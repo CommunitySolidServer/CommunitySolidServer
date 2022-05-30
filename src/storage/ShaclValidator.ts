@@ -31,7 +31,7 @@ export class ShaclValidator extends ShapeValidator {
   public async canHandle(input: { parentContainerIdentifier: ResourceIdentifier;
     parentContainerRepresentation: Representation;
     representation: Representation; }): Promise<void> {
-    const shapeURL = input.parentContainerRepresentation.metadata.get(LDP.constrainedBy)?.value;
+    const shapeURL = input.parentContainerRepresentation.metadata.get(LDP.terms.constrainedBy)?.value;
     if (!shapeURL) {
       throw new Error(this.noShapePresent);
     }
@@ -41,7 +41,7 @@ export class ShaclValidator extends ShapeValidator {
     parentContainerRepresentation: Representation;
     representation: Representation; }): Promise<void> {
     // Check if the parent has ldp:constrainedBy in the metadata
-    const shapeURL = input.parentContainerRepresentation.metadata.get(LDP.constrainedBy)!.value;
+    const shapeURL = input.parentContainerRepresentation.metadata.get(LDP.terms.constrainedBy)!.value;
     let representationData;
     // Convert the RDF representation to a N3.Store
     const preferences = { type: { [INTERNAL_QUADS]: 1 }};
@@ -65,7 +65,7 @@ export class ShaclValidator extends ShapeValidator {
     }
 
     this.logger.debug(`URL of the shapefile present in the metadata of the parent: ${shapeURL}`);
-    const shape = await fetchDataset(shapeURL, this.converter);
+    const shape = await fetchDataset(shapeURL);
     const shapeStore = await readableToQuads(shape.data);
 
     this.targetClassCheck(shapeStore, dataStore, shapeURL);

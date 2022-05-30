@@ -1,5 +1,6 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { ensureTrailingSlash } from '../../util/PathUtil';
+import { sanitizeUrlPart } from '../../util/StringUtil';
 import type { IdentifierGenerator } from './IdentifierGenerator';
 
 /**
@@ -14,7 +15,7 @@ export class SuffixIdentifierGenerator implements IdentifierGenerator {
   }
 
   public generate(name: string): ResourceIdentifier {
-    const cleanName = name.replace(/\W/gu, '-');
+    const cleanName = sanitizeUrlPart(name);
     return { path: ensureTrailingSlash(new URL(cleanName, this.base).href) };
   }
 }

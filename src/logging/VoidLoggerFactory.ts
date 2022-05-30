@@ -1,4 +1,3 @@
-import type { Logger } from './Logger';
 import type { LoggerFactory } from './LoggerFactory';
 import { VoidLogger } from './VoidLogger';
 
@@ -9,7 +8,7 @@ export class VoidLoggerFactory implements LoggerFactory {
   private readonly logger = new VoidLogger();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public createLogger(label: string): Logger {
+  public createLogger(label: string): VoidLogger {
     return this.logger;
   }
 }

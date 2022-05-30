@@ -94,13 +94,15 @@ describe('A server with restricted IDP access', (): void => {
   it('can still access registration with the correct credentials.', async(): Promise<void> => {
     // Logging into session
     const state = new IdentityTestState(baseUrl, 'http://mockedredirect/', baseUrl);
-    const url = await state.startSession();
-    await state.parseLoginPage(url);
-    await state.login(url, settings.email, settings.password);
+    let url = await state.startSession();
+    let res = await state.fetchIdp(url);
+    expect(res.status).toBe(200);
+    url = await state.login(url, settings.email, settings.password);
+    await state.consent(url);
     expect(state.session.info?.webId).toBe(webId);
 
     // Registration still works for this WebID
-    let res = await state.session.fetch(`${baseUrl}idp/register/`);
+    res = await state.session.fetch(`${baseUrl}idp/register/`);
     expect(res.status).toBe(200);
 
     res = await state.session.fetch(`${baseUrl}idp/register/`, {
@@ -111,5 +113,7 @@ describe('A server with restricted IDP access', (): void => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.webId).toBe(joinUrl(baseUrl, 'bob/profile/card#me'));
+
+    await state.session.logout();
   });
 });

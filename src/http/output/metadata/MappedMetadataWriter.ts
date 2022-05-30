@@ -1,3 +1,5 @@
+import type { NamedNode } from 'n3';
+import { DataFactory } from 'n3';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
@@ -8,11 +10,15 @@ import { MetadataWriter } from './MetadataWriter';
  * The header value(s) will be the same as the corresponding object value(s).
  */
 export class MappedMetadataWriter extends MetadataWriter {
-  private readonly headerMap: [string, string][];
+  private readonly headerMap: Map<NamedNode, string>;
 
   public constructor(headerMap: Record<string, string>) {
     super();
-    this.headerMap = Object.entries(headerMap);
+
+    this.headerMap = new Map<NamedNode, string>();
+    for (const [ key, value ] of Object.entries(headerMap)) {
+      this.headerMap.set(DataFactory.namedNode(key), value);
+    }
   }
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {

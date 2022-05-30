@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import type { App } from '../../src/init/App';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
@@ -17,6 +17,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
       getTestConfigPath('server-without-auth.json'),
       getDefaultVariables(port, 'https://example.pod/'),
     ) as App;
+
     await app.start();
   });
 

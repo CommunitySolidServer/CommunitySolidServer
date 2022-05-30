@@ -1,58 +1,52 @@
-import type { Readable } from 'stream';
-import type { ActorInitSparql } from '@comunica/actor-init-sparql';
-import { newEngine } from '@comunica/actor-init-sparql';
-import type { IQueryResultUpdate } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
-import { defaultGraph } from '@rdfjs/data-model';
-import { Store } from 'n3';
-import type { BaseQuad } from 'rdf-js';
+import { QueryEngine } from '@comunica/query-sparql';
+import type { Store } from 'n3';
+import { DataFactory } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
-import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Patch } from '../../http/representation/Patch';
-import type { Representation } from '../../http/representation/Representation';
-import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { SparqlUpdatePatch } from '../../http/representation/SparqlUpdatePatch';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { readableToQuads, readableToString } from '../../util/StreamUtil';
-import { RepresentationPatcher } from './RepresentationPatcher';
-import type { RepresentationPatcherInput } from './RepresentationPatcher';
+import { readableToString } from '../../util/StreamUtil';
+import type { RdfStorePatcherInput } from './RdfStorePatcher';
+import { RdfStorePatcher } from './RdfStorePatcher';
 
 /**
  * Supports application/sparql-update PATCH requests on RDF resources.
  *
  * Only DELETE/INSERT updates without variables are supported.
  */
-export class SparqlUpdatePatcher extends RepresentationPatcher {
+export class SparqlUpdatePatcher extends RdfStorePatcher {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly engine: ActorInitSparql;
+  private readonly engine: QueryEngine;
 
   public constructor() {
     super();
-    this.engine = newEngine();
+    this.engine = new QueryEngine();
   }
 
-  public async canHandle({ patch }: RepresentationPatcherInput): Promise<void> {
+  public async canHandle({ patch }: RdfStorePatcherInput): Promise<void> {
     if (!this.isSparqlUpdate(patch)) {
       throw new NotImplementedHttpError('Only SPARQL update patches are supported');
     }
   }
 
-  public async handle(input: RepresentationPatcherInput): Promise<Representation> {
+  public async handle({ identifier, patch, store }: RdfStorePatcherInput): Promise<Store> {
     // Verify the patch
-    const { patch, representation, identifier } = input;
     const op = (patch as SparqlUpdatePatch).algebra;
 
     // In case of a NOP we can skip everything
     if (op.type === Algebra.types.NOP) {
-      return representation ?? new BasicRepresentation([], identifier, INTERNAL_QUADS, false);
+      return store;
     }
 
     this.validateUpdate(op);
 
-    return this.patch(input);
+    return this.patch({
+      identifier,
+      patch,
+      store,
+    });
   }
 
   private isSparqlUpdate(patch: Patch): patch is SparqlUpdatePatch {
@@ -86,7 +80,7 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
    * This means: no GRAPH statements, no DELETE WHERE containing terms of type Variable.
    */
   private validateDeleteInsert(op: Algebra.DeleteInsert): void {
-    const def = defaultGraph();
+    const def = DataFactory.defaultGraph();
     const deletes = op.delete ?? [];
     const inserts = op.insert ?? [];
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {
@@ -115,30 +109,16 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
   /**
    * Apply the given algebra operation to the given identifier.
    */
-  private async patch({ identifier, patch, representation }: RepresentationPatcherInput): Promise<Representation> {
-    let result: Store<BaseQuad>;
-    let metadata: RepresentationMetadata;
-
-    if (representation) {
-      ({ metadata } = representation);
-      if (metadata.contentType !== INTERNAL_QUADS) {
-        throw new InternalServerError('Quad stream was expected for patching.');
-      }
-      result = await readableToQuads(representation.data);
-      this.logger.debug(`${result.size} quads in ${identifier.path}.`);
-    } else {
-      metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
-      result = new Store<BaseQuad>();
-    }
+  private async patch({ identifier, patch, store }: RdfStorePatcherInput): Promise<Store> {
+    const result = store;
+    this.logger.debug(`${result.size} quads in ${identifier.path}.`);
 
     // Run the query through Comunica
     const sparql = await readableToString(patch.data);
-    const query = await this.engine.query(sparql,
-      { sources: [ result ], baseIRI: identifier.path }) as IQueryResultUpdate;
-    await query.updateResult;
+    await this.engine.queryVoid(sparql, { sources: [ result ], baseIRI: identifier.path });
 
     this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 
-    return new BasicRepresentation(result.match() as unknown as Readable, metadata, false);
+    return result;
   }
 }

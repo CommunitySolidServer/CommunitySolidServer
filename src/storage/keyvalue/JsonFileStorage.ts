@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { writeJson, readJson } from 'fs-extra';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { isSystemError } from '../../util/errors/SystemError';
 import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
@@ -70,8 +70,7 @@ export class JsonFileStorage implements KeyValueStorage<string, unknown> {
     return this.locker.withWriteLock(this.lockIdentifier, async(): Promise<T> => {
       const json = await this.getJson();
       const result = updateFn(json);
-      const updatedText = JSON.stringify(json, null, 2);
-      await fsPromises.writeFile(this.filePath, updatedText, 'utf8');
+      await writeJson(this.filePath, json, { encoding: 'utf8', spaces: 2 });
       return result;
     });
   }
@@ -81,8 +80,7 @@ export class JsonFileStorage implements KeyValueStorage<string, unknown> {
    */
   private async getJson(): Promise<NodeJS.Dict<unknown>> {
     try {
-      const text = await fsPromises.readFile(this.filePath, 'utf8');
-      return JSON.parse(text);
+      return await readJson(this.filePath, 'utf8');
     } catch (error: unknown) {
       if (isSystemError(error) && error.code === 'ENOENT') {
         return {};

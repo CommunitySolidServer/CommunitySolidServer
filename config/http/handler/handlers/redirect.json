@@ -1,0 +1,20 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Example handler to configure redirect patterns.",
+      "@id": "urn:solid-server:default:RedirectHandler",
+      "@type": "RedirectingHttpHandler",
+      "redirects": [
+        {
+          "RedirectingHttpHandler:_redirects_key": "/from/(.*)",
+          "RedirectingHttpHandler:_redirects_value": "/to/$1"
+        }
+      ],
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "statusCode": "303"
+    }
+  ]
+}

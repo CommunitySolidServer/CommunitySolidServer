@@ -72,7 +72,7 @@ describe('A SparqlDataAccessor', (): void => {
   it('can only handle quad data.', async(): Promise<void> => {
     let representation = new BasicRepresentation(data, metadata, true);
     await expect(accessor.canHandle(representation)).rejects.toThrow(UnsupportedMediaTypeHttpError);
-    representation = new BasicRepresentation(data, 'newInternalType', false);
+    representation = new BasicRepresentation(data, 'internal/newInternalType', false);
     await expect(accessor.canHandle(representation)).rejects.toThrow(UnsupportedMediaTypeHttpError);
     representation = new BasicRepresentation(data, INTERNAL_QUADS, false);
     metadata.contentType = INTERNAL_QUADS;
@@ -285,5 +285,22 @@ describe('A SparqlDataAccessor', (): void => {
     await expect(accessor.writeContainer(identifier, metadata)).rejects.toThrow(updateError);
 
     updateError = undefined;
+  });
+
+  it('overwrites the metadata when writing metadata.', async(): Promise<void> => {
+    const resourceIdentifier = { path: `${base}resource` };
+
+    const newMetadata = new RepresentationMetadata(resourceIdentifier);
+    newMetadata.addQuad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}c`));
+    await expect(accessor.writeMetadata(resourceIdentifier, newMetadata)).resolves.toBeUndefined();
+
+    expect(fetchUpdate).toHaveBeenCalledTimes(1);
+    expect(fetchUpdate.mock.calls[0][0]).toBe(endpoint);
+    expect(simplifyQuery(fetchUpdate.mock.calls[0][1])).toBe(simplifyQuery([
+      'DELETE WHERE { GRAPH <meta:http://test.com/resource> { ?s ?p ?o. } };',
+      'INSERT DATA {',
+      'GRAPH <meta:http://test.com/resource> { <http://test.com/a> <http://test.com/b> <http://test.com/c>. }',
+      '}',
+    ]));
   });
 });

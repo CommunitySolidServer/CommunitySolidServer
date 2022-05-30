@@ -2,8 +2,10 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
-import { CONTENT_TYPE, CONTENT_TYPE_TERM } from '../../util/Vocabularies';
+import type { ContentType } from '../../util/HeaderUtil';
+import { parseContentType } from '../../util/HeaderUtil';
+import { toNamedTerm, toObjectTerm, isTerm, toLiteral } from '../../util/TermUtil';
+import { CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
@@ -17,6 +19,22 @@ export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
  */
 export function isRepresentationMetadata(object: any): object is RepresentationMetadata {
   return typeof object?.setMetadata === 'function';
+}
+
+// Caches named node conversions
+const cachedNamedNodes: Record<string, NamedNode> = {};
+
+/**
+ * Converts the incoming name (URI or shorthand) to a named node.
+ * The generated terms get cached to reduce the number of created nodes,
+ * so only use this for internal constants!
+ * @param name - Predicate to potentially transform.
+ */
+function toCachedNamedNode(name: string): NamedNode {
+  if (!(name in cachedNamedNodes)) {
+    cachedNamedNodes[name] = DataFactory.namedNode(name);
+  }
+  return cachedNamedNodes[name];
 }
 
 /**
@@ -87,9 +105,10 @@ export class RepresentationMetadata {
 
     if (overrides) {
       if (typeof overrides === 'string') {
-        overrides = { [CONTENT_TYPE]: overrides };
+        this.contentType = overrides;
+      } else {
+        this.setOverrides(overrides);
       }
-      this.setOverrides(overrides);
     }
   }
 
@@ -113,7 +132,7 @@ export class RepresentationMetadata {
    */
   public quads(
     subject: NamedNode | BlankNode | string | null = null,
-    predicate: NamedNode | string | null = null,
+    predicate: NamedNode | null = null,
     object: NamedNode | BlankNode | Literal | string | null = null,
     graph: MetadataGraph | null = null,
   ): Quad[] {
@@ -164,12 +183,12 @@ export class RepresentationMetadata {
    */
   public addQuad(
     subject: NamedNode | BlankNode | string,
-    predicate: NamedNode | string,
+    predicate: NamedNode,
     object: NamedNode | BlankNode | Literal | string,
     graph?: MetadataGraph,
   ): this {
     this.store.addQuad(toNamedTerm(subject),
-      toCachedNamedNode(predicate),
+      predicate,
       toObjectTerm(object, true),
       graph ? toNamedTerm(graph) : undefined);
     return this;
@@ -191,12 +210,12 @@ export class RepresentationMetadata {
    */
   public removeQuad(
     subject: NamedNode | BlankNode | string,
-    predicate: NamedNode | string,
+    predicate: NamedNode,
     object: NamedNode | BlankNode | Literal | string,
     graph?: MetadataGraph,
   ): this {
     const quads = this.quads(toNamedTerm(subject),
-      toCachedNamedNode(predicate),
+      predicate,
       toObjectTerm(object, true),
       graph ? toNamedTerm(graph) : undefined);
     return this.removeQuads(quads);
@@ -216,7 +235,7 @@ export class RepresentationMetadata {
    * @param object - Value(s) to add.
    * @param graph - Optional graph of where to add the values to.
    */
-  public add(predicate: NamedNode | string, object: MetadataValue, graph?: MetadataGraph): this {
+  public add(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
     return this.forQuads(predicate, object, (pred, obj): any => this.addQuad(this.id, pred, obj, graph));
   }
 
@@ -226,7 +245,7 @@ export class RepresentationMetadata {
    * @param object - Value(s) to remove.
    * @param graph - Optional graph of where to remove the values from.
    */
-  public remove(predicate: NamedNode | string, object: MetadataValue, graph?: MetadataGraph): this {
+  public remove(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
     return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj, graph));
   }
 
@@ -234,12 +253,11 @@ export class RepresentationMetadata {
    * Helper function to simplify add/remove
    * Runs the given function on all predicate/object pairs, but only converts the predicate to a named node once.
    */
-  private forQuads(predicate: NamedNode | string, object: MetadataValue,
+  private forQuads(predicate: NamedNode, object: MetadataValue,
     forFn: (pred: NamedNode, obj: NamedNode | Literal) => void): this {
-    const predicateNode = toCachedNamedNode(predicate);
     const objects = Array.isArray(object) ? object : [ object ];
     for (const obj of objects) {
-      forFn(predicateNode, toObjectTerm(obj, true));
+      forFn(predicate, toObjectTerm(obj, true));
     }
     return this;
   }
@@ -249,9 +267,23 @@ export class RepresentationMetadata {
    * @param predicate - Predicate to remove.
    * @param graph - Optional graph where to remove from.
    */
-  public removeAll(predicate: NamedNode | string, graph?: MetadataGraph): this {
-    this.removeQuads(this.store.getQuads(this.id, toCachedNamedNode(predicate), null, graph ?? null));
+  public removeAll(predicate: NamedNode, graph?: MetadataGraph): this {
+    this.removeQuads(this.store.getQuads(this.id, predicate, null, graph ?? null));
     return this;
+  }
+
+  /**
+   * Verifies if a specific triple can be found in the metadata.
+   * Undefined parameters are interpreted as wildcards.
+   */
+  public has(
+    predicate: NamedNode | string | null = null,
+    object: NamedNode | BlankNode | Literal | string | null = null,
+    graph: MetadataGraph | null = null,
+  ): boolean {
+    // This works with N3.js but at the time of writing the typings have not been updated yet.
+    // If you see this line of code check if the typings are already correct and update this if so.
+    return (this.store.has as any)(this.id, predicate, object, graph);
   }
 
   /**
@@ -261,8 +293,8 @@ export class RepresentationMetadata {
    *
    * @returns An array with all matches.
    */
-  public getAll(predicate: NamedNode | string, graph?: MetadataGraph): Term[] {
-    return this.store.getQuads(this.id, toCachedNamedNode(predicate), null, graph ?? null)
+  public getAll(predicate: NamedNode, graph?: MetadataGraph): Term[] {
+    return this.store.getQuads(this.id, predicate, null, graph ?? null)
       .map((quad): Term => quad.object);
   }
 
@@ -275,15 +307,15 @@ export class RepresentationMetadata {
    *
    * @returns The corresponding value. Undefined if there is no match
    */
-  public get(predicate: NamedNode | string, graph?: MetadataGraph): Term | undefined {
+  public get(predicate: NamedNode, graph?: MetadataGraph): Term | undefined {
     const terms = this.getAll(predicate, graph);
     if (terms.length === 0) {
       return;
     }
     if (terms.length > 1) {
-      this.logger.error(`Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`);
+      this.logger.error(`Multiple results for ${predicate.value}`);
       throw new InternalServerError(
-        `Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`,
+        `Multiple results for ${predicate.value}`,
       );
     }
     return terms[0];
@@ -296,12 +328,69 @@ export class RepresentationMetadata {
    * @param object - Value(s) to set.
    * @param graph - Optional graph where the triple should be stored.
    */
-  public set(predicate: NamedNode | string, object?: MetadataValue, graph?: MetadataGraph): this {
+  public set(predicate: NamedNode, object?: MetadataValue, graph?: MetadataGraph): this {
     this.removeAll(predicate, graph);
     if (object) {
       this.add(predicate, object, graph);
     }
     return this;
+  }
+
+  private setContentType(input?: ContentType | string): void {
+    // Make sure complete Content-Type RDF structure is gone
+    this.removeContentType();
+
+    if (!input) {
+      return;
+    }
+
+    if (typeof input === 'string') {
+      input = parseContentType(input);
+    }
+
+    for (const [ key, value ] of Object.entries(input.parameters)) {
+      const node = DataFactory.blankNode();
+      this.addQuad(this.id, SOLID_META.terms.contentTypeParameter, node);
+      this.addQuad(node, RDFS.terms.label, key);
+      this.addQuad(node, SOLID_META.terms.value, value);
+    }
+
+    // Set base content type string
+    this.set(CONTENT_TYPE_TERM, input.value);
+  }
+
+  /**
+   * Parse the internal RDF structure to retrieve the Record with ContentType Parameters.
+   * @returns A {@link ContentType} object containing the value and optional parameters if there is one.
+   */
+  private getContentType(): ContentType | undefined {
+    const value = this.get(CONTENT_TYPE_TERM)?.value;
+    if (!value) {
+      return;
+    }
+    const params = this.getAll(SOLID_META.terms.contentTypeParameter);
+    return {
+      value,
+      parameters: Object.fromEntries(params.map((param): [string, string] => {
+        const labels = this.store.getObjects(param, RDFS.terms.label, null);
+        const values = this.store.getObjects(param, SOLID_META.terms.value, null);
+        if (labels.length !== 1 || values.length !== 1) {
+          this.logger.error(`Detected invalid content-type metadata for ${this.id.value}`);
+          return [ 'invalid', '' ];
+        }
+        return [ labels[0].value, values[0].value ];
+      })),
+    };
+  }
+
+  private removeContentType(): void {
+    this.removeAll(CONTENT_TYPE_TERM);
+    const params = this.quads(this.id, SOLID_META.terms.contentTypeParameter);
+    for (const quad of params) {
+      const paramEntries = this.quads(quad.object as BlankNode);
+      this.store.removeQuads(paramEntries);
+    }
+    this.store.removeQuads(params);
   }
 
   // Syntactic sugar for common predicates
@@ -314,6 +403,31 @@ export class RepresentationMetadata {
   }
 
   public set contentType(input) {
-    this.set(CONTENT_TYPE_TERM, input);
+    this.setContentType(input);
+  }
+
+  /**
+   * Shorthand for the ContentType as an object (with parameters)
+   */
+  public get contentTypeObject(): ContentType | undefined {
+    return this.getContentType();
+  }
+
+  public set contentTypeObject(contentType) {
+    this.setContentType(contentType);
+  }
+
+  /**
+  * Shorthand for the CONTENT_LENGTH predicate.
+  */
+  public get contentLength(): number | undefined {
+    const length = this.get(CONTENT_LENGTH_TERM);
+    return length?.value ? Number(length.value) : undefined;
+  }
+
+  public set contentLength(input) {
+    if (input) {
+      this.set(CONTENT_LENGTH_TERM, toLiteral(input, XSD.terms.integer));
+    }
   }
 }

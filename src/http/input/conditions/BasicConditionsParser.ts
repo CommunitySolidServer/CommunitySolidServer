@@ -3,6 +3,7 @@ import type { HttpRequest } from '../../../server/HttpRequest';
 import type { BasicConditionsOptions } from '../../../storage/BasicConditions';
 import { BasicConditions } from '../../../storage/BasicConditions';
 import type { Conditions } from '../../../storage/Conditions';
+import { splitCommaSeparated } from '../../../util/StringUtil';
 import { ConditionsParser } from './ConditionsParser';
 
 /**
@@ -58,6 +59,9 @@ export class BasicConditionsParser extends ConditionsParser {
    * Undefined if there is no value for the given header name.
    */
   private parseTagHeader(request: HttpRequest, header: 'if-match' | 'if-none-match'): string[] | undefined {
-    return request.headers[header]?.trim().split(/\s*,\s*/u);
+    const headerValue = request.headers[header];
+    if (headerValue) {
+      return splitCommaSeparated(headerValue.trim());
+    }
   }
 }

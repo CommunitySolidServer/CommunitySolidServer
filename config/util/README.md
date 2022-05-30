@@ -36,8 +36,10 @@ to the ChainedConverter list.
 
 ## Resource-locker
 Which locking mechanism to use to for example prevent 2 write simultaneous write requests.
+* *debug-void*: No locking mechanism, does not prevent simultaneous read/writes.
+* *file*: Uses a file-system based locking mechanism (process-safe/thread-safe).
 * *memory*: Uses an in-memory locking mechanism.
-* *redis*: Uses a Redis store for locking.
+* *redis*: Uses a Redis store for locking that supports threadsafe read-write locking (process-safe/thread-safe).
 
 ## Variables
 Various variables used by other options.

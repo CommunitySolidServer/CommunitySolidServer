@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "This is the entry point to the application. It can be used to both start and stop the server.",
@@ -13,7 +13,12 @@
         "finalizers": [
           { "@id": "urn:solid-server:default:ServerInitializer" }
         ]
-      }
+      },
+      "clusterManager": { 
+        "@id": "urn:solid-server:default:ClusterManager",
+        "@type": "ClusterManager",
+        "workers": { "@id": "urn:solid-server:default:variable:workers" }
+       }
     }
   ]
 }

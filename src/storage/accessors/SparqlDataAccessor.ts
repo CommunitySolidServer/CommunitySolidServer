@@ -27,7 +27,7 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { isContainerIdentifier } from '../../util/PathUtil';
-import { CONTENT_TYPE, LDP } from '../../util/Vocabularies';
+import { CONTENT_TYPE_TERM, LDP } from '../../util/Vocabularies';
 import type { DataAccessor } from './DataAccessor';
 
 const { defaultGraph, namedNode, quad, variable } = DataFactory;
@@ -125,16 +125,26 @@ export class SparqlDataAccessor implements DataAccessor {
     }
     const { name, parent } = this.getRelatedNames(identifier);
 
-    const triples = await arrayifyStream(data) as Quad[];
+    const triples = await arrayifyStream<Quad>(data);
     const def = defaultGraph();
     if (triples.some((triple): boolean => !def.equals(triple.graph))) {
       throw new NotImplementedHttpError('Only triples in the default graph are supported.');
     }
 
     // Not relevant since all content is triples
-    metadata.removeAll(CONTENT_TYPE);
+    metadata.removeAll(CONTENT_TYPE_TERM);
 
     return this.sendSparqlUpdate(this.sparqlInsert(name, metadata, parent, triples));
+  }
+
+  /**
+   * Reads the metadata and stores it.
+   */
+  public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
+    const { name } = this.getRelatedNames(identifier);
+    const metaName = this.getMetadataNode(name);
+
+    return this.sendSparqlUpdate(this.sparqlInsertMetadata(metaName, metadata));
   }
 
   /**
@@ -235,6 +245,31 @@ export class SparqlDataAccessor implements DataAccessor {
         insert.push(this.sparqlUpdateGraph(name, triples));
       }
     }
+
+    return {
+      updates,
+      type: 'update',
+      prefixes: {},
+    };
+  }
+
+  /**
+   * Creates an update query that overwrites metadata of a resource.
+   * @param metaName - Name of the metadata resource to update.
+   * @param metadata - New metadata of the resource.
+   */
+  private sparqlInsertMetadata(metaName: NamedNode, metadata: RepresentationMetadata): Update {
+    // Insert new metadata and containment triple
+    const insert: GraphQuads[] = [ this.sparqlUpdateGraph(metaName, metadata.quads()) ];
+
+    // Necessary updates: delete metadata and insert new data
+    const updates: UpdateOperation[] = [
+      this.sparqlUpdateDeleteAll(metaName),
+      {
+        updateType: 'insert',
+        insert,
+      },
+    ];
 
     return {
       updates,

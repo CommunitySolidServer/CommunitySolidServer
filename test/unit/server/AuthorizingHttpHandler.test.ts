@@ -62,7 +62,7 @@ describe('An AuthorizingHttpHandler', (): void => {
     expect(modesExtractor.handleSafe).toHaveBeenCalledTimes(1);
     expect(modesExtractor.handleSafe).toHaveBeenLastCalledWith(operation);
     expect(permissionReader.handleSafe).toHaveBeenCalledTimes(1);
-    expect(permissionReader.handleSafe).toHaveBeenLastCalledWith({ credentials, identifier: operation.target });
+    expect(permissionReader.handleSafe).toHaveBeenLastCalledWith({ credentials, identifier: operation.target, modes });
     expect(authorizer.handleSafe).toHaveBeenCalledTimes(1);
     expect(authorizer.handleSafe)
       .toHaveBeenLastCalledWith({ credentials, identifier: operation.target, modes, permissionSet });

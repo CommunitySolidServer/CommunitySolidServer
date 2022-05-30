@@ -23,9 +23,9 @@ export class ConvertingRouterRule extends RouterRule {
   private readonly typedStores: ConvertingStoreEntry[];
   private readonly defaultStore: ResourceStore;
 
-  public constructor(typedStore: ConvertingStoreEntry, defaultStore: ResourceStore) {
+  public constructor(typedStores: ConvertingStoreEntry[], defaultStore: ResourceStore) {
     super();
-    this.typedStores = [ typedStore ];
+    this.typedStores = typedStores;
     this.defaultStore = defaultStore;
   }
 
@@ -39,7 +39,7 @@ export class ConvertingRouterRule extends RouterRule {
         entry.supportChecker.supports({ identifier, representation }));
     } else {
       // No content-type given so we can only check if one of the stores has data for the identifier
-      store = await this.findStore(async(entry): Promise<boolean> => entry.store.resourceExists(identifier));
+      store = await this.findStore(async(entry): Promise<boolean> => entry.store.hasResource(identifier));
     }
     return store;
   }

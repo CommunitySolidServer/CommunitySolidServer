@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Logs a warning if the base URL changes.",
+      "@id": "urn:solid-server:default:ModuleVersionVerifier",
+      "@type": "ModuleVersionVerifier",
+      "storageKey": "current-server-version",
+      "storage": { "@id": "urn:solid-server:default:SetupStorage" }
+    }
+  ]
+}

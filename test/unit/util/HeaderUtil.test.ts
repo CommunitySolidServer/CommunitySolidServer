@@ -1,6 +1,9 @@
 import type { HttpResponse } from '../../../src/server/HttpResponse';
+import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import {
   addHeader,
+  hasScheme,
+  matchesAuthorizationScheme,
   parseAccept,
   parseAcceptCharset,
   parseAcceptDateTime,
@@ -8,6 +11,7 @@ import {
   parseAcceptLanguage,
   parseContentType,
   parseForwarded,
+  parseLinkHeader,
 } from '../../../src/util/HeaderUtil';
 
 describe('HeaderUtil', (): void => {
@@ -42,9 +46,11 @@ describe('HeaderUtil', (): void => {
 
     it('parses Accept headers with double quoted values.', async(): Promise<void> => {
       expect(parseAccept('audio/basic; param1="val" ; q=0.5 ;param2="\\\\\\"valid"')).toEqual([
-        { range: 'audio/basic',
+        {
+          range: 'audio/basic',
           weight: 0.5,
-          parameters: { mediaType: { param1: 'val' }, extension: { param2: '\\\\\\"valid' }}},
+          parameters: { mediaType: { param1: 'val' }, extension: { param2: '\\\\\\"valid' }},
+        },
       ]);
     });
 
@@ -190,16 +196,35 @@ describe('HeaderUtil', (): void => {
 
   describe('#parseContentType', (): void => {
     const contentTypeTurtle = 'text/turtle';
+    const contentTypePlain: any = {
+      value: 'text/plain',
+      parameters: {
+        charset: 'utf-8',
+      },
+    };
     it('handles single content-type parameter (with leading and trailing whitespaces).', (): void => {
-      expect(parseContentType('text/turtle').type).toEqual(contentTypeTurtle);
-      expect(parseContentType('text/turtle ').type).toEqual(contentTypeTurtle);
-      expect(parseContentType(' text/turtle').type).toEqual(contentTypeTurtle);
+      expect(parseContentType('text/turtle').value).toEqual(contentTypeTurtle);
+      expect(parseContentType('text/turtle ').value).toEqual(contentTypeTurtle);
+      expect(parseContentType(' text/turtle').value).toEqual(contentTypeTurtle);
+      expect(parseContentType('text/plain; charset=utf-8')).toEqual(contentTypePlain);
+      expect(parseContentType(' text/plain; charset=utf-8')).toEqual(contentTypePlain);
+      expect(parseContentType('text/plain ; charset=utf-8')).toEqual(contentTypePlain);
+      expect(parseContentType(' text/plain ; charset=utf-8')).toEqual(contentTypePlain);
+      expect(parseContentType(' text/plain ; charset="utf-8"')).toEqual(contentTypePlain);
+      expect(parseContentType(' text/plain ; charset = "utf-8"')).toEqual(contentTypePlain);
     });
 
     it('handles multiple content-type parameters.', (): void => {
-      expect(parseContentType('text/turtle; charset=UTF-8').type).toEqual(contentTypeTurtle);
+      expect(parseContentType('text/turtle; charset=UTF-8').value).toEqual(contentTypeTurtle);
+      contentTypePlain.parameters.test = 'value1';
+      expect(parseContentType('text/plain; charset=utf-8;test="value1"')).toEqual(contentTypePlain);
+    });
+
+    it('errors on invalid content-types.', (): void => {
+      expect((): any => parseContentType('invalid type')).toThrow(BadRequestHttpError);
     });
   });
+
   describe('#parseForwarded', (): void => {
     it('handles an empty set of headers.', (): void => {
       expect(parseForwarded({})).toEqual({});
@@ -263,6 +288,185 @@ describe('HeaderUtil', (): void => {
         host: 'pod.example',
         proto: 'https',
       });
+    });
+  });
+
+  describe('#parseLinkHeader', (): void => {
+    it('handles an empty set of headers.', (): void => {
+      expect(parseLinkHeader([])).toEqual([]);
+    });
+
+    it('handles empty string values.', (): void => {
+      expect(parseLinkHeader([ '' ])).toEqual([]);
+    });
+
+    it('parses a Link header value as array.', (): void => {
+      const link = [ '<http://test.com>; rel="myRel"; test="value1"' ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+      ]);
+    });
+
+    it('parses a Link header value as string.', (): void => {
+      const link = '<http://test.com>; rel="myRel"; test="value1"';
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+      ]);
+    });
+
+    it('parses multiple Link header values delimited by a comma.', (): void => {
+      const link = [ `<http://test.com>; rel="myRel"; test="value1", 
+      <http://test2.com>; rel="myRel2"; test="value2"` ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('parses multiple Link header values as array elements.', (): void => {
+      const link = [
+        '<http://test.com>; rel="myRel"; test="value1"',
+        '<http://test2.com>; rel="myRel2"; test="value2"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('ignores invalid syntax links.', (): void => {
+      const link = [
+        'http://test.com; rel="myRel"; test="value1"',
+        '<http://test2.com>; rel="myRel2"; test="value2"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('ignores invalid links (no rel parameter).', (): void => {
+      const link = [
+        '<http://test.com>; att="myAtt"; test="value1"',
+        '<http://test2.com>; rel="myRel2"; test="value2"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('ignores extra rel parameters.', (): void => {
+      const link = [
+        '<http://test.com>; rel="myRel1"; rel="myRel2"; test="value1"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel1',
+            test: 'value1',
+          },
+        },
+      ]);
+    });
+
+    it('works with an empty argument.', (): void => {
+      expect(parseLinkHeader()).toEqual([]);
+    });
+  });
+
+  describe('#matchesAuthorizationScheme', (): void => {
+    it('returns true if the provided authorization header value matches the provided scheme.', (): void => {
+      const authorization = `Bearer Q0xXTzl1dTM4RF8xLXllSGx5am51WFUzbzZ2LTZ1WU1GWXpfMTBEajBjaw==`;
+      expect(matchesAuthorizationScheme('Bearer', authorization)).toBeTruthy();
+    });
+
+    it('returns false if the provided authorization header value does not match the provided scheme.', (): void => {
+      const authorization = `Basic YWxpY2U6YWxpY2U=`;
+      expect(matchesAuthorizationScheme('Bearer', authorization)).toBeFalsy();
+    });
+
+    it('correctly detects scheme matches when a different casing is used.', (): void => {
+      const authorization = `bAsIc YWxpY2U6YWxpY2U=`;
+      expect(matchesAuthorizationScheme('Basic', authorization)).toBeTruthy();
+    });
+
+    it('escapes special regex characters in the scheme argument, resulting in a correct match.', (): void => {
+      const authorization = `bA.*sIc$ YWxpY2U6YWxpY2U=`;
+      expect(matchesAuthorizationScheme('bA.*sIc$', authorization)).toBeTruthy();
+    });
+
+    it('returns false if the authorization argument is undefined.', (): void => {
+      expect(matchesAuthorizationScheme('Bearer')).toBeFalsy();
+    });
+  });
+
+  describe('#hasScheme', (): void => {
+    it('returns true if the provided url matches the provided scheme.', (): void => {
+      expect(hasScheme('http://example.com', 'http')).toBeTruthy();
+    });
+
+    it('returns true if the provided url matches one of the provided schemes.', (): void => {
+      expect(hasScheme('ws://example.com', 'http', 'https', 'ws')).toBeTruthy();
+    });
+
+    it('returns false if the provided url does not match the provided scheme.', (): void => {
+      expect(hasScheme('http://example.com', 'https')).toBeFalsy();
+    });
+
+    it('returns false if the provided value is not a valid url.', (): void => {
+      expect(hasScheme('not-a-URL:test', 'http')).toBeFalsy();
+    });
+
+    it('is case insensitive: schemes with different case, result in a correct match.', (): void => {
+      expect(hasScheme('wss://example.com', 'http', 'WSS')).toBeTruthy();
     });
   });
 });

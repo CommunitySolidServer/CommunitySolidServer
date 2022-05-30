@@ -3,11 +3,12 @@ import { BasicRepresentation } from '../../http/representation/BasicRepresentati
 import type { Representation } from '../../http/representation/Representation';
 import { INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
-import { modulePathPlaceholder } from '../../util/PathUtil';
+import { resolveModulePath } from '../../util/PathUtil';
 import { getSingleItem } from '../../util/StreamUtil';
+import { isValidFileName } from '../../util/StringUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
+import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 // Fields optional due to https://github.com/LinkedSoftwareDependencies/Components.js/issues/20
 export interface TemplateOptions {
@@ -18,8 +19,8 @@ export interface TemplateOptions {
 }
 
 const DEFAULT_TEMPLATE_OPTIONS: TemplateOptions = {
-  mainTemplatePath: `${modulePathPlaceholder}templates/error/main.md.hbs`,
-  codeTemplatesPath: `${modulePathPlaceholder}templates/error/descriptions/`,
+  mainTemplatePath: resolveModulePath('templates/error/main.md.hbs'),
+  codeTemplatesPath: resolveModulePath('templates/error/descriptions/'),
   extension: '.md.hbs',
   contentType: 'text/markdown',
 };
@@ -35,7 +36,7 @@ const DEFAULT_TEMPLATE_OPTIONS: TemplateOptions = {
  * That result will be passed as an additional parameter to the main templating call,
  * using the variable `codeMessage`.
  */
-export class ErrorToTemplateConverter extends TypedRepresentationConverter {
+export class ErrorToTemplateConverter extends BaseTypedRepresentationConverter {
   private readonly templateEngine: TemplateEngine;
   private readonly mainTemplatePath: string;
   private readonly codeTemplatesPath: string;
@@ -43,7 +44,7 @@ export class ErrorToTemplateConverter extends TypedRepresentationConverter {
   private readonly contentType: string;
 
   public constructor(templateEngine: TemplateEngine, templateOptions?: TemplateOptions) {
-    super(INTERNAL_ERROR, templateOptions?.contentType ?? DEFAULT_TEMPLATE_OPTIONS.contentType);
+    super(INTERNAL_ERROR, templateOptions?.contentType ?? DEFAULT_TEMPLATE_OPTIONS.contentType!);
     // Workaround for https://github.com/LinkedSoftwareDependencies/Components.js/issues/20
     if (!templateOptions || Object.keys(templateOptions).length === 0) {
       templateOptions = DEFAULT_TEMPLATE_OPTIONS;
@@ -63,7 +64,7 @@ export class ErrorToTemplateConverter extends TypedRepresentationConverter {
     if (HttpError.isInstance(error)) {
       try {
         const templateFile = `${error.errorCode}${this.extension}`;
-        assert(/^[\w.-]+$/u.test(templateFile), 'Invalid error template name');
+        assert(isValidFileName(templateFile), 'Invalid error template name');
         description = await this.templateEngine.render(error.details ?? {},
           { templateFile, templatePath: this.codeTemplatesPath });
       } catch {

@@ -44,6 +44,7 @@ module.exports = {
     // Problems with optional parameters
     '@typescript-eslint/no-unnecessary-condition': 'off',
     '@typescript-eslint/prefer-optional-chain': 'error',
+    '@typescript-eslint/promise-function-async': [ 'error', { checkArrowFunctions: false } ],
     '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/unified-signatures': 'off',
@@ -82,6 +83,12 @@ module.exports = {
     'unicorn/no-fn-reference-in-iterator': 'off',
     'unicorn/no-object-as-default-parameter': 'off',
     'unicorn/numeric-separators-style': 'off',
+    // At function only supported in Node v16.6.0
+    'unicorn/prefer-at': 'off',
+    // Does not make sense for more complex cases
+    'unicorn/prefer-object-from-entries': 'off',
+    // Only supported in Node v15
+    'unicorn/prefer-string-replace-all' : 'off',
     // Can get ugly with large single statements
     'unicorn/prefer-ternary': 'off',
     'yield-star-spacing': [ 'error', 'after' ],
@@ -128,6 +135,7 @@ module.exports = {
     }],
     'import/no-duplicates': 'error',
     'import/no-extraneous-dependencies': 'error',
+    'import/no-named-as-default': 'off',
     // Doesn't work with type imports
     'no-duplicate-imports': 'off',
     'unused-imports/no-unused-imports-ts': 'error',

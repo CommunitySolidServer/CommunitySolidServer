@@ -1,7 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/util/auxiliary/strategies/acl.json"
+    "css:config/util/auxiliary/strategies/acl.json",
+    "css:config/util/auxiliary/strategies/meta.json"
   ],
   "@graph": [
     {
@@ -9,7 +10,8 @@
       "@id": "urn:solid-server:default:AuxiliaryStrategy",
       "@type": "RoutingAuxiliaryStrategy",
       "sources": [
-        { "@id": "urn:solid-server:default:AclStrategy" }
+        { "@id": "urn:solid-server:default:AclStrategy" },
+        { "@id": "urn:solid-server:default:MetadataStrategy" }
       ]
     }
   ]

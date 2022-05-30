@@ -1,8 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/ldp/authorization/readers/acl.json",
-    "files-scs:config/ldp/authorization/readers/ownership.json"
+    "css:config/ldp/authorization/readers/acl.json",
+    "css:config/ldp/authorization/readers/ownership.json"
   ],
   "@graph": [
     {

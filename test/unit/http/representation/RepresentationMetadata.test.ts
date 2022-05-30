@@ -1,8 +1,10 @@
 import 'jest-rdf';
-import { defaultGraph, literal, namedNode, quad } from '@rdfjs/data-model';
+import type { BlankNode } from 'n3';
+import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
-import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE_TERM, SOLID_META, RDFS } from '../../../../src/util/Vocabularies';
+const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
 // Helper functions to filter quads
 function getQuads(quads: Quad[], subject?: string, predicate?: string, object?: string, graph?: string): Quad[] {
@@ -35,7 +37,7 @@ describe('A RepresentationMetadata', (): void => {
   describe('constructor', (): void => {
     it('creates a blank node if no identifier was given.', async(): Promise<void> => {
       metadata = new RepresentationMetadata();
-      expect(metadata.identifier.termType).toEqual('BlankNode');
+      expect(metadata.identifier.termType).toBe('BlankNode');
       expect(metadata.quads()).toHaveLength(0);
     });
 
@@ -51,13 +53,23 @@ describe('A RepresentationMetadata', (): void => {
 
     it('converts string to content type.', async(): Promise<void> => {
       metadata = new RepresentationMetadata('text/turtle');
-      expect(metadata.contentType).toEqual('text/turtle');
+      expect(metadata.contentType).toBe('text/turtle');
 
       metadata = new RepresentationMetadata({ path: 'identifier' }, 'text/turtle');
-      expect(metadata.contentType).toEqual('text/turtle');
+      expect(metadata.contentType).toBe('text/turtle');
 
       metadata = new RepresentationMetadata(new RepresentationMetadata(), 'text/turtle');
-      expect(metadata.contentType).toEqual('text/turtle');
+      expect(metadata.contentType).toBe('text/turtle');
+    });
+
+    it('stores the content-length correctly.', async(): Promise<void> => {
+      metadata = new RepresentationMetadata();
+      metadata.contentLength = 50;
+      expect(metadata.contentLength).toBe(50);
+
+      metadata = new RepresentationMetadata();
+      metadata.contentLength = undefined;
+      expect(metadata.contentLength).toBeUndefined();
     });
 
     it('copies an other metadata object.', async(): Promise<void> => {
@@ -70,14 +82,14 @@ describe('A RepresentationMetadata', (): void => {
 
     it('takes overrides for specific predicates.', async(): Promise<void> => {
       metadata = new RepresentationMetadata({ predVal: 'objVal' });
-      expect(metadata.get('predVal')).toEqualRdfTerm(literal('objVal'));
+      expect(metadata.get(namedNode('predVal'))).toEqualRdfTerm(literal('objVal'));
 
       metadata = new RepresentationMetadata({ predVal: literal('objVal') });
-      expect(metadata.get('predVal')).toEqualRdfTerm(literal('objVal'));
+      expect(metadata.get(namedNode('predVal'))).toEqualRdfTerm(literal('objVal'));
 
       metadata = new RepresentationMetadata({ predVal: [ 'objVal1', literal('objVal2') ], predVal2: 'objVal3' });
-      expect(metadata.getAll('predVal')).toEqualRdfTermArray([ literal('objVal1'), literal('objVal2') ]);
-      expect(metadata.get('predVal2')).toEqualRdfTerm(literal('objVal3'));
+      expect(metadata.getAll(namedNode('predVal'))).toEqualRdfTermArray([ literal('objVal1'), literal('objVal2') ]);
+      expect(metadata.get(namedNode('predVal2'))).toEqualRdfTerm(literal('objVal3'));
     });
 
     it('can combine overrides with an identifier.', async(): Promise<void> => {
@@ -141,7 +153,7 @@ describe('A RepresentationMetadata', (): void => {
       // `setMetadata` should have the same result as the following
       const expectedMetadata = new RepresentationMetadata(identifier).addQuads(inputQuads);
       expectedMetadata.identifier = namedNode('otherId');
-      expectedMetadata.add('test:pred', 'objVal');
+      expectedMetadata.add(namedNode('test:pred'), 'objVal');
 
       expect(metadata.identifier).toEqual(other.identifier);
       expect(metadata.quads()).toBeRdfIsomorphic(expectedMetadata.quads());
@@ -149,13 +161,13 @@ describe('A RepresentationMetadata', (): void => {
 
     it('can add a quad.', async(): Promise<void> => {
       const newQuad = quad(namedNode('random'), namedNode('new'), literal('triple'));
-      metadata.addQuad('random', 'new', 'triple');
+      metadata.addQuad('random', namedNode('new'), 'triple');
       expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads, newQuad ]);
     });
 
     it('can add a quad with a graph.', async(): Promise<void> => {
       const newQuad = quad(namedNode('random'), namedNode('new'), literal('triple'), namedNode('graph'));
-      metadata.addQuad('random', 'new', 'triple', 'graph');
+      metadata.addQuad('random', namedNode('new'), 'triple', 'graph');
       expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads, newQuad ]);
     });
 
@@ -174,7 +186,7 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('removes all matching triples if graph is undefined.', async(): Promise<void> => {
-      metadata.removeQuad(identifier, 'has', 'data');
+      metadata.removeQuad(identifier, namedNode('has'), 'data');
       expect(metadata.quads()).toHaveLength(inputQuads.length - 2);
       expect(metadata.quads()).toBeRdfIsomorphic(removeQuads(inputQuads, identifier.value, 'has', 'data'));
     });
@@ -236,6 +248,13 @@ describe('A RepresentationMetadata', (): void => {
       );
     });
 
+    it('can check the existence of a triple.', async(): Promise<void> => {
+      expect(metadata.has(namedNode('has'), literal('data'))).toBe(true);
+      expect(metadata.has(namedNode('has'))).toBe(true);
+      expect(metadata.has(undefined, literal('data'))).toBe(true);
+      expect(metadata.has(namedNode('has'), literal('wrongData'))).toBe(false);
+    });
+
     it('can get all values for a predicate.', async(): Promise<void> => {
       expect(metadata.getAll(namedNode('has'))).toEqualRdfTermArray(
         [ literal('data'), literal('moreData'), literal('data') ],
@@ -258,7 +277,6 @@ describe('A RepresentationMetadata', (): void => {
 
     it('errors if there are multiple values when getting a value.', async(): Promise<void> => {
       expect((): any => metadata.get(namedNode('has'))).toThrow(Error);
-      expect((): any => metadata.get('has')).toThrow(Error);
     });
 
     it('can set the value of a predicate.', async(): Promise<void> => {
@@ -274,16 +292,85 @@ describe('A RepresentationMetadata', (): void => {
     it('has a shorthand for content-type.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       metadata.contentType = 'a/b';
-      expect(metadata.get(CONTENT_TYPE)).toEqualRdfTerm(literal('a/b'));
-      expect(metadata.contentType).toEqual('a/b');
+      expect(metadata.get(CONTENT_TYPE_TERM)).toEqualRdfTerm(literal('a/b'));
+      expect(metadata.contentType).toBe('a/b');
       metadata.contentType = undefined;
       expect(metadata.contentType).toBeUndefined();
     });
 
     it('errors if a shorthand has multiple values.', async(): Promise<void> => {
-      metadata.add(CONTENT_TYPE, 'a/b');
-      metadata.add(CONTENT_TYPE, 'c/d');
+      metadata.add(CONTENT_TYPE_TERM, 'a/b');
+      metadata.add(CONTENT_TYPE_TERM, 'c/d');
       expect((): any => metadata.contentType).toThrow();
+    });
+
+    it('has a shorthand for Content-Type as string.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      expect(metadata.contentTypeObject).toEqual({
+        value: 'text/plain',
+        parameters: {
+          charset: 'utf-8',
+          test: 'value1',
+        },
+      });
+    });
+
+    it('has a shorthand for Content-Type as object.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentTypeObject = {
+        value: 'text/plain',
+        parameters: {
+          charset: 'utf-8',
+          test: 'value1',
+        },
+      };
+      expect(metadata.contentTypeObject).toEqual({
+        value: 'text/plain',
+        parameters: {
+          charset: 'utf-8',
+          test: 'value1',
+        },
+      });
+      expect(metadata.contentType).toBe('text/plain');
+    });
+
+    it('can properly clear the Content-Type parameters explicitly.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      metadata.contentType = undefined;
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      expect(metadata.quads(null, SOLID_META.terms.contentTypeParameter, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, SOLID_META.terms.value, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, RDFS.terms.label, null, null)).toHaveLength(0);
+    });
+
+    it('can properly clear the Content-Type parameters implicitly.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      metadata.contentType = 'text/turtle';
+      expect(metadata.contentType).toBe('text/turtle');
+      expect(metadata.contentTypeObject).toEqual({
+        value: 'text/turtle',
+        parameters: {},
+      });
+      expect(metadata.quads(null, SOLID_META.terms.contentTypeParameter, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, SOLID_META.terms.value, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, RDFS.terms.label, null, null)).toHaveLength(0);
+    });
+
+    it('can return invalid parameters when too many quads are present.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      const param = metadata.quads(null, SOLID_META.terms.value)[0].subject;
+      metadata.addQuad(param as BlankNode, SOLID_META.terms.value, 'anomaly');
+      expect(metadata.contentTypeObject?.parameters).toMatchObject({ invalid: '' });
     });
   });
 });

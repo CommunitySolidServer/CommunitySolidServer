@@ -1,14 +1,14 @@
 import 'jest-rdf';
-import { literal, namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import {
-  toCachedNamedNode,
   toNamedTerm,
   toPredicateTerm,
   toObjectTerm,
   toLiteral,
   isTerm,
 } from '../../../src/util/TermUtil';
-import { CONTENT_TYPE_TERM, XSD } from '../../../src/util/Vocabularies';
+import { XSD } from '../../../src/util/Vocabularies';
+const { literal, namedNode } = DataFactory;
 
 describe('TermUtil', (): void => {
   describe('isTerm function', (): void => {
@@ -18,27 +18,6 @@ describe('TermUtil', (): void => {
       expect(isTerm('notATerm')).toBeFalsy();
       expect(isTerm({})).toBeFalsy();
       expect(isTerm()).toBeFalsy();
-    });
-  });
-
-  describe('toCachedNamedNode function', (): void => {
-    it('returns the input if it was a named node.', async(): Promise<void> => {
-      const term = namedNode('name');
-      expect(toCachedNamedNode(term)).toBe(term);
-    });
-
-    it('returns a named node when a string is used.', async(): Promise<void> => {
-      expect(toCachedNamedNode('name')).toEqualRdfTerm(namedNode('name'));
-    });
-
-    it('caches generated named nodes.', async(): Promise<void> => {
-      const result = toCachedNamedNode('name');
-      expect(result).toEqualRdfTerm(namedNode('name'));
-      expect(toCachedNamedNode('name')).toBe(result);
-    });
-
-    it('supports URI shorthands.', async(): Promise<void> => {
-      expect(toCachedNamedNode('contentType')).toEqualRdfTerm(CONTENT_TYPE_TERM);
     });
   });
 

@@ -1,11 +1,10 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Checks if the agent belongs to a group that has access.",
       "@id": "urn:solid-server:default:AgentGroupAccessChecker",
       "@type": "AgentGroupAccessChecker",
-      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
       "cache": {
         "@id": "urn:solid-server:default:ExpiringAclCache",
         "@type": "WrappedExpiringStorage",
@@ -15,7 +14,8 @@
     {
       "comment": "Makes sure the expiring storage cleanup timer is stopped when the application needs to stop.",
       "@id": "urn:solid-server:default:Finalizer",
-      "ParallelFinalizer:_finalizers": [ { "@id": "urn:solid-server:default:ExpiringAclCache" } ]
+      "@type": "ParallelFinalizer",
+      "finalizers": [ { "@id": "urn:solid-server:default:ExpiringAclCache" } ]
     }
   ]
 }

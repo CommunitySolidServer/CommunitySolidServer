@@ -1,9 +1,10 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/ldp/metadata-parser/parsers/content-type.json",
-    "files-scs:config/ldp/metadata-parser/parsers/slug.json",
-    "files-scs:config/ldp/metadata-parser/parsers/link.json"
+    "css:config/ldp/metadata-parser/parsers/content-type.json",
+    "css:config/ldp/metadata-parser/parsers/link.json",
+    "css:config/ldp/metadata-parser/parsers/plain-json-ld-filter.json",
+    "css:config/ldp/metadata-parser/parsers/slug.json"
   ],
   "@graph": [
     {
@@ -12,8 +13,9 @@
       "@type": "ParallelHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:ContentTypeParser" },
-        { "@id": "urn:solid-server:default:SlugParser" },
-        { "@id": "urn:solid-server:default:LinkRelParser" }
+        { "@id": "urn:solid-server:default:LinkRelParser" },
+        { "@id": "urn:solid-server:default:PlainJsonLdFilter" },
+        { "@id": "urn:solid-server:default:SlugParser" }
       ]
     }
   ]

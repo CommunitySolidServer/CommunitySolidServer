@@ -1,15 +1,14 @@
 import type { HttpErrorOptions } from './HttpError';
-import { HttpError } from './HttpError';
+import { generateHttpErrorClass } from './HttpError';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BaseHttpError = generateHttpErrorClass(401, 'UnauthorizedHttpError');
 
 /**
  * An error thrown when an agent is not authorized.
  */
-export class UnauthorizedHttpError extends HttpError {
+export class UnauthorizedHttpError extends BaseHttpError {
   public constructor(message?: string, options?: HttpErrorOptions) {
-    super(401, 'UnauthorizedHttpError', message, options);
-  }
-
-  public static isInstance(error: any): error is UnauthorizedHttpError {
-    return HttpError.isInstance(error) && error.statusCode === 401;
+    super(message, options);
   }
 }

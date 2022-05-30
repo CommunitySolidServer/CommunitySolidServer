@@ -1,8 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/app/setup/handlers/redirect.json",
-    "files-scs:config/app/setup/handlers/setup.json"
+    "css:config/app/setup/handlers/redirect.json",
+    "css:config/app/setup/handlers/setup.json"
   ],
   "@graph": [
     {

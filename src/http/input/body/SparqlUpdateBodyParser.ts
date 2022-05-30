@@ -26,10 +26,11 @@ export class SparqlUpdateBodyParser extends BodyParser {
     const sparql = await readableToString(request);
     let algebra: Algebra.Operation;
     try {
-      algebra = translate(sparql, { quads: true, baseIRI: metadata.identifier.value });
+      algebra = translate(sparql, { quads: true, baseIRI: metadata.identifier.value }) as Algebra.Update;
     } catch (error: unknown) {
-      this.logger.warn('Could not translate SPARQL query to SPARQL algebra', { error });
-      throw new BadRequestHttpError(createErrorMessage(error), { cause: error });
+      const message = createErrorMessage(error);
+      this.logger.warn(`Could not translate SPARQL query to SPARQL algebra: ${message}`);
+      throw new BadRequestHttpError(message, { cause: error });
     }
 
     // Prevent body from being requested again

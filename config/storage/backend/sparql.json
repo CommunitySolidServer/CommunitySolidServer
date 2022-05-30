@@ -1,7 +1,7 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/backend/data-accessors/sparql-endpoint.json"
+    "css:config/storage/backend/data-accessors/sparql-endpoint.json"
   ],
   "@graph": [
     {
@@ -10,13 +10,16 @@
       "@type": "DataAccessorBasedStore",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" }
+      "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     },
     {
       "comment": "This makes it so all incoming data is converted to quad objects.",
       "@id": "urn:solid-server:default:ResourceStore_Converting",
-      "RepresentationConvertingStore:_options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
-      "RepresentationConvertingStore:_options_inType": "internal/quads"
+      "@type": "RepresentationConvertingStore",
+      "options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+      "options_inType": "internal/quads"
     }
   ]
 }

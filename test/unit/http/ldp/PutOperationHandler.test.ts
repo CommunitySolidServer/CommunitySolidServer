@@ -5,8 +5,10 @@ import type { Representation } from '../../../../src/http/representation/Represe
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
+import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 
 describe('A PutOperationHandler', (): void => {
   let operation: Operation;
@@ -14,21 +16,29 @@ describe('A PutOperationHandler', (): void => {
   const conditions = new BasicConditions({});
   let store: jest.Mocked<ResourceStore>;
   let handler: PutOperationHandler;
+  const metaStrategy = new SimpleSuffixStrategy('.meta');
+
   beforeEach(async(): Promise<void> => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'PUT', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
-      resourceExists: jest.fn(),
+      hasResource: jest.fn(),
       setRepresentation: jest.fn(),
     } as any;
 
-    handler = new PutOperationHandler(store);
+    handler = new PutOperationHandler(store, metaStrategy);
   });
 
   it('only supports PUT operations.', async(): Promise<void> => {
     await expect(handler.canHandle({ operation })).resolves.toBeUndefined();
     operation.method = 'GET';
     await expect(handler.canHandle({ operation })).rejects.toThrow(NotImplementedHttpError);
+  });
+
+  it('creates a new container when there is no content-type.', async(): Promise<void> => {
+    operation.target.path = 'http://test.com/foo/';
+    const result = await handler.handle({ operation });
+    expect(result.statusCode).toBe(201);
   });
 
   it('errors if there is no content-type.', async(): Promise<void> => {
@@ -41,17 +51,28 @@ describe('A PutOperationHandler', (): void => {
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation).toHaveBeenLastCalledWith(operation.target, body, conditions);
     expect(result.statusCode).toBe(201);
-    expect(result.metadata?.get(SOLID_HTTP.location)?.value).toBe(operation.target.path);
+    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe(operation.target.path);
     expect(result.data).toBeUndefined();
   });
 
   it('returns the correct response if the resource already exists.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(true);
+    store.hasResource.mockResolvedValueOnce(true);
     const result = await handler.handle({ operation });
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation).toHaveBeenLastCalledWith(operation.target, body, conditions);
     expect(result.statusCode).toBe(205);
     expect(result.metadata).toBeUndefined();
     expect(result.data).toBeUndefined();
+  });
+
+  it('errors if the target is a metadata resource.', async(): Promise<void> => {
+    operation.target.path = 'http://test.com/foo.meta';
+    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
+  });
+
+  it('errors if the target is a container that already exists.', async(): Promise<void> => {
+    store.hasResource.mockResolvedValueOnce(true);
+    operation.target.path = 'http://test.com/';
+    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
   });
 });

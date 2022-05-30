@@ -1,9 +1,9 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/ldp/authorization/readers/access-checkers/agent.json",
-    "files-scs:config/ldp/authorization/readers/access-checkers/agent-class.json",
-    "files-scs:config/ldp/authorization/readers/access-checkers/agent-group.json"
+    "css:config/ldp/authorization/readers/access-checkers/agent.json",
+    "css:config/ldp/authorization/readers/access-checkers/agent-class.json",
+    "css:config/ldp/authorization/readers/access-checkers/agent-group.json"
   ],
   "@graph": [
     {

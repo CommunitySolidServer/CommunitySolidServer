@@ -1,6 +1,7 @@
 import assert from 'assert';
 import { hash, compare } from 'bcrypt';
 import { v4 } from 'uuid';
+import type { ExpiringStorage } from '../../../../storage/keyvalue/ExpiringStorage';
 import type { KeyValueStorage } from '../../../../storage/keyvalue/KeyValueStorage';
 import type { AccountSettings, AccountStore } from './AccountStore';
 
@@ -26,15 +27,25 @@ export interface ForgotPasswordPayload {
 export type EmailPasswordData = AccountPayload | ForgotPasswordPayload | AccountSettings;
 
 /**
- * A EmailPasswordStore that uses a KeyValueStorage
- * to persist its information.
+ * A EmailPasswordStore that uses a KeyValueStorage to persist its information and an
+ * ExpiringStorage to persist ForgotPassword records.
+ *
+ * `forgotPasswordExpiration` parameter is how long the ForgotPassword record should be
+ *   stored in minutes. *(defaults to 15 minutes)*
  */
 export class BaseAccountStore implements AccountStore {
   private readonly storage: KeyValueStorage<string, EmailPasswordData>;
+  private readonly forgotPasswordStorage: ExpiringStorage<string, EmailPasswordData>;
   private readonly saltRounds: number;
+  private readonly forgotPasswordExpiration: number;
 
-  public constructor(storage: KeyValueStorage<string, EmailPasswordData>, saltRounds: number) {
+  public constructor(storage: KeyValueStorage<string, EmailPasswordData>,
+    forgotPasswordStorage: ExpiringStorage<string, EmailPasswordData>,
+    saltRounds: number,
+    forgotPasswordExpiration = 15) {
     this.storage = storage;
+    this.forgotPasswordStorage = forgotPasswordStorage;
+    this.forgotPasswordExpiration = forgotPasswordExpiration * 60 * 1000;
     this.saltRounds = saltRounds;
   }
 
@@ -130,20 +141,21 @@ export class BaseAccountStore implements AccountStore {
   public async generateForgotPasswordRecord(email: string): Promise<string> {
     const recordId = v4();
     await this.getAccountPayload(email, true);
-    await this.storage.set(
+    await this.forgotPasswordStorage.set(
       this.getForgotPasswordRecordResourceIdentifier(recordId),
       { recordId, email },
+      this.forgotPasswordExpiration,
     );
     return recordId;
   }
 
   public async getForgotPasswordRecord(recordId: string): Promise<string | undefined> {
     const identifier = this.getForgotPasswordRecordResourceIdentifier(recordId);
-    const forgotPasswordRecord = await this.storage.get(identifier) as ForgotPasswordPayload | undefined;
+    const forgotPasswordRecord = await this.forgotPasswordStorage.get(identifier) as ForgotPasswordPayload | undefined;
     return forgotPasswordRecord?.email;
   }
 
   public async deleteForgotPasswordRecord(recordId: string): Promise<void> {
-    await this.storage.delete(this.getForgotPasswordRecordResourceIdentifier(recordId));
+    await this.forgotPasswordStorage.delete(this.getForgotPasswordRecordResourceIdentifier(recordId));
   }
 }

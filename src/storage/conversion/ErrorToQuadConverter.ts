@@ -4,13 +4,13 @@ import { RepresentationMetadata } from '../../http/representation/Representation
 import { INTERNAL_ERROR, INTERNAL_QUADS } from '../../util/ContentTypes';
 import { getSingleItem } from '../../util/StreamUtil';
 import { DC, SOLID_ERROR } from '../../util/Vocabularies';
+import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 /**
  * Converts an error object into quads by creating a triple for each of name/message/stack.
  */
-export class ErrorToQuadConverter extends TypedRepresentationConverter {
+export class ErrorToQuadConverter extends BaseTypedRepresentationConverter {
   public constructor() {
     super(INTERNAL_ERROR, INTERNAL_QUADS);
   }

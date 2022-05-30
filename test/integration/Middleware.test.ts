@@ -3,6 +3,7 @@ import request from 'supertest';
 import type { BaseHttpServerFactory } from '../../src/server/BaseHttpServerFactory';
 import type { HttpHandlerInput } from '../../src/server/HttpHandler';
 import { HttpHandler } from '../../src/server/HttpHandler';
+import { splitCommaSeparated } from '../../src/util/StringUtil';
 import { getPort } from '../util/Util';
 import { getTestConfigPath, instantiateFromConfig } from './Config';
 
@@ -93,47 +94,49 @@ describe('An http server with middleware', (): void => {
     expect(res.header).toEqual(expect.objectContaining({ 'access-control-allow-origin': 'test.com' }));
   });
 
-  it('exposes the Accept-Patch header via CORS.', async(): Promise<void> => {
+  it('exposes the Accept-[Method] header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
-    expect(exposed.split(/\s*,\s*/u)).toContain('Accept-Patch');
+    expect(splitCommaSeparated(exposed)).toContain('Accept-Patch');
+    expect(splitCommaSeparated(exposed)).toContain('Accept-Post');
+    expect(splitCommaSeparated(exposed)).toContain('Accept-Put');
   });
 
   it('exposes the Last-Modified and ETag headers via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
-    expect(exposed.split(/\s*,\s*/u)).toContain('ETag');
-    expect(exposed.split(/\s*,\s*/u)).toContain('Last-Modified');
+    expect(splitCommaSeparated(exposed)).toContain('ETag');
+    expect(splitCommaSeparated(exposed)).toContain('Last-Modified');
   });
 
   it('exposes the Link header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
-    expect(exposed.split(/\s*,\s*/u)).toContain('Link');
+    expect(splitCommaSeparated(exposed)).toContain('Link');
   });
 
   it('exposes the Location header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
-    expect(exposed.split(/\s*,\s*/u)).toContain('Location');
+    expect(splitCommaSeparated(exposed)).toContain('Location');
   });
 
   it('exposes the MS-Author-Via header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
-    expect(exposed.split(/\s*,\s*/u)).toContain('MS-Author-Via');
+    expect(splitCommaSeparated(exposed)).toContain('MS-Author-Via');
   });
 
   it('exposes the WAC-Allow header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
-    expect(exposed.split(/\s*,\s*/u)).toContain('WAC-Allow');
+    expect(splitCommaSeparated(exposed)).toContain('WAC-Allow');
   });
 
   it('exposes the Updates-Via header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
-    expect(exposed.split(/\s*,\s*/u)).toContain('Updates-Via');
+    expect(splitCommaSeparated(exposed)).toContain('Updates-Via');
   });
 
   it('sends incoming requests to the handler.', async(): Promise<void> => {

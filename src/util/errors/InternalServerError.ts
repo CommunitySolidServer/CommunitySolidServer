@@ -1,14 +1,14 @@
 import type { HttpErrorOptions } from './HttpError';
-import { HttpError } from './HttpError';
+import { generateHttpErrorClass } from './HttpError';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BaseHttpError = generateHttpErrorClass(500, 'InternalServerError');
+
 /**
  * A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
  */
-export class InternalServerError extends HttpError {
+export class InternalServerError extends BaseHttpError {
   public constructor(message?: string, options?: HttpErrorOptions) {
-    super(500, 'InternalServerError', message, options);
-  }
-
-  public static isInstance(error: any): error is InternalServerError {
-    return HttpError.isInstance(error) && error.statusCode === 500;
+    super(message, options);
   }
 }

@@ -1,12 +1,12 @@
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import type { NamedNode, Quad, Term } from 'rdf-js';
+import type { NamedNode, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
-import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
@@ -26,10 +26,8 @@ import {
   trimTrailingSlashes,
   toCanonicalUriPath,
 } from '../util/PathUtil';
-import { parseQuads } from '../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
 import {
-  CONTENT_TYPE,
   DC,
   SOLID_HTTP,
   LDP,
@@ -39,9 +37,11 @@ import {
   XSD,
   SOLID_META,
   PREFERRED_PREFIX_TERM,
+  CONTENT_TYPE_TERM,
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
+import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import type { ResourceStore } from './ResourceStore';
 
 /**
@@ -73,17 +73,24 @@ export class DataAccessorBasedStore implements ResourceStore {
   private readonly accessor: DataAccessor;
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly auxiliaryStrategy: AuxiliaryStrategy;
+  private readonly metadataStrategy: AuxiliaryStrategy;
+  private readonly converter: RepresentationConverter;
 
   public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy,
-    auxiliaryStrategy: AuxiliaryStrategy) {
+    auxiliaryStrategy: AuxiliaryStrategy, metadataStrategy: AuxiliaryStrategy, converter: RepresentationConverter) {
     this.accessor = accessor;
     this.identifierStrategy = identifierStrategy;
     this.auxiliaryStrategy = auxiliaryStrategy;
+    this.metadataStrategy = metadataStrategy;
+    this.converter = converter;
   }
 
-  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+  public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
     try {
       this.validateIdentifier(identifier);
+      if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
+        identifier = this.metadataStrategy.getSubjectIdentifier(identifier);
+      }
       await this.accessor.getMetadata(identifier);
       return true;
     } catch (error: unknown) {
@@ -96,9 +103,15 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     this.validateIdentifier(identifier);
+    let isMetadata = false;
+
+    if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
+      identifier = this.metadataStrategy.getSubjectIdentifier(identifier);
+      isMetadata = true;
+    }
 
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
-    const metadata = await this.accessor.getMetadata(identifier);
+    let metadata = await this.accessor.getMetadata(identifier);
     let representation: Representation;
 
     // Potentially add auxiliary related metadata
@@ -107,33 +120,41 @@ export class DataAccessorBasedStore implements ResourceStore {
     // https://solid.github.io/specification/protocol#auxiliary-resources
     await this.auxiliaryStrategy.addMetadata(metadata);
 
-    if (isContainerPath(metadata.identifier.value)) {
-      // Add containment triples of non-auxiliary resources
-      for await (const child of this.accessor.getChildren(identifier)) {
-        if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
-          metadata.addQuads(child.quads());
-          metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
+    const isContainer = isContainerPath(metadata.identifier.value);
+    let data = metadata.quads();
+    if (isContainer || isMetadata) {
+      if (isContainer) {
+        // Add containment triples of non-auxiliary resources
+        for await (const child of this.accessor.getChildren(identifier)) {
+          if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
+            if (!isMetadata) {
+              metadata.addQuads(child.quads());
+            }
+            metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
+          }
+        }
+        data = metadata.quads();
+
+        if (isMetadata) {
+          metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
         }
       }
-
-      // Generate a container representation from the metadata
-      // All triples should be in the same graph for the data representation
-      const data = metadata.quads().map((triple): Quad => {
-        if (triple.graph.termType === 'DefaultGraph') {
-          return triple;
-        }
-        return DataFactory.quad(triple.subject, triple.predicate, triple.object);
-      });
-
       metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(POSIX.terms.namespace, PREFERRED_PREFIX_TERM, 'posix', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(XSD.terms.namespace, PREFERRED_PREFIX_TERM, 'xsd', SOLID_META.terms.ResponseMetadata);
+    }
+
+    if (isContainer) {
       representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
+    } else if (isMetadata) {
+      representation = new BasicRepresentation(
+        metadata.quads(), this.metadataStrategy.getAuxiliaryIdentifier(identifier), INTERNAL_QUADS,
+      );
     } else {
-      // Retrieve a document representation from the accessor
       representation = new BasicRepresentation(await this.accessor.getData(identifier), metadata);
     }
+
     return representation;
   }
 
@@ -155,7 +176,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // that are not supported by the target resource."
     // https://solid.github.io/specification/protocol#reading-writing-resources
     if (!isContainerPath(parentMetadata.identifier.value)) {
-      throw new MethodNotAllowedHttpError('The given path is not a container.');
+      throw new MethodNotAllowedHttpError([ 'POST' ], 'The given path is not a container.');
     }
 
     this.validateConditions(conditions, parentMetadata);
@@ -196,20 +217,24 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new ConflictHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
     }
 
-    const isContainer = this.isNewContainer(representation.metadata, identifier.path);
     // Solid, §3.1: "Paths ending with a slash denote a container resource."
     // https://solid.github.io/specification/protocol#uri-slash-semantics
-    if (isContainer !== isContainerIdentifier(identifier)) {
+    const isContainer = isContainerIdentifier(identifier);
+    if (!isContainer && this.isContainerType(representation.metadata)) {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
     // Ensure the representation is supported by the accessor
-    // Containers are not checked because uploaded representations are treated as metadata
-    if (!isContainer) {
+    // Metadata and containers are not checked since they get converted to RepresentationMetadata objects.
+    if (!isContainer && !this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       await this.accessor.canHandle(representation);
     }
 
     this.validateConditions(conditions, oldMetadata);
+
+    if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
+      return await this.writeMetadata(identifier, representation);
+    }
 
     // Potentially have to create containers if it didn't exist yet
     return this.writeData(identifier, representation, isContainer, !oldMetadata, Boolean(oldMetadata));
@@ -235,19 +260,27 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
+
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-988664970
+    // DELETE is not allowed on metadata
+    if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
+      throw new ConflictHttpError('Not allowed to delete metadata resources directly.');
+    }
+
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
     // the server MUST respond with the 405 status code."
     // https://solid.github.io/specification/protocol#deleting-resources
     if (this.isRootStorage(metadata)) {
-      throw new MethodNotAllowedHttpError('Cannot delete a root storage container.');
+      throw new MethodNotAllowedHttpError([ 'DELETE' ], 'Cannot delete a root storage container.');
     }
     if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) &&
       this.auxiliaryStrategy.isRequiredInRoot(identifier)) {
       const subjectIdentifier = this.auxiliaryStrategy.getSubjectIdentifier(identifier);
       const parentMetadata = await this.accessor.getMetadata(subjectIdentifier);
       if (this.isRootStorage(parentMetadata)) {
-        throw new MethodNotAllowedHttpError(`Cannot delete ${identifier.path} from a root storage container.`);
+        throw new MethodNotAllowedHttpError([ 'DELETE' ],
+          `Cannot delete ${identifier.path} from a root storage container.`);
       }
     }
 
@@ -347,6 +380,49 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
+   * Write the given metadata resource to the DataAccessor.
+   * @param identifier - Identifier of the resource.
+   * @param representation - Corresponding Representation.
+   *
+   * @returns Identifiers of resources that were possibly modified.
+   */
+  protected async writeMetadata(identifier: ResourceIdentifier, representation: Representation):
+  Promise<ResourceIdentifier[]> {
+    const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);
+
+    // Cannot create metadata without a corresponding resource
+    if (!await this.hasResource(subjectIdentifier)) {
+      throw new ConflictHttpError('Metadata resources can not be created directly.');
+    }
+
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-988664970
+    // It must not be possible to create .meta.meta resources
+    if (this.metadataStrategy.isAuxiliaryIdentifier(subjectIdentifier)) {
+      throw new ConflictHttpError(
+        'Not allowed to create metadata resources on a metadata resource.',
+      );
+    }
+
+    const metadata = new RepresentationMetadata(subjectIdentifier);
+    let rdf = representation;
+    if (!representation.isEmpty) {
+      rdf = await this.converter.handleSafe({
+        identifier,
+        representation,
+        preferences: { type: { [INTERNAL_QUADS]: 1 }},
+      });
+    }
+
+    const quads = await arrayifyStream(rdf.data);
+    metadata.addQuads(quads);
+
+    this.removeResponseMetadata(metadata);
+    metadata.removeAll(CONTENT_TYPE_TERM);
+    await this.accessor.writeMetadata(subjectIdentifier, metadata);
+    return [ identifier ];
+  }
+
+  /**
    * Write the given resource to the DataAccessor. Metadata will be updated with necessary triples.
    * In case of containers `handleContainerData` will be used to verify the data.
    * @param identifier - Identifier of the resource.
@@ -406,38 +482,20 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
-   * Verify if the incoming data for a container is valid (RDF and no containment triples).
-   * Adds the container data to its metadata afterwards.
+   * Warns when the representation has data and removes the content-type from the metadata.
    *
    * @param representation - Container representation.
    */
   protected async handleContainerData(representation: Representation): Promise<void> {
-    let quads: Quad[];
-    try {
-      // No need to parse the data if it already contains internal/quads
-      if (representation.metadata.contentType === INTERNAL_QUADS) {
-        quads = await arrayifyStream(representation.data);
-      } else {
-        const { contentType, identifier } = representation.metadata;
-        quads = await parseQuads(representation.data, { format: contentType, baseIRI: identifier.value });
-      }
-    } catch (error: unknown) {
-      throw new BadRequestHttpError(`Can only create containers with RDF data. ${createErrorMessage(error)}`,
-        { cause: error });
-    }
-
-    // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s containment triples;
-    // if the server receives such a request, it MUST respond with a 409 status code."
-    // https://solid.github.io/specification/protocol#writing-resources
-    if (quads.some((quad): boolean => quad.predicate.value === LDP.contains)) {
-      throw new ConflictHttpError('Container bodies are not allowed to have containment triples.');
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1022214820
+    // Make it not possible via PUT to add metadata during the creation of a container
+    // Thus the contents are ignored and a warning is sent
+    if (!representation.isEmpty) {
+      this.logger.warn('The contents of the body are ignored when creating a container.');
     }
 
     // Input content type doesn't matter anymore
-    representation.metadata.removeAll(CONTENT_TYPE);
-
-    // Container data is stored in the metadata
-    representation.metadata.addQuads(quads);
+    representation.metadata.removeAll(CONTENT_TYPE_TERM);
   }
 
   /**
@@ -473,10 +531,23 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - Slug to use for the new URI.
    */
   protected createURI(container: ResourceIdentifier, isContainer: boolean, slug?: string): ResourceIdentifier {
+    this.validateSlug(isContainer, slug);
     const base = ensureTrailingSlash(container.path);
     const name = (slug && this.cleanSlug(slug)) ?? uuid();
     const suffix = isContainer ? '/' : '';
     return { path: `${base}${name}${suffix}` };
+  }
+
+  /**
+   * Validates if the slug and headers are valid.
+   * Errors if slug exists, ends on slash, but ContainerType Link header is NOT present
+   * @param isContainer - Is the slug supposed to represent a container?
+   * @param slug - Is the requested slug (if any).
+   */
+  protected validateSlug(isContainer: boolean, slug?: string): void {
+    if (slug && isContainerPath(slug) && !isContainer) {
+      throw new BadRequestHttpError('Only slugs used to create containers can end with a `/`.');
+    }
   }
 
   /**
@@ -501,9 +572,9 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected async createSafeUri(container: ResourceIdentifier, metadata: RepresentationMetadata):
   Promise<ResourceIdentifier> {
     // Get all values needed for naming the resource
-    const isContainer = this.isNewContainer(metadata);
-    const slug = metadata.get(SOLID_HTTP.slug)?.value;
-    metadata.removeAll(SOLID_HTTP.slug);
+    const isContainer = this.isContainerType(metadata);
+    const slug = metadata.get(SOLID_HTTP.terms.slug)?.value;
+    metadata.removeAll(SOLID_HTTP.terms.slug);
 
     let newID: ResourceIdentifier = this.createURI(container, isContainer, slug);
 
@@ -517,7 +588,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Make sure we don't already have a resource with this exact name (or with differing trailing slash)
     const withSlash = { path: ensureTrailingSlash(newID.path) };
     const withoutSlash = { path: trimTrailingSlashes(newID.path) };
-    if (await this.resourceExists(withSlash) || await this.resourceExists(withoutSlash)) {
+    if (await this.hasResource(withSlash) || await this.hasResource(withoutSlash)) {
       newID = this.createURI(container, isContainer);
     }
 
@@ -526,16 +597,11 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Checks if the given metadata represents a (potential) container,
-   * both based on the metadata and the URI.
+   * based on the metadata.
    * @param metadata - Metadata of the (new) resource.
-   * @param suffix - Suffix of the URI. Can be the full URI, but only the last part is required.
    */
-  protected isNewContainer(metadata: RepresentationMetadata, suffix?: string): boolean {
-    if (this.hasContainerType(metadata.getAll(RDF.type))) {
-      return true;
-    }
-    const slug = suffix ?? metadata.get(SOLID_HTTP.slug)?.value;
-    return Boolean(slug && isContainerPath(slug));
+  protected isContainerType(metadata: RepresentationMetadata): boolean {
+    return this.hasContainerType(metadata.getAll(RDF.terms.type));
   }
 
   /**
@@ -549,7 +615,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Verifies if this is the metadata of a root storage container.
    */
   protected isRootStorage(metadata: RepresentationMetadata): boolean {
-    return metadata.getAll(RDF.type).some((term): boolean => term.value === PIM.Storage);
+    return metadata.getAll(RDF.terms.type).some((term): boolean => term.value === PIM.Storage);
   }
 
   /**

@@ -3,16 +3,18 @@ import type {
   EmailPasswordData,
 } from '../../../../../../src/identity/interaction/email-password/storage/BaseAccountStore';
 import { BaseAccountStore } from '../../../../../../src/identity/interaction/email-password/storage/BaseAccountStore';
+import type { ExpiringStorage } from '../../../../../../src/storage/keyvalue/ExpiringStorage';
 import type { KeyValueStorage } from '../../../../../../src/storage/keyvalue/KeyValueStorage';
 
 describe('A BaseAccountStore', (): void => {
   let storage: KeyValueStorage<string, EmailPasswordData>;
+  let forgotPasswordStorage: ExpiringStorage<string, EmailPasswordData>;
   const saltRounds = 11;
   let store: BaseAccountStore;
   const email = 'test@test.com';
   const webId = 'http://test.com/#webId';
   const password = 'password!';
-  const settings: AccountSettings = { useIdp: true };
+  const settings: AccountSettings = { useIdp: true, clientCredentials: []};
 
   beforeEach(async(): Promise<void> => {
     const map = new Map();
@@ -22,7 +24,13 @@ describe('A BaseAccountStore', (): void => {
       delete: jest.fn((id: string): any => map.delete(id)),
     } as any;
 
-    store = new BaseAccountStore(storage, saltRounds);
+    forgotPasswordStorage = {
+      get: jest.fn((id: string): any => map.get(id)),
+      set: jest.fn((id: string, value: any): any => map.set(id, value)),
+      delete: jest.fn((id: string): any => map.delete(id)),
+    } as any;
+
+    store = new BaseAccountStore(storage, forgotPasswordStorage, saltRounds);
   });
 
   it('can create accounts.', async(): Promise<void> => {
@@ -84,7 +92,7 @@ describe('A BaseAccountStore', (): void => {
   });
 
   it('can update the settings.', async(): Promise<void> => {
-    const newSettings = { webId, useIdp: false };
+    const newSettings = { webId, useIdp: false, clientCredentials: []};
     await expect(store.create(email, webId, password, settings)).resolves.toBeUndefined();
     await expect(store.verify(email)).resolves.toBeUndefined();
     await expect(store.updateSettings(webId, newSettings)).resolves.toBeUndefined();

@@ -1,14 +1,14 @@
 # Community Solid Server
 
-<img src="https://raw.githubusercontent.com/solid/community-server/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
+<img src="https://raw.githubusercontent.com/CommunitySolidServer/CommunitySolidServer/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
 
-[![MIT license](https://img.shields.io/npm/l/@solid/community-server)](https://github.com/solid/community-server/blob/main/LICENSE.md)
+[![MIT license](https://img.shields.io/npm/l/@solid/community-server)](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/LICENSE.md)
 [![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
 [![Node.js version](https://img.shields.io/node/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
-[![Build Status](https://github.com/solid/community-server/workflows/CI/badge.svg)](https://github.com/solid/community-server/actions)
-[![Coverage Status](https://coveralls.io/repos/github/solid/community-server/badge.svg)](https://coveralls.io/github/solid/community-server)
-[![GitHub discussions](https://img.shields.io/github/discussions/solid/community-server)](https://github.com/solid/community-server/discussions)
-[![Chat on Gitter](https://badges.gitter.im/solid/community-server.svg)](https://gitter.im/solid/community-server)
+[![Build Status](https://github.com/CommunitySolidServer/CommunitySolidServer/workflows/CI/badge.svg)](https://github.com/CommunitySolidServer/CommunitySolidServer/actions)
+[![Coverage Status](https://coveralls.io/repos/github/CommunitySolidServer/CommunitySolidServer/badge.svg)](https://coveralls.io/github/CommunitySolidServer/CommunitySolidServer)
+[![GitHub discussions](https://img.shields.io/github/discussions/CommunitySolidServer/CommunitySolidServer)](https://github.com/CommunitySolidServer/CommunitySolidServer/discussions)
+[![Chat on Gitter](https://badges.gitter.im/CommunitySolidServer/community.svg)](https://gitter.im/CommunitySolidServer/community)
 
 **The Community Solid Server is open software
 that provides you with a [Solid](https://solidproject.org/) Pod and identity.
@@ -16,7 +16,7 @@ This Pod acts as your own personal storage space
 so you can share data with people and Solid applications.**
 
 As an open and modular implementation of the
-[Solid specifications](https://solid.github.io/specification/),
+[Solid specifications](https://solidproject.org/TR/),
 the Community Solid Server is a great companion:
 
 - 🧑🏽 **for people** who want to try out having their own Pod
@@ -33,7 +33,7 @@ and get started with Solid immediately.
 
 ## ⚡ Running the server
 To run the server, you will need [Node.js](https://nodejs.org/en/).
-We support versions 12.7 and up.
+We support versions 14.2 and up.
 <br>
 If you do not use Node.js,
 you can run a [Docker](https://www.docker.com/) version instead.
@@ -62,27 +62,35 @@ If you rather prefer to run the latest source code version,
 or if you want to try a specific [branch](https://www.npmjs.com/) of the code,
 you can use:
 ```shell
-git clone https://github.com/solid/community-server.git
-cd community-server
+git clone https://github.com/CommunitySolidServer/CommunitySolidServer.git
+cd CommunitySolidServer
 npm ci
 npm start -- # add parameters if needed
 ```
 
 ### 📦 Running via Docker
-Docker allows you to run the server without having Node.js installed:
+Docker allows you to run the server without having Node.js installed. Images are built on each tagged version and hosted on [Docker Hub](https://hub.docker.com/r/solidproject/community-server).
+
 ```shell
-git clone https://github.com/solid/community-server.git
-cd community-server
-# Build the Docker image
-docker build --rm -f Dockerfile -t css:latest .
+# Clone the repo to get access to the configs
+git clone https://github.com/CommunitySolidServer/CommunitySolidServer.git
+cd CommunitySolidServer
 # Run the image, serving your `~/Solid` directory on `http://localhost:3000`
-docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest
+docker run --rm -v ~/Solid:/data -p 3000:3000 -it solidproject/community-server:latest
 # Or use one of the built-in configurations
-docker run --rm -p 3000:3000 -it css:latest -c config/default.json
+docker run --rm -p 3000:3000 -it solidproject/community-server -c config/default.json
 # Or use your own configuration mapped to the right directory
-docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
+docker run --rm -v ~/solid-config:/config -p 3000:3000 -it solidproject/community-server -c /config/my-config.json
 ```
 
+### 🗃️ Helm Chart
+The official [Helm](https://helm.sh/) Chart for Kubernetes deployment is maintained at [CommunitySolidServer/css-helm-chart](https://github.com/CommunitySolidServer/css-helm-chart) and published on [ArtifactHUB](https://artifacthub.io/packages/helm/community-solid-server/community-solid-server). There you will find complete installation instructions.
+
+```
+# Summary
+helm repo add community-solid-server https://communitysolidserver.github.io/css-helm-chart/charts/
+helm install my-css community-solid-server/community-solid-server
+```
 
 ## 🔧 Configuring the server
 The Community Solid Server is designed to be flexible
@@ -99,16 +107,26 @@ These parameters give you direct access
 to some commonly used settings:
 
 | parameter name         | default value              | description                                                                                                                          |
-| --------------         | -------------              | -----------                                                                                                                          |
-| `--port, -p`           | `3000`                     | The TCP port on which the server runs.                                                                                               |
-| `--baseUrl. -b`        | `http://localhost:$PORT/`  | The public URL of your server.                                                                                                       |
-| `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems.                                                                          |
+|------------------------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `--port, -p`           | `3000`                     | The TCP port on which the server should listen.                                                                                      |
+| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The base URL used internally to generate URLs. Change this if your server does not run on `http://localhost:$PORT/`.                 |
+| `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems. Use `debug` for full information.                                        |
 | `--config, -c`         | `@css:config/default.json` | The configuration for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json` |
-| `--rootFilePath, -f`   | `./`                       | Root folder of the server, when using a file-based configuration.                                                                    |
+| `--rootFilePath, -f`   | `./`                       | Root folder where the server stores data, when using a file-based configuration.                                                     |
 | `--sparqlEndpoint, -s` |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                              |
-| `--showStackTrace, -t` | false                      | Enables detailed logging on error pages.                                                                                             |
-| `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations.                                                                     |
-| `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.
+| `--showStackTrace, -t` | false                      | Enables detailed logging on error output.                                                                                            |
+| `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                |
+| `--seededPodConfigJson`|                            | Path to the file that keeps track of seeded Pod configurations.                                                                      |
+| `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.                                                |
+| `--workers, -w`        | `1`                        | Run in multithreaded mode using workers. Special values are `-1` (scale to `num_cores-1`), `0` (scale to `num_cores`) and 1 (singlethreaded).     |
+
+### 🔀 Multithreading
+The Community Solid Server can be started in multithreaded mode with any config. The config must only contain components that are threadsafe though. If a non-threadsafe component is used in multithreaded mode, the server will describe with an error which class is the culprit.
+
+```node
+# Running multithreaded with autoscaling to number of logical cores minus 1
+npm start -- -c config/file.json -w -1
+```
 
 ### 🧶 Custom configurations
 More substantial changes to server behavior can be achieved
@@ -117,29 +135,29 @@ The Community Solid Server uses [Components.js](https://componentsjs.readthedocs
 to specify how modules and components need to be wired together at runtime.
 
 Examples and guidance on configurations
-are available in the [`config` folder](https://github.com/solid/community-server/tree/main/config).
+are available in the [`config` folder](https://github.com/CommunitySolidServer/CommunitySolidServer/tree/main/config).
 
-Recipes for configuring the server can be found at [solid/community-server-recipes](https://github.com/solid/community-server-recipes).
+Recipes for configuring the server can be found at [CommunitySolidServer/recipes](https://github.com/CommunitySolidServer/recipes).
 
 
 ## 👩🏽‍💻 Developing server code
 The server allows writing and plugging in custom modules
 without altering its base source code.
 
-The [📗 API documentation](https://solid.github.io/community-server/docs/) and
+The [📗 API documentation](https://communitysolidserver.github.io/CommunitySolidServer/docs/) and
 the [📐 architectural diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
 can help you find your way.
 
 If you want to help out with server development,
-have a look at the [📓 developer notes](guides/developer-notes.md) and
-[🛠️ good first issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+have a look at the [📓 user documentation](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/documentation/) and
+[🛠️ good first issues](https://github.com/CommunitySolidServer/CommunitySolidServer/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
 
 ## 📜 License
 The Solid Community Server code
 is copyrighted by [Inrupt Inc.](https://inrupt.com/)
 and [imec](https://www.imec-int.com/)
-and available under the [MIT License](https://github.com/solid/community-server/blob/main/LICENSE.md).
+and available under the [MIT License](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/LICENSE.md).
 
 Core contributors are
 [Joachim Van Herwegen](https://github.com/joachimvh),
@@ -150,7 +168,7 @@ and
 
 
 ## 🎤 Feedback and questions
-Don't hesitate to [start a discussion](https://github.com/solid/community-server/discussions)
-or [report a bug](https://github.com/solid/community-server/issues).
+Don't hesitate to [start a discussion](https://github.com/CommunitySolidServer/CommunitySolidServer/discussions)
+or [report a bug](https://github.com/CommunitySolidServer/CommunitySolidServer/issues).
 
 Learn more about Solid at [solidproject.org](https://solidproject.org/).

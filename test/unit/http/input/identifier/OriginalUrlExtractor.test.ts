@@ -1,7 +1,22 @@
+import { SingleRootIdentifierStrategy } from '../../../../../src';
 import { OriginalUrlExtractor } from '../../../../../src/http/input/identifier/OriginalUrlExtractor';
 
+// Utility interface for defining the createExtractor utility method arguments
+interface CreateExtractorArgs {
+  baseUrl?: string;
+  includeQueryString?: boolean;
+}
+
+// Helper function for instantiating an OriginalUrlExtractor
+function createExtractor(args: CreateExtractorArgs = { }): OriginalUrlExtractor {
+  const identifierStrategy = new SingleRootIdentifierStrategy(args.baseUrl ?? 'http://test.com');
+  const extractor = new OriginalUrlExtractor({ identifierStrategy, includeQueryString: args.includeQueryString });
+  return extractor;
+}
+
 describe('A OriginalUrlExtractor', (): void => {
-  const extractor = new OriginalUrlExtractor();
+  // Default extractor to use, some test cases may specify an alternative extractor
+  const extractor = createExtractor();
 
   it('can handle any input.', async(): Promise<void> => {
     await expect(extractor.canHandle({} as any)).resolves.toBeUndefined();
@@ -21,15 +36,26 @@ describe('A OriginalUrlExtractor', (): void => {
       .rejects.toThrow('The request has an invalid Host header: test.com/forbidden');
   });
 
+  it('errors if the request URL base does not match the configured baseUrl.', async(): Promise<void> => {
+    await expect(extractor.handle({ request: { url: 'url', headers: { host: 'example.com' }} as any }))
+      .rejects.toThrow(`The identifier http://example.com/url is outside the configured identifier space.`);
+  });
+
   it('returns the input URL.', async(): Promise<void> => {
     await expect(extractor.handle({ request: { url: 'url', headers: { host: 'test.com' }} as any }))
       .resolves.toEqual({ path: 'http://test.com/url' });
   });
 
   it('returns an input URL with query string.', async(): Promise<void> => {
-    const noQuery = new OriginalUrlExtractor({ includeQueryString: false });
+    const noQuery = createExtractor({ includeQueryString: false });
     await expect(noQuery.handle({ request: { url: '/url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
       .resolves.toEqual({ path: 'http://test.com/url' });
+  });
+
+  it('returns an input URL with multiple leading slashes.', async(): Promise<void> => {
+    const noQuery = createExtractor({ includeQueryString: true });
+    await expect(noQuery.handle({ request: { url: '///url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
+      .resolves.toEqual({ path: 'http://test.com///url?abc=def&xyz' });
   });
 
   it('drops the query string when includeQueryString is set to false.', async(): Promise<void> => {
@@ -38,12 +64,14 @@ describe('A OriginalUrlExtractor', (): void => {
   });
 
   it('supports host:port combinations.', async(): Promise<void> => {
-    await expect(extractor.handle({ request: { url: 'url', headers: { host: 'localhost:3000' }} as any }))
+    const altExtractor = createExtractor({ baseUrl: 'http://localhost:3000/' });
+    await expect(altExtractor.handle({ request: { url: 'url', headers: { host: 'localhost:3000' }} as any }))
       .resolves.toEqual({ path: 'http://localhost:3000/url' });
   });
 
   it('uses https protocol if the connection is secure.', async(): Promise<void> => {
-    await expect(extractor.handle(
+    const altExtractor = createExtractor({ baseUrl: 'https://test.com/' });
+    await expect(altExtractor.handle(
       { request: { url: 'url', headers: { host: 'test.com' }, connection: { encrypted: true } as any } as any },
     )).resolves.toEqual({ path: 'https://test.com/url' });
   });
@@ -60,7 +88,8 @@ describe('A OriginalUrlExtractor', (): void => {
   });
 
   it('encodes hosts.', async(): Promise<void> => {
-    await expect(extractor.handle({ request: { url: '/', headers: { host: '點看' }} as any }))
+    const altExtractor = createExtractor({ baseUrl: 'http://xn--c1yn36f/' });
+    await expect(altExtractor.handle({ request: { url: '/', headers: { host: '點看' }} as any }))
       .resolves.toEqual({ path: 'http://xn--c1yn36f/' });
   });
 
@@ -74,60 +103,66 @@ describe('A OriginalUrlExtractor', (): void => {
   });
 
   it('takes the Forwarded header into account.', async(): Promise<void> => {
+    const altExtractor = createExtractor({ baseUrl: 'https://pod.example/' });
     const headers = {
       host: 'test.com',
       forwarded: 'proto=https;host=pod.example',
     };
-    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+    await expect(altExtractor.handle({ request: { url: '/foo/bar', headers } as any }))
       .resolves.toEqual({ path: 'https://pod.example/foo/bar' });
   });
 
   it('should fallback to x-fowarded-* headers.', async(): Promise<void> => {
+    const altExtractor = createExtractor({ baseUrl: 'https://pod.example/' });
     const headers = {
       host: 'test.com',
       'x-forwarded-host': 'pod.example',
       'x-forwarded-proto': 'https',
     };
-    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+    await expect(altExtractor.handle({ request: { url: '/foo/bar', headers } as any }))
       .resolves.toEqual({ path: 'https://pod.example/foo/bar' });
   });
 
   it('should just take x-forwarded-host if provided.', async(): Promise<void> => {
+    const altExtractor = createExtractor({ baseUrl: 'http://pod.example/' });
     const headers = {
       host: 'test.com',
       'x-forwarded-host': 'pod.example',
     };
-    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+    await expect(altExtractor.handle({ request: { url: '/foo/bar', headers } as any }))
       .resolves.toEqual({ path: 'http://pod.example/foo/bar' });
   });
 
   it('should just take x-forwarded-protocol if provided.', async(): Promise<void> => {
+    const altExtractor = createExtractor({ baseUrl: 'https://test.com/' });
     const headers = {
       host: 'test.com',
       'x-forwarded-proto': 'https',
     };
-    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+    await expect(altExtractor.handle({ request: { url: '/foo/bar', headers } as any }))
       .resolves.toEqual({ path: 'https://test.com/foo/bar' });
   });
 
   it('should prefer forwarded header to x-forwarded-* headers.', async(): Promise<void> => {
+    const altExtractor = createExtractor({ baseUrl: 'http://pod.example/' });
     const headers = {
       host: 'test.com',
       forwarded: 'proto=http;host=pod.example',
       'x-forwarded-proto': 'https',
       'x-forwarded-host': 'anotherpod.example',
     };
-    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+    await expect(altExtractor.handle({ request: { url: '/foo/bar', headers } as any }))
       .resolves.toEqual({ path: 'http://pod.example/foo/bar' });
   });
 
   it('should just take the first x-forwarded-* value.', async(): Promise<void> => {
+    const altExtractor = createExtractor({ baseUrl: 'http://pod.example/' });
     const headers = {
       host: 'test.com',
       'x-forwarded-host': 'pod.example, another.domain',
       'x-forwarded-proto': 'http,https',
     };
-    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+    await expect(altExtractor.handle({ request: { url: '/foo/bar', headers } as any }))
       .resolves.toEqual({ path: 'http://pod.example/foo/bar' });
   });
 });

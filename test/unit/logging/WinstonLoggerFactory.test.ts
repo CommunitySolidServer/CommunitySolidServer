@@ -13,7 +13,7 @@ describe('WinstonLoggerFactory', (): void => {
     const logger = factory.createLogger('MyLabel');
     expect(logger).toBeInstanceOf(WinstonLogger);
     const innerLogger: Logger = (logger as any).logger;
-    expect(innerLogger.level).toEqual('debug');
+    expect(innerLogger.level).toBe('debug');
     expect(innerLogger.format).toBeTruthy();
     expect(innerLogger.transports).toHaveLength(1);
   });
@@ -35,6 +35,7 @@ describe('WinstonLoggerFactory', (): void => {
       level: expect.stringContaining('debug'),
       message: 'my message',
       timestamp: expect.any(String),
+      metadata: expect.any(Object),
       [Symbol.for('level')]: 'debug',
       [Symbol.for('splat')]: [ undefined ],
       [Symbol.for('message')]: expect.any(String),

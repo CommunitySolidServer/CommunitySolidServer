@@ -1,5 +1,6 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
+import { DataFactory } from 'n3';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
@@ -9,6 +10,7 @@ import type { Guarded } from '../../../../src/util/GuardedStream';
 import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIdentifierStrategy';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { LDP, RDF } from '../../../../src/util/Vocabularies';
+const { namedNode } = DataFactory;
 
 class DummyStrategy extends BaseIdentifierStrategy {
   public supportsIdentifier(): boolean {
@@ -96,8 +98,8 @@ describe('An InMemoryDataAccessor', (): void => {
         children.push(child);
       }
       expect(children).toHaveLength(2);
-      expect(children[0].identifier.value).toEqual(`${base}container/resource`);
-      expect(children[1].identifier.value).toEqual(`${base}container/container2/`);
+      expect(children[0].identifier.value).toBe(`${base}container/resource`);
+      expect(children[1].identifier.value).toBe(`${base}container/container2/`);
     });
 
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
@@ -133,14 +135,14 @@ describe('An InMemoryDataAccessor', (): void => {
       )).resolves.toBeUndefined();
 
       const newMetadata = new RepresentationMetadata(inputMetadata);
-      newMetadata.add(RDF.type, LDP.terms.BasicContainer);
+      newMetadata.add(RDF.terms.type, LDP.terms.BasicContainer);
       await expect(accessor.writeContainer(identifier, newMetadata)).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}container/`);
       const quads = metadata.quads();
       expect(quads).toHaveLength(2);
-      expect(metadata.getAll(RDF.type).map((term): string => term.value))
+      expect(metadata.getAll(RDF.terms.type).map((term): string => term.value))
         .toEqual([ LDP.Container, LDP.BasicContainer ]);
 
       const children = [];
@@ -148,7 +150,7 @@ describe('An InMemoryDataAccessor', (): void => {
         children.push(child);
       }
       expect(children).toHaveLength(1);
-      expect(children[0].identifier.value).toEqual(`${base}container/resource`);
+      expect(children[0].identifier.value).toBe(`${base}container/resource`);
 
       await expect(accessor.getMetadata({ path: `${base}container/resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
@@ -168,14 +170,14 @@ describe('An InMemoryDataAccessor', (): void => {
       expect(metadata.identifier.value).toBe(`${base}`);
       const quads = metadata.quads();
       expect(quads).toHaveLength(1);
-      expect(metadata.getAll(RDF.type)).toHaveLength(1);
+      expect(metadata.getAll(RDF.terms.type)).toHaveLength(1);
 
       const children = [];
       for await (const child of accessor.getChildren(identifier)) {
         children.push(child);
       }
       expect(children).toHaveLength(1);
-      expect(children[0].identifier.value).toEqual(`${base}resource`);
+      expect(children[0].identifier.value).toBe(`${base}resource`);
 
       await expect(accessor.getMetadata({ path: `${base}resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
@@ -199,6 +201,18 @@ describe('An InMemoryDataAccessor', (): void => {
         children.push(child);
       }
       expect(children).toHaveLength(0);
+    });
+
+    it('writes metadata.', async(): Promise<void> => {
+      const resourceIdentifier = { path: `${base}resource` };
+      const inputMetadata = new RepresentationMetadata(resourceIdentifier, { [RDF.type]: LDP.terms.Resource });
+      await accessor.writeDocument(resourceIdentifier, data, inputMetadata);
+
+      const extraMetadata = new RepresentationMetadata(resourceIdentifier);
+      extraMetadata.addQuad(namedNode('a'), namedNode('b'), namedNode('c'));
+      await expect(accessor.writeMetadata(resourceIdentifier, extraMetadata)).resolves.toBeUndefined();
+
+      await expect(accessor.getMetadata(resourceIdentifier)).resolves.toStrictEqual(extraMetadata);
     });
   });
 

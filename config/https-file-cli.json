@@ -1,0 +1,117 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/app/main/default.json",
+    "css:config/app/init/default.json",
+    "css:config/app/setup/required.json",
+    "css:config/app/variables/default.json",
+    "css:config/http/handler/default.json",
+    "css:config/http/middleware/websockets.json",
+
+    "css:config/http/static/default.json",
+    "css:config/identity/access/public.json",
+    "css:config/identity/email/default.json",
+    "css:config/identity/handler/default.json",
+    "css:config/identity/ownership/token.json",
+    "css:config/identity/pod/static.json",
+    "css:config/identity/registration/enabled.json",
+    "css:config/ldp/authentication/dpop-bearer.json",
+    "css:config/ldp/authorization/webacl.json",
+    "css:config/ldp/handler/default.json",
+    "css:config/ldp/metadata-parser/default.json",
+    "css:config/ldp/metadata-writer/default.json",
+    "css:config/ldp/modes/default.json",
+    "css:config/storage/backend/file.json",
+    "css:config/storage/key-value/resource-store.json",
+    "css:config/storage/middleware/default.json",
+    "css:config/util/auxiliary/acl.json",
+    "css:config/util/identifiers/suffix.json",
+    "css:config/util/index/default.json",
+    "css:config/util/logging/winston.json",
+    "css:config/util/representation-conversion/default.json",
+    "css:config/util/resource-locker/file.json",
+    "css:config/util/variables/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": [
+        "Adds CLI options --httpsKey and --httpsCert and uses those to start an HTTPS server.",
+        "The http/server-factory import above has been omitted since that feature is set below."
+      ]
+    },
+    {
+      "@id": "urn:solid-server-app-setup:default:CliExtractor",
+      "@type": "YargsCliExtractor",
+      "parameters": [
+        {
+          "@type": "YargsParameter",
+          "name": "httpsKey",
+          "options": {
+            "demandOption": true,
+            "requiresArg": true,
+            "type": "string",
+            "describe": "File path to the HTTPS key."
+          }
+        },
+        {
+          "@type": "YargsParameter",
+          "name": "httpsCert",
+          "options": {
+            "demandOption": true,
+            "requiresArg": true,
+            "type": "string",
+            "describe": "File path to the HTTPS certificate."
+          }
+        }
+      ]
+    },
+    {
+      "comment": "Adds resolvers to assign the CLI values to the Components.js variables.",
+      "@id": "urn:solid-server-app-setup:default:SettingsResolver",
+      "@type": "CombinedSettingsResolver",
+      "resolvers": [
+        {
+          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:custom:variable:httpsKey",
+          "CombinedSettingsResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "httpsKey"
+          }
+        },
+        {
+          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:custom:variable:httpsCert",
+          "CombinedSettingsResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "httpsCert"
+          }
+        }
+      ]
+    },
+    {
+      "comment": [
+        "Creates an HTTPS server with the settings provided via the command line.",
+        "Replaces the example import from config/http/server-factory.https-example.json."
+      ],
+      "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "WebSocketServerFactory",
+      "baseServerFactory": {
+        "@id": "urn:solid-server:default:HttpServerFactory",
+        "@type": "BaseHttpServerFactory",
+        "handler": { "@id": "urn:solid-server:default:HttpHandler" },
+        "options_showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
+        "options_https": true,
+        "options_key": {
+          "@id": "urn:solid-server:custom:variable:httpsKey",
+          "@type": "Variable"
+        },
+        "options_cert": {
+          "@id": "urn:solid-server:custom:variable:httpsCert",
+          "@type": "Variable"
+        }
+      },
+      "webSocketHandler": {
+        "@type": "UnsecureWebSocketsProtocol",
+        "source": { "@id": "urn:solid-server:default:ResourceStore" }
+      }
+    }
+  ]
+}

@@ -18,13 +18,14 @@ export * from './authorization/access/AgentGroupAccessChecker';
 export * from './authorization/permissions/Permissions';
 export * from './authorization/permissions/ModesExtractor';
 export * from './authorization/permissions/MethodModesExtractor';
-export * from './authorization/permissions/SparqlPatchModesExtractor';
+export * from './authorization/permissions/N3PatchModesExtractor';
+export * from './authorization/permissions/SparqlUpdateModesExtractor';
 
 // Authorization
-export * from './authorization/OwnerPermissionReader';
 export * from './authorization/AllStaticReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
+export * from './authorization/OwnerPermissionReader';
 export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
@@ -45,6 +46,7 @@ export * from './http/auxiliary/Validator';
 
 // HTTP/Input/Body
 export * from './http/input/body/BodyParser';
+export * from './http/input/body/N3PatchBodyParser';
 export * from './http/input/body/RawBodyParser';
 export * from './http/input/body/SparqlUpdateBodyParser';
 
@@ -57,9 +59,11 @@ export * from './http/input/identifier/OriginalUrlExtractor';
 export * from './http/input/identifier/TargetExtractor';
 
 // HTTP/Input/Metadata
+export * from './http/input/metadata/ContentLengthParser';
 export * from './http/input/metadata/ContentTypeParser';
 export * from './http/input/metadata/LinkRelParser';
 export * from './http/input/metadata/MetadataParser';
+export * from './http/input/metadata/PlainJsonLdFilter';
 export * from './http/input/metadata/SlugParser';
 
 // HTTP/Input/Preferences
@@ -86,9 +90,11 @@ export * from './http/ldp/PutOperationHandler';
 // HTTP/Output/Error
 export * from './http/output/error/ConvertingErrorHandler';
 export * from './http/output/error/ErrorHandler';
+export * from './http/output/error/RedirectingErrorHandler';
 export * from './http/output/error/SafeErrorHandler';
 
 // HTTP/Output/Metadata
+export * from './http/output/metadata/AllowAcceptHeaderWriter';
 export * from './http/output/metadata/ConstantMetadataWriter';
 export * from './http/output/metadata/LinkRelMetadataWriter';
 export * from './http/output/metadata/MappedMetadataWriter';
@@ -124,8 +130,15 @@ export * from './http/UnsecureWebSocketsProtocol';
 export * from './identity/configuration/IdentityProviderFactory';
 export * from './identity/configuration/ProviderFactory';
 
+// Identity/Interaction/Email-Password/Credentials
+export * from './identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
+export * from './identity/interaction/email-password/credentials/EmailPasswordAuthorizer';
+export * from './identity/interaction/email-password/credentials/CreateCredentialsHandler';
+export * from './identity/interaction/email-password/credentials/CredentialsHandler';
+export * from './identity/interaction/email-password/credentials/DeleteCredentialsHandler';
+export * from './identity/interaction/email-password/credentials/ListCredentialsHandler';
+
 // Identity/Interaction/Email-Password/Handler
-export * from './identity/interaction/email-password/handler/InteractionHandler';
 export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
 export * from './identity/interaction/email-password/handler/LoginHandler';
 export * from './identity/interaction/email-password/handler/RegistrationHandler';
@@ -136,22 +149,28 @@ export * from './identity/interaction/email-password/storage/AccountStore';
 export * from './identity/interaction/email-password/storage/BaseAccountStore';
 
 // Identity/Interaction/Email-Password/Util
+export * from './identity/interaction/email-password/util/BaseEmailSender';
+export * from './identity/interaction/email-password/util/EmailSender';
 export * from './identity/interaction/email-password/util/RegistrationManager';
 
 // Identity/Interaction/Email-Password
 export * from './identity/interaction/email-password/EmailPasswordUtil';
 
 // Identity/Interaction/Routing
-export * from './identity/interaction/routing/BasicInteractionRoute';
+export * from './identity/interaction/routing/AbsolutePathInteractionRoute';
 export * from './identity/interaction/routing/InteractionRoute';
-
-// Identity/Interaction/Util
-export * from './identity/interaction/util/BaseEmailSender';
-export * from './identity/interaction/util/EmailSender';
-export * from './identity/interaction/util/InteractionCompleter';
+export * from './identity/interaction/routing/InteractionRouteHandler';
+export * from './identity/interaction/routing/RelativePathInteractionRoute';
 
 // Identity/Interaction
-export * from './identity/interaction/SessionHttpHandler';
+export * from './identity/interaction/BaseInteractionHandler';
+export * from './identity/interaction/ConsentHandler';
+export * from './identity/interaction/ControlHandler';
+export * from './identity/interaction/FixedInteractionHandler';
+export * from './identity/interaction/HtmlViewHandler';
+export * from './identity/interaction/InteractionHandler';
+export * from './identity/interaction/LocationInteractionHandler';
+export * from './identity/interaction/PromptHandler';
 
 // Identity/Ownership
 export * from './identity/ownership/NoCheckOwnershipValidator';
@@ -161,29 +180,54 @@ export * from './identity/ownership/TokenOwnershipValidator';
 // Identity/Storage
 export * from './identity/storage/AdapterFactory';
 export * from './identity/storage/ExpiringAdapterFactory';
+export * from './identity/storage/PassthroughAdapterFactory';
 export * from './identity/storage/WebIdAdapterFactory';
 
 // Identity
 export * from './identity/IdentityProviderHttpHandler';
+export * from './identity/OidcHttpHandler';
+
+// Init/Cluster
+export * from './init/cluster/ClusterManager';
+export * from './init/cluster/SingleThreaded';
+export * from './init/cluster/WorkerManager';
 
 // Init/Final
 export * from './init/final/Finalizable';
 export * from './init/final/ParallelFinalizer';
 
 // Init/Setup
+export * from './init/setup/SetupHandler';
 export * from './init/setup/SetupHttpHandler';
+
+// Init/Cli
+export * from './init/cli/CliExtractor';
+export * from './init/cli/YargsCliExtractor';
+
+// Init/Variables/Extractors
+export * from './init/variables/extractors/KeyExtractor';
+export * from './init/variables/extractors/AssetPathExtractor';
+export * from './init/variables/extractors/BaseUrlExtractor';
+export * from './init/variables/extractors/SettingsExtractor';
+
+// Init/Variables
+export * from './init/variables/CombinedSettingsResolver';
+export * from './init/variables/SettingsResolver';
 
 // Init
 export * from './init/App';
 export * from './init/AppRunner';
+export * from './init/BaseUrlVerifier';
+export * from './init/CliResolver';
 export * from './init/ConfigPodInitializer';
 export * from './init/ContainerInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
+export * from './init/ModuleVersionVerifier';
+export * from './init/SeededPodInitializer';
 export * from './init/ServerInitializer';
 
 // Logging
-export * from './logging/LazyLogger';
 export * from './logging/LazyLoggerFactory';
 export * from './logging/Logger';
 export * from './logging/LoggerFactory';
@@ -240,16 +284,22 @@ export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
 // Server/Util
-export * from './server/util/RedirectAllHttpHandler';
+export * from './server/util/RedirectingHttpHandler';
 export * from './server/util/RouterHandler';
 
 // Storage/Accessors
+export * from './storage/accessors/AtomicDataAccessor';
+export * from './storage/accessors/AtomicFileDataAccessor';
 export * from './storage/accessors/DataAccessor';
 export * from './storage/accessors/FileDataAccessor';
+export * from './storage/accessors/FilterMetadataDataAccessor';
 export * from './storage/accessors/InMemoryDataAccessor';
+export * from './storage/accessors/PassthroughDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
+export * from './storage/accessors/ValidatingDataAccessor';
 
 // Storage/Conversion
+export * from './storage/conversion/BaseTypedRepresentationConverter';
 export * from './storage/conversion/ChainedConverter';
 export * from './storage/conversion/ConstantConverter';
 export * from './storage/conversion/ContainerToTemplateConverter';
@@ -260,7 +310,6 @@ export * from './storage/conversion/ErrorToJsonConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
 export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/FormToJsonConverter';
-export * from './storage/conversion/IfNeededConverter';
 export * from './storage/conversion/MarkdownToHtmlConverter';
 export * from './storage/conversion/PassthroughConverter';
 export * from './storage/conversion/QuadToRdfConverter';
@@ -269,6 +318,7 @@ export * from './storage/conversion/RepresentationConverter';
 export * from './storage/conversion/TypedRepresentationConverter';
 
 // Storage/KeyValue
+export * from './storage/keyvalue/EncodingPathStorage';
 export * from './storage/keyvalue/ExpiringStorage';
 export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
@@ -284,12 +334,20 @@ export * from './storage/mapping/FixedContentTypeMapper';
 export * from './storage/mapping/SubdomainExtensionBasedMapper';
 
 // Storage/Patch
-export * from './storage/patch/ContainerPatcher';
 export * from './storage/patch/ConvertingPatcher';
+export * from './storage/patch/ImmutableMetadataPatcher';
+export * from './storage/patch/N3Patcher';
 export * from './storage/patch/PatchHandler';
+export * from './storage/patch/RdfPatcher';
+export * from './storage/patch/RdfStorePatcher';
 export * from './storage/patch/RepresentationPatcher';
 export * from './storage/patch/RepresentationPatchHandler';
 export * from './storage/patch/SparqlUpdatePatcher';
+
+// Storage/Quota
+export * from './storage/quota/GlobalQuotaStrategy';
+export * from './storage/quota/PodQuotaStrategy';
+export * from './storage/quota/QuotaStrategy';
 
 // Storage/Routing
 export * from './storage/routing/BaseUrlRouterRule';
@@ -298,10 +356,19 @@ export * from './storage/routing/PreferenceSupport';
 export * from './storage/routing/RegexRouterRule';
 export * from './storage/routing/RouterRule';
 
+// Storage/Size-Reporter
+export * from './storage/size-reporter/FileSizeReporter';
+export * from './storage/size-reporter/Size';
+export * from './storage/size-reporter/SizeReporter';
+
+// Storage/Validators
+export * from './storage/validators/QuotaValidator';
+
 // Storage
 export * from './storage/AtomicResourceStore';
 export * from './storage/BaseResourceStore';
 export * from './storage/BasicConditions';
+export * from './storage/CachedResourceSet';
 export * from './storage/Conditions';
 export * from './storage/DataAccessorBasedStore';
 export * from './storage/IndexRepresentationStore';
@@ -311,6 +378,7 @@ export * from './storage/PassthroughStore';
 export * from './storage/PatchingStore';
 export * from './storage/ReadOnlyStore';
 export * from './storage/RepresentationConvertingStore';
+export * from './storage/ResourceSet';
 export * from './storage/ResourceStore';
 export * from './storage/RoutingResourceStore';
 export * from './storage/ShapeValidationStore';
@@ -322,12 +390,16 @@ export * from './util/errors/BadRequestHttpError';
 export * from './util/errors/ConflictHttpError';
 export * from './util/errors/ErrorUtil';
 export * from './util/errors/ForbiddenHttpError';
+export * from './util/errors/FoundHttpError';
 export * from './util/errors/HttpError';
+export * from './util/errors/HttpErrorUtil';
 export * from './util/errors/InternalServerError';
 export * from './util/errors/MethodNotAllowedHttpError';
+export * from './util/errors/MovedPermanentlyHttpError';
 export * from './util/errors/NotFoundHttpError';
 export * from './util/errors/NotImplementedHttpError';
 export * from './util/errors/PreconditionFailedHttpError';
+export * from './util/errors/RedirectHttpError';
 export * from './util/errors/SystemError';
 export * from './util/errors/UnauthorizedHttpError';
 export * from './util/errors/UnsupportedMediaTypeHttpError';
@@ -336,9 +408,13 @@ export * from './util/errors/UnsupportedMediaTypeHttpError';
 export * from './util/handlers/AsyncHandler';
 export * from './util/handlers/BooleanHandler';
 export * from './util/handlers/ConditionalHandler';
+export * from './util/handlers/HandlerUtil';
+export * from './util/handlers/MethodFilterHandler';
 export * from './util/handlers/ParallelHandler';
+export * from './util/handlers/ProcessHandler';
 export * from './util/handlers/SequenceHandler';
 export * from './util/handlers/StaticHandler';
+export * from './util/handlers/StaticThrowHandler';
 export * from './util/handlers/UnionHandler';
 export * from './util/handlers/UnsupportedAsyncHandler';
 export * from './util/handlers/WaterfallHandler';
@@ -352,12 +428,14 @@ export * from './util/identifiers/SubdomainIdentifierStrategy';
 // Util/Locking
 export * from './util/locking/ExpiringReadWriteLocker';
 export * from './util/locking/EqualReadWriteLocker';
+export * from './util/locking/FileSystemResourceLocker';
 export * from './util/locking/GreedyReadWriteLocker';
+export * from './util/locking/MemoryResourceLocker';
 export * from './util/locking/ReadWriteLocker';
-export * from './util/locking/RedisResourceLocker';
+export * from './util/locking/RedisLocker';
 export * from './util/locking/ResourceLocker';
-export * from './util/locking/SingleThreadedResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
+export * from './util/locking/VoidLocker';
 
 // Util/Templates
 export * from './util/templates/ChainedTemplateEngine';
@@ -376,5 +454,7 @@ export * from './util/QuadUtil';
 export * from './util/RecordObject';
 export * from './util/ResourceUtil';
 export * from './util/StreamUtil';
+export * from './util/StringUtil';
 export * from './util/TermUtil';
+export * from './util/TimerUtil';
 export * from './util/Vocabularies';

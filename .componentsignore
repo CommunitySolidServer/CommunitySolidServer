@@ -1,13 +1,27 @@
 [
   "Adapter",
+  "BaseHttpError",
   "BasicConditions",
   "BasicRepresentation",
+  "CredentialSet",
+  "Dict",
   "Error",
   "EventEmitter",
   "HttpErrorOptions",
+  "HttpResponse",
+  "NodeJS.Dict",
   "Permission",
+  "PermissionSet",
+  "Promise",
+  "Readonly",
+  "RegExp",
+  "Set",
+  "Settings",
   "Template",
   "TemplateEngine",
   "ValuePreferencesArg",
-  "WinstonLogger"
+  "VariableBindings",
+  "UnionHandler",
+  "WinstonLogger",
+  "YargsOptions"
 ]

@@ -1,7 +1,8 @@
 import 'jest-rdf';
-import { literal, namedNode, quad } from '@rdfjs/data-model';
-import { parseQuads, serializeQuads } from '../../../src/util/QuadUtil';
+import { DataFactory } from 'n3';
+import { parseQuads, serializeQuads, uniqueQuads } from '../../../src/util/QuadUtil';
 import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
+const { literal, namedNode, quad } = DataFactory;
 
 describe('QuadUtil', (): void => {
   describe('#serializeQuads', (): void => {
@@ -33,6 +34,20 @@ describe('QuadUtil', (): void => {
         namedNode('pre:pred'),
         literal('obj'),
       ) ]);
+    });
+  });
+
+  describe('#uniqueQuads', (): void => {
+    it('filters out duplicate quads.', async(): Promise<void> => {
+      const quads = [
+        quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+        quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')),
+        quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+      ];
+      expect(uniqueQuads(quads)).toBeRdfIsomorphic([
+        quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+        quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')),
+      ]);
     });
   });
 });

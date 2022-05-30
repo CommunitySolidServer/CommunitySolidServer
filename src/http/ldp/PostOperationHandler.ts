@@ -35,6 +35,7 @@ export class PostOperationHandler extends OperationHandler {
       this.logger.warn('POST requests require the Content-Type header to be set');
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
+
     const identifier = await this.store.addResource(operation.target, operation.body, operation.conditions);
     return new CreatedResponseDescription(identifier);
   }

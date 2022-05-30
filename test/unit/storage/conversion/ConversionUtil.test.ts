@@ -6,7 +6,7 @@ import {
   getTypeWeight,
   getWeightedPreferences, isInternalContentType,
   matchesMediaPreferences,
-  matchesMediaType,
+  matchesMediaType, preferencesToString,
 } from '../../../../src/storage/conversion/ConversionUtil';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 
@@ -109,16 +109,16 @@ describe('ConversionUtil', (): void => {
   describe('#matchesMediaPreferences', (): void => {
     it('returns false if there are no matches.', async(): Promise<void> => {
       const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 };
-      expect(matchesMediaPreferences('c/x', preferences)).toEqual(false);
+      expect(matchesMediaPreferences('c/x', preferences)).toBe(false);
     });
 
     it('returns true if there are matches.', async(): Promise<void> => {
       const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 };
-      expect(matchesMediaPreferences('b/x', preferences)).toEqual(true);
+      expect(matchesMediaPreferences('b/x', preferences)).toBe(true);
     });
 
     it('matches anything if there are no preferences.', async(): Promise<void> => {
-      expect(matchesMediaPreferences('a/a')).toEqual(true);
+      expect(matchesMediaPreferences('a/a')).toBe(true);
     });
 
     it('does not match internal types if not in the preferences.', async(): Promise<void> => {
@@ -151,6 +151,13 @@ describe('ConversionUtil', (): void => {
 
       expect(isInternalContentType()).toBeFalsy();
       expect(isInternalContentType('text/turtle')).toBeFalsy();
+    });
+  });
+
+  describe('#preferencesToString', (): void => {
+    it('returns a string serialization.', async(): Promise<void> => {
+      const preferences: ValuePreferences = { 'a/*': 1, 'b/b': 0.8, 'c/c': 0 };
+      expect(preferencesToString(preferences)).toBe('a/*:1,b/b:0.8,c/c:0');
     });
   });
 });

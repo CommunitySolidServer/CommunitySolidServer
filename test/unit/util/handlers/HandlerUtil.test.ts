@@ -1,44 +1,8 @@
-import { HttpError } from '../../../../src/util/errors/HttpError';
 import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
-import { createAggregateError, filterHandlers, findHandler } from '../../../../src/util/handlers/HandlerUtil';
+import { filterHandlers, findHandler } from '../../../../src/util/handlers/HandlerUtil';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('HandlerUtil', (): void => {
-  describe('createAggregateError', (): void => {
-    const error401 = new HttpError(401, 'UnauthorizedHttpError');
-    const error415 = new HttpError(415, 'UnsupportedMediaTypeHttpError');
-    const error501 = new HttpError(501, 'NotImplementedHttpError');
-    const error = new Error('noStatusCode');
-
-    it('throws an error with matching status code if all errors have the same.', async(): Promise<void> => {
-      expect(createAggregateError([ error401, error401 ])).toMatchObject({
-        statusCode: 401,
-        name: 'UnauthorizedHttpError',
-      });
-    });
-
-    it('throws an InternalServerError if one of the errors has status code 5xx.', async(): Promise<void> => {
-      expect(createAggregateError([ error401, error501 ])).toMatchObject({
-        statusCode: 500,
-        name: 'InternalServerError',
-      });
-    });
-
-    it('throws an BadRequestHttpError if all handlers have 4xx status codes.', async(): Promise<void> => {
-      expect(createAggregateError([ error401, error415 ])).toMatchObject({
-        statusCode: 400,
-        name: 'BadRequestHttpError',
-      });
-    });
-
-    it('interprets non-HTTP errors as internal errors.', async(): Promise<void> => {
-      expect(createAggregateError([ error ])).toMatchObject({
-        statusCode: 500,
-        name: 'InternalServerError',
-      });
-    });
-  });
-
   describe('findHandler', (): void => {
     let handlerTrue: AsyncHandler<any, any>;
     let handlerFalse: AsyncHandler<any, any>;

@@ -1,5 +1,6 @@
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
+import { LDP } from '../../src/util/Vocabularies';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 
@@ -103,7 +104,9 @@ describe('A Solid server', (): void => {
       },
       body: '"test"',
     });
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(409);
+    // This container already exists and it can not be edited
+    // See https://github.com/solid/community-server/issues/1027#issuecomment-1023371546
   });
 
   it('can POST to create a container.', async(): Promise<void> => {
@@ -112,6 +115,7 @@ describe('A Solid server', (): void => {
       headers: {
         'content-type': 'text/turtle',
         slug: 'containerPOST/',
+        link: `<${LDP.Container}>; rel="type"`,
       },
       body: '<a:b> <a:b> <a:b>.',
     });
@@ -177,8 +181,26 @@ describe('A Solid server', (): void => {
     expect(res.status).toBe(205);
   });
 
-  it('can PATCH containers.', async(): Promise<void> => {
+  it('can not PATCH containers.', async(): Promise<void> => {
     const url = `${baseUrl}containerPATCH/`;
+    await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/turtle',
+      },
+    });
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/sparql-update',
+      },
+      body: 'INSERT DATA { <b:b> <b:b> <b:b>. }',
+    });
+    expect(res.status).toBe(409);
+  });
+
+  it('can PATCH metadata resources.', async(): Promise<void> => {
+    const url = `${baseUrl}resourcePATCH`;
     await fetch(url, {
       method: 'PUT',
       headers: {
@@ -186,7 +208,7 @@ describe('A Solid server', (): void => {
       },
       body: '<a:b> <a:b> <a:b>.',
     });
-    const res = await fetch(url, {
+    const res = await fetch(`${url}.meta`, {
       method: 'PATCH',
       headers: {
         'content-type': 'application/sparql-update',

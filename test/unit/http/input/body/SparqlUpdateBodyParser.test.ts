@@ -1,6 +1,6 @@
 import 'jest-rdf';
-import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
 import * as algebra from 'sparqlalgebrajs';
 import type { BodyParserArgs } from '../../../../../src/http/input/body/BodyParser';
@@ -10,6 +10,7 @@ import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { guardedStreamFrom } from '../../../../../src/util/StreamUtil';
+const { namedNode, quad } = DataFactory;
 
 describe('A SparqlUpdateBodyParser', (): void => {
   const bodyParser = new SparqlUpdateBodyParser();
@@ -24,9 +25,9 @@ describe('A SparqlUpdateBodyParser', (): void => {
     input.metadata.contentType = 'text/plain';
     await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
     input.metadata.contentType = 'application/sparql-update;charset=utf-8';
-    await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
+    await expect(bodyParser.canHandle(input)).resolves.toBeUndefined();
     input.metadata.contentType = 'application/sparql-update ; foo=bar';
-    await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
+    await expect(bodyParser.canHandle(input)).resolves.toBeUndefined();
     input.metadata.contentType = 'application/sparql-update';
     await expect(bodyParser.canHandle(input)).resolves.toBeUndefined();
   });

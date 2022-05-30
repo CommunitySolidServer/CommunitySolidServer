@@ -1,9 +1,9 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/backend/data-accessors/file.json",
-    "files-scs:config/storage/backend/data-accessors/memory.json",
-    "files-scs:config/storage/backend/data-accessors/sparql-endpoint.json"
+    "css:config/storage/backend/data-accessors/file.json",
+    "css:config/storage/backend/data-accessors/memory.json",
+    "css:config/storage/backend/data-accessors/sparql-endpoint.json"
   ],
   "@graph": [
     {
@@ -21,22 +21,26 @@
       "@id": "urn:solid-server:default:RouterRule",
       "@type": "RegexRouterRule",
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "storeMap": [
+      "rules": [
         {
-          "RegexRouterRule:_storeMap_key": "^/(\\.acl)?$",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:SparqlResourceStore" }
+          "@type": "RegexRule",
+          "regex": "^/(\\.acl)?$",
+          "store": { "@id": "urn:solid-server:default:SparqlResourceStore" }
         },
         {
-          "RegexRouterRule:_storeMap_key": "/file/",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:FileResourceStore" }
+          "@type": "RegexRule",
+          "regex": "/file/",
+          "store": { "@id": "urn:solid-server:default:FileResourceStore" }
         },
         {
-          "RegexRouterRule:_storeMap_key": "/memory/",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:MemoryResourceStore" }
+          "@type": "RegexRule",
+          "regex": "/memory/",
+          "store": { "@id": "urn:solid-server:default:MemoryResourceStore" }
         },
         {
-          "RegexRouterRule:_storeMap_key": "/sparql/",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:SparqlResourceStore" }
+          "@type": "RegexRule",
+          "regex": "/sparql/",
+          "store": { "@id": "urn:solid-server:default:SparqlResourceStore" }
         }
       ]
     },
@@ -46,14 +50,18 @@
       "@type": "DataAccessorBasedStore",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" }
+      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     },
     {
       "@id": "urn:solid-server:default:MemoryResourceStore",
       "@type": "DataAccessorBasedStore",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "accessor": { "@id": "urn:solid-server:default:MemoryDataAccessor" }
+      "accessor": { "@id": "urn:solid-server:default:MemoryDataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     },
     {
       "comment": "SparqlDataAccessor only accepts quad objects so data to that route needs to be converted",
@@ -65,7 +73,9 @@
         "@type": "DataAccessorBasedStore",
         "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
         "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-        "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" }
+        "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
+        "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
       }
     }
   ]

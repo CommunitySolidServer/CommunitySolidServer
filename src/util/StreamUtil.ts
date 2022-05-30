@@ -22,7 +22,7 @@ const logger = getLoggerFor('StreamUtil');
  * @returns The joined string.
  */
 export async function readableToString(stream: Readable): Promise<string> {
-  return (await arrayifyStream(stream)).join('');
+  return (await arrayifyStream<string>(stream)).join('');
 }
 
 /**

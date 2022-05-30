@@ -1,5 +1,148 @@
 # Community Solid Server release notes
 
+## v5.0.0
+### New features
+- Support for Node v12 was dropped.
+- Components.js was upgraded to v5. If you have created an external component
+  you should also upgrade to prevent warnings and conflicts.
+- A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
+- The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
+
+### Data migration
+The following actions are required if you are upgrading from a v4 server and want to retain your data.
+
+...
+
+### Configuration changes
+You might need to make changes to your v4 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- The prefix of all imports was changed from `files-scs` to `css`.
+- All default configurations with a file-based backend now use a file-based locker instead of a memory-based one,
+  making them threadsafe.
+
+The following changes are relevant for v4 custom configs that replaced certain features.
+- `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
+- `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
+- The content-length parser has been moved from the default configuration to the quota configurations.
+   - `/ldp/metadata-parser/default.json`
+   - `/storage/backend/*-quota-file.json`
+   - `/storage/backend/quota/quota-file.json`
+- The structure of the init configs has changed significantly to support worker threads.
+   - `/app/init/*`
+- RegexPathRouting has changed from a map datastructure to an array datastructure, allowing for fallthrough regex parsing. The change is reflected in the following default configs:
+   - `/storage/backend/regex.json`
+   - `/sparql-file-storage.json`
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- `YargsCliExtractor` was changed to now take as input an array of parameter objects.
+- `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
+- `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
+
+A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
+
+## V4.0.1
+Freezes the `oidc-provider` dependency to prevent a potential issue with the solid authn client
+as described in https://github.com/inrupt/solid-client-authn-js/issues/2103.
+
+## v4.0.0
+### New features
+- The server can be started with a new parameter to automatically generate accounts and pods, 
+  for more info see [here](documentation/seeding-pods.md).
+- It is now possible to automate authentication requests using Client Credentials,
+  for more info see [here](documentation/client-credentials.md).
+- A new `RedirectingHttpHandler` class has been added which can be used to redirect certain URLs.
+- A new default configuration `config/https-file-cli.json` 
+  that can set the HTTPS parameters through the CLI has been added.
+  This is also an example of how to add CLI parameters through a custom configuration.
+- A new RedisLocker has been added to replace the old RedisResourceLocker class. 
+  It allows for true threadsafe read/write locking.
+
+### Configuration changes
+You might need to make changes to your v3 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- ...
+
+The following changes are relevant for v3 custom configs that replaced certain features.
+- The key/value storage configs in `config/storage/key-value/*` have been changed to reduce config duplication.
+  All storages there that were only relevant for 1 class have been moved to the config of that class.
+- Due to a parameter rename in `CombinedSettingsResolver`, 
+  `config/app/variables/resolver/resolver.json` has been updated.
+- The OIDC provider setup was changed to add client_credentials support.
+  - `/identity/handler/adapter-factory/webid.json`
+  - `/identity/handler/provider-factory/identity.json`
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- The output of `parseContentType` in `HeaderUtil` was changed to include parameters.
+- `PermissionReader`s take an additional `modes` parameter as input.
+- The `ResourceStore` function `resourceExists` has been renamed to `hasResource`
+  and has been moved to a separate `ResourceSet` interface.
+- Several `ModesExtractor`s `PermissionBasedAuthorizer` now take a `ResourceSet` as constructor parameter.
+- `RepresentationMetadata` no longer accepts strings for predicates in any of its functions.
+- `CombinedSettingsResolver` parameter `computers` has been renamed to `resolvers`.
+- `IdentityProviderFactory` requires an additional `credentialStorage` parameter.
+- The `RedisResourceLocker` class has been removed and the `RedisLocker`class was added instead. 
+ `RedisLocker` implements both the `ResourceLocker` and `ReadWriteLocker` interface.
+
+## v3.0.0
+### New features
+- The Identity Provider now uses the `webid` scope as required for Solid-OIDC.
+- The `VoidLocker` can be used to disable locking for development/testing purposes. 
+  This can be enabled by changing the `/config/util/resource-locker/` import to `debug-void.json`
+- Added support for setting a quota on the server. See the `config/quota-file.json` config for an example.
+- An official docker image is now built on each version tag and published at https://hub.docker.com/r/solidproject/community-server.
+- Added support for N3 Patch.
+- It is now possible to customize arguments to the `community-solid-server` command, 
+  which enables passing custom variables to configurations and setting new default values.
+- The AppRunner functions have changed to require Components.js variables. 
+  This is important for anyone who starts the server from code.
+- When logging in, a consent screen will now provide information about the client.
+
+### Data migration
+The following actions are required if you are upgrading from a v2 server and want to retain your data.
+
+Due to changes in the keys used by the IDP, you will need to delete the stored keys and sessions.
+If you are using a file backend, delete the `.internal/idp/` folder in your data folder and restart the server.
+This will not delete the user accounts, but users will have to log in again.
+
+### Configuration changes
+You might need to make changes to your v2 configuration if you use a custom config.
+
+The `@context` needs to be updated to 
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- A new configuration option needs to be imported:
+  - `/app/variables/default.json` contains everything related to parsing CLI arguments 
+    and assigning values to variables.
+
+The following changes are relevant for v2 custom configs that replaced certain features.
+- Conversion has been simplified so most converters are part of the conversion chain:
+  - `/util/representation-conversion/default.json`
+- The IDP settings have changed to support the latest Solid-OIDC draft.
+  - `/identity/handler/provider-factory/identity.json`
+- Requests targeting the OIDC library now use a separate handler.
+  - `/http/handler/default.json`
+  - `/identity/handler/default.json`
+- The architecture of IDP interaction handlers has completely changed to improve modularity
+  - `/identity/handler/interaction/*`
+  - `/identity/registration/*`
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- `TypedRepresentationConverter` function signatures changed 
+  and base functionality moved to `BaseTypedRepresentationConverter`.
+- Many changes to several components related to the IDP. This includes the HTML templates.
+
 ## v2.0.0
 ### New features
 - Pod owners always have Control access to resources stored in their Pod.

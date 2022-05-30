@@ -1,0 +1,23 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Contains all features of metadata auxiliary resources (suffix, link header, etc.).",
+      "@id": "urn:solid-server:default:MetadataStrategy",
+      "@type": "ComposedAuxiliaryStrategy",
+      "identifierStrategy": { "@id": "urn:solid-server:default:MetadataIdentifierStrategy" },
+      "metadataGenerator": {
+        "@type": "LinkMetadataGenerator",
+        "link": "http://purl.org/dc/terms/description",
+        "identifierStrategy": { "@id": "urn:solid-server:default:MetadataIdentifierStrategy" }
+      },
+      "ownAuthorization": false,
+      "requiredInRoot": false
+    },
+    {
+      "@id": "urn:solid-server:default:MetadataIdentifierStrategy",
+      "@type": "SuffixAuxiliaryIdentifierStrategy",
+      "suffix": ".meta"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/ldp/metadata-parser/parsers/content-length.json",
+    "css:config/storage/backend/quota/pod-quota-file.json",
+    "css:config/storage/backend/quota/quota-file.json"
+  ],
+  "@graph": [
+    {
+      "comment": "A pod quota store setup with a file system backend.",
+      "@id": "urn:solid-server:default:ResourceStore_Backend",
+      "@type": "DataAccessorBasedStore",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+    },
+    {
+      "comment": "Add content-length parser to the MetadataParser.",
+      "@id": "urn:solid-server:default:MetadataParser",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:ContentLengthParser" }
+      ]
+    }
+  ]
+}

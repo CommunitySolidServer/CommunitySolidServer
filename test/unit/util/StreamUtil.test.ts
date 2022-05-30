@@ -8,6 +8,7 @@ import {
   guardedStreamFrom, pipeSafely, transformSafely,
   readableToString, readableToQuads, readJsonStream, getSingleItem,
 } from '../../../src/util/StreamUtil';
+import { flushPromises } from '../../util/Util';
 
 jest.mock('../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { warn: jest.fn(), log: jest.fn() } as any;
@@ -23,7 +24,7 @@ describe('StreamUtil', (): void => {
   describe('#readableToString', (): void => {
     it('concatenates all elements of a Readable.', async(): Promise<void> => {
       const stream = Readable.from([ 'a', 'b', 'c' ]);
-      await expect(readableToString(stream)).resolves.toEqual('abc');
+      await expect(readableToString(stream)).resolves.toBe('abc');
     });
   });
 
@@ -77,7 +78,7 @@ describe('StreamUtil', (): void => {
       const input = Readable.from([ 'data' ]);
       const output = new PassThrough();
       const piped = pipeSafely(input, output);
-      await expect(readableToString(piped)).resolves.toEqual('data');
+      await expect(readableToString(piped)).resolves.toBe('data');
     });
 
     it('pipes errors from one stream to the other.', async(): Promise<void> => {
@@ -132,7 +133,7 @@ describe('StreamUtil', (): void => {
 
       piped.destroy(new Error('this causes an unpipe!'));
       // Allow events to propagate
-      await new Promise(setImmediate);
+      await flushPromises();
       expect(input.destroyed).toBe(true);
     });
 
@@ -149,7 +150,7 @@ describe('StreamUtil', (): void => {
 
       piped.destroy(new Error('error!'));
       // Allow events to propagate
-      await new Promise(setImmediate);
+      await flushPromises();
       expect(input.destroyed).toBe(false);
     });
 

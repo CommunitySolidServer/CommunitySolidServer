@@ -1,5 +1,4 @@
 import { types } from 'util';
-import { HttpError } from './HttpError';
 
 /**
  * Checks if the input is an {@link Error}.
@@ -24,11 +23,4 @@ export function assertError(error: unknown): asserts error is Error {
 
 export function createErrorMessage(error: unknown): string {
   return isError(error) ? error.message : `Unknown error: ${error}`;
-}
-
-/**
- * Returns the HTTP status code corresponding to the error.
- */
-export function getStatusCode(error: Error): number {
-  return HttpError.isInstance(error) ? error.statusCode : 500;
 }

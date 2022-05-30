@@ -12,7 +12,12 @@ export async function instantiateFromConfig(componentUrl: string, configPaths: s
   variables?: Record<string, any>): Promise<any> {
   // Initialize the Components.js loader
   const mainModulePath = joinFilePath(__dirname, '../../');
-  const manager = await ComponentsManager.build({ mainModulePath, logLevel: 'error', moduleState: cachedModuleState });
+  const manager = await ComponentsManager.build({
+    mainModulePath,
+    logLevel: 'error',
+    moduleState: cachedModuleState,
+    typeChecking: false,
+  });
   cachedModuleState = manager.moduleState;
 
   if (!Array.isArray(configPaths)) {
@@ -48,5 +53,7 @@ export function getDefaultVariables(port: number, baseUrl?: string): Record<stri
     'urn:solid-server:default:variable:port': port,
     'urn:solid-server:default:variable:loggingLevel': 'off',
     'urn:solid-server:default:variable:showStackTrace': true,
+    'urn:solid-server:default:variable:seededPodConfigJson': null,
+    'urn:solid-server:default:variable:workers': 1,
   };
 }

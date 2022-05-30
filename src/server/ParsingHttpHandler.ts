@@ -6,6 +6,7 @@ import type { ResponseWriter } from '../http/output/ResponseWriter';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import { getLoggerFor } from '../logging/LogUtil';
 import { assertError } from '../util/errors/ErrorUtil';
+import { HttpError } from '../util/errors/HttpError';
 import type { HttpHandlerInput } from './HttpHandler';
 import { HttpHandler } from './HttpHandler';
 import type { OperationHttpHandler } from './OperationHttpHandler';
@@ -73,6 +74,10 @@ export class ParsingHttpHandler extends HttpHandler {
     } catch (error: unknown) {
       assertError(error);
       result = await this.errorHandler.handleSafe({ error, preferences });
+      if (HttpError.isInstance(error) && result.metadata) {
+        const quads = error.generateMetadata(result.metadata.identifier);
+        result.metadata.addQuads(quads);
+      }
     }
 
     if (result) {

@@ -1,11 +1,11 @@
-import marked from 'marked';
+import { marked } from 'marked';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { TEXT_HTML, TEXT_MARKDOWN } from '../../util/ContentTypes';
 import { readableToString } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
+import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 /**
  * Converts Markdown data to HTML.
@@ -13,7 +13,7 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  * A standard Markdown string will be converted to a <p> tag, so html and body tags should be part of the template.
  * In case the Markdown body starts with a header (#), that value will also be used as `title` parameter.
  */
-export class MarkdownToHtmlConverter extends TypedRepresentationConverter {
+export class MarkdownToHtmlConverter extends BaseTypedRepresentationConverter {
   private readonly templateEngine: TemplateEngine;
 
   public constructor(templateEngine: TemplateEngine) {

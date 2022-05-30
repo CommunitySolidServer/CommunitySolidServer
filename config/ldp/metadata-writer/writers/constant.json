@@ -1,19 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Adds fixed headers to the response.",
       "@id": "urn:solid-server:default:MetadataWriter_Constant",
       "@type": "ConstantMetadataWriter",
       "headers": [
-        {
-          "ConstantMetadataWriter:_headers_key": "Accept-Patch",
-          "ConstantMetadataWriter:_headers_value": "application/sparql-update"
-        },
-        {
-          "ConstantMetadataWriter:_headers_key": "Allow",
-          "ConstantMetadataWriter:_headers_value": "OPTIONS, HEAD, GET, PATCH, POST, PUT, DELETE"
-        },
         {
           "ConstantMetadataWriter:_headers_key": "MS-Author-Via",
           "ConstantMetadataWriter:_headers_value": "SPARQL"

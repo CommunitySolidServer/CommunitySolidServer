@@ -165,32 +165,8 @@
     }
   }
 
-  // Checks whether the given element is visible
-  function isVisible(element) {
-    return !(elements[element] ?? element).classList.contains('hidden');
-  }
-
-  // Sets the visibility of the given element
-  function setVisibility(element, visible) {
-    // Show or hide the element
-    element = elements[element] ?? element;
-    element.classList[visible ? 'remove' : 'add']('hidden');
-
-    // Disable children of hidden elements,
-    // such that the browser does not expect input for them
-    for (const child of getDescendants(element)) {
-      if ('disabled' in child)
-        child.disabled = !visible;
-    }
-  }
-
-  // Obtains all children, grandchildren, etc. of the given element
-  function getDescendants(element) {
-    return [...element.querySelectorAll("*")];
-  }
-
   // Prepare the form when the DOM is ready
-  window.addEventListener('DOMContentLoaded', (event) => {
+  addEventListener('DOMContentLoaded', (event) => {
     synchronizeInputFields();
     elements.mainForm.classList.add('loaded');
   });

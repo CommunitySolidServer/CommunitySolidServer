@@ -3,7 +3,8 @@ import type { PermissionReader, PermissionReaderInput } from '../../../src/autho
 import { UnionPermissionReader } from '../../../src/authorization/UnionPermissionReader';
 
 describe('A UnionPermissionReader', (): void => {
-  const input: PermissionReaderInput = { credentials: {}, identifier: { path: 'http://test.com/foo' }};
+  const input: PermissionReaderInput =
+    { credentials: {}, identifier: { path: 'http://test.com/foo' }, modes: new Set() };
   let readers: jest.Mocked<PermissionReader>[];
   let unionReader: UnionPermissionReader;
 

@@ -1,4 +1,4 @@
-import { addHeader } from '../../util/HeaderUtil';
+import { addHeader, hasScheme } from '../../util/HeaderUtil';
 import { HttpHandler } from '../HttpHandler';
 import type { HttpResponse } from '../HttpResponse';
 
@@ -11,7 +11,7 @@ export class WebSocketAdvertiser extends HttpHandler {
   public constructor(baseUrl: string) {
     super();
     const socketUrl = new URL(baseUrl);
-    socketUrl.protocol = /^(?:http|ws):/u.test(baseUrl) ? 'ws:' : 'wss:';
+    socketUrl.protocol = hasScheme(baseUrl, 'http', 'ws') ? 'ws:' : 'wss:';
     this.socketUrl = socketUrl.href;
   }
 

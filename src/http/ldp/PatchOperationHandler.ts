@@ -37,12 +37,13 @@ export class PatchOperationHandler extends OperationHandler {
       this.logger.warn('PATCH requests require the Content-Type header to be set');
       throw new BadRequestHttpError('PATCH requests require the Content-Type header to be set');
     }
+
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
-    // See https://github.com/solid/community-server/issues/632
+    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/632
     // RFC7231, §4.3.4: If the target resource does not have a current representation and the
     //   PUT successfully creates one, then the origin server MUST inform the
     //   user agent by sending a 201 (Created) response.
-    const exists = await this.store.resourceExists(operation.target, operation.conditions);
+    const exists = await this.store.hasResource(operation.target);
     await this.store.modifyResource(operation.target, operation.body as Patch, operation.conditions);
     if (exists) {
       return new ResetResponseDescription();

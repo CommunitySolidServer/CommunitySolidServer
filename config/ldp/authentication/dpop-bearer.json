@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Supports DPoP and Bearer access tokens, or no credentials.",
@@ -12,7 +12,8 @@
             {
               "@type": "DPoPWebIdExtractor",
               "originalUrlExtractor": {
-                "@type": "OriginalUrlExtractor"
+                "@type": "OriginalUrlExtractor",
+                "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
               }
             },
             { "@type": "BearerWebIdExtractor" }

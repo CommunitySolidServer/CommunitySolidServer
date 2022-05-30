@@ -2,7 +2,6 @@ import type { ResourceIdentifier } from '../../http/representation/ResourceIdent
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
-import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import {
@@ -23,6 +22,8 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
   protected readonly logger = getLoggerFor(this);
   protected readonly baseRequestURI: string;
   protected readonly rootFilepath: string;
+  // Extension to use as a fallback when the media type is not supported (could be made configurable).
+  protected readonly unknownMediaTypeExtension = 'unknown';
 
   public constructor(base: string, rootFilepath: string) {
     this.baseRequestURI = trimTrailingSlashes(base);
@@ -41,12 +42,6 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
    */
   public async mapUrlToFilePath(identifier: ResourceIdentifier, isMetadata: boolean, contentType?: string):
   Promise<ResourceLink> {
-    // Technically we could allow paths ending on .meta as long as we make sure there is never a mixup.
-    // But this can lead to potential issues.
-    // This also immediately stops users that expect they can update metadata like this.
-    if (this.isMetadataPath(identifier.path)) {
-      throw new ConflictHttpError('Not allowed to create files with the metadata extension.');
-    }
     let path = this.getRelativePath(identifier);
     if (isMetadata) {
       path += '.meta';
@@ -85,7 +80,10 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
    */
   protected async mapUrlToDocumentPath(identifier: ResourceIdentifier, filePath: string, contentType?: string):
   Promise<ResourceLink> {
-    contentType = await this.getContentTypeFromUrl(identifier, contentType);
+    // Don't try to get content-type from URL when the file path refers to a document with unknown media type.
+    if (!filePath.endsWith(`.${this.unknownMediaTypeExtension}`)) {
+      contentType = await this.getContentTypeFromUrl(identifier, contentType);
+    }
     this.logger.debug(`The path for ${identifier.path} is ${filePath}`);
     return { identifier, filePath, contentType, isMetadata: this.isMetadataPath(filePath) };
   }

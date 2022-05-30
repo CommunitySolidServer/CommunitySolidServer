@@ -233,11 +233,18 @@ form ul.actions > li {
   margin-right: 1em;
 }
 
+/* Directly hide hidden elements. */
+.hidden {
+  display: none;
+}
+
+/* Hide form elements with a sliding animation so users can track more easily what is happening. */
 form.loaded * {
   max-height: 1000px;
   transition: max-height .2s;
 }
 form .hidden {
+  display: block;
   max-height: 0;
   overflow: hidden;
 }

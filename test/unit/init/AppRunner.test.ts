@@ -1,18 +1,71 @@
 import { ComponentsManager } from 'componentsjs';
+import type { ClusterManager } from '../../../src';
 import type { App } from '../../../src/init/App';
 import { AppRunner } from '../../../src/init/AppRunner';
+import type { CliExtractor } from '../../../src/init/cli/CliExtractor';
+import type { SettingsResolver } from '../../../src/init/variables/SettingsResolver';
 import { joinFilePath } from '../../../src/util/PathUtil';
+import { flushPromises } from '../../util/Util';
+
+const defaultParameters = {
+  port: 3000,
+  logLevel: 'info',
+};
+const cliExtractor: jest.Mocked<CliExtractor> = {
+  handleSafe: jest.fn().mockResolvedValue(defaultParameters),
+} as any;
+
+const defaultVariables = {
+  'urn:solid-server:default:variable:port': 3000,
+  'urn:solid-server:default:variable:loggingLevel': 'info',
+};
+const settingsResolver: jest.Mocked<SettingsResolver> = {
+  handleSafe: jest.fn().mockResolvedValue(defaultVariables),
+} as any;
+
+const mockLogger = {
+  info: jest.fn(),
+  warn: jest.fn(),
+  silly: jest.fn(),
+  error: jest.fn(),
+  verbose: jest.fn(),
+  debug: jest.fn(),
+  log: jest.fn(),
+};
+
+const clusterManager: jest.Mocked<ClusterManager> = {
+  isSingleThreaded: jest.fn().mockReturnValue(false),
+  spawnWorkers: jest.fn(),
+  isPrimary: jest.fn().mockReturnValue(true),
+  isWorker: jest.fn().mockReturnValue(false),
+  logger: mockLogger,
+  workers: 1,
+  clusterMode: 1,
+} as any;
 
 const app: jest.Mocked<App> = {
   start: jest.fn(),
+  clusterManager,
 } as any;
 
 const manager: jest.Mocked<ComponentsManager<App>> = {
-  instantiate: jest.fn(async(): Promise<App> => app),
+  instantiate: jest.fn(async(iri: string): Promise<any> => {
+    switch (iri) {
+      case 'urn:solid-server-app-setup:default:CliResolver': return { cliExtractor, settingsResolver };
+      case 'urn:solid-server:default:App': return app;
+      default: throw new Error('unknown iri');
+    }
+  }),
   configRegistry: {
     register: jest.fn(),
   },
 } as any;
+
+const listSingleThreadedComponentsMock = jest.fn().mockResolvedValue([]);
+
+jest.mock('../../../src/init/cluster/SingleThreaded', (): any => ({
+  listSingleThreadedComponents: (): any => listSingleThreadedComponentsMock(),
+}));
 
 jest.mock('componentsjs', (): any => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -22,7 +75,6 @@ jest.mock('componentsjs', (): any => ({
 }));
 
 jest.spyOn(process, 'cwd').mockReturnValue('/var/cwd');
-const error = jest.spyOn(console, 'error').mockImplementation(jest.fn());
 const write = jest.spyOn(process.stderr, 'write').mockImplementation(jest.fn());
 const exit = jest.spyOn(process, 'exit').mockImplementation(jest.fn() as any);
 
@@ -31,8 +83,123 @@ describe('AppRunner', (): void => {
     jest.clearAllMocks();
   });
 
+  describe('create', (): void => {
+    it('creates an App with the provided settings.', async(): Promise<void> => {
+      const variables = {
+        'urn:solid-server:default:variable:port': 3000,
+        'urn:solid-server:default:variable:loggingLevel': 'info',
+        'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
+        'urn:solid-server:default:variable:showStackTrace': false,
+        'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
+      };
+      const createdApp = await new AppRunner().create(
+        {
+          mainModulePath: joinFilePath(__dirname, '../../../'),
+          dumpErrorState: true,
+          logLevel: 'info',
+        },
+        joinFilePath(__dirname, '../../../config/default.json'),
+        variables,
+      );
+      expect(createdApp).toBe(app);
+
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+      expect(ComponentsManager.build).toHaveBeenCalledWith({
+        dumpErrorState: true,
+        logLevel: 'info',
+        mainModulePath: joinFilePath(__dirname, '../../../'),
+      });
+      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+      expect(manager.configRegistry.register)
+        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
+      expect(manager.instantiate).toHaveBeenCalledTimes(1);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server:default:App', { variables });
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(0);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(0);
+      expect(app.start).toHaveBeenCalledTimes(0);
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
+    });
+
+    it('throws an error if threading issues are detected with 1 class.', async(): Promise<void> => {
+      listSingleThreadedComponentsMock.mockImplementationOnce((): string[] => [ 'ViolatingClass' ]);
+      const variables = {
+        'urn:solid-server:default:variable:port': 3000,
+        'urn:solid-server:default:variable:loggingLevel': 'info',
+        'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
+        'urn:solid-server:default:variable:showStackTrace': false,
+        'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
+      };
+
+      let caughtError: Error | undefined;
+      try {
+        await new AppRunner().create(
+          {
+            mainModulePath: joinFilePath(__dirname, '../../../'),
+            dumpErrorState: true,
+            logLevel: 'info',
+          },
+          joinFilePath(__dirname, '../../../config/default.json'),
+          variables,
+        );
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError?.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
+      expect(caughtError?.message).toMatch(
+        /\[ViolatingClass\] is not threadsafe and should not be run in multithreaded setups!/mu,
+      );
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
+    });
+
+    it('throws an error if threading issues are detected with 2 class.', async(): Promise<void> => {
+      listSingleThreadedComponentsMock.mockImplementationOnce((): string[] => [ 'ViolatingClass1', 'ViolatingClass2' ]);
+      const variables = {
+        'urn:solid-server:default:variable:port': 3000,
+        'urn:solid-server:default:variable:loggingLevel': 'info',
+        'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
+        'urn:solid-server:default:variable:showStackTrace': false,
+        'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
+      };
+
+      let caughtError: Error | undefined;
+      try {
+        await new AppRunner().create(
+          {
+            mainModulePath: joinFilePath(__dirname, '../../../'),
+            dumpErrorState: true,
+            logLevel: 'info',
+          },
+          joinFilePath(__dirname, '../../../config/default.json'),
+          variables,
+        );
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError?.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
+      expect(caughtError?.message).toMatch(
+        /\[ViolatingClass1, ViolatingClass2\] are not threadsafe and should not be run in multithreaded setups!/mu,
+      );
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
+    });
+  });
+
   describe('run', (): void => {
-    it('starts the server with default settings.', async(): Promise<void> => {
+    it('starts the server with provided settings.', async(): Promise<void> => {
+      const variables = {
+        'urn:solid-server:default:variable:port': 3000,
+        'urn:solid-server:default:variable:loggingLevel': 'info',
+        'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
+        'urn:solid-server:default:variable:showStackTrace': false,
+        'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
+      };
       await new AppRunner().run(
         {
           mainModulePath: joinFilePath(__dirname, '../../../'),
@@ -40,13 +207,7 @@ describe('AppRunner', (): void => {
           logLevel: 'info',
         },
         joinFilePath(__dirname, '../../../config/default.json'),
-        {
-          port: 3000,
-          loggingLevel: 'info',
-          rootFilePath: '/var/cwd/',
-          showStackTrace: false,
-          podConfigJson: '/var/cwd/pod-config.json',
-        },
+        variables,
       );
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
@@ -59,172 +220,45 @@ describe('AppRunner', (): void => {
       expect(manager.configRegistry.register)
         .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
       expect(manager.instantiate).toHaveBeenCalledTimes(1);
-      expect(manager.instantiate).toHaveBeenCalledWith(
-        'urn:solid-server:default:App',
-        {
-          variables: {
-            'urn:solid-server:default:variable:port': 3000,
-            'urn:solid-server:default:variable:baseUrl': 'http://localhost:3000/',
-            'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
-            'urn:solid-server:default:variable:sparqlEndpoint': undefined,
-            'urn:solid-server:default:variable:loggingLevel': 'info',
-            'urn:solid-server:default:variable:showStackTrace': false,
-            'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
-          },
-        },
-      );
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server:default:App', { variables });
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(0);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(0);
       expect(app.start).toHaveBeenCalledTimes(1);
       expect(app.start).toHaveBeenCalledWith();
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
     });
   });
 
-  describe('runCli', (): void => {
-    it('starts the server with default settings.', async(): Promise<void> => {
-      new AppRunner().runCli({
-        argv: [ 'node', 'script' ],
-      });
-
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
+  describe('createCli', (): void => {
+    it('creates the server with default settings.', async(): Promise<void> => {
+      await expect(new AppRunner().createCli([ 'node', 'script' ])).resolves.toBe(app);
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
         dumpErrorState: true,
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
+        typeChecking: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
         .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
-      expect(manager.instantiate).toHaveBeenCalledTimes(1);
-      expect(manager.instantiate).toHaveBeenCalledWith(
+      expect(manager.instantiate).toHaveBeenCalledTimes(2);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(1);
+      expect(cliExtractor.handleSafe).toHaveBeenCalledWith([ 'node', 'script' ]);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(1);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledWith(defaultParameters);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(2,
         'urn:solid-server:default:App',
-        {
-          variables: {
-            'urn:solid-server:default:variable:port': 3000,
-            'urn:solid-server:default:variable:baseUrl': 'http://localhost:3000/',
-            'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
-            'urn:solid-server:default:variable:sparqlEndpoint': undefined,
-            'urn:solid-server:default:variable:loggingLevel': 'info',
-            'urn:solid-server:default:variable:showStackTrace': false,
-            'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
-          },
-        },
-      );
-      expect(app.start).toHaveBeenCalledTimes(1);
-      expect(app.start).toHaveBeenCalledWith();
-    });
-
-    it('accepts abbreviated flags.', async(): Promise<void> => {
-      new AppRunner().runCli({
-        argv: [
-          'node', 'script',
-          '-b', 'http://pod.example/',
-          '-c', 'myconfig.json',
-          '-f', '/root',
-          '-l', 'debug',
-          '-m', 'module/path',
-          '-p', '4000',
-          '-s', 'http://localhost:5000/sparql',
-          '-t',
-          '--podConfigJson', '/different-path.json',
-        ],
-      });
-
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
-
-      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
-      expect(ComponentsManager.build).toHaveBeenCalledWith({
-        dumpErrorState: true,
-        logLevel: 'debug',
-        mainModulePath: '/var/cwd/module/path',
-      });
-      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
-      expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
-      expect(manager.instantiate).toHaveBeenCalledWith(
-        'urn:solid-server:default:App',
-        {
-          variables: {
-            'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
-            'urn:solid-server:default:variable:loggingLevel': 'debug',
-            'urn:solid-server:default:variable:port': 4000,
-            'urn:solid-server:default:variable:rootFilePath': '/root',
-            'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
-            'urn:solid-server:default:variable:showStackTrace': true,
-            'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
-          },
-        },
-      );
-    });
-
-    it('accepts full flags.', async(): Promise<void> => {
-      new AppRunner().runCli({
-        argv: [
-          'node', 'script',
-          '--baseUrl', 'http://pod.example/',
-          '--config', 'myconfig.json',
-          '--loggingLevel', 'debug',
-          '--mainModulePath', 'module/path',
-          '--port', '4000',
-          '--rootFilePath', 'root',
-          '--sparqlEndpoint', 'http://localhost:5000/sparql',
-          '--showStackTrace',
-          '--podConfigJson', '/different-path.json',
-        ],
-      });
-
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
-
-      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
-      expect(ComponentsManager.build).toHaveBeenCalledWith({
-        dumpErrorState: true,
-        logLevel: 'debug',
-        mainModulePath: '/var/cwd/module/path',
-      });
-      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
-      expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
-      expect(manager.instantiate).toHaveBeenCalledWith(
-        'urn:solid-server:default:App',
-        {
-          variables: {
-            'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
-            'urn:solid-server:default:variable:loggingLevel': 'debug',
-            'urn:solid-server:default:variable:port': 4000,
-            'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
-            'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
-            'urn:solid-server:default:variable:showStackTrace': true,
-            'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
-          },
-        },
-      );
-    });
-
-    it('accepts asset paths for the config flag.', async(): Promise<void> => {
-      new AppRunner().runCli({
-        argv: [
-          'node', 'script',
-          '--config', '@css:config/file.json',
-        ],
-      });
-      await new Promise(setImmediate);
-
-      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
-      expect(manager.configRegistry.register).toHaveBeenCalledWith(
-        joinFilePath(__dirname, '../../../config/file.json'),
-      );
+        { variables: defaultVariables });
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
+      expect(app.start).toHaveBeenCalledTimes(0);
     });
 
     it('uses the default process.argv in case none are provided.', async(): Promise<void> => {
       const { argv } = process;
-      process.argv = [
+      const argvParameters = [
         'node', 'script',
         '-b', 'http://pod.example/',
         '-c', 'myconfig.json',
@@ -235,136 +269,222 @@ describe('AppRunner', (): void => {
         '-s', 'http://localhost:5000/sparql',
         '-t',
         '--podConfigJson', '/different-path.json',
+        '--seededPodConfigJson', '/different-path.json',
+        '-w', '1',
       ];
+      process.argv = argvParameters;
 
-      new AppRunner().runCli();
-
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
+      await expect(new AppRunner().createCli()).resolves.toBe(app);
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
         dumpErrorState: true,
         logLevel: 'debug',
         mainModulePath: '/var/cwd/module/path',
+        typeChecking: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
-      expect(manager.instantiate).toHaveBeenCalledWith(
+      expect(manager.instantiate).toHaveBeenCalledTimes(2);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(1);
+      expect(cliExtractor.handleSafe).toHaveBeenCalledWith(argvParameters);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(1);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledWith(defaultParameters);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(2,
         'urn:solid-server:default:App',
-        {
-          variables: {
-            'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
-            'urn:solid-server:default:variable:loggingLevel': 'debug',
-            'urn:solid-server:default:variable:port': 4000,
-            'urn:solid-server:default:variable:rootFilePath': '/root',
-            'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
-            'urn:solid-server:default:variable:showStackTrace': true,
-            'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
-          },
-        },
-      );
+        { variables: defaultVariables });
+      expect(app.start).toHaveBeenCalledTimes(0);
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
 
       process.argv = argv;
     });
 
-    it('exits with output to stderr when instantiation fails.', async(): Promise<void> => {
-      manager.instantiate.mockRejectedValueOnce(new Error('Fatal'));
-      new AppRunner().runCli({
-        argv: [ 'node', 'script' ],
-      });
-
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
-
-      expect(write).toHaveBeenCalledTimes(2);
-      expect(write).toHaveBeenNthCalledWith(1,
-        expect.stringMatching(/^Error: could not instantiate server from .*default\.json/u));
-      expect(write).toHaveBeenNthCalledWith(2,
-        expect.stringMatching(/^Error: Fatal/u));
-
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
+    it('checks for threading issues when starting in multithreaded mode.', async(): Promise<void> => {
+      const createdApp = await new AppRunner().createCli();
+      expect(createdApp).toBe(app);
+      expect(listSingleThreadedComponentsMock).toHaveBeenCalled();
     });
 
-    it('exits without output to stderr when initialization fails.', async(): Promise<void> => {
-      app.start.mockRejectedValueOnce(new Error('Fatal'));
-      new AppRunner().runCli({
-        argv: [ 'node', 'script' ],
-      });
+    it('throws an error if there are threading issues detected.', async(): Promise<void> => {
+      listSingleThreadedComponentsMock.mockImplementationOnce((): string[] => [ 'ViolatingClass' ]);
 
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
+      let caughtError: Error = new Error('should disappear');
+      try {
+        await new AppRunner().createCli([ 'node', 'script' ]);
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
+      expect(caughtError?.message).toMatch(
+        /\[ViolatingClass\] is not threadsafe and should not be run in multithreaded setups!/mu,
+      );
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
+    });
+
+    it('throws an error if creating a ComponentsManager fails.', async(): Promise<void> => {
+      (manager.configRegistry.register as jest.Mock).mockRejectedValueOnce(new Error('Fatal'));
+
+      let caughtError: Error = new Error('should disappear');
+      try {
+        await new AppRunner().createCli([ 'node', 'script' ]);
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError.message).toMatch(/^Could not build the config files from .*default\.json/mu);
+      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
+    });
+
+    it('throws an error if instantiating the CliResolver fails.', async(): Promise<void> => {
+      manager.instantiate.mockRejectedValueOnce(new Error('Fatal'));
+
+      let caughtError: Error = new Error('should disappear');
+      try {
+        await new AppRunner().createCli([ 'node', 'script' ]);
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError.message).toMatch(/^Could not load the config variables/mu);
+      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
+    });
+
+    it('throws an error if instantiating the server fails.', async(): Promise<void> => {
+      // We want the second call to fail
+      manager.instantiate
+        .mockResolvedValueOnce({ cliExtractor, settingsResolver })
+        .mockRejectedValueOnce(new Error('Fatal'));
+
+      let caughtError: Error = new Error('should disappear');
+      try {
+        await new AppRunner().createCli([ 'node', 'script' ]);
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError.message).toMatch(/^Could not create the server/mu);
+      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
+    });
+
+    it('throws an error if non-error objects get thrown.', async(): Promise<void> => {
+      (manager.configRegistry.register as jest.Mock).mockRejectedValueOnce('NotAnError');
+
+      let caughtError: Error = new Error('should disappear');
+      try {
+        await new AppRunner().createCli([ 'node', 'script' ]);
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError.message).toMatch(/^Cause: Unknown error: NotAnError$/mu);
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('runCli', (): void => {
+    it('runs the server.', async(): Promise<void> => {
+      await expect(new AppRunner().runCli([ 'node', 'script' ])).resolves.toBeUndefined();
+
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+      expect(ComponentsManager.build).toHaveBeenCalledWith({
+        dumpErrorState: true,
+        logLevel: 'info',
+        mainModulePath: joinFilePath(__dirname, '../../../'),
+        typeChecking: false,
       });
+      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+      expect(manager.configRegistry.register)
+        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
+      expect(manager.instantiate).toHaveBeenCalledTimes(2);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(1);
+      expect(cliExtractor.handleSafe).toHaveBeenCalledWith([ 'node', 'script' ]);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(1);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledWith(defaultParameters);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(2,
+        'urn:solid-server:default:App',
+        { variables: defaultVariables });
+      expect(app.start).toHaveBeenCalledTimes(1);
+      expect(app.start).toHaveBeenLastCalledWith();
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
+    });
+
+    it('throws an error if the server could not start.', async(): Promise<void> => {
+      app.start.mockRejectedValueOnce(new Error('Fatal'));
+
+      let caughtError: Error = new Error('should disappear');
+      try {
+        await new AppRunner().runCli([ 'node', 'script' ]);
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError.message).toMatch(/^Could not start the server/mu);
+      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+
+      expect(app.start).toHaveBeenCalledTimes(1);
 
       expect(write).toHaveBeenCalledTimes(0);
 
-      expect(exit).toHaveBeenCalledWith(1);
+      expect(exit).toHaveBeenCalledTimes(0);
     });
+  });
 
-    it('exits when unknown options are passed to the main executable.', async(): Promise<void> => {
-      new AppRunner().runCli({
-        argv: [ 'node', 'script', '--foo' ],
-      });
+  describe('runCliSync', (): void => {
+    it('starts the server.', async(): Promise<void> => {
+      // eslint-disable-next-line no-sync
+      new AppRunner().runCliSync({ argv: [ 'node', 'script' ]});
 
       // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
+      await flushPromises();
 
-      expect(error).toHaveBeenCalledWith('Unknown argument: foo');
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+      expect(ComponentsManager.build).toHaveBeenCalledWith({
+        dumpErrorState: true,
+        logLevel: 'info',
+        mainModulePath: joinFilePath(__dirname, '../../../'),
+        typeChecking: false,
+      });
+      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+      expect(manager.configRegistry.register)
+        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
+      expect(manager.instantiate).toHaveBeenCalledTimes(2);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(1);
+      expect(cliExtractor.handleSafe).toHaveBeenCalledWith([ 'node', 'script' ]);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(1);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledWith(defaultParameters);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(2,
+        'urn:solid-server:default:App',
+        { variables: defaultVariables });
+      expect(app.start).toHaveBeenCalledTimes(1);
+      expect(app.start).toHaveBeenLastCalledWith();
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
     });
 
-    it('exits when no value is passed to the main executable for an argument.', async(): Promise<void> => {
-      new AppRunner().runCli({
-        argv: [ 'node', 'script', '-s' ],
-      });
+    it('exits the process and writes to stderr if there was an error.', async(): Promise<void> => {
+      manager.instantiate.mockRejectedValueOnce(new Error('Fatal'));
 
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
+      // eslint-disable-next-line no-sync
+      new AppRunner().runCliSync({ argv: [ 'node', 'script' ]});
 
-      expect(error).toHaveBeenCalledWith('Not enough arguments following: s');
+      // Wait until app.start has been called, because we can't await AppRunner.runCli.
+      await flushPromises();
+
+      expect(write).toHaveBeenCalledTimes(1);
+      expect(write).toHaveBeenLastCalledWith(expect.stringMatching(/Cause: Fatal/mu));
+
       expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-    });
-
-    it('exits when unknown parameters are passed to the main executable.', async(): Promise<void> => {
-      new AppRunner().runCli({
-        argv: [ 'node', 'script', 'foo', 'bar', 'foo.txt', 'bar.txt' ],
-      });
-
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
-
-      expect(error).toHaveBeenCalledWith('Unsupported positional arguments: "foo", "bar", "foo.txt", "bar.txt"');
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
-    });
-
-    it('exits when multiple values for a parameter are passed.', async(): Promise<void> => {
-      new AppRunner().runCli({
-        argv: [ 'node', 'script', '-l', 'info', '-l', 'debug' ],
-      });
-
-      // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
-
-      expect(error).toHaveBeenCalledWith('Multiple values were provided for: "l": "info", "debug"');
-      expect(exit).toHaveBeenCalledTimes(1);
-      expect(exit).toHaveBeenCalledWith(1);
+      expect(exit).toHaveBeenLastCalledWith(1);
     });
   });
 });

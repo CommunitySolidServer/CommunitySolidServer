@@ -1,12 +1,12 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
-import { namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
+import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
-import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
@@ -15,9 +15,11 @@ import { isContainerPath } from '../../../../src/util/PathUtil';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
+const { namedNode, quad } = DataFactory;
 
 jest.mock('fs');
+jest.mock('fs-extra');
 
 const rootFilePath = 'uploads';
 const now = new Date();
@@ -26,14 +28,16 @@ now.setMilliseconds(0);
 
 describe('A FileDataAccessor', (): void => {
   const base = 'http://test.com/';
+  let mapper: FileIdentifierMapper;
   let accessor: FileDataAccessor;
   let cache: { data: any };
   let metadata: RepresentationMetadata;
   let data: Guarded<Readable>;
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs(rootFilePath, now);
-    accessor = new FileDataAccessor(new ExtensionBasedMapper(base, rootFilePath));
+    cache = mockFileSystem(rootFilePath, now);
+    mapper = new ExtensionBasedMapper(base, rootFilePath);
+    accessor = new FileDataAccessor(mapper);
 
     metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
 
@@ -66,6 +70,13 @@ describe('A FileDataAccessor', (): void => {
       const stream = await accessor.getData({ path: `${base}resource` });
       await expect(readableToString(stream)).resolves.toBe('data');
     });
+
+    it('throws an error if something else went wrong.', async(): Promise<void> => {
+      jest.requireMock('fs-extra').stat = (): any => {
+        throw new Error('error');
+      };
+      await expect(accessor.getData({ path: `${base}resource` })).rejects.toThrow('error');
+    });
   });
 
   describe('getting metadata', (): void => {
@@ -83,7 +94,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('throws an error if something else went wrong.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.lstat = (): any => {
+      jest.requireMock('fs-extra').lstat = (): any => {
         throw new Error('error');
       };
       await expect(accessor.getMetadata({ path: base })).rejects.toThrow('error');
@@ -101,10 +112,11 @@ describe('A FileDataAccessor', (): void => {
       metadata = await accessor.getMetadata({ path: `${base}resource.ttl` });
       expect(metadata.identifier.value).toBe(`${base}resource.ttl`);
       expect(metadata.contentType).toBe('text/turtle');
-      expect(metadata.get(RDF.type)?.value).toBe(LDP.Resource);
-      expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
-      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
+      expect(metadata.get(RDF.terms.type)?.value).toBe(LDP.Resource);
+      expect(metadata.get(POSIX.terms.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
+      expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
+        XSD.terms.integer));
       // `dc:modified` is in the default graph
       expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(2);
     });
@@ -112,36 +124,80 @@ describe('A FileDataAccessor', (): void => {
     it('does not generate size metadata for a container.', async(): Promise<void> => {
       cache.data = { container: {}};
       metadata = await accessor.getMetadata({ path: `${base}container/` });
-      expect(metadata.get(POSIX.size)).toBeUndefined();
-      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.terms.size)).toBeUndefined();
+      expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
     });
 
     it('generates the metadata for a container.', async(): Promise<void> => {
-      cache.data = { container: { resource: 'data', 'resource.meta': 'metadata', notAFile: 5, container2: {}}};
+      cache.data = {
+        container: {
+          resource: 'data',
+          'resource.meta': 'metadata',
+          notAFile: 5,
+          container2: {},
+        },
+      };
       metadata = await accessor.getMetadata({ path: `${base}container/` });
       expect(metadata.identifier.value).toBe(`${base}container/`);
-      expect(metadata.getAll(RDF.type)).toEqualRdfTermArray(
+      expect(metadata.getAll(RDF.terms.type)).toEqualRdfTermArray(
         [ LDP.terms.Container, LDP.terms.BasicContainer, LDP.terms.Resource ],
       );
-      expect(metadata.get(POSIX.size)).toBeUndefined();
-      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
+      expect(metadata.get(POSIX.terms.size)).toBeUndefined();
+      expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
+        XSD.terms.integer));
       // `dc:modified` is in the default graph
       expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(1);
     });
 
     it('generates metadata for container child resources.', async(): Promise<void> => {
-      cache.data = { container: { resource: 'data', 'resource.meta': 'metadata', notAFile: 5, container2: {}}};
+      cache.data = {
+        container: {
+          resource: 'data',
+          'resource.meta': 'metadata',
+          symlink: Symbol(`${rootFilePath}/container/resource`),
+          symlinkContainer: Symbol(`${rootFilePath}/container/container2`),
+          symlinkInvalid: Symbol(`${rootFilePath}/invalid`),
+          notAFile: 5,
+          container2: {},
+        },
+      };
+
       const children = [];
       for await (const child of accessor.getChildren({ path: `${base}container/` })) {
         children.push(child);
       }
-      expect(children).toHaveLength(2);
+
+      // Identifiers
+      expect(children).toHaveLength(4);
+      expect(new Set(children.map((child): string => child.identifier.value))).toEqual(new Set([
+        `${base}container/container2/`,
+        `${base}container/resource`,
+        `${base}container/symlink`,
+        `${base}container/symlinkContainer/`,
+      ]));
+
+      // Containers
+      for (const child of children.filter(({ identifier }): boolean => identifier.value.endsWith('/'))) {
+        const types = child.getAll(RDF.terms.type).map((term): string => term.value);
+        expect(types).toContain(LDP.Resource);
+        expect(types).toContain(LDP.Container);
+        expect(types).toContain(LDP.BasicContainer);
+      }
+
+      // Documents
+      for (const child of children.filter(({ identifier }): boolean => !identifier.value.endsWith('/'))) {
+        const types = child.getAll(RDF.terms.type).map((term): string => term.value);
+        expect(types).toContain(LDP.Resource);
+        expect(types).toContain('http://www.w3.org/ns/iana/media-types/application/octet-stream#Resource');
+        expect(types).not.toContain(LDP.Container);
+        expect(types).not.toContain(LDP.BasicContainer);
+      }
+
+      // All resources
       for (const child of children) {
-        expect([ `${base}container/resource`, `${base}container/container2/` ]).toContain(child.identifier.value);
-        expect(child.getAll(RDF.type)!.some((type): boolean => type.equals(LDP.terms.Resource))).toBe(true);
-        expect(child.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-        expect(child.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
+        expect(child.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+        expect(child.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
           XSD.terms.integer));
         // `dc:modified` is in the default graph
         expect(child.quads(null, null, null, SOLID_META.terms.ResponseMetadata))
@@ -149,14 +205,56 @@ describe('A FileDataAccessor', (): void => {
       }
     });
 
+    it('does not generate IANA URIs for children with invalid content-types.', async(): Promise<void> => {
+      cache.data = {
+        container: {
+          resource1: 'data',
+          resource2: 'badData',
+        },
+      };
+
+      const badMapper: jest.Mocked<FileIdentifierMapper> = {
+        mapFilePathToUrl: jest.fn(async(filePath: string, isContainer: boolean): Promise<ResourceLink> => {
+          const result = await mapper.mapFilePathToUrl(filePath, isContainer);
+          if (filePath.endsWith('resource2')) {
+            result.contentType = 'this is not a valid type';
+          }
+          return result;
+        }),
+        mapUrlToFilePath: jest.fn((...args): Promise<ResourceLink> => mapper.mapUrlToFilePath(...args)),
+      };
+
+      accessor = new FileDataAccessor(badMapper);
+
+      const children = [];
+      for await (const child of accessor.getChildren({ path: `${base}container/` })) {
+        children.push(child);
+      }
+
+      // Identifiers
+      expect(children).toHaveLength(2);
+      expect(new Set(children.map((child): string => child.identifier.value))).toEqual(new Set([
+        `${base}container/resource1`,
+        `${base}container/resource2`,
+      ]));
+
+      const types1 = children[0].getAll(RDF.terms.type).map((term): string => term.value);
+      const types2 = children[1].getAll(RDF.terms.type).map((term): string => term.value);
+
+      expect(types1).toContain('http://www.w3.org/ns/iana/media-types/application/octet-stream#Resource');
+      for (const type of types2) {
+        expect(type).not.toMatch(/^http:\/\/www\.w3.org\/ns\/iana\/media-types\//u);
+      }
+    });
+
     it('adds stored metadata when requesting metadata.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': '<http://this> <http://is> <http://metadata>.' };
       metadata = await accessor.getMetadata({ path: `${base}resource` });
-      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'http://this')).toBe(true);
+      expect(metadata.quads().some((qd): boolean => qd.subject.value === 'http://this')).toBe(true);
 
       cache.data = { container: { '.meta': '<http://this> <http://is> <http://metadata>.' }};
       metadata = await accessor.getMetadata({ path: `${base}container/` });
-      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'http://this')).toBe(true);
+      expect(metadata.quads().some((qd): boolean => qd.subject.value === 'http://this')).toBe(true);
     });
 
     it('throws an error if there is a problem with the internal metadata.', async(): Promise<void> => {
@@ -169,12 +267,6 @@ describe('A FileDataAccessor', (): void => {
     it('throws a 404 if the identifier does not start with the base.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: 'badpath' }, data, metadata))
         .rejects.toThrow(NotFoundHttpError);
-    });
-
-    it('throws an error when writing to a metadata path.', async(): Promise<void> => {
-      const result = accessor.writeDocument({ path: `${base}resource.meta` }, data, metadata);
-      await expect(result).rejects.toThrow(ConflictHttpError);
-      await expect(result).rejects.toThrow('Not allowed to create files with the metadata extension.');
     });
 
     it('writes the data to the corresponding file.', async(): Promise<void> => {
@@ -191,7 +283,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('does not write metadata that is stored by the file system.', async(): Promise<void> => {
-      metadata.add(RDF.type, LDP.terms.Resource);
+      metadata.add(RDF.terms.type, LDP.terms.Resource);
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data.resource).toBe('data');
       expect(cache.data['resource.meta']).toBeUndefined();
@@ -206,7 +298,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('errors if there is a problem deleting the old metadata file.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': 'metadata!' };
-      jest.requireMock('fs').promises.unlink = (): any => {
+      jest.requireMock('fs-extra').remove = (): any => {
         throw new Error('error');
       };
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
@@ -227,7 +319,7 @@ describe('A FileDataAccessor', (): void => {
         data.emit('error', new Error('error'));
         return null;
       };
-      metadata.add('likes', 'apples');
+      metadata.add(namedNode('likes'), 'apples');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .rejects.toThrow('error');
       expect(cache.data['resource.meta']).toBeUndefined();
@@ -235,9 +327,9 @@ describe('A FileDataAccessor', (): void => {
 
     it('updates the filename if the content-type gets updated.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.', 'resource.meta': '<this> <is> <metadata>.' };
-      metadata.identifier = namedNode(`${base}resource`);
+      metadata.identifier = DataFactory.namedNode(`${base}resource`);
       metadata.contentType = 'text/plain';
-      metadata.add('new', 'metadata');
+      metadata.add(namedNode('new'), 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .resolves.toBeUndefined();
       expect(cache.data).toEqual({
@@ -247,9 +339,9 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('does not try to update the content-type if there is no original file.', async(): Promise<void> => {
-      metadata.identifier = namedNode(`${base}resource.txt`);
+      metadata.identifier = DataFactory.namedNode(`${base}resource.txt`);
       metadata.contentType = 'text/turtle';
-      metadata.add('new', 'metadata');
+      metadata.add(namedNode('new'), 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource.txt` }, data, metadata))
         .resolves.toBeUndefined();
       expect(cache.data).toEqual({
@@ -260,7 +352,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws an error if there is an issue deleting the original file.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.' };
-      jest.requireMock('fs').promises.unlink = (): any => {
+      jest.requireMock('fs-extra').remove = (): any => {
         const error = new Error('error') as SystemError;
         error.code = 'EISDIR';
         error.syscall = 'unlink';
@@ -290,7 +382,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('throws other errors when making a directory.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.mkdir = (): any => {
+      jest.requireMock('fs-extra').ensureDir = (): any => {
         throw new Error('error');
       };
       await expect(accessor.writeContainer({ path: base }, metadata)).rejects.toThrow('error');
@@ -325,6 +417,22 @@ describe('A FileDataAccessor', (): void => {
     });
   });
 
+  describe('writing metadata', (): void => {
+    it('writes metadata to the metadata resource.', async(): Promise<void> => {
+      const resourceIdentifier = { path: `${base}resource` };
+      const inputMetadata = new RepresentationMetadata(resourceIdentifier, { [RDF.type]: LDP.terms.Resource });
+      await accessor.writeDocument(resourceIdentifier, data, inputMetadata);
+
+      const extraMetadata = new RepresentationMetadata(resourceIdentifier);
+      extraMetadata.addQuad(namedNode('a'), namedNode('b'), namedNode('c'));
+      await expect(accessor.writeMetadata(resourceIdentifier, extraMetadata)).resolves.toBeUndefined();
+
+      const outputMetadata = await accessor.getMetadata(resourceIdentifier);
+      expect(outputMetadata.quads(`${base}a`))
+        .toStrictEqual([ quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}c`)) ]);
+    });
+  });
+
   describe('deleting a resource', (): void => {
     it('throws a 404 if the identifier does not start with the base.', async(): Promise<void> => {
       await expect(accessor.deleteResource({ path: 'badpath' })).rejects.toThrow(NotFoundHttpError);
@@ -353,6 +461,9 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws error if there is a problem with deleting existing metadata.', async(): Promise<void> => {
       cache.data = { resource: 'apple', 'resource.meta': {}};
+      jest.requireMock('fs-extra').remove = (): any => {
+        throw new Error('error');
+      };
       await expect(accessor.deleteResource({ path: `${base}resource` })).rejects.toThrow();
     });
 

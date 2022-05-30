@@ -1,19 +1,20 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/app/init/base/init.json"
+    "css:config/app/init/base/init.json"
   ],
   "@graph": [
     {
-      "comment": "These handlers are called whenever the server is started, and can be used to ensure that all necessary resources for booting are available.",
-      "@id": "urn:solid-server:default:ParallelInitializer",
+      "comment": "These handlers are called only for the Primary process whenever the server is started, and can be used to ensure that all necessary resources for booting are available. (in singlethreaded mode, these are always called)",
+      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
       "@type": "ParallelHandler",
-      "handlers": [
-        {
-          "comment": "This handler is here because having this array empty gives Components.js errors.",
-          "@type": "StaticHandler"
-        }
-      ]
+      "handlers": [ ]
+    },
+    {
+      "comment": "These handlers are called only for the workers processes whenever the server is started, and can be used to ensure that all necessary resources for booting are available. (in singlethreaded mode, these are always called)",
+      "@id": "urn:solid-server:default:WorkerParallelInitializer",
+      "@type": "ParallelHandler",
+      "handlers": [ ]
     }
   ]
 }

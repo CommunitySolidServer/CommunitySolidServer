@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "@id": "urn:solid-server:default:OperationHandler",
@@ -7,7 +7,7 @@
       "handlers": [
         {
           "@type": "GetOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "PostOperationHandler",
@@ -15,7 +15,8 @@
         },
         {
           "@type": "PutOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" }
+          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
         },
         {
           "@type": "DeleteOperationHandler",
@@ -23,11 +24,15 @@
         },
         {
           "@type": "HeadOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "PatchOperationHandler",
           "store": { "@id": "urn:solid-server:default:ResourceStore" }
+        },
+        {
+          "@type": "StaticThrowHandler",
+          "error": { "@type": "MethodNotAllowedHttpError" }
         }
       ]
     }

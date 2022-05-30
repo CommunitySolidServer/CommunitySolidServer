@@ -3,7 +3,8 @@ name: CI
 on:
   push:
     branches:
-      - '**'
+      - 'main'
+      - 'versions/*'
     tags:
       - 'v*'
   pull_request:
@@ -14,34 +15,58 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
       - run: npm ci --ignore-scripts
       - run: npm run lint
 
-  validate-components:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16.x'
-      - run: npm ci
-      - run: npm run validate
-
-  test:
-    runs-on: ubuntu-latest
+  test-unit:
+    runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
+        operating-system:
+          - ubuntu-latest
+          - windows-latest
         node-version:
-          - '12.17'
-          - '12.x'
           - '14.2'
           - '14.x'
           - '16.0'
           - '16.x'
+          - '18.0'
+          - '18.x'
+    timeout-minutes: 15
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Type-check tests
+        run: npm run test:ts
+      - name: Run unit tests
+        run: npm run test:unit
+      - name: Submit unit test coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: test-unit-${{ matrix.node-version }}-${{ matrix.operating-system }}
+          parallel: true
+
+  test-integration:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - '14.x'
+          - '16.x'
+          - '18.x'
     env:
       TEST_DOCKER: true
     services:
@@ -55,60 +80,65 @@ jobs:
         image: redis
         ports:
           - 6379:6379
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install dependencies and run build scripts
         run: npm ci
-      - name: Type-check tests
-        run: npm run test:ts
-      - name: Run unit tests
-        run: npm run test:unit
-      - name: Submit unit test coverage
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.github_token }}
-          flag-name: run-${{ matrix.node-version }}
-          parallel: true
       - name: Run integration tests
         run: npm run test:integration
-      - name: Run deployment tests
-        run: npm run test:deploy
 
-  test-windows:
+  test-integration-windows:
     runs-on: windows-latest
     strategy:
       matrix:
         node-version:
-          - '12.x'
           - '14.x'
           - '16.x'
-    timeout-minutes: 10
+          - '18.x'
+    timeout-minutes: 15
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install dependencies and run build scripts
         run: npm ci
-      - name: Run unit tests
-        run: npm run test:unit
       - name: Run integration tests
         run: npm run test:integration
-      - name: Run deployment tests
+
+  test-configs:
+    runs-on: ubuntu-latest
+    services:
+      sparql-endpoint:
+        image: tenforce/virtuoso
+        env:
+          SPARQL_UPDATE: true
+        ports:
+          - 4000:8890
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Run deploy tests
         run: npm run test:deploy
 
   coveralls:
-    needs: test
+    needs: test-unit
     runs-on: ubuntu-latest
     steps:
       - name: Consolidate test coverage from different jobs
@@ -117,17 +147,100 @@ jobs:
           github-token: ${{ secrets.github_token }}
           parallel-finished: true
 
+  docker-main-branch:
+    needs:
+      - lint
+      - test-unit
+      - test-integration
+      - test-integration-windows
+      - test-configs
+    # Only run on tag push events starting with v prefix for now OR main branch push events
+    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            solidproject/community-server
+          # edge will always be executed (without latest tag), semver only on tag push events (with latest tag)
+          tags: |
+            type=edge
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+          github-token: ${{ secrets.github_token }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  docker-versions-branch:
+    needs:
+      - lint
+      - test-unit
+      - test-integration
+      - test-integration-windows
+      - test-configs
+    # Only run on push events on a versions/* branch (ASSUMPTION: THERE SHOULD ONLY BE ONE THERE!)
+    if: startsWith(github.ref, 'refs/heads/versions/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            solidproject/community-server
+          # Just one label: next (no latest here) for the last pushed commit on this branch
+          tags: |
+            type=raw,value=next
+          github-token: ${{ secrets.github_token }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
       - run: npm ci --ignore-scripts
       - run: npm run docs
       - name: Save docs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docs
           path: docs
@@ -137,11 +250,14 @@ jobs:
     needs:
       - docs
       - lint
-      - test
+      - test-unit
+      - test-integration
+      - test-integration-windows
+      - test-configs
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: docs
           path: docs

@@ -8,8 +8,8 @@ describe('A FormToJsonConverter', (): void => {
   const converter = new FormToJsonConverter();
 
   it('supports going from form data to json.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual({ 'application/x-www-form-urlencoded': 1 });
-    await expect(converter.getOutputTypes()).resolves.toEqual({ 'application/json': 1 });
+    await expect(converter.getOutputTypes('application/x-www-form-urlencoded'))
+      .resolves.toEqual({ 'application/json': 1 });
   });
 
   it('converts form data to JSON.', async(): Promise<void> => {

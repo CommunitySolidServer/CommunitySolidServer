@@ -1,9 +1,11 @@
 import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../../../src/http/representation/RepresentationPreferences';
 import { DynamicJsonToTemplateConverter } from '../../../../src/storage/conversion/DynamicJsonToTemplateConverter';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 import { CONTENT_TYPE_TERM, SOLID_META } from '../../../../src/util/Vocabularies';
@@ -50,6 +52,12 @@ describe('A DynamicJsonToTemplateConverter', (): void => {
     await expect(converter.canHandle(input)).resolves.toBeUndefined();
   });
 
+  it('rejects JSON input if no templates are defined.', async(): Promise<void> => {
+    preferences.type = { 'application/json': 1 };
+    representation.metadata = new RepresentationMetadata('application/json');
+    await expect(converter.canHandle(input)).rejects.toThrow(NotImplementedHttpError);
+  });
+
   it('uses the input JSON as parameters for the matching template.', async(): Promise<void> => {
     const result = await converter.handle(input);
     await expect(readableToString(result.data)).resolves.toBe('<html>');
@@ -63,5 +71,20 @@ describe('A DynamicJsonToTemplateConverter', (): void => {
     input.preferences = {};
     const result = await converter.handle(input);
     await expect(readableToString(result.data)).resolves.toBe('<html>');
+  });
+
+  it('returns the input representation if JSON is preferred.', async(): Promise<void> => {
+    input.preferences.type = { 'application/json': 1, 'text/html': 0.5 };
+    await expect(converter.handle(input)).resolves.toBe(input.representation);
+  });
+
+  it('still converts if JSON is preferred but there is a JSON template.', async(): Promise<void> => {
+    input.preferences.type = { 'application/json': 1 };
+    const templateNode = namedNode(templateFile);
+    representation.metadata.add(SOLID_META.terms.template, templateNode);
+    representation.metadata.addQuad(templateNode, CONTENT_TYPE_TERM, 'application/json');
+    const result = await converter.handle(input);
+    await expect(readableToString(result.data)).resolves.toBe('<html>');
+    expect(result.metadata.contentType).toBe('application/json');
   });
 });

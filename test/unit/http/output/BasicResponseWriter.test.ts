@@ -49,7 +49,7 @@ describe('A BasicResponseWriter', (): void => {
       response.on('end', (): void => {
         expect(response._isEndCalled()).toBeTruthy();
         expect(response._getStatusCode()).toBe(201);
-        expect(response._getData()).toEqual('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
+        expect(response._getData()).toBe('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
         resolve();
       });
     });

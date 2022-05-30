@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
+import { SingleRootIdentifierStrategy } from '../../src';
 import { BasicRequestParser } from '../../src/http/input/BasicRequestParser';
 import { RawBodyParser } from '../../src/http/input/body/RawBodyParser';
 import { BasicConditionsParser } from '../../src/http/input/conditions/BasicConditionsParser';
@@ -12,7 +13,8 @@ import { BasicConditions } from '../../src/storage/BasicConditions';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 
 describe('A BasicRequestParser with simple input parsers', (): void => {
-  const targetExtractor = new OriginalUrlExtractor();
+  const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');
+  const targetExtractor = new OriginalUrlExtractor({ identifierStrategy });
   const preferenceParser = new AcceptPreferenceParser();
   const metadataParser = new ContentTypeParser();
   const conditionsParser = new BasicConditionsParser();
@@ -53,7 +55,7 @@ describe('A BasicRequestParser with simple input parsers', (): void => {
         metadata: expect.any(RepresentationMetadata),
       },
     });
-    expect(result.body?.metadata.contentType).toEqual('text/turtle');
+    expect(result.body?.metadata.contentType).toBe('text/turtle');
 
     await expect(arrayifyStream(result.body.data)).resolves.toEqual(
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
