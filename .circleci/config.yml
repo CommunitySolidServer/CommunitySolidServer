@@ -32,22 +32,19 @@ workflows:
     jobs:
       - docker/publish:
           context:
-            - kube-primary
             - docker-org-itme
             - docker-user-ian
-            - mysilio-me-smtp
           image: itme/$CIRCLE_PROJECT_REPONAME
           tag: $CIRCLE_SHA1
-          docker-username: $DOCKER_USERNAME
-          docker-password: $DOCKER_PASSWORD
+          # can't use $ here, need to give it an env var name
+          docker-username: DOCKER_USER
+          docker-password: DOCKER_PASSWORD
           filters:
             branches:
               only: main
       - helmfile-apply:
           context:
             - kube-primary
-            - docker-org-itme
-            - docker-user-ian
             - mysilio-me-smtp
           filters:
             branches:
