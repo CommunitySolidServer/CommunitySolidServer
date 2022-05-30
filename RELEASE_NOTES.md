@@ -39,7 +39,17 @@ The following changes are relevant for v4 custom configs that replaced certain f
 - The `IdentityProviderFactory` inputs have been extended.
   - `/identity/handler/provider-factory/identity.json`
 - LDP components have slightly changed so the preference parser is in a separate config file.
-  - `/config/ldp/handler/*`
+  - `/ldp/handler/*`
+- Restructured the init configs.
+  - `/app/init/base/init.json`
+  - `/app/main/default.json`
+- Added lock cleanup on server start (and updated existing finalization).
+  - `/util/resource-locker/file.json`
+  - `/util/resource-locker/redis.json`
+- Updated finalizers.
+  - `/app/identity/handler/account-store/default.json` 
+  - `/identity/ownership/token.json`
+  - `/ldp/authorization/readers/access-checkers/agent-group.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
@@ -49,6 +59,12 @@ These changes are relevant if you wrote custom modules for the server that depen
 - Both `TemplateEngine` implementations now take a `baseUrl` parameter as input.
 - The `IdentityProviderFactory` and `ConvertingErrorHandler` now additionally take a `PreferenceParser` as input.
 - Error handlers now take the incoming HttpRequest as input instead of just the preferences.
+- Extended the initialization/finalization system:
+  * Introduced `Initializable` interface and `InitializableHandler` wrapper class.
+  * Introduced `Finalizer` abstract class and `FinalizableHandler` wrapper class.
+  * Changed type for `finalizer` attribute in `App` from `Finalizable` to `Finalizer` and updated the calling code in `App.stop()`.
+  * Removed the now obsolete `ParallelFinalizer` util class.
+- Added a lock cleanup on initialize for lock implementations `RedisLocker` and `FileSystemResourceLocker`.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
 

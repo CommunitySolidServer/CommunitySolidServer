@@ -194,7 +194,8 @@ export * from './init/cluster/WorkerManager';
 
 // Init/Final
 export * from './init/final/Finalizable';
-export * from './init/final/ParallelFinalizer';
+export * from './init/final/FinalizableHandler';
+export * from './init/final/Finalizer';
 
 // Init/Setup
 export * from './init/setup/SetupHandler';
@@ -221,6 +222,8 @@ export * from './init/BaseUrlVerifier';
 export * from './init/CliResolver';
 export * from './init/ConfigPodInitializer';
 export * from './init/ContainerInitializer';
+export * from './init/Initializable';
+export * from './init/InitializableHandler';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
 export * from './init/ModuleVersionVerifier';
