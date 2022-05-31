@@ -8,7 +8,7 @@ fullNameOverride: {{ .Release.Name }}
 image:
   registry: docker.io
   repository: itme/{{ requiredEnv  "CIRCLE_PROJECT_REPONAME" }}
-  tag: {{ requiredEnv "CIRCLECI_SHA1" }}
+  tag: {{ requiredEnv "CIRCLE_SHA1" }}
   pullSecrets:
     - css-image-pull-secrets
 ingress:

@@ -45,6 +45,8 @@ workflows:
       - helmfile-apply:
           context:
             - kube-primary
+            - docker-org-itme
+            - docker-user-ian
             - mysilio-me-smtp
           filters:
             branches:
