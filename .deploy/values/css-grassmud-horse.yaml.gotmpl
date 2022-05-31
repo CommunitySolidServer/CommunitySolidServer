@@ -12,6 +12,7 @@ image:
   pullSecrets:
     - css-image-pull-secrets
 ingress:
+  enabled: true
   annotatations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-dns"
