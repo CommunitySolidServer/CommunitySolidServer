@@ -10,7 +10,7 @@ image:
   repository: itme/{{ requiredEnv  "CIRCLE_PROJECT_REPONAME" }}
   tag: {{ requiredEnv "CIRCLE_SHA1" }}
   pullSecrets:
-    - css-image-pull-secrets
+  - css-image-pull-secrets
 ingress:
   enabled: true
   annotatations:
@@ -19,6 +19,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
   host: css.grassmud.horse
   tls:
-    hosts:
-    - css.grassmud.horse
+  - hosts:
+      - css.grassmud.horse
     secretName: {{ .Release.Name }}-tls
