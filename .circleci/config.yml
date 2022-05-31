@@ -25,7 +25,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
-      - run: helmfile --file $PROJECT_PATH/.deploy/helmfile.yaml apply
+      - run: helmfile --file .deploy/helmfile.yaml apply
 
 workflows:
   deploy:
