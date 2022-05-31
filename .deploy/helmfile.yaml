@@ -17,4 +17,4 @@ releases:
     values:
       - ./values/{{ .Environment.Name }}.yaml.gotmpl
     needs:
-      - css-image-pull-secrets
+      - {{ .Environment.Name }}/css-image-pull-secrets
