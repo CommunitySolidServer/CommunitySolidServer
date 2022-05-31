@@ -4,6 +4,7 @@ config:
 persistence:
   enabled: true
   size: 100Gi
+  storageClassName: gp2
 fullNameOverride: {{ .Release.Name }}
 image:
   registry: docker.io
