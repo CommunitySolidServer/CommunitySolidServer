@@ -1,16 +1,15 @@
 import type { Store } from 'n3';
 import SHACLValidator from 'rdf-validate-shacl';
-import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
-import type { Representation } from '../http/representation/Representation';
-import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
-import { INTERNAL_QUADS } from '../util/ContentTypes';
-import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
-import { fetchDataset } from '../util/FetchUtil';
-import { cloneRepresentation } from '../util/ResourceUtil';
-import { readableToQuads } from '../util/StreamUtil';
-import { LDP, SH } from '../util/Vocabularies';
-import type { RepresentationConverter } from './conversion/RepresentationConverter';
+import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
+import { getLoggerFor } from '../../logging/LogUtil';
+import { INTERNAL_QUADS } from '../../util/ContentTypes';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { fetchDataset } from '../../util/FetchUtil';
+import { cloneRepresentation } from '../../util/ResourceUtil';
+import { readableToQuads } from '../../util/StreamUtil';
+import { LDP, SH } from '../../util/Vocabularies';
+import type { RepresentationConverter } from '../conversion/RepresentationConverter';
+import type { ShapeValidatorInput } from './ShapeValidator';
 import { ShapeValidator } from './ShapeValidator';
 
 /**
@@ -28,46 +27,43 @@ export class ShaclValidator extends ShapeValidator {
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
-  public async canHandle(input: { parentContainerIdentifier: ResourceIdentifier;
-    parentContainerRepresentation: Representation;
-    representation: Representation; }): Promise<void> {
-    const shapeURL = input.parentContainerRepresentation.metadata.get(LDP.terms.constrainedBy)?.value;
+  public async canHandle({ parentRepresentation }: ShapeValidatorInput): Promise<void> {
+    const shapeURL = parentRepresentation.metadata.get(LDP.terms.constrainedBy)?.value;
     if (!shapeURL) {
       throw new Error(this.noShapePresent);
     }
   }
 
-  public async handle(input: { parentContainerIdentifier: ResourceIdentifier;
-    parentContainerRepresentation: Representation;
-    representation: Representation; }): Promise<void> {
+  public async handle(input: ShapeValidatorInput): Promise<void> {
+    const { parentRepresentation, representation } = input;
     // Check if the parent has ldp:constrainedBy in the metadata
-    const shapeURL = input.parentContainerRepresentation.metadata.get(LDP.terms.constrainedBy)!.value;
+    const shapeURL = parentRepresentation.metadata.get(LDP.terms.constrainedBy)!.value;
     let representationData;
     // Convert the RDF representation to a N3.Store
     const preferences = { type: { [INTERNAL_QUADS]: 1 }};
     try {
       // Creating a new representation as the data might be written later by DataAccessorBasedStore
-      const tempRepresentation = await cloneRepresentation(input.representation);
+      const tempRepresentation = await cloneRepresentation(representation);
+      this.logger.info(`own: ${representation.metadata.identifier.value}`);
       representationData = await this.converter.handleSafe({
-        identifier: input.parentContainerIdentifier,
+        identifier: { path: representation.metadata.identifier.value },
         representation: tempRepresentation,
         preferences,
       });
     } catch (error: unknown) {
-      input.representation.data.destroy();
+      representation.data.destroy();
       throw error;
     }
     const dataStore = await readableToQuads(representationData.data);
 
-    if (this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: input.representation.metadata.identifier.value })) {
-      this.logger.debug('It is an auxiliry file, no validation is required here.');
+    if (this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: representation.metadata.identifier.value })) {
+      this.logger.debug('It is an auxiliary file, no validation is required here.');
       return;
     }
 
     this.logger.debug(`URL of the shapefile present in the metadata of the parent: ${shapeURL}`);
     const shape = await fetchDataset(shapeURL);
     const shapeStore = await readableToQuads(shape.data);
-
     this.targetClassCheck(shapeStore, dataStore, shapeURL);
     // Actual validation
     const validator = new SHACLValidator(shapeStore);
@@ -78,9 +74,7 @@ export class ShaclValidator extends ShapeValidator {
     }
   }
 
-  public async handleSafe(input: { parentContainerIdentifier: ResourceIdentifier;
-    parentContainerRepresentation: Representation;
-    representation: Representation; }): Promise<void> {
+  public async handleSafe(input: ShapeValidatorInput): Promise<void> {
     let canHandle: boolean;
     try {
       await this.canHandle(input);

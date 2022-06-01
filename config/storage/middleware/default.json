@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
     "css:config/storage/middleware/stores/converting.json",
     "css:config/storage/middleware/stores/locking.json",
@@ -38,13 +38,13 @@
       "comment": "Validates resources when the parent container has ldp:constrainedBy in its metadata",
       "@id": "urn:solid-server:default:ResourceStore_Shape",
       "@type": "ShapeValidationStore",
-      "ShapeValidationStore:identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-      "ShapeValidationStore:source": { "@id": "urn:solid-server:default:ResourceStore_Converting" },
-      "ShapeValidationStore:validator": {
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Converting" },
+      "validator": {
         "@id": "urn:solid-server:default:ShaclValidator",
         "@type": "ShaclValidator",
-        "ShaclValidator:converter": { "@id": "urn:solid-server:default:RdfToQuadConverter" },
-        "ShaclValidator:auxiliaryStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
+        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
       }
     },
     {

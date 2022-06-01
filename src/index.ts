@@ -382,8 +382,8 @@ export * from './storage/ResourceSet';
 export * from './storage/ResourceStore';
 export * from './storage/RoutingResourceStore';
 export * from './storage/ShapeValidationStore';
-export * from './storage/ShaclValidator';
-export * from './storage/ShapeValidator';
+export * from './storage/validators/ShaclValidator';
+export * from './storage/validators/ShapeValidator';
 
 // Util/Errors
 export * from './util/errors/BadRequestHttpError';
