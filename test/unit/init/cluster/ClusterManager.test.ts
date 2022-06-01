@@ -30,7 +30,7 @@ describe('A ClusterManager', (): void => {
   });
 
   it('can handle workers input as string.', (): void => {
-    const cm = new ClusterManager('4');
+    const cm = new ClusterManager(4);
     expect(cm.isSingleThreaded()).toBeFalsy();
   });
 
@@ -46,14 +46,14 @@ describe('A ClusterManager', (): void => {
   });
 
   it('errors on invalid workers amount.', (): void => {
-    expect((): ClusterManager => new ClusterManager('10')).toBeDefined();
-    expect((): ClusterManager => new ClusterManager('2')).toBeDefined();
-    expect((): ClusterManager => new ClusterManager('1')).toBeDefined();
-    expect((): ClusterManager => new ClusterManager('0')).toBeDefined();
-    expect((): ClusterManager => new ClusterManager('-1')).toBeDefined();
-    expect((): ClusterManager => new ClusterManager('-5')).toBeDefined();
-    expect((): ClusterManager => new ClusterManager('-6')).toThrow('Invalid workers value');
-    expect((): ClusterManager => new ClusterManager('-10')).toThrow('Invalid workers value');
+    expect((): ClusterManager => new ClusterManager(10)).toBeDefined();
+    expect((): ClusterManager => new ClusterManager(2)).toBeDefined();
+    expect((): ClusterManager => new ClusterManager(1)).toBeDefined();
+    expect((): ClusterManager => new ClusterManager(0)).toBeDefined();
+    expect((): ClusterManager => new ClusterManager(-1)).toBeDefined();
+    expect((): ClusterManager => new ClusterManager(-5)).toBeDefined();
+    expect((): ClusterManager => new ClusterManager(-6)).toThrow('Invalid workers value');
+    expect((): ClusterManager => new ClusterManager(-10)).toThrow('Invalid workers value');
   });
 
   it('has an isPrimary() that works.', (): void => {
