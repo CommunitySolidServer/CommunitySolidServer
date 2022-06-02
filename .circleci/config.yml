@@ -21,7 +21,6 @@ jobs:
           password: $DOCKER_PASSWORD
     steps:
       - checkout
-      - setup_remote_docker
       - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
       - run: helmfile --file .deploy/helmfile.yaml apply
 
