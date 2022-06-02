@@ -12,7 +12,7 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-dns"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
-  host:{{ .Release.Name }}.grassmud.horse
+  host: {{ .Release.Name }}.grassmud.horse
   tls:
   - hosts:
       - {{ .Release.Name }}.grassmud.horse
