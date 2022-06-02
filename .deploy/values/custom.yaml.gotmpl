@@ -5,7 +5,7 @@ persistence:
   enabled: true
   size: 100Gi
   storageClassName: gp2
-fullNameOverride: {{ .Release.Name }}
+fullnameOverride: {{ .Release.Name }}
 image:
   registry: docker.io
   repository: itme/{{ requiredEnv  "CIRCLE_PROJECT_REPONAME" }}
