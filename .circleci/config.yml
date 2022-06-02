@@ -19,8 +19,6 @@ jobs:
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PASSWORD
-    environment:
-      HELMFILE_ENVIRONMENT: css-grassmud-horse
     steps:
       - checkout
       - setup_remote_docker
