@@ -15,5 +15,5 @@ ingress:
   host:{{ .Release.Name }}.grassmud.horse
   tls:
   - hosts:
-      - {{ Release.Name }}.grassmud.horse
+      - {{ .Release.Name }}.grassmud.horse
     secretName: {{ .Release.Name }}-tls
