@@ -14,7 +14,7 @@ image:
   - css-image-pull-secrets
 ingress:
   enabled: true
-  ingressClassName: nginx
+  className: nginx
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-dns"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
