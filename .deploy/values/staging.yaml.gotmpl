@@ -18,8 +18,8 @@ ingress:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-dns"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
-  host: css-custom.grassmud.horse
+  host: staging.css.grassmud.horse
   tls:
   - hosts:
-    - css-custom.grassmud.horse
+    - staging.css.grassmud.horse
     secretName: {{ .Release.Name }}-tls
