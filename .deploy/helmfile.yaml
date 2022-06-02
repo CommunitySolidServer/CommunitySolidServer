@@ -8,15 +8,15 @@ releases:
     chart: ./image-pull-secrets
     values:
       - ./values/image-pull-secrets.yaml.gotmpl
-  - name: css-custom
-    namespace: grassmud-horse
+  - name: community-solid-server
+    namespace: css-custom
     chart: css/community-solid-server
     values:
       - ./values/custom.yaml.gotmpl
     needs:
       - grassmud-horse/css-image-pull-secrets
-  - name: css-default
-    namespace: grassmud-horse
+  - name: community-solid-server
+    namespace: css-default
     chart: css/community-solid-server
     values:
       - ./values/default.yaml.gotmpl

@@ -8,12 +8,12 @@ persistence:
 fullnameOverride: {{ .Release.Name }}
 ingress:
   enabled: true
-  className: nginx
   annotations:
+    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-dns"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
-  host: {{ .Release.Name }}.grassmud.horse
+  host: css-default.grassmud.horse
   tls:
   - hosts:
-      - {{ .Release.Name }}.grassmud.horse
+    - css-default.grassmud.horse
     secretName: {{ .Release.Name }}-tls
