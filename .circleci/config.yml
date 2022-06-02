@@ -36,9 +36,6 @@ workflows:
           # can't use $ here, need to give it an env var name
           docker-username: DOCKER_USER
           docker-password: DOCKER_PASSWORD
-          executor: docker/docker
-          use-remote-docker: true
-          remote-docker-dlc: true
           filters:
             branches:
               only: main
