@@ -1,0 +1,19 @@
+config:
+  bundled: file
+  logLevel: verbose
+persistence:
+  enabled: true
+  size: 100Gi
+  storageClassName: gp2
+fullNameOverride: {{ .Release.Name }}
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  host:{{ .Release.Name }}.grassmud.horse
+  tls:
+  - hosts:
+      - {{ Release.Name }}.grassmud.horse
+    secretName: {{ .Release.Name }}-tls

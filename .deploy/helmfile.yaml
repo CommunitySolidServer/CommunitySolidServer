@@ -2,19 +2,21 @@ repositories:
 - name: css
   url: https://communitysolidserver.github.io/css-helm-chart/charts/
 
-environments:
-  css-grassmud-horse:
-
 releases:
   - name: css-image-pull-secrets
-    namespace: {{ .Environment.Name }}
+    namespace: grassmud-horse
     chart: ./image-pull-secrets
     values:
       - ./values/image-pull-secrets.yaml.gotmpl
-  - name: community-solid-server
-    namespace: {{ .Environment.Name }}
+  - name: css-custom
+    namespace: grassmud-horse
     chart: css/community-solid-server
     values:
-      - ./values/{{ .Environment.Name }}.yaml.gotmpl
+      - ./values/custom.yaml.gotmpl
     needs:
-      - {{ .Environment.Name }}/css-image-pull-secrets
+      - grassmud-horse/css-image-pull-secrets
+  - name: css-default
+    namespace: grassmud-horse
+    chart: css/community-solid-server
+    values:
+      - ./values/default.yaml.gotmpl
