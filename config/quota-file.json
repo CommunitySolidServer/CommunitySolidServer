@@ -16,7 +16,7 @@
     "files-scs:config/identity/pod/static.json",
     "files-scs:config/identity/registration/enabled.json",
     "files-scs:config/ldp/authentication/dpop-bearer.json",
-    "files-scs:config/ldp/authorization/allow-all.json",
+    "files-scs:config/ldp/authorization/webacl.json",
     "files-scs:config/ldp/handler/default.json",
     "files-scs:config/ldp/metadata-parser/default.json",
     "files-scs:config/ldp/metadata-writer/default.json",
