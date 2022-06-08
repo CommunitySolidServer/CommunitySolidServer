@@ -3,21 +3,21 @@
 ## What is a description resource
 
 [Description resources](https://solidproject.org/TR/2021/protocol-20211217#auxiliary-resources-description-resource)
-contain auxiliary information about a resource. They represent all the metadata corresponding to that resource.
+contain auxiliary information about a resource.
+In CSS, these represent all the metadata corresponding to that resource.
 This indicates that a resource will always have a corresponding description resource
 and therefore description resources can not be created or deleted directly.
 
-Description resources are discoverable through interacting with their corresponding resource.
-More concrete, when performing a `GET` or `HEAD` request on a resource, 
+Description resources are discoverable by interacting with their subject resource.
+More concretely, when performing a `GET` or `HEAD` request on a resource, 
 there will be a `describedby` response **Link Header** with an URL that points to the description resource.
 
-**Note**: with the default configuration,
+**Note**: with the provided default configurations,
 a description resource that corresponds to a resource with URL `http://example.org/resource`
 will have `http://example.org/resource.meta` as URL.
 However, this does not have to be always the case as the Solid Protocol does not state anything about
 the strategy of encoding the description resource. 
 Therefore, the CSS makes this configurable in the [metadata configuration file](../config/util/auxiliary/strategies/meta.json).
-
 
 ## How to edit the metadata of a resource
 
@@ -31,12 +31,12 @@ A `PUT` request replaces the state of the target resource entirely with the requ
 This is not possible with description resources and therefore not allowed.
 
 Furthermore, it is also forbidden to perform a `DELETE` on description resources.
-The reason being that a resource will always have some auxiliary description (e.g. content type), 
+The reason being that a resource will always have some metadata (e.g. `rdf:type`), 
 which means that it semantically makes no sense to delete description resources.
 
 ### Protected metadata
 
-Some metadata is forbidden to be modified.
+Some metadata is managed by the server and can not be modified directly, such as the last modified date.
 The CSS will throw an error (409 `ConflictHttpError`) when trying to change this protected metadata.
 
 ## Impact on creating containers
@@ -58,40 +58,31 @@ Additionally, it is now forbidden to perform a `PUT` request to an existing cont
 
 ## Example of a workflow for editing a description resource {#workflow}
 
-In this example, we are trying to add an inbox description to an `ldp:Resource`.
-This inbox indication will then allow discovery for the `ldp:inbox` as described in the [Linked Data Notifications specification](https://www.w3.org/TR/ldn/).
+In this example, we add an inbox description to `http://localhost:3000/foo/`.
+This allows discovery of the `ldp:inbox` as described in the [Linked Data Notifications specification](https://www.w3.org/TR/ldn/).
 
-To give some context, assume we have started the CSS with the default configuration
-and have created an inbox which has as URL `http://localhost:3000/inbox/`.
+We have started the CSS with the default configuration
+and have already created an inbox at `http://localhost:3000/inbox/`.
 
 We don't know the location of the description resource
 So first, we send a `HEAD` request to the resource to retrieve the description resource URL.
 
 ```shell
-curl --location --head 'http://localhost:3000/'
+curl --head 'http://localhost:3000/foo/'
 ```
 
 which will at least the following response
 
 ```shell
 HTTP/1.1 200 OK
-Link: <http://localhost:3000/.meta>; rel="describedby"
+Link: <http://localhost:3000/foo/.meta>; rel="describedby"
 ```
 Now that we have the URL of the description resource,
 we create a query for adding the inbox in the description of the resource.
-This can be either with a SPARQL Update
 
 ```shell
-curl --location --request PATCH 'http://localhost:3000/.meta' \
---header 'Content-Type: application/sparql-update' \
---data-raw 'INSERT DATA { <http://localhost:3000/> <http://www.w3.org/ns/ldp#inbox> <http://localhost:3000/inbox/>. }'
-```
-
-or with an N3 Patch.
-
-```shell
-curl --location --request PATCH 'http://localhost:3000/resource.meta' \
---header 'Content-Type: text/n3' \
+curl -X PATCH 'http://localhost:3000/foo/.meta' \
+-H 'Content-Type: text/n3' \
 --data-raw '@prefix solid: <http://www.w3.org/ns/solid/terms#>.
 <> a solid:InsertDeletePatch;
 solid:inserts { <http://localhost:3000/> <http://www.w3.org/ns/ldp#inbox> <http://localhost:3000/inbox/>. }.'
@@ -100,7 +91,7 @@ solid:inserts { <http://localhost:3000/> <http://www.w3.org/ns/ldp#inbox> <http:
 After this update, we can verify that the inbox is added by performing a GET request to the description resource
 
 ```shell
-curl --location --request GET 'http://localhost:3000/.meta'
+curl --request GET 'http://localhost:3000/.meta'
 ```
 With as result for the body
 ```turtle
