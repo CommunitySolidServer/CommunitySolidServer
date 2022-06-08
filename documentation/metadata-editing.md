@@ -91,7 +91,7 @@ solid:inserts { <http://localhost:3000/> <http://www.w3.org/ns/ldp#inbox> <http:
 After this update, we can verify that the inbox is added by performing a GET request to the description resource
 
 ```shell
-curl --request GET 'http://localhost:3000/.meta'
+curl --request GET 'http://localhost:3000/foo/.meta'
 ```
 With as result for the body
 ```turtle
