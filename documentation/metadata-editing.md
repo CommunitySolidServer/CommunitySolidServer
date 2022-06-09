@@ -41,20 +41,11 @@ The CSS will throw an error (409 `ConflictHttpError`) when trying to change this
 
 ## Impact on creating containers
 
-Before editing description resources was possible, it was possible to change the description resource of `ldp:Container`s.
-This was achieved by executing a `PUT` request to the container and adding the metadata triples in the body of that request.
-
-This was not in line with the [Solid Protocol](https://solidproject.org/TR/2021/protocol-20211217#writing-resources)
-about writing resources.
-The protocol states the following:
-
-> Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s resource metadata statements;
-> if the server receives such a request, it MUST respond with a 409 status code.
-
-Therefore, since it is now possible to edit description resources directly,
-the above functionality has been removed from the CSS.
-This means that now when creating a container, the contents of the body are ignored.
-Additionally, it is now forbidden to perform a `PUT` request to an existing container.
+When creating a container the input body is ignored
+and performing a `PUT` request on an existing container will result in an error.
+Container metadata can only be added and modified by performing a `PATCH` on the description resource,
+similarly to documents.
+This is done to clearly differentiate between a containers representation and metadata.
 
 ## Example of a workflow for editing a description resource {#workflow}
 
@@ -84,14 +75,14 @@ we create a query for adding the inbox in the description of the resource.
 curl -X PATCH 'http://localhost:3000/foo/.meta' \
 -H 'Content-Type: text/n3' \
 --data-raw '@prefix solid: <http://www.w3.org/ns/solid/terms#>.
-<> a solid:InsertDeletePatch;
-solid:inserts { <http://localhost:3000/> <http://www.w3.org/ns/ldp#inbox> <http://localhost:3000/inbox/>. }.'
+`<> a solid:InsertDeletePatch;`
+solid:inserts { <http://localhost:3000/foo/> <http://www.w3.org/ns/ldp#inbox> <http://localhost:3000/inbox/>. }.'
 ```
 
 After this update, we can verify that the inbox is added by performing a GET request to the description resource
 
 ```shell
-curl --request GET 'http://localhost:3000/foo/.meta'
+curl 'http://localhost:3000/foo/.meta'
 ```
 With as result for the body
 ```turtle
@@ -100,11 +91,21 @@ With as result for the body
 @prefix posix: <http://www.w3.org/ns/posix/stat#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 
-<http://localhost:3000/> a <http://www.w3.org/ns/pim/space#Storage>, ldp:Container, ldp:BasicContainer, ldp:Resource;
+<http://localhost:3000/foo/> a ldp:Container, ldp:BasicContainer, ldp:Resource;
+    dc:modified "2022-06-09T08:17:07.000Z"^^xsd:dateTime;
     ldp:inbox <http://localhost:3000/inbox/>;
-    dc:modified "2022-05-25T09:15:27.000Z"^^xsd:dateTime.
-<http://localhost:3000/> posix:mtime 1653470127;
-    <http://www.w3.org/ns/auth/acl#accessControl> <http://localhost:3000/.acl>;
-    dc:description <http://localhost:3000/.meta>;
-    ldp:contains <http://localhost:3000/inbox>.
+    <http://www.w3.org/ns/auth/acl#accessControl> <http://localhost:3000/foo/.acl>;
+    dc:description <http://localhost:3000/foo/.meta>.
+```
+
+This can also be verified by sending a GET request to the subject resource itself.
+The inbox location can also be found in the Link headers.
+
+```shell
+curl -v 'http://localhost:3000/foo/.meta'
+```
+
+```shell
+HTTP/1.1 200 OK
+Link: <http://localhost:3000/inbox/>; rel="http://www.w3.org/ns/ldp#inbox"
 ```
