@@ -69,5 +69,5 @@ The `ErrorHandler` will convert the error to an HTTP response to be returned.
 Below are sections that go deeper into the specific steps.
 Not all steps are covered yet and will be added in the future.
 
-[How authentication and authorization work](authorization.md)
-[What the `ResourceStore` looks like](resource-store.md)
+* [How authentication and authorization work](authorization.md)
+* [What the `ResourceStore` looks like](resource-store.md)
