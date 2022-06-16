@@ -1,7 +1,7 @@
 import { promises as fsPromises } from 'fs';
 import fetch from 'cross-fetch';
 import type { ResourceStore, App } from '../../src/';
-import { BasicRepresentation, isSystemError, joinFilePath } from '../../src/';
+import { BasicRepresentation, isSystemError, joinFilePath, joinUrl } from '../../src/';
 import { AclHelper } from '../util/AclHelper';
 import { deleteResource, getResource, postResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
@@ -233,5 +233,37 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
     // GET file
     const response = await getResource(identifier.path);
     expect(await response.text()).toContain('valid data');
+  });
+
+  it('prevents creation of intermediate intermediate containers if they are not allowed.', async(): Promise<void> => {
+    const url = joinUrl(baseUrl, 'foo/bar/');
+    // Not allowed since there are no append permissions on the base container
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { write: true },
+      agentClass: 'agent',
+      default: true,
+    });
+    let response = await fetch(url, { method: 'PUT' });
+    expect(response.status).toBe(401);
+
+    // Not allowed since there are no write permissions for the target
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { append: true },
+      agentClass: 'agent',
+      accessTo: true,
+    });
+    response = await fetch(url, { method: 'PUT' });
+    expect(response.status).toBe(401);
+
+    // This covers all required permissions
+    await aclHelper.setSimpleAcl(baseUrl, [
+      { permissions: { append: true },
+        agentClass: 'agent',
+        accessTo: true },
+      { permissions: { write: true },
+        agentClass: 'agent',
+        default: true },
+    ]);
+    await putResource(url, { contentType: 'text/plain', exists: false });
   });
 });
