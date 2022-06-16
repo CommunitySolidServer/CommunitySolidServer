@@ -50,7 +50,7 @@
     "docker:setup": "./test/docker/docker-setup.sh",
     "docker:start": "./test/docker/docker-start.sh",
     "docker:stop": "./test/docker/docker-stop.sh",
-    "docs": "typedoc",
+    "typedocs": "typedoc --customCss ./documentation/typedoc.css",
     "jest": "jest --coverageReporters text-summary --",
     "lint": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
     "prepare": "npm run build",

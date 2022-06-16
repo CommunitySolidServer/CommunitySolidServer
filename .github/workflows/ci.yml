@@ -251,7 +251,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  docs:
+  typedocs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -259,7 +259,7 @@ jobs:
         with:
           node-version: '16.x'
       - run: npm ci --ignore-scripts
-      - run: npm run docs
+      - run: npm run typedocs
       - name: Save docs
         uses: actions/upload-artifact@v3
         with:
@@ -267,9 +267,28 @@ jobs:
           path: docs
           retention-days: 1
 
+  mkdocs:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - typedocs
+    steps:
+      - uses: actions/checkout@v2
+      - id: get_version
+        uses: battila7/get-version-action@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs-material 
+      - run: pip install mike
+      - run: git config user.name ci-bot
+      - run: git config user.email ci-bot@example.com
+      - run: git fetch origin gh-pages --depth=1
+      - run: cd documentation && mike deploy --push --update-aliases ${{steps.get_version.outputs.major}}.${{steps.get_version.outputs.minor}} latest
+
   publish-docs:
     needs:
-      - docs
+      - mkdocs
       - lint
       - test-unit
       - test-integration
@@ -282,7 +301,10 @@ jobs:
         with:
           name: docs
           path: docs
+      - id: get_version
+        uses: battila7/get-version-action@v2
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: ./docs
+          destination_dir:  ${{steps.get_version.outputs.major}}.${{steps.get_version.outputs.minor}}/docs

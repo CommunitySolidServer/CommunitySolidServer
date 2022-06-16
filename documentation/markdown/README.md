@@ -1,4 +1,9 @@
-# Documentation
+---
+hide:
+  - navigation
+---
+
+# Welcome
 
 Welcome to the Community Solid Server!
 Here we will cover many aspects of the server,
