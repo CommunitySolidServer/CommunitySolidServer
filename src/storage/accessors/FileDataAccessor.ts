@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import type { Readable } from 'stream';
 import type { Stats } from 'fs-extra';
 import { ensureDir, remove, stat, lstat, createWriteStream, createReadStream, opendir } from 'fs-extra';
@@ -12,13 +13,14 @@ import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMedi
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { parseContentType } from '../../util/HeaderUtil';
-import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
+import { joinFilePath, isContainerIdentifier, resolveModulePath } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../../util/ResourceUtil';
 import { toLiteral, toNamedTerm } from '../../util/TermUtil';
 import { CONTENT_TYPE_TERM, DC, IANA, LDP, POSIX, RDF, SOLID_META, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
+import { scryptSync, createCipheriv, createDecipheriv } from "crypto";
 
 /**
  * DataAccessor that uses the file system to store documents as files and containers as folders.
@@ -27,9 +29,14 @@ export class FileDataAccessor implements DataAccessor {
   protected readonly logger = getLoggerFor(this);
 
   protected readonly resourceMapper: FileIdentifierMapper;
+  protected readonly cryptoAlgorithm: string;
+  protected readonly cryptoKey: Buffer;
 
   public constructor(resourceMapper: FileIdentifierMapper) {
     this.resourceMapper = resourceMapper;
+    this.cryptoAlgorithm = "aes-192-cbc";
+    const password = readFileSync(resolveModulePath("secure/key"));
+    this.cryptoKey = scryptSync(password, "salt", 24);
   }
 
   /**
@@ -48,9 +55,18 @@ export class FileDataAccessor implements DataAccessor {
   public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false);
     const stats = await this.getStats(link.filePath);
-
     if (stats.isFile()) {
-      return guardStream(createReadStream(link.filePath));
+      const readStream = createReadStream(link.filePath);
+      let guardedStream: Guarded<Readable>;
+      const internalLink = link.filePath.includes('/.internal/');
+      if(!internalLink){
+        guardedStream = guardStream(readStream.pipe(
+          createDecipheriv(this.cryptoAlgorithm, this.cryptoKey, Buffer.alloc(16, 0))
+        ));
+      }else{
+        guardedStream = guardStream(readStream)
+      }
+      return guardedStream;
     }
 
     throw new NotFoundHttpError();
@@ -84,7 +100,6 @@ export class FileDataAccessor implements DataAccessor {
   public async writeDocument(identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata):
   Promise<void> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false, metadata.contentType);
-
     // Check if we already have a corresponding file with a different extension
     await this.verifyExistingExtension(link);
 
@@ -232,12 +247,20 @@ export class FileDataAccessor implements DataAccessor {
   private async getRawMetadata(identifier: ResourceIdentifier): Promise<Quad[]> {
     try {
       const metadataLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
-
       // Check if the metadata file exists first
       await lstat(metadataLink.filePath);
 
-      const readMetadataStream = guardStream(createReadStream(metadataLink.filePath));
-      return await parseQuads(readMetadataStream, { format: metadataLink.contentType, baseIRI: identifier.path });
+      const readStream = createReadStream(metadataLink.filePath);
+      let guardedStream: Guarded<Readable>;
+      const internalLink = metadataLink.filePath.includes('/.internal/');
+      if(!internalLink){
+        guardedStream = guardStream(readStream.pipe(
+          createDecipheriv(this.cryptoAlgorithm, this.cryptoKey, Buffer.alloc(16, 0))
+        ));
+      }else{
+        guardedStream = guardStream(readStream);
+      }
+      return await parseQuads(guardedStream, { format: metadataLink.contentType, baseIRI: identifier.path });
     } catch (error: unknown) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
       if (!isSystemError(error) || error.code !== 'ENOENT') {
@@ -339,7 +362,13 @@ export class FileDataAccessor implements DataAccessor {
   protected async writeDataFile(path: string, data: Readable): Promise<void> {
     return new Promise((resolve, reject): any => {
       const writeStream = createWriteStream(path);
-      data.pipe(writeStream);
+      const internalLink = path.includes('/.internal/');
+      if(!internalLink){
+        const cipher = createCipheriv(this.cryptoAlgorithm, this.cryptoKey, Buffer.alloc(16, 0));
+        data.pipe(cipher).pipe(writeStream);
+      }else{
+        data.pipe(writeStream);
+      }
       data.on('error', (error): void => {
         reject(error);
         writeStream.end();
