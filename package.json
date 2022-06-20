@@ -57,6 +57,7 @@
     "release": "standard-version",
     "start": "node ./bin/server.js",
     "start:file": "node ./bin/server.js -c config/file.json -f ./data",
+    "start-penny-localhost": "node ./bin/server.js -c config/penny.json -f ./data -p 3001",
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-configs.sh",
     "test:ts": "tsc -p test --noEmit",
@@ -66,7 +67,7 @@
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
-  "husky": {
+  "disabled_husky": {
     "hooks": {
       "pre-commit": "npm run build && npm run lint && npm run test:unit && npm run test:integration",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
