@@ -273,7 +273,7 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
-    it('Ignores the content when trying to create a container when the data is not empty.', async(): Promise<void> => {
+    it('ignores the content when trying to create a container when the data is not empty.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.terms.type, LDP.terms.Container);
       const result = await store.addResource(resourceID, representation);
@@ -439,15 +439,6 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add(RDF.terms.type, LDP.terms.Container);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
         new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
-      );
-    });
-
-    it('succeeds when trying to create a container with non-RDF data +' +
-        'since the data will be ignored.', async(): Promise<void> => {
-      const resourceID = { path: `${root}container/` };
-      representation.metadata.add(RDF.terms.type, LDP.terms.Container);
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toStrictEqual(
-        [{ path: root }, { path: `${root}container/` }],
       );
     });
 

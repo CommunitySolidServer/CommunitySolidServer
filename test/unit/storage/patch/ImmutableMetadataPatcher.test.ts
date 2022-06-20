@@ -40,7 +40,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
       canHandle: jest.fn(),
       handle: jest.fn(async(): Promise<Store> => new Store([
         quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)) ])),
-    } as unknown as SparqlUpdatePatcher;
+    } as any;
     metaStrategy = new SimpleSuffixStrategy('.meta');
     store = new Store();
     patch = getPatch();
