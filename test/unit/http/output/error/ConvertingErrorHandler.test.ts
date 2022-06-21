@@ -1,10 +1,12 @@
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
+import type { PreferenceParser } from '../../../../../src/http/input/preferences/PreferenceParser';
 import { ConvertingErrorHandler } from '../../../../../src/http/output/error/ConvertingErrorHandler';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../../src/http/representation/Representation';
 import type { RepresentationPreferences } from '../../../../../src/http/representation/RepresentationPreferences';
+import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type {
   RepresentationConverter,
   RepresentationConverterArgs,
@@ -33,7 +35,9 @@ describe('A ConvertingErrorHandler', (): void => {
   // The error object can get modified by the handler
   let error: Error;
   let stack: string | undefined;
-  let converter: RepresentationConverter;
+  const request = {} as HttpRequest;
+  let converter: jest.Mocked<RepresentationConverter>;
+  let preferenceParser: jest.Mocked<PreferenceParser>;
   let handler: ConvertingErrorHandler;
 
   beforeEach(async(): Promise<void> => {
@@ -45,20 +49,33 @@ describe('A ConvertingErrorHandler', (): void => {
       handleSafe: jest.fn((): Representation => new BasicRepresentation('serialization', 'text/turtle', true)),
     } as any;
 
-    handler = new ConvertingErrorHandler(converter, true);
+    preferenceParser = {
+      canHandle: jest.fn(),
+      handle: jest.fn().mockResolvedValue(preferences),
+    } as any;
+
+    handler = new ConvertingErrorHandler(converter, preferenceParser, true);
   });
 
   it('rejects input not supported by the converter.', async(): Promise<void> => {
-    (converter.canHandle as jest.Mock).mockRejectedValueOnce(new Error('rejected'));
-    await expect(handler.canHandle({ error, preferences })).rejects.toThrow('rejected');
+    converter.canHandle.mockRejectedValueOnce(new Error('rejected'));
+    await expect(handler.canHandle({ error, request })).rejects.toThrow('rejected');
     expect(converter.canHandle).toHaveBeenCalledTimes(1);
-    const args = (converter.canHandle as jest.Mock).mock.calls[0][0] as RepresentationConverterArgs;
+    const args = converter.canHandle.mock.calls[0][0];
     expect(args.preferences).toBe(preferences);
     expect(args.representation.metadata.contentType).toBe('internal/error');
   });
 
+  it('rejects input not supported by the preference parser.', async(): Promise<void> => {
+    preferenceParser.canHandle.mockRejectedValueOnce(new Error('rejected'));
+    await expect(handler.canHandle({ error, request })).rejects.toThrow('rejected');
+    expect(preferenceParser.canHandle).toHaveBeenCalledTimes(1);
+    expect(preferenceParser.canHandle).toHaveBeenLastCalledWith({ request });
+    expect(converter.canHandle).toHaveBeenCalledTimes(0);
+  });
+
   it('accepts input supported by the converter.', async(): Promise<void> => {
-    await expect(handler.canHandle({ error, preferences })).resolves.toBeUndefined();
+    await expect(handler.canHandle({ error, request })).resolves.toBeUndefined();
     expect(converter.canHandle).toHaveBeenCalledTimes(1);
     const args = (converter.canHandle as jest.Mock).mock.calls[0][0] as RepresentationConverterArgs;
     expect(args.preferences).toBe(preferences);
@@ -66,7 +83,7 @@ describe('A ConvertingErrorHandler', (): void => {
   });
 
   it('returns the converted error response.', async(): Promise<void> => {
-    const prom = handler.handle({ error, preferences });
+    const prom = handler.handle({ error, request });
     await expect(prom).resolves.toMatchObject({ statusCode: 404 });
     expect((await prom).metadata?.contentType).toBe('text/turtle');
     expect(converter.handle).toHaveBeenCalledTimes(1);
@@ -75,7 +92,7 @@ describe('A ConvertingErrorHandler', (): void => {
   });
 
   it('uses the handleSafe function of the converter during its own handleSafe call.', async(): Promise<void> => {
-    const prom = handler.handleSafe({ error, preferences });
+    const prom = handler.handleSafe({ error, request });
     await expect(prom).resolves.toMatchObject({ statusCode: 404 });
     expect((await prom).metadata?.contentType).toBe('text/turtle');
     expect(converter.handleSafe).toHaveBeenCalledTimes(1);
@@ -84,8 +101,8 @@ describe('A ConvertingErrorHandler', (): void => {
   });
 
   it('hides the stack trace if the option is disabled.', async(): Promise<void> => {
-    handler = new ConvertingErrorHandler(converter);
-    const prom = handler.handle({ error, preferences });
+    handler = new ConvertingErrorHandler(converter, preferenceParser);
+    const prom = handler.handle({ error, request });
     await expect(prom).resolves.toMatchObject({ statusCode: 404 });
     expect((await prom).metadata?.contentType).toBe('text/turtle');
     expect(converter.handle).toHaveBeenCalledTimes(1);

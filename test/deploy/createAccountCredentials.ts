@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 /* eslint-disable no-console */
 import fetch from 'cross-fetch';
 import urljoin from 'url-join';

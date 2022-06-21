@@ -22,19 +22,23 @@ export interface BasicRequestParserArgs {
 
 /**
  * Creates an {@link Operation} from an incoming {@link HttpRequest} by aggregating the results
- * of a {@link TargetExtractor}, {@link PreferenceParser}, {@link MetadataParser},
+ * of a {@link TargetExtractor}, {@link MetadataParser},
  * {@link ConditionsParser} and {@link BodyParser}.
  */
 export class BasicRequestParser extends RequestParser {
-  private readonly targetExtractor!: TargetExtractor;
-  private readonly preferenceParser!: PreferenceParser;
-  private readonly metadataParser!: MetadataParser;
-  private readonly conditionsParser!: ConditionsParser;
-  private readonly bodyParser!: BodyParser;
+  private readonly targetExtractor: TargetExtractor;
+  private readonly preferenceParser: PreferenceParser;
+  private readonly metadataParser: MetadataParser;
+  private readonly conditionsParser: ConditionsParser;
+  private readonly bodyParser: BodyParser;
 
   public constructor(args: BasicRequestParserArgs) {
     super();
-    Object.assign(this, args);
+    this.targetExtractor = args.targetExtractor;
+    this.preferenceParser = args.preferenceParser;
+    this.metadataParser = args.metadataParser;
+    this.conditionsParser = args.conditionsParser;
+    this.bodyParser = args.bodyParser;
   }
 
   public async handle(request: HttpRequest): Promise<Operation> {

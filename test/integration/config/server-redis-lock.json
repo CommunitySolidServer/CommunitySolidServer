@@ -47,7 +47,7 @@
     {
       "@id": "urn:solid-server:default:RedisLocker",
       "@type": "RedisLocker",
-      "attemptSettings_retryCount": 29,
+      "attemptSettings_retryCount": 1,
       "attemptSettings_retryDelay": 100,
       "attemptSettings_retryJitter": 0
     }

@@ -120,7 +120,7 @@ All notable changes to this project will be documented in this file.
 * fix: Make UnionCredentialsExtractor tolerate failures. ([c13456c](https://github.com/solid/community-server/commit/c13456c2259538e502a59ce73a226bab2c99c395))
 * fix: Accept lowercase Authorization tokens. ([9c52011](https://github.com/solid/community-server/commit/9c52011addde6cbdfd22efeb9485841c640363be))
 * feat: Return correct status codes for invalid requests ([1afed65](https://github.com/solid/community-server/commit/1afed65368f98f4fda7bdd8f9fc5071f51d4dc5b))
-* fix: Split AccountStorage and ForgotPasswordStorage ([d067165](expiring now) (<https://github.com/solid/community-server/commit/d067165b68a824143ff65f289d8a1e5e53d15103>))
+* fix: Split AccountStorage and ForgotPasswordStorage (expiring now) ([d067165](https://github.com/solid/community-server/commit/d067165b68a824143ff65f289d8a1e5e53d15103))
 * fix: Add content-negotiation when fetching dataset from url ([ce754c1](https://github.com/solid/community-server/commit/ce754c119fb87dc8a4f79c639e316bd04d40109b))
 * fix: Prevent login page from showing error before redirect ([1ed45c8](https://github.com/solid/community-server/commit/1ed45c8903e8750b818885cb6e48183e4c36f22a))
 * fix: Make IDP routes independent of handlers ([1769b79](https://github.com/solid/community-server/commit/1769b799df090a036f2d2925c06ba8d9f7130e6b))
@@ -195,7 +195,7 @@ All notable changes to this project will be documented in this file.
 
 * fix: Allow clients to be remembered in the SessionHttpHandler ([47b3a2d](https://github.com/solid/community-server/commit/47b3a2d77f4a5b3fa5bab364ac19dc32d79a89c1))
 * fix: Convert data to SparqlDataAccessor in regex config ([f34e124](https://github.com/solid/community-server/commit/f34e124e1b88c59b4e456b3f69d9373e61550bd1))
-* fix([7928f43](deps): update dependency @solid/access-token-verifier to ^0.12.0 (<https://github.com/solid/community-server/commit/7928f43f443f914c7850a968912f19a78212d266>))
+* fix(deps): update dependency @solid/access-token-verifier to ^0.12.0 ([7928f43](https://github.com/solid/community-server/commit/7928f43f443f914c7850a968912f19a78212d266))
 
 ## [1.0.0](https://github.com/solid/community-server/compare/v1.0.0-beta.2...v1.0.0) (2021-08-04)
 
@@ -271,7 +271,7 @@ All notable changes to this project will be documented in this file.
 * feat: Create ErrorHandler to convert errors to Representations ([e1f9587](https://github.com/solid/community-server/commit/e1f95877dac6a8f77d2c7a687bf478440ee5cb17))
 * feat: Add showStackTrace CLI variable ([b604dd8](https://github.com/solid/community-server/commit/b604dd8331e1c7682dd6080c696981855e277df6))
 * feat: Create WWW-Authenticate metadata writer ([e3c5b39](https://github.com/solid/community-server/commit/e3c5b3975266e5eee3939f9d1e8f5e0537417782))
-* [Expose constant Allow header]([a6371b0](https://github.com/solid/community-server/commit/a6371b073597ae922c3374d952dfdf2f920017ac))
+* Expose constant Allow header ([a6371b0]([a6371b0](https://github.com/solid/community-server/commit/a6371b073597ae922c3374d952dfdf2f920017ac))
 * feat: Add ErrorToHtmlConverter using templates ([9c0fa77](https://github.com/solid/community-server/commit/9c0fa775276b8ba3383d25a155a2507309e0a1de))
 * fix: Support BGPs with variables in SPARQL UPDATE queries ([f299b36](https://github.com/solid/community-server/commit/f299b36e2429245bf82be85ca0cccf733d658619))
 
@@ -290,7 +290,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-* feat: Add identity provider ([1d65143](#455) (<https://github.com/solid/community-server/commit/1d65143e89d4d64663805467a1587850690eeb59>))
+* feat: Add identity provider (#455) ([1d65143](https://github.com/solid/community-server/commit/1d65143e89d4d64663805467a1587850690eeb59))
 * feat: Add redis based locking mechanism ([99d0173](https://github.com/solid/community-server/commit/99d0173213be4b05bc78b80ac108cbb5f0906ad6))
 * feat: enable more compact config props using type-scoped contexts ([2861b90](https://github.com/solid/community-server/commit/2861b902c476c456b9e5c208ab5048fc6e318421))
 * feat: Update ChainedConverter to create dynamic paths ([44d82ea](https://github.com/solid/community-server/commit/44d82eac045fc3a5e8ae4b5407fc1989889f9e27))
@@ -341,7 +341,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-* fix: Do not re-encode static assets. ([c899e6c](#566) (<https://github.com/solid/community-server/commit/c899e6c4b1ab714347f49006b96615ad54fdb387>))
+* fix: Do not re-encode static assets. (#566) ([c899e6c](https://github.com/solid/community-server/commit/c899e6c4b1ab714347f49006b96615ad54fdb387))
 * fix: Preserve query string in transformations. ([6e50443](https://github.com/solid/community-server/commit/6e50443a3930adb14a483899b87589ccf42e7596))
 * fix: Test error classes correctly ([c29928c](https://github.com/solid/community-server/commit/c29928c32c0d2ce5c97889edb3bd73904ab6077e))
 * fix: Close unpiped streams ([386d782](https://github.com/solid/community-server/commit/386d78277dc7dda340c284bfff1ef8c40605e7ed))
@@ -356,7 +356,7 @@ All notable changes to this project will be documented in this file.
 * fix: do not output filesystem container size ([1486f01](https://github.com/solid/community-server/commit/1486f01aaf714aba945df5f31f17cb5e96002d1a))
 * Fix #621: acl:AuthenticatedAgent instead of foaf:AuthenticatedAgent ([91791a0](https://github.com/solid/community-server/commit/91791a0a140a9b1c80c2d7d9dde910c90b2062d8))
 * fix: Allow non-variable BGP boedies in SPARQL updates ([894d458](https://github.com/solid/community-server/commit/894d4589d96533e9432c63911adc355c0785f0e0))
-* [Correctly handle slugs in POST requests]([28c0eb7](https://github.com/solid/community-server/commit/28c0eb7e887f907fc4ca3a5045d9eb71cf0b0491))
+* Correctly handle slugs in POST requests ([28c0eb7](https://github.com/solid/community-server/commit/28c0eb7e887f907fc4ca3a5045d9eb71cf0b0491))
 * fix: Update faulty token verifier ([5c6822d](https://github.com/solid/community-server/commit/5c6822d4686585a03631b371427c7e2151ab65c7))
 * fix: SPARQL PATCH Content Type ([2a34a43](https://github.com/solid/community-server/commit/2a34a430fa7435df01743e7f8ac7de014d259405))
 * fix: SPARQL body parser test content type metadata ([23473f5](https://github.com/solid/community-server/commit/23473f59e69c1e028c7796996d98cf571277ad14))
@@ -391,7 +391,7 @@ All notable changes to this project will be documented in this file.
 * feat: Export UnsecureConstantCredentialsExtractor. ([5429014](https://github.com/solid/community-server/commit/542901488fb043d47575206f87d0106f656e0974))
 * feat: Add IfNeededConverter and PassthroughConverter. ([6763500](https://github.com/solid/community-server/commit/676350046631b75b136ad01ccca0ce6a64104526))
 * feat: Support composite PATCH updates ([36761e8](https://github.com/solid/community-server/commit/36761e81249c9d7e787083de08135f1f22b5c23d))
-* [Add optional path and url suffixes to FixedContentTypeMapper]([4ac0167](https://github.com/solid/community-server/commit/4ac0167c8d2b25a5bc5169617f04f2f9f3eece88))
+* Add optional path and url suffixes to FixedContentTypeMapper ([4ac0167]([4ac0167](https://github.com/solid/community-server/commit/4ac0167c8d2b25a5bc5169617f04f2f9f3eece88))
 * feat: Implement UnsupportedAsyncHandler. ([dd9d873](https://github.com/solid/community-server/commit/dd9d8731226d22e24643ee8565f4369480bae260))
 * feat: Add ConstantConverter. ([5416d66](https://github.com/solid/community-server/commit/5416d66a31f4388c99352a3def81a4d06b085e78))
 * feat: Set Vary header. ([693d48b](https://github.com/solid/community-server/commit/693d48b9eb965c4a479e137eea157eb1943b40a9))
@@ -564,8 +564,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 * feat: Expose types ([1dd1469](https://github.com/solid/community-server/commit/1dd14692feed21410557548d877c99ac08c2090f))
-* feat: Implement resource mapper for the file resource store ([383da24](#142) (<https://github.com/solid/community-server/commit/383da24601118d13e32c41b044ed7e69b31cc113>))
-* feat: More integration tests and test configs ([b1991cb](#154) (<https://github.com/solid/community-server/commit/b1991cb08ae722aae497104067a7a455456952c7>))
+* feat: Implement resource mapper for the file resource store (#142) ([383da24](https://github.com/solid/community-server/commit/383da24601118d13e32c41b044ed7e69b31cc113))
+* feat: More integration tests and test configs (#154) ([b1991cb](https://github.com/solid/community-server/commit/b1991cb08ae722aae497104067a7a455456952c7))
 * feat: Update RepresentationMetadata to store triples ([76319ba](https://github.com/solid/community-server/commit/76319ba360f563122f1d35854b0e846417da2490))
 * feat: Add logging ([99464d9](https://github.com/solid/community-server/commit/99464d9a954569cc1f259b01d28e223550571d7a))
 * feat: Implement HEAD request support ([0644f8d](https://github.com/solid/community-server/commit/0644f8d24517b88018f85941d5b74b94c3a443f3))
@@ -607,8 +607,8 @@ All notable changes to this project will be documented in this file.
 * refactor: Rename instances of data resource to document ([626b311](https://github.com/solid/community-server/commit/626b3114f413af2eb87c00c880ed86dc7569bb08))
 * refactor: Remove file and in memory stores ([03c64e5](https://github.com/solid/community-server/commit/03c64e561707a4880822338817dc030b97a0f53f))
 * refactor: Make ExtensionBasedMapper only expose what is needed ([4df2645](https://github.com/solid/community-server/commit/4df26454d44a71e676342fc4c5b37fa9e2ee118c))
-* refactor: Implement empty canHandle on base class. ([1a45b65](#289) (<https://github.com/solid/community-server/commit/1a45b65df702815a65cc6fb539a6687eea5d3194>))
-* chore: Organize tests ([73a56d8](#292) (<https://github.com/solid/community-server/commit/73a56d8682711fedd8f54216275e521c44a51670>))
+* refactor: Implement empty canHandle on base class. (#289) ([1a45b65](https://github.com/solid/community-server/commit/1a45b65df702815a65cc6fb539a6687eea5d3194))
+* chore: Organize tests (#292) ([73a56d8](https://github.com/solid/community-server/commit/73a56d8682711fedd8f54216275e521c44a51670))
 * chore: Use Jest recommended linting. ([4b4f737](https://github.com/solid/community-server/commit/4b4f7370137dbbacf2ef2c887e952ad6d7e55622))
 * refactor: Change constructor so it is supported by Components.js ([dee4eef](https://github.com/solid/community-server/commit/dee4eef131f1852dd62428ff122d73630070d710))
 * refactor: Change routing constructors to work with Components.js ([50dfea1](https://github.com/solid/community-server/commit/50dfea1a27b461ea8ca87526165d33f0d991c44a))
@@ -621,7 +621,7 @@ All notable changes to this project will be documented in this file.
 * fix: metadata file error in FileResourceStore ([c808dfe](https://github.com/solid/community-server/commit/c808dfeff09e26a4b31199cc0eec9db8667add28))
 * fix: Retain status codes when combining errors ([10723bb](https://github.com/solid/community-server/commit/10723bb6b866316c2f20da0fe47349bd5f52edf5))
 * fix: Have AsyncHandlers only check what is necessary ([4d34cdd](https://github.com/solid/community-server/commit/4d34cdd12f6dfcc5d5df64bd5c90b13148f69cfb))
-* [Fix typo.]([79defc3](https://github.com/solid/community-server/commit/79defc3abb77d1454038c8a8e25b79494a9f4a6b))
+* Fix typo. ([79defc3](https://github.com/solid/community-server/commit/79defc3abb77d1454038c8a8e25b79494a9f4a6b))
 * fix: Make sure all URI characters are correctly encoded ([e85ca62](https://github.com/solid/community-server/commit/e85ca622da0c8e3ef8344332e162cfe327f74551))
 * fix: Fix test issues ([2296219](https://github.com/solid/community-server/commit/22962192ffff5eac028ef3604e1cd989331cbff0))
 * fix: Remove metadata file if no new metadata is stored ([63f891c](https://github.com/solid/community-server/commit/63f891c0f17ee915af21805ca114d2a9a90fb62e))
@@ -650,7 +650,7 @@ All notable changes to this project will be documented in this file.
 * feat: add support for parsing more RDF formats using rdf-parse ([e88e680](https://github.com/solid/community-server/commit/e88e680ed7bd2799cdfd6f627dfc85f064dee94c))
 * feat: Support link and slug headers in SimpleBodyParser ([86d5f36](https://github.com/solid/community-server/commit/86d5f367d52b769b563a8ad6ea1a02274f9ec5ab))
 * feat: Move runtime config into dedicated component, Closes #67 ([5126356](https://github.com/solid/community-server/commit/5126356c940bb12d9765bbd3571b6f1f6fa65cd0))
-* feat: Add file based ResourceStore ([381dae4](#52) (<https://github.com/solid/community-server/commit/381dae42f689a11937ca4daf0227d0bd16064ce3>))
+* feat: Add file based ResourceStore (#52) ([381dae4](https://github.com/solid/community-server/commit/381dae42f689a11937ca4daf0227d0bd16064ce3))
 * feat: Add more extensive permission parsing support ([e06d0bc](https://github.com/solid/community-server/commit/e06d0bc8c5fed72a47bf8e82f0affba27e1f77bb))
 * feat: Integrate acl with rest of server ([769b492](https://github.com/solid/community-server/commit/769b49293cffa77cd7381331bc59e488d7e8f4c9))
 * feat: Add acl support ([0545ca1](https://github.com/solid/community-server/commit/0545ca121eedec5541900aa1411dbeea8af015e2))
@@ -683,4 +683,4 @@ All notable changes to this project will be documented in this file.
 * feat: add FirstCompositeHandler to support multiple handlers ([4229932](https://github.com/solid/community-server/commit/4229932a3ac75c2532da4e495e96b779fc5b6c92))
 * feat: add custom errors ([57405f3](https://github.com/solid/community-server/commit/57405f3e2695f3a82628e02052695314d656af95))
 * feat: add additional supported interfaces ([a4f2b39](https://github.com/solid/community-server/commit/a4f2b3995c3e8cfeacf5fe3dbbc0eeb8020f9c9e))
-* [Initial configuration]([b949b6c](https://github.com/solid/community-server/commit/b949b6cf5eade549b91731edcd1c4d931537a42e))
+* Initial configuration ([b949b6c](https://github.com/solid/community-server/commit/b949b6cf5eade549b91731edcd1c4d931537a42e))
