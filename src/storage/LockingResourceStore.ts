@@ -3,6 +3,7 @@ import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIde
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -46,27 +47,27 @@ export class LockingResourceStore implements AtomicResourceStore {
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     return this.locks.withWriteLock(this.getLockIdentifier(container),
-      async(): Promise<ResourceIdentifier> => this.source.addResource(container, representation, conditions));
+      async(): Promise<Record<string, RepresentationMetadata>> => this.source.addResource(container, representation, conditions));
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ResourceIdentifier[]> => this.source.setRepresentation(identifier, representation, conditions));
+      async(): Promise<Record<string, RepresentationMetadata>> => this.source.setRepresentation(identifier, representation, conditions));
   }
 
   public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ResourceIdentifier[]> => this.source.deleteResource(identifier, conditions));
+      async(): Promise<Record<string, RepresentationMetadata>> => this.source.deleteResource(identifier, conditions));
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ResourceIdentifier[]> => this.source.modifyResource(identifier, patch, conditions));
+      async(): Promise<Record<string, RepresentationMetadata>> => this.source.modifyResource(identifier, patch, conditions));
   }
 
   /**
