@@ -1,5 +1,6 @@
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
@@ -21,22 +22,22 @@ export class BaseResourceStore implements ResourceStore {
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     throw new NotImplementedHttpError();
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     throw new NotImplementedHttpError();
   }
 
   public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     throw new NotImplementedHttpError();
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     throw new NotImplementedHttpError();
   }
 }
