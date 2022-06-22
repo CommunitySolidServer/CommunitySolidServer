@@ -5,6 +5,7 @@ import type { HttpRequest } from '../server/HttpRequest';
 import { WebSocketHandler } from '../server/WebSocketHandler';
 import { parseForwarded } from '../util/HeaderUtil';
 import { splitCommaSeparated } from '../util/StringUtil';
+import type { RepresentationMetadata } from './representation/RepresentationMetadata';
 import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid-0.1';
@@ -61,10 +62,13 @@ class WebSocketListener extends EventEmitter {
     this.emit('closed');
   }
 
-  public onResourceChanged({ path }: ResourceIdentifier): void {
-    if (this.subscribedPaths.has(path)) {
-      this.sendMessage('pub', path);
-    }
+  public onResourceChanged(changed: Record<string, RepresentationMetadata>): void {
+    for (const [key, value] of Object.entries(changed)) {
+      if (this.subscribedPaths.has(key)) {
+        // TODO - Not sure what this should be
+        this.sendMessage('pub', JSON.stringify(value));
+      }
+    };
   }
 
   private onMessage(message: string): void {
@@ -128,7 +132,7 @@ export class UnsecureWebSocketsProtocol extends WebSocketHandler {
     this.logger.warn('The chosen configuration includes Solid WebSockets API 0.1, which is unauthenticated.');
     this.logger.warn('This component will be removed from default configurations in future versions.');
 
-    source.on('changed', (changed: ResourceIdentifier): void => this.onResourceChanged(changed));
+    source.on('changed', (changed: Record<string, RepresentationMetadata>): void => this.onResourceChanged(changed));
   }
 
   public async handle(input: { webSocket: WebSocket; upgradeRequest: HttpRequest }): Promise<void> {
@@ -143,7 +147,7 @@ export class UnsecureWebSocketsProtocol extends WebSocketHandler {
     listener.start(input.upgradeRequest);
   }
 
-  private onResourceChanged(changed: ResourceIdentifier): void {
+  private onResourceChanged(changed: Record<string, RepresentationMetadata>): void {
     for (const listener of this.listeners) {
       listener.onResourceChanged(changed);
     }

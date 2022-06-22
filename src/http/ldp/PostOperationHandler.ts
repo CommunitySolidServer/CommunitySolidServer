@@ -37,6 +37,7 @@ export class PostOperationHandler extends OperationHandler {
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
     const result = await this.store.addResource(operation.target, operation.body, operation.conditions);
+    // TODO - Not sure what this should be
     return new CreatedResponseDescription(createResourceIdentifier(result[operation.target.path].identifier.value));
   }
 }
