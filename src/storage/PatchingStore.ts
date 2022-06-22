@@ -1,4 +1,5 @@
 import type { Patch } from '../http/representation/Patch';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './Conditions';
@@ -20,7 +21,7 @@ export class PatchingStore<T extends ResourceStore = ResourceStore> extends Pass
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
     try {
       return await this.source.modifyResource(identifier, patch, conditions);
     } catch (error: unknown) {
