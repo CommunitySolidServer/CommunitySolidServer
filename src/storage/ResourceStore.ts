@@ -1,5 +1,6 @@
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { Conditions } from './Conditions';
@@ -38,13 +39,13 @@ export interface ResourceStore extends ResourceSet {
    * @param representation - New representation of the resource.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Identifiers of resources that were possibly modified.
+   * @returns Info about resources that were possibly modified.
    */
   setRepresentation: (
     identifier: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<ResourceIdentifier[]>;
+  ) => Promise<Record<string, RepresentationMetadata>>;
 
   /**
    * Creates a new resource in the container.
@@ -52,25 +53,25 @@ export interface ResourceStore extends ResourceSet {
    * @param representation - Representation of the new resource
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns The identifier of the newly created resource.
+   * @returns Info about the newly created resource.
    */
   addResource: (
     container: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<ResourceIdentifier>;
+  ) => Promise<Record<string, RepresentationMetadata>>;
 
   /**
    * Deletes a resource.
    * @param identifier - Identifier of resource to delete.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Identifiers of resources that were possibly modified.
+   * @returns Info about resources that were possibly modified.
    */
   deleteResource: (
     identifier: ResourceIdentifier,
     conditions?: Conditions,
-  ) => Promise<ResourceIdentifier[]>;
+  ) => Promise<Record<string, RepresentationMetadata>>;
 
   /**
    * Sets or updates the representation of a resource,
@@ -79,11 +80,11 @@ export interface ResourceStore extends ResourceSet {
    * @param patch - Description of which parts to update.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Identifiers of resources that were possibly modified.
+   * @returns Info about resources that were possibly modified.
    */
   modifyResource: (
     identifier: ResourceIdentifier,
     patch: Patch,
     conditions?: Conditions,
-  ) => Promise<ResourceIdentifier[]>;
+  ) => Promise<Record<string, RepresentationMetadata>>;
 }
