@@ -14,3 +14,10 @@ export interface ResourceIdentifier {
 export function isResourceIdentifier(object: any): object is ResourceIdentifier {
   return object && (typeof object.path === 'string');
 }
+
+/**
+ * Factory function creating a resource identifier for convenience.
+ */
+export function createResourceIdentifier(resourcePath: string): ResourceIdentifier {
+  return { path: resourcePath };
+}
