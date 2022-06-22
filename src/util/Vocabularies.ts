@@ -71,6 +71,12 @@ export const ACL = createUriAndTermNamespace('http://www.w3.org/ns/auth/acl#',
   'Control',
 );
 
+export const AS = createUriAndTermNamespace('https://www.w3.org/ns/activitystreams#',
+  'Create',
+  'Update',
+  'Delete',
+);
+
 export const AUTH = createUriAndTermNamespace('urn:solid:auth:',
   'userMode',
   'publicMode',
@@ -142,6 +148,10 @@ export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms
   'where',
 
   'InsertDeletePatch',
+);
+
+export const SOLID_AS = createUriAndTermNamespace('http://www.w3.org/ns/solid/activitystreams#',
+  'Activity',
 );
 
 export const SOLID_ERROR = createUriAndTermNamespace('urn:npm:solid:community-server:error:',
