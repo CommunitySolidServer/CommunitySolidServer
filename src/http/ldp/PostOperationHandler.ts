@@ -4,6 +4,7 @@ import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
+import { createResourceIdentifier } from '../representation/ResourceIdentifier';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
 
@@ -35,7 +36,7 @@ export class PostOperationHandler extends OperationHandler {
       this.logger.warn('POST requests require the Content-Type header to be set');
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
-    const identifier = await this.store.addResource(operation.target, operation.body, operation.conditions);
-    return new CreatedResponseDescription(identifier);
+    const result = await this.store.addResource(operation.target, operation.body, operation.conditions);
+    return new CreatedResponseDescription(createResourceIdentifier(result[operation.target.path].identifier.value));
   }
 }
