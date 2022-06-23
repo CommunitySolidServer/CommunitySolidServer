@@ -17,6 +17,7 @@
             "comment": "Converts an Error object into a representation for an HTTP response.",
             "@type": "ConvertingErrorHandler",
             "converter": { "@id": "urn:solid-server:default:UiEnabledConverter" },
+            "preferenceParser": { "@id": "urn:solid-server:default:PreferenceParser" },
             "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
           }
         ]

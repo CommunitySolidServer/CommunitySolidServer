@@ -49,12 +49,8 @@ export class ClusterManager {
   private readonly workers: number;
   private readonly clusterMode: ClusterMode;
 
-  public constructor(workers: number | string) {
+  public constructor(workers: number) {
     const cores = cpus().length;
-    // Workaround for https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1182
-    if (typeof workers === 'string') {
-      workers = Number.parseInt(workers, 10);
-    }
 
     if (workers <= -cores) {
       throw new InternalServerError('Invalid workers value (should be in the interval ]-num_cores, +∞).');

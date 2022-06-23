@@ -16,6 +16,7 @@
           }
         ]
       },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "configStorage": { "@id": "urn:solid-server:default:PodConfigurationStorage" }
     }
   ]

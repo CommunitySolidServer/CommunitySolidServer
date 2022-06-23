@@ -87,11 +87,13 @@ export async function postResource(container: string, options: CreateOptions): P
 /**
  * This is specifically for PATCH requests which are expected to succeed.
  */
-export async function patchResource(url: string, query: string, exists?: boolean): Promise<Response> {
+export async function patchResource(url: string, query: string, type: 'sparql' | 'n3', exists?: boolean):
+Promise<Response> {
+  const contentTypes = { sparql: 'application/sparql-update', n3: 'text/n3' };
   const response = await fetch(url, {
     method: 'PATCH',
     headers: {
-      'content-type': 'application/sparql-update',
+      'content-type': contentTypes[type],
     },
     body: query,
   });
@@ -104,25 +106,6 @@ export async function patchResource(url: string, query: string, exists?: boolean
   return response;
 }
 
-/**
- * This is specifically for PATCH requests which are expected to succeed.
- */
-export async function patchResourceN3(url: string, query: string, exists?: boolean): Promise<Response> {
-  const response = await fetch(url, {
-    method: 'PATCH',
-    headers: {
-      'content-type': 'text/n3',
-    },
-    body: [ '@prefix solid: <http://www.w3.org/ns/solid/terms#>.', query ].join('\n'),
-  });
-  await expect(response.text()).resolves.toHaveLength(0);
-  expect(response.status).toBe(exists ? 205 : 201);
-  if (!exists) {
-    expect(response.headers.get('location')).toBe(url);
-  }
-
-  return response;
-}
 export async function deleteResource(url: string): Promise<void> {
   let response = await fetch(url, { method: 'DELETE' });
   expect(response.status).toBe(205);

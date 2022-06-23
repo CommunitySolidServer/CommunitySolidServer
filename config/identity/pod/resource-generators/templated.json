@@ -10,7 +10,8 @@
         "@type": "ExtensionBasedMapperFactory"
       },
       "templateEngine": {
-        "@type": "HandlebarsTemplateEngine"
+        "@type": "HandlebarsTemplateEngine",
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
       }
     }
   ]

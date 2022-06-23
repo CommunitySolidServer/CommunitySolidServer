@@ -7,6 +7,7 @@
   you should also upgrade to prevent warnings and conflicts.
 - A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
+- Metadata of resources can now be edited through patching its description resources. See the [documentation](./documentation/metadata-editing.md) for more information.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
@@ -36,14 +37,40 @@ The following changes are relevant for v4 custom configs that replaced certain f
 - RegexPathRouting has changed from a map datastructure to an array datastructure, allowing for fallthrough regex parsing. The change is reflected in the following default configs:
    - `/storage/backend/regex.json`
    - `/sparql-file-storage.json`
+- The `IdentityProviderFactory` inputs have been extended.
+  - `/identity/handler/provider-factory/identity.json`
+- LDP components have slightly changed so the preference parser is in a separate config file.
+  - `/config/ldp/handler/*`
+- The `PutOperationHandler` constructor now has an extra argument: `metadataStrategy`, resulting in a change in `config/ldp/handler/components/operation-handler.json`
+- A new key-value pair was added to `config/ldp/metadata-writer/writers/link-rel.json`, which allows generating the link to the description resource
+- The `DataAccessorBasedStore` constructor now has two new arguments: `metadataStrategy` and `converter`. As a result following configuration files are changed:
+  - `config/sparql-file-storage.json`
+  - `config/storage/backend/dynamic.json`
+  - `config/storage/backend/file.json`
+  - `config/storage/backend/global-quota-file.json`
+  - `config/storage/backend/memory.json`
+  - `config/storage/backend/pod-quota-file.json`
+  - `config/storage/backend/regex.json`
+  - `config/storage/backend/sparql.json`
+  - `templates/config/defaults.json`
+- `config/storage/middleware/stores/patching.json` has changed significantly to allow description resources to be patched.
+- The auxiliary configuration files were updated. In the following configuration files, the `metadataStrategy` is added in the list of sources:
+  - `config/util/auxiliary/acl.json`
+  - `config/util/auxiliary/no-acl.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - `YargsCliExtractor` was changed to now take as input an array of parameter objects.
 - `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
 - `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
+- Both `TemplateEngine` implementations now take a `baseUrl` parameter as input.
+- The `IdentityProviderFactory` and `ConvertingErrorHandler` now additionally take a `PreferenceParser` as input.
+- Error handlers now take the incoming HttpRequest as input instead of just the preferences.
+- `DataAccessor` interface is changed. There is now a new method called `writeMetadata`.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
+
+A new interface `RdfStorePatcher` has been added for executing patches on a store. The `SparqlUpdatePatcher` and `N3Patcher` now use this interface instead of the `RepresentationPatcher`.
 
 ## V4.0.1
 Freezes the `oidc-provider` dependency to prevent a potential issue with the solid authn client

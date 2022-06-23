@@ -20,7 +20,7 @@ describe('A StaticAssetHandler', (): void => {
     '/foo/bar/folder1/': '/assets/folders/1/',
     '/foo/bar/folder2/': '/assets/folders/2',
     '/foo/bar/folder2/subfolder/': '/assets/folders/3',
-  });
+  }, 'http://localhost:3000');
 
   afterEach(jest.clearAllMocks);
 
@@ -217,7 +217,7 @@ describe('A StaticAssetHandler', (): void => {
     jest.spyOn(Date, 'now').mockReturnValue(0);
     const cachedHandler = new StaticAssetHandler({
       '/foo/bar/style': '/assets/styles/bar.css',
-    }, {
+    }, 'http://localhost:3000', {
       expires: 86400,
     });
     const request = { method: 'GET', url: '/foo/bar/style' };

@@ -9,7 +9,6 @@ import {
   expectQuads,
   getResource,
   patchResource,
-  patchResourceN3,
   postResource,
   putResource,
 } from '../util/FetchUtil';
@@ -21,8 +20,7 @@ import {
   getTestFolder,
   instantiateFromConfig, removeFolder,
 } from './Config';
-import literal = DataFactory.literal;
-const { namedNode, quad } = DataFactory;
+const { literal, namedNode, quad } = DataFactory;
 
 const port = getPort('LpdHandlerWithoutAuth');
 const baseUrl = `http://localhost:${port}/`;
@@ -323,7 +321,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
       'WHERE {}',
     ].join('\n');
-    await patchResource(documentUrl, query, true);
+    await patchResource(documentUrl, query, 'sparql', true);
 
     // PATCH using a content-type header with charset
     const query2 = [ 'DELETE { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
@@ -368,11 +366,12 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     const documentUrl = response.headers.get('location')!;
 
     // PATCH
-    const query = [ '<> a solid:InsertDeletePatch;',
+    const query = [ '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
+      '<> a solid:InsertDeletePatch;',
       'solid:deletes { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> };',
       'solid:inserts { <http://test.com/s3> <http://test.com/p3> <http://test.com/o3> }.',
     ].join('\n');
-    await patchResourceN3(documentUrl, query, true);
+    await patchResource(documentUrl, query, 'n3', true);
 
     // PATCH using a content-type header with charset
     const query2 = [ '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',

@@ -131,7 +131,7 @@ test:s dc:modified test:o.
     );
   });
 
-  it('converts quads in the ResponseMetadata graph to the default graph (in Turtle)..', async(): Promise<void> => {
+  it('converts quads in the ResponseMetadata graph to the default graph.', async(): Promise<void> => {
     const representation = new BasicRepresentation([ quad(
       namedNode('http://test.com/s'),
       namedNode('http://test.com/p'),

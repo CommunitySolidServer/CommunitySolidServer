@@ -17,6 +17,7 @@ describe('A RepresentationPatchHandler', (): void => {
   let source: jest.Mocked<ResourceStore>;
   let patcher: jest.Mocked<RepresentationPatcher>;
   let handler: RepresentationPatchHandler;
+
   beforeEach(async(): Promise<void> => {
     source = {
       getRepresentation: jest.fn().mockResolvedValue(representation),

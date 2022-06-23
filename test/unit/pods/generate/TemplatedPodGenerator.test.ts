@@ -13,6 +13,7 @@ describe('A TemplatedPodGenerator', (): void => {
   const template = 'config-template.json';
   const templatePath = `${configTemplatePath}${template}`;
   const identifier = { path: 'http://test.com/alice/' };
+  const baseUrl = 'http://test.com';
   let settings: PodSettings;
   let storeFactory: ComponentsJsFactory;
   let variableHandler: VariableHandler;
@@ -32,7 +33,7 @@ describe('A TemplatedPodGenerator', (): void => {
 
     configStorage = new Map<string, unknown>() as any;
 
-    generator = new TemplatedPodGenerator(storeFactory, variableHandler, configStorage, configTemplatePath);
+    generator = new TemplatedPodGenerator(storeFactory, variableHandler, configStorage, baseUrl, configTemplatePath);
   });
 
   it('only supports settings with a template.', async(): Promise<void> => {
@@ -45,9 +46,11 @@ describe('A TemplatedPodGenerator', (): void => {
     expect(variableHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(variableHandler.handleSafe).toHaveBeenLastCalledWith({ identifier, settings });
     expect(storeFactory.generate).toHaveBeenCalledTimes(1);
-    expect(storeFactory.generate).toHaveBeenLastCalledWith(
-      templatePath, TEMPLATE.ResourceStore, { [TEMPLATE_VARIABLE.templateConfig]: templatePath },
-    );
+    expect(storeFactory.generate)
+      .toHaveBeenLastCalledWith(templatePath, TEMPLATE.ResourceStore, {
+        [TEMPLATE_VARIABLE.templateConfig]: templatePath,
+        'urn:solid-server:default:variable:baseUrl': baseUrl,
+      });
     expect(configStorage.get(identifier.path)).toEqual({ [TEMPLATE_VARIABLE.templateConfig]: templatePath });
   });
 
@@ -72,13 +75,14 @@ describe('A TemplatedPodGenerator', (): void => {
   });
 
   it('uses a default template folder if none is provided.', async(): Promise<void> => {
-    generator = new TemplatedPodGenerator(storeFactory, variableHandler, configStorage);
+    generator = new TemplatedPodGenerator(storeFactory, variableHandler, configStorage, baseUrl);
     const defaultPath = joinFilePath(__dirname, '../../../../templates/config/', template);
 
     await expect(generator.generate(identifier, settings)).resolves.toBe('store');
     expect(storeFactory.generate)
       .toHaveBeenLastCalledWith(defaultPath, TEMPLATE.ResourceStore, {
         [TEMPLATE_VARIABLE.templateConfig]: defaultPath,
+        'urn:solid-server:default:variable:baseUrl': baseUrl,
       });
   });
 });

@@ -72,6 +72,7 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
 
   [ 'PUT',     'C/',  [],                     undefined,              '',     N3,  401, 401 ],
   [ 'PUT',     'C/',  [ AM.read ],            undefined,              '',     N3,  401, 401 ],
+  // We return a 409 when targeting an existing container as we only allow changes targeting the metadata directly
   [ 'PUT',     'C/',  [ AM.write ],           undefined,              '',     '',  409, 201 ],
 
   [ 'PUT',     'C/R', [],                     undefined,              '',     TXT, 401, 401 ],

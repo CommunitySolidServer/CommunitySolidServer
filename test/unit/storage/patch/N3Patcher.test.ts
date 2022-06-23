@@ -14,6 +14,7 @@ describe('An N3Patcher', (): void => {
   let input: RdfStorePatcherInput;
   const patcher = new N3Patcher();
   let store: Store;
+
   beforeEach(async(): Promise<void> => {
     patch = new BasicRepresentation() as N3Patch;
     patch.deletes = [];

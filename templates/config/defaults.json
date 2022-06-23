@@ -3,7 +3,8 @@
   "import": [
     "css:config/util/auxiliary/acl.json",
     "css:config/util/index/default.json",
-    "css:config/util/representation-conversion/default.json"
+    "css:config/util/representation-conversion/default.json",
+    "css:config/util/variables/default.json"
   ],
   "@graph": [
     {
