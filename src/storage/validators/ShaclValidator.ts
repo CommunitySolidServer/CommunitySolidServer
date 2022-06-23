@@ -4,6 +4,8 @@ import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { InternalServerError } from '../../util/errors/InternalServerError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { fetchDataset } from '../../util/FetchUtil';
 import { cloneRepresentation } from '../../util/ResourceUtil';
 import { readableToQuads } from '../../util/StreamUtil';
@@ -44,7 +46,7 @@ export class ShaclValidator extends ShapeValidator {
     try {
       // Creating a new representation as the data might be written later by DataAccessorBasedStore
       const tempRepresentation = await cloneRepresentation(representation);
-      this.logger.info(`own: ${representation.metadata.identifier.value}`);
+      this.logger.debug(`resource to be validated by the shape: ${representation.metadata.identifier.value}`);
       representationData = await this.converter.handleSafe({
         identifier: { path: representation.metadata.identifier.value },
         representation: tempRepresentation,
@@ -52,6 +54,15 @@ export class ShaclValidator extends ShapeValidator {
       });
     } catch (error: unknown) {
       representation.data.destroy();
+      if (error instanceof NotImplementedHttpError) {
+        throw new BadRequestHttpError('Data could not be validated as it could not be converted to rdf',
+          { details: { ...error, message: error.message }});
+      }
+
+      if (error instanceof InternalServerError) {
+        throw new BadRequestHttpError('Not allowed to create new containers within a constrained container',
+          { details: { ...error, message: error.message }});
+      }
       throw error;
     }
     const dataStore = await readableToQuads(representationData.data);
