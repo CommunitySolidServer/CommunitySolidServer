@@ -15,9 +15,11 @@ releases:
     values:
       - ./values/production.yaml.gotmpl
     needs:
-      - grassmud-horse/css-image-pull-secrets
+      - mysilio-me/itme-image-pull-secrets
   - name: staging-css
     namespace: mysilio-me
     chart: css/community-solid-server
     values:
       - ./values/staging.yaml.gotmpl
+    needs:
+      - mysilio-me/itme-image-pull-secrets
