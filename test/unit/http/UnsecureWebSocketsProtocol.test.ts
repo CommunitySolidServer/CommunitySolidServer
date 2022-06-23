@@ -101,7 +101,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       it('send an error message.', (): void => {
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift())
-          .toBe('error Mismatched host: wrong.example instead of mypod.example');
+          .toBe('error Mismatched host: expected mypod.example but got wrong.example');
       });
     });
 
@@ -113,7 +113,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       it('send an error message.', (): void => {
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift())
-          .toBe('error Mismatched protocol: http: instead of https:');
+          .toBe('error Mismatched protocol: expected https: but got http:');
       });
     });
   });

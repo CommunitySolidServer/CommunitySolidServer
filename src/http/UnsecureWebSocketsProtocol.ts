@@ -92,10 +92,10 @@ class WebSocketListener extends EventEmitter {
       // Resolve and verify the URL
       const resolved = new URL(path, `${this.protocol}${this.host}`);
       if (resolved.host !== this.host) {
-        throw new Error(`Mismatched host: ${resolved.host} instead of ${this.host}`);
+        throw new Error(`Mismatched host: expected ${this.host} but got ${resolved.host}`);
       }
       if (resolved.protocol !== this.protocol) {
-        throw new Error(`Mismatched protocol: ${resolved.protocol} instead of ${this.protocol}`);
+        throw new Error(`Mismatched protocol: expected ${this.protocol} but got ${resolved.protocol}`);
       }
       // Subscribe to the URL
       const url = resolved.href;
