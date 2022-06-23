@@ -11,7 +11,7 @@ image:
   repository: itme/{{ requiredEnv  "CIRCLE_PROJECT_REPONAME" }}
   tag: {{ requiredEnv "CIRCLE_SHA1" }}
   pullSecrets:
-  - css-image-pull-secrets
+  - itme-image-pull-secrets
 ingress:
   enabled: true
   className: nginx
@@ -21,5 +21,5 @@ ingress:
   host: css.grassmud.horse
   tls:
   - hosts:
-    - css.grassmud.horse
+    - mysilio.me
     secretName: {{ .Release.Name }}-tls
