@@ -63,12 +63,6 @@
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run build && npm run lint && npm run test:unit && npm run test:integration",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
   "standard-version": {
     "scripts": {
       "postbump": "ts-node ./scripts/upgradeConfig.ts",
@@ -163,7 +157,6 @@
     "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-plugin-unicorn": "^37.0.1",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "husky": "^4.3.8",
     "jest": "^27.4.7",
     "jest-rdf": "^1.7.0",
     "node-mocks-http": "^1.11.0",
