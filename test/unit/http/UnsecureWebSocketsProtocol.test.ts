@@ -25,7 +25,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
           'sec-websocket-protocol': 'solid-0.1, other/1.0.0',
         },
         socket: {
-          secure: true,
+          encrypted: true,
         },
       } as any as HttpRequest;
       await protocol.handle({ webSocket, upgradeRequest } as any);
