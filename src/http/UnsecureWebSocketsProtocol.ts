@@ -63,10 +63,9 @@ class WebSocketListener extends EventEmitter {
   }
 
   public onResourceChanged(changed: Record<string, RepresentationMetadata>): void {
-    for (const [key, value] of Object.entries(changed)) {
+    for (const key of Object.keys(changed)) {
       if (this.subscribedPaths.has(key)) {
-        // TODO - Not sure what this should be
-        this.sendMessage('pub', JSON.stringify(value));
+        this.sendMessage('pub', key);
       }
     };
   }
