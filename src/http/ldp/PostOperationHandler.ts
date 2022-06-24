@@ -38,7 +38,10 @@ export class PostOperationHandler extends OperationHandler {
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
     const result = await this.store.addResource(operation.target, operation.body, operation.conditions);
-    const createdIdentifier = Object.entries(result).find(([_, value]) => value.get(SOLID_AS.terms.Activity)?.value === AS.Create)![0];
+    const createdIdentifier = Object.entries(result).find(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ([ key, value ]): boolean => value.get(SOLID_AS.terms.Activity)?.value === AS.Create,
+    )![0];
     return new CreatedResponseDescription(createResourceIdentifier(createdIdentifier));
   }
 }

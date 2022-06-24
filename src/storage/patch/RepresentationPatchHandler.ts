@@ -23,7 +23,8 @@ export class RepresentationPatchHandler extends PatchHandler {
     this.patcher = patcher;
   }
 
-  public async handle({ source, patch, identifier }: PatchHandlerInput): Promise<Record<string, RepresentationMetadata>> {
+  public async handle({ source, patch, identifier }: PatchHandlerInput):
+  Promise<Record<string, RepresentationMetadata>> {
     // Get the representation from the store
     let representation: Representation | undefined;
     try {

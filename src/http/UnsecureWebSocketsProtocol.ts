@@ -6,7 +6,6 @@ import { WebSocketHandler } from '../server/WebSocketHandler';
 import { parseForwarded } from '../util/HeaderUtil';
 import { splitCommaSeparated } from '../util/StringUtil';
 import type { RepresentationMetadata } from './representation/RepresentationMetadata';
-import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid-0.1';
 
@@ -67,7 +66,7 @@ class WebSocketListener extends EventEmitter {
       if (this.subscribedPaths.has(key)) {
         this.sendMessage('pub', key);
       }
-    };
+    }
   }
 
   private onMessage(message: string): void {

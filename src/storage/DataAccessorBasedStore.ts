@@ -273,7 +273,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
       const deletedIdentifiers = await this.safelyDeleteAuxiliaryResources(auxiliaries);
-      deletedIdentifiers.forEach((deletedIdentifier) => {
+      deletedIdentifiers.forEach((deletedIdentifier): void => {
         changes[deletedIdentifier.path] =
           new RepresentationMetadata(deletedIdentifier).add(SOLID_AS.terms.Activity, AS.Delete);
       });
@@ -392,20 +392,20 @@ export class DataAccessorBasedStore implements ResourceStore {
     // https://solid.github.io/specification/protocol#writing-resources
     let changes: Record<string, RepresentationMetadata> = {};
     if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
-      const parentContainer = this.identifierStrategy.getParentContainer(identifier);
+      const parent = this.identifierStrategy.getParentContainer(identifier);
       if (!createContainers) {
-        changes[parentContainer.path] = new RepresentationMetadata(parentContainer).add(SOLID_AS.terms.Activity, AS.Update);
+        changes[parent.path] = new RepresentationMetadata(parent).add(SOLID_AS.terms.Activity, AS.Update);
       } else {
-        const createdContainers = await this.createRecursiveContainers(parentContainer);
+        const createdContainers = await this.createRecursiveContainers(parent);
         changes = { ...changes, ...createdContainers };
 
         if (Object.keys(createdContainers).length === 0) {
-          changes[parentContainer.path] = new RepresentationMetadata(parentContainer).add(SOLID_AS.terms.Activity, AS.Update);
+          changes[parent.path] = new RepresentationMetadata(parent).add(SOLID_AS.terms.Activity, AS.Update);
         }
       }
 
       // Parent container is also modified
-      await this.updateContainerModifiedDate(parentContainer);
+      await this.updateContainerModifiedDate(parent);
     }
 
     // Remove all generated metadata to prevent it from being stored permanently
@@ -415,7 +415,8 @@ export class DataAccessorBasedStore implements ResourceStore {
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
 
-    changes[identifier.path] = new RepresentationMetadata(identifier).add(SOLID_AS.terms.Activity, exists ? AS.Update : AS.Create);
+    changes[identifier.path] =
+      new RepresentationMetadata(identifier).add(SOLID_AS.terms.Activity, exists ? AS.Update : AS.Create);
     return changes;
   }
 
@@ -610,7 +611,8 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
    * @param container - Identifier of the container which will need to exist.
    */
-  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<Record<string, RepresentationMetadata>> {
+  protected async createRecursiveContainers(container: ResourceIdentifier):
+  Promise<Record<string, RepresentationMetadata>> {
     // Verify whether the container already exists
     try {
       const metadata = await this.getNormalizedMetadata(container);
@@ -635,7 +637,8 @@ export class DataAccessorBasedStore implements ResourceStore {
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
     const changes = await this.writeData(container, new BasicRepresentation([], container), true, false, false);
     const filteredChanges = Object.entries(changes).reduce(
-      (acc, [key, value]) => value.get(SOLID_AS.terms.Activity)?.value === AS.Create ? { ...acc, [key]: value } : acc,
+      (acc, [ key, value ]): Record<string, RepresentationMetadata> =>
+        value.get(SOLID_AS.terms.Activity)?.value === AS.Create ? { ...acc, [key]: value } : acc,
       {},
     );
 
