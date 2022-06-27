@@ -4,6 +4,7 @@ import type { Representation } from '../http/representation/Representation';
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
+import { AS, SOLID_AS } from '../util/Vocabularies';
 import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
 
@@ -51,6 +52,16 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
 
   private emitChanged(changes: Record<string, RepresentationMetadata>): Record<string, RepresentationMetadata> {
     this.emit('changed', changes);
+
+    // Emit an event for every updated, deleted or created resource
+    for (const [key, value] of Object.entries(changes)) {
+      switch(value.get(SOLID_AS.terms.Activity)?.value) {
+        case AS.Create: this.emit('created', { path: key }); break;
+        case AS.Delete: this.emit('deleted', { path: key }); break;
+        case AS.Update: this.emit('updated', { path: key }); break;
+      }
+    }
+
     return changes;
   }
 }
