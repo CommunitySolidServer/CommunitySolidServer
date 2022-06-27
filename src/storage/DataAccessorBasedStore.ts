@@ -281,14 +281,14 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const container = this.identifierStrategy.getParentContainer(identifier);
-      changes[container.path] =
-        new RepresentationMetadata(container).add(SOLID_AS.terms.Activity, AS.Update);
+      changes[container.path] = new RepresentationMetadata(container).add(SOLID_AS.terms.Activity, AS.Update);
 
       // Update modified date of parent
       await this.updateContainerModifiedDate(container);
     }
 
     await this.accessor.deleteResource(identifier);
+    changes[identifier.path] = new RepresentationMetadata(identifier).add(SOLID_AS.terms.Activity, AS.Delete);
     return changes;
   }
 
