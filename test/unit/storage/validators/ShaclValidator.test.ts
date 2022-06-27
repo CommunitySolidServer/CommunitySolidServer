@@ -84,12 +84,6 @@ describe('ShaclValidator', (): void => {
     expect(fetchDataset).toHaveBeenLastCalledWith(shapeUrl);
   });
 
-  // // Todo: implement check in shaclvalidator to throw error when not RDF data
-  // it('throws error when the representation is not RDF.', async(): Promise<void> => {
-  //   input.representation = new BasicRepresentation('text', 'text/plain');
-  //   await expect(validator.handle(input)).rejects.toThrow(BadRequestHttpError);
-  // });
-
   it('throws error when the converter fails.', async(): Promise<void> => {
     converter.handleSafe = jest.fn().mockImplementation((): void => {
       throw new BadRequestHttpError('error');
