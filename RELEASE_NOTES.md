@@ -8,6 +8,7 @@
 - A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
 - Metadata of resources can now be edited by PATCHing its description resource. See the [documentation](./documentation/metadata-editing.md) for more information.
+
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
 
