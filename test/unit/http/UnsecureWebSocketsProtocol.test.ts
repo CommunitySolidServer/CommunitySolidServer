@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { AS, RepresentationMetadata, SOLID_AS } from '../../../src';
 import { UnsecureWebSocketsProtocol } from '../../../src/http/UnsecureWebSocketsProtocol';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 
@@ -70,7 +71,10 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       });
 
       it('emits pub messages for that resource.', (): void => {
-        source.emit('changed', { path: 'https://mypod.example/foo/bar' });
+        source.emit('changed', {
+          'https://mypod.example/foo/bar': new RepresentationMetadata({ path: 'https://mypod.example/foo/bar'})
+            .add(SOLID_AS.terms.Activity, AS.Update),
+        });
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift()).toBe('pub https://mypod.example/foo/bar');
       });
@@ -87,7 +91,11 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       });
 
       it('emits pub messages for that resource.', (): void => {
-        source.emit('changed', { path: 'https://mypod.example/relative/foo' });
+        source.emit('changed', {
+          'https://mypod.example/relative/foo':
+            new RepresentationMetadata({ path: 'https://mypod.example/relative/foo'})
+              .add(SOLID_AS.terms.Activity, AS.Update),
+        });
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift()).toBe('pub https://mypod.example/relative/foo');
       });
