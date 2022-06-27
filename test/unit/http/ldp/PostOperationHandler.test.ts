@@ -20,12 +20,10 @@ describe('A PostOperationHandler', (): void => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
-      addResource: jest.fn(async(): Promise<Record<string, RepresentationMetadata>> =>
-        ({
-          'newPath': new RepresentationMetadata({ path: 'newPath' }).add(SOLID_AS.terms.Activity, AS.Create),
-          'parent': new RepresentationMetadata({ path: 'parent' }).add(SOLID_AS.terms.Activity, AS.Update),
-        }),
-      ),
+      addResource: jest.fn(async(): Promise<Record<string, RepresentationMetadata>> => ({
+        newPath: new RepresentationMetadata({ path: 'newPath' }).add(SOLID_AS.terms.Activity, AS.Create),
+        parent: new RepresentationMetadata({ path: 'parent' }).add(SOLID_AS.terms.Activity, AS.Update),
+      })),
     } as unknown as ResourceStore;
     handler = new PostOperationHandler(store);
   });

@@ -72,7 +72,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
 
       it('emits pub messages for that resource.', (): void => {
         source.emit('changed', {
-          'https://mypod.example/foo/bar': new RepresentationMetadata({ path: 'https://mypod.example/foo/bar'})
+          'https://mypod.example/foo/bar': new RepresentationMetadata({ path: 'https://mypod.example/foo/bar' })
             .add(SOLID_AS.terms.Activity, AS.Update),
         });
         expect(webSocket.messages).toHaveLength(1);
@@ -93,7 +93,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       it('emits pub messages for that resource.', (): void => {
         source.emit('changed', {
           'https://mypod.example/relative/foo':
-            new RepresentationMetadata({ path: 'https://mypod.example/relative/foo'})
+            new RepresentationMetadata({ path: 'https://mypod.example/relative/foo' })
               .add(SOLID_AS.terms.Activity, AS.Update),
         });
         expect(webSocket.messages).toHaveLength(1);
