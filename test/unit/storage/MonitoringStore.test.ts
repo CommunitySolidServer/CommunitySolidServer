@@ -135,8 +135,7 @@ describe('A MonitoringStore', (): void => {
     store.on('updated', updatedCb);
     const createdCb = jest.fn();
     store.on('created', createdCb);
-    const result = store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
-    await result;
+    await store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
 
     expect(createdCb).toHaveBeenCalledTimes(1);
     expect(createdCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' });
@@ -144,6 +143,27 @@ describe('A MonitoringStore', (): void => {
     expect(updatedCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' });
     expect(deletedCb).toHaveBeenCalledTimes(1);
     expect(deletedCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' });
+
+    store.removeListener('created', createdCb);
+    store.removeListener('deleted', deletedCb);
+    store.removeListener('updated', updatedCb);
+  });
+
+  it('should not emit an extra event when the Activity is not a valid AS value.', async(): Promise<void> => {
+    source.addResource = jest.fn(async(): Promise<any> => ({
+      'path': new RepresentationMetadata({ path: 'path' }).add(SOLID_AS.terms.Activity, 'SomethingRandom'),
+    }));
+    const deletedCb = jest.fn();
+    store.on('deleted', deletedCb);
+    const updatedCb = jest.fn();
+    store.on('updated', updatedCb);
+    const createdCb = jest.fn();
+    store.on('created', createdCb);
+    await store.addResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
+
+    expect(createdCb).toHaveBeenCalledTimes(0);
+    expect(updatedCb).toHaveBeenCalledTimes(0);
+    expect(deletedCb).toHaveBeenCalledTimes(0);
 
     store.removeListener('created', createdCb);
     store.removeListener('deleted', deletedCb);
