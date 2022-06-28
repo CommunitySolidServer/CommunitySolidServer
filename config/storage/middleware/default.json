@@ -39,6 +39,8 @@
       "@id": "urn:solid-server:default:ResourceStore_Shape",
       "@type": "ShapeValidationStore",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
       "source": { "@id": "urn:solid-server:default:ResourceStore_Converting" },
       "validator": {
         "@id": "urn:solid-server:default:ShaclValidator",
