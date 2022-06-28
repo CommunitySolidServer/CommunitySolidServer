@@ -1,3 +1,5 @@
+import { AS, SOLID_AS } from '../../../src/util/Vocabularies';
+import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { Patch } from '../../../src/http/representation/Patch';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { MonitoringStore } from '../../../src/storage/MonitoringStore';
@@ -7,15 +9,24 @@ describe('A MonitoringStore', (): void => {
   let store: MonitoringStore;
   let source: ResourceStore;
   let changedCallback: () => void;
-  const modified = [
-    { path: 'http://example.org/modified/1' },
-    { path: 'http://example.org/modified/2' },
-  ];
+  const modified = {
+    'http://example.org/modified/1': new RepresentationMetadata({ path: 'http://example.org/modified/1' })
+                                      .add(SOLID_AS.terms.Activity, AS.Create),
+    'http://example.org/modified/2': new RepresentationMetadata({ path: 'http://example.org/modified/2' })
+                                      .add(SOLID_AS.terms.Activity, AS.Update),
+    'http://example.org/modified/3': new RepresentationMetadata({ path: 'http://example.org/modified/3' })
+                                      .add(SOLID_AS.terms.Activity, AS.Delete),
+  };
 
   beforeEach(async(): Promise<void> => {
     source = {
       getRepresentation: jest.fn(async(): Promise<any> => ({ success: true })),
-      addResource: jest.fn(async(): Promise<any> => ({ path: 'http://example.org/foo/bar/new' })),
+      addResource: jest.fn(async(): Promise<any> => ({
+        'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
+                                            .add(SOLID_AS.terms.Activity, AS.Create),
+        'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
+                                            .add(SOLID_AS.terms.Activity, AS.Update),
+      })),
       setRepresentation: jest.fn(async(): Promise<any> => modified),
       deleteResource: jest.fn(async(): Promise<any> => modified),
       modifyResource: jest.fn(async(): Promise<any> => modified),
@@ -43,8 +54,10 @@ describe('A MonitoringStore', (): void => {
   });
 
   it('calls addResource directly from the source.', async(): Promise<void> => {
-    await expect(store.addResource({ path: 'http://example.org/foo/bar' }, {} as Representation)).resolves
-      .toStrictEqual({ path: 'http://example.org/foo/bar/new' });
+    await expect(store.addResource({ path: 'http://example.org/foo/bar' }, {} as Representation)).resolves.toEqual({
+      'http://example.org/foo/bar/new': expect.any(RepresentationMetadata),
+      'http://example.org/foo/bar/': expect.any(RepresentationMetadata),
+    });
     expect(source.addResource).toHaveBeenCalledTimes(1);
     expect(source.addResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
@@ -54,8 +67,8 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' });
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Create);
   });
 
   it('calls setRepresentation directly from the source.', async(): Promise<void> => {
@@ -69,9 +82,10 @@ describe('A MonitoringStore', (): void => {
     const result = store.setRepresentation({ path: 'http://example.org/foo/bar' }, {} as Representation);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
-    expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' });
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' });
+    expect(changedCallback).toHaveBeenCalledTimes(3);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' }, AS.Create);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' }, AS.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' }, AS.Delete);
   });
 
   it('calls deleteResource directly from the source.', async(): Promise<void> => {
@@ -85,9 +99,10 @@ describe('A MonitoringStore', (): void => {
     const result = store.deleteResource({ path: 'http://example.org/foo/bar' });
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
-    expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' });
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' });
+    expect(changedCallback).toHaveBeenCalledTimes(3);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' }, AS.Create);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' }, AS.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' }, AS.Delete);
   });
 
   it('calls modifyResource directly from the source.', async(): Promise<void> => {
@@ -101,14 +116,37 @@ describe('A MonitoringStore', (): void => {
     const result = store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
-    expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' });
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' });
+    expect(changedCallback).toHaveBeenCalledTimes(3);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' }, AS.Create);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' }, AS.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' }, AS.Delete);
   });
 
   it('calls hasResource directly from the source.', async(): Promise<void> => {
     await expect(store.hasResource({ path: 'http://example.org/foo/bar' })).resolves.toBeUndefined();
     expect(source.hasResource).toHaveBeenCalledTimes(1);
     expect(source.hasResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' });
+  });
+
+  it('fires specific created, deleted and updated events', async(): Promise<void> => {
+    const deletedCb = jest.fn();
+    store.on('deleted', deletedCb);
+    const updatedCb = jest.fn();
+    store.on('updated', updatedCb);
+    const createdCb = jest.fn();
+    store.on('created', createdCb);
+    const result = store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
+    await result;
+
+    expect(createdCb).toHaveBeenCalledTimes(1);
+    expect(createdCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' });
+    expect(updatedCb).toHaveBeenCalledTimes(1);
+    expect(updatedCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' });
+    expect(deletedCb).toHaveBeenCalledTimes(1);
+    expect(deletedCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' });
+
+    store.removeListener('created', createdCb);
+    store.removeListener('deleted', deletedCb);
+    store.removeListener('updated', updatedCb);
   });
 });

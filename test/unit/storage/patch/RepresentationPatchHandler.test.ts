@@ -1,4 +1,4 @@
-import { RepresentationMetadata } from '../../../../src';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
 import type { PatchHandlerInput } from '../../../../src/storage/patch/PatchHandler';
