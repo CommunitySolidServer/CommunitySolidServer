@@ -1,14 +1,12 @@
 import { DataFactory } from 'n3';
 import type { Term } from 'rdf-js';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
-import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
-import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { isContainerIdentifier } from '../util/PathUtil';
 import { cloneRepresentation } from '../util/ResourceUtil';
@@ -22,12 +20,8 @@ import type { ShapeValidator } from './validators/ShapeValidator';
 import namedNode = DataFactory.namedNode;
 
 /**
- * ResourceStore which validates input data based on shapes using SHACL.
- *
+ * ResourceStore which validates input data based on shapes.
  * When a validation is successful, the input data is written away in the backend.
- * Methods implemented:
- *  * Adding a resource to the backend
- *
  */
 export class ShapeValidationStore extends PassthroughStore {
   private readonly identifierStrategy: IdentifierStrategy;
@@ -52,19 +46,6 @@ export class ShapeValidationStore extends PassthroughStore {
     await this.validator.handleSafe({ parentRepresentation, representation });
 
     return await this.source.addResource(identifier, representation, conditions);
-  }
-
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions):
-  Promise<ResourceIdentifier[]> {
-    // Check if the parent has ldp:constrainedBy in the metadata
-    if (!this.identifierStrategy.isRootContainer(identifier)) {
-      // I think this can be removed, right?
-      const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
-      const parentContainer = await this.source.getRepresentation(parentIdentifier, {});
-      this.logger.debug(`parent container: ${parentContainer.metadata.identifier.value}`);
-      throw new NotImplementedHttpError();
-    }
-    return this.source.modifyResource(identifier, patch, conditions);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
@@ -102,6 +83,9 @@ export class ShapeValidationStore extends PassthroughStore {
       }
       // Verify that no (non-auxiliary) resources are available in the container (children = 0)
       // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/942#issuecomment-1143789703
+      // note: when re adding the same via SPARQL update this gives an error. BUT it should not give an error,
+      //  thus fix is needed
+      // if the newshape is the same as shape then it is actually ok
       if (newShapes.length === 1 &&
           dataStore.getObjects(namedNode(subjectIdentifier.path), LDP.terms.contains, null).length > 0) {
         throw new BadRequestHttpError(
