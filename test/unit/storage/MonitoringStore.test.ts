@@ -151,7 +151,7 @@ describe('A MonitoringStore', (): void => {
 
   it('should not emit an extra event when the Activity is not a valid AS value.', async(): Promise<void> => {
     source.addResource = jest.fn(async(): Promise<any> => ({
-      'path': new RepresentationMetadata({ path: 'path' }).add(SOLID_AS.terms.Activity, 'SomethingRandom'),
+      path: new RepresentationMetadata({ path: 'path' }).add(SOLID_AS.terms.Activity, 'SomethingRandom'),
     }));
     const deletedCb = jest.fn();
     store.on('deleted', deletedCb);
