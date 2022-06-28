@@ -9,6 +9,8 @@ import { ShaclValidator } from '../../../../src/storage/validators/ShaclValidato
 import type { ShapeValidatorInput } from '../../../../src/storage/validators/ShapeValidator';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { fetchDataset } from '../../../../src/util/FetchUtil';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { LDP, RDF, SH } from '../../../../src/util/Vocabularies';
@@ -77,24 +79,47 @@ describe('ShaclValidator', (): void => {
     await expect(validator.canHandle(input)).rejects.toThrow(Error);
   });
 
+  it('does not validate when the parent container is not constrained by a shape.', async(): Promise<void> => {
+    input.parentRepresentation = new BasicRepresentation();
+    await expect(validator.handleSafe(input)).resolves.toBeUndefined();
+    expect(converter.handleSafe).toHaveBeenCalledTimes(0);
+    expect(fetchDataset).toHaveBeenCalledTimes(0);
+  });
+
   it('fetches the shape and validates the representation.', async(): Promise<void> => {
-    await expect(validator.handle(input)).resolves.toBeUndefined();
+    await expect(validator.handleSafe(input)).resolves.toBeUndefined();
     expect(converter.handleSafe).toHaveBeenCalledTimes(1);
     expect(fetchDataset).toHaveBeenCalledTimes(1);
     expect(fetchDataset).toHaveBeenLastCalledWith(shapeUrl);
   });
 
   it('throws error when the converter fails.', async(): Promise<void> => {
+    const error = new BadRequestHttpError('error');
     converter.handleSafe = jest.fn().mockImplementation((): void => {
-      throw new BadRequestHttpError('error');
+      throw error;
     });
-    await expect(validator.handle(input)).rejects.toThrow(BadRequestHttpError);
+    await expect(validator.handleSafe(input)).rejects.toThrow(error);
+  });
+
+  it('throws error when the converter fails due to non-RDF input to validate.', async(): Promise<void> => {
+    converter.handleSafe = jest.fn().mockImplementationOnce((): void => {
+      throw new NotImplementedHttpError('error');
+    });
+    await expect(validator.handleSafe(input)).rejects.toThrow(BadRequestHttpError);
+  });
+
+  it('throws error when the converter fails due empty input to validate.', async(): Promise<void> => {
+    // This happens in the case that an attempt is made to add a new container within the constrained container.
+    converter.handleSafe = jest.fn().mockImplementationOnce((): void => {
+      throw new InternalServerError('error');
+    });
+    await expect(validator.handleSafe(input)).rejects.toThrow(BadRequestHttpError);
   });
 
   it('does not execute validation when the target resource is an auxiliary resource.', async(): Promise<void> => {
     input.representation.metadata.identifier = namedNode(root + auxiliarySuffix);
 
-    await expect(validator.handle(input)).resolves.toBeUndefined();
+    await expect(validator.handleSafe(input)).resolves.toBeUndefined();
   });
 
   it('throws error when the data does not conform to the shape.', async(): Promise<void> => {
@@ -105,7 +130,7 @@ describe('ShaclValidator', (): void => {
       ]), INTERNAL_QUADS),
     ));
 
-    await expect(validator.handle(input)).rejects.toThrow(BadRequestHttpError);
+    await expect(validator.handleSafe(input)).rejects.toThrow(BadRequestHttpError);
     expect(converter.handleSafe).toHaveBeenCalledTimes(1);
     expect(fetchDataset).toHaveBeenCalledTimes(1);
     expect(fetchDataset).toHaveBeenLastCalledWith(shapeUrl);
@@ -118,7 +143,7 @@ describe('ShaclValidator', (): void => {
       ]), INTERNAL_QUADS),
     ));
 
-    await expect(validator.handle(input)).rejects.toThrow(BadRequestHttpError);
+    await expect(validator.handleSafe(input)).rejects.toThrow(BadRequestHttpError);
     expect(converter.handleSafe).toHaveBeenCalledTimes(1);
     expect(fetchDataset).toHaveBeenCalledTimes(1);
     expect(fetchDataset).toHaveBeenLastCalledWith(shapeUrl);
