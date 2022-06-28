@@ -180,8 +180,20 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and export to docker
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: "Test docker image 'latest'"
+        run: |
+          docker run --rm solidproject/community-server:latest --version
+      - name: "Test docker image 'edge'"
+        run: |
+          docker run --rm solidproject/community-server:edge --version
       - name: Build and push
-        id: docker_build
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -221,8 +233,17 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and export to docker
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: "Test docker image 'next'"
+        run: |
+          docker run --rm solidproject/community-server:next --version
       - name: Build and push
-        id: docker_build
         uses: docker/build-push-action@v3
         with:
           context: .
