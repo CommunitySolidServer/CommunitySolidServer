@@ -13,7 +13,10 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
  */
 export class RdfToQuadConverter extends BaseTypedRepresentationConverter {
   public constructor() {
-    super(rdfParser.getContentTypes(), INTERNAL_QUADS);
+    const inputTypes = rdfParser.getContentTypes()
+      // ContentType application/json MAY NOT be converted to Quad.
+      .then((types): string[] => types.filter((type): boolean => type !== 'application/json'));
+    super(inputTypes, INTERNAL_QUADS);
   }
 
   public async handle({ representation, identifier }: RepresentationConverterArgs): Promise<Representation> {
