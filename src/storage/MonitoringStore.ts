@@ -51,11 +51,11 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   }
 
   private emitChanged(changes: Record<string, RepresentationMetadata>): Record<string, RepresentationMetadata> {
-    this.emit('changed', changes);
-
-    // Emit an event for every updated, deleted or created resource
+    
     for (const [key, value] of Object.entries(changes)) {
-      switch(value.get(SOLID_AS.terms.Activity)?.value) {
+      const activity = value.get(SOLID_AS.terms.Activity)?.value;
+      this.emit('changed', { path: key }, activity);
+      switch(activity) {
         case AS.Create: this.emit('created', { path: key }); break;
         case AS.Delete: this.emit('deleted', { path: key }); break;
         case AS.Update: this.emit('updated', { path: key }); break;
