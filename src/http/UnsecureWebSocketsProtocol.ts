@@ -5,7 +5,7 @@ import type { HttpRequest } from '../server/HttpRequest';
 import { WebSocketHandler } from '../server/WebSocketHandler';
 import { parseForwarded } from '../util/HeaderUtil';
 import { splitCommaSeparated } from '../util/StringUtil';
-import type { RepresentationMetadata } from './representation/RepresentationMetadata';
+import { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid-0.1';
 
@@ -61,11 +61,9 @@ class WebSocketListener extends EventEmitter {
     this.emit('closed');
   }
 
-  public onResourceChanged(changed: Record<string, RepresentationMetadata>): void {
-    for (const key of Object.keys(changed)) {
-      if (this.subscribedPaths.has(key)) {
-        this.sendMessage('pub', key);
-      }
+  public onResourceChanged({ path }: ResourceIdentifier): void {
+    if (this.subscribedPaths.has(path)) {
+      this.sendMessage('pub', path);
     }
   }
 
@@ -130,7 +128,7 @@ export class UnsecureWebSocketsProtocol extends WebSocketHandler {
     this.logger.warn('The chosen configuration includes Solid WebSockets API 0.1, which is unauthenticated.');
     this.logger.warn('This component will be removed from default configurations in future versions.');
 
-    source.on('changed', (changed: Record<string, RepresentationMetadata>): void => this.onResourceChanged(changed));
+    source.on('changed', (changed: ResourceIdentifier): void => this.onResourceChanged(changed));
   }
 
   public async handle(input: { webSocket: WebSocket; upgradeRequest: HttpRequest }): Promise<void> {
@@ -145,7 +143,7 @@ export class UnsecureWebSocketsProtocol extends WebSocketHandler {
     listener.start(input.upgradeRequest);
   }
 
-  private onResourceChanged(changed: Record<string, RepresentationMetadata>): void {
+  private onResourceChanged(changed: ResourceIdentifier): void {
     for (const listener of this.listeners) {
       listener.onResourceChanged(changed);
     }
