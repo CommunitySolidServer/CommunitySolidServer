@@ -5,7 +5,7 @@ import type { HttpRequest } from '../server/HttpRequest';
 import { WebSocketHandler } from '../server/WebSocketHandler';
 import { parseForwarded } from '../util/HeaderUtil';
 import { splitCommaSeparated } from '../util/StringUtil';
-import { ResourceIdentifier } from './representation/ResourceIdentifier';
+import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid-0.1';
 

@@ -1,9 +1,9 @@
-import { AS, SOLID_AS } from '../../../src/util/Vocabularies';
-import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { Patch } from '../../../src/http/representation/Patch';
 import type { Representation } from '../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import { MonitoringStore } from '../../../src/storage/MonitoringStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
+import { AS, SOLID_AS } from '../../../src/util/Vocabularies';
 
 describe('A MonitoringStore', (): void => {
   let store: MonitoringStore;
@@ -11,11 +11,11 @@ describe('A MonitoringStore', (): void => {
   let changedCallback: () => void;
   const modified = {
     'http://example.org/modified/1': new RepresentationMetadata({ path: 'http://example.org/modified/1' })
-                                      .add(SOLID_AS.terms.Activity, AS.Create),
+      .add(SOLID_AS.terms.Activity, AS.Create),
     'http://example.org/modified/2': new RepresentationMetadata({ path: 'http://example.org/modified/2' })
-                                      .add(SOLID_AS.terms.Activity, AS.Update),
+      .add(SOLID_AS.terms.Activity, AS.Update),
     'http://example.org/modified/3': new RepresentationMetadata({ path: 'http://example.org/modified/3' })
-                                      .add(SOLID_AS.terms.Activity, AS.Delete),
+      .add(SOLID_AS.terms.Activity, AS.Delete),
   };
 
   beforeEach(async(): Promise<void> => {
@@ -23,9 +23,9 @@ describe('A MonitoringStore', (): void => {
       getRepresentation: jest.fn(async(): Promise<any> => ({ success: true })),
       addResource: jest.fn(async(): Promise<any> => ({
         'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
-                                            .add(SOLID_AS.terms.Activity, AS.Create),
+          .add(SOLID_AS.terms.Activity, AS.Create),
         'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
-                                            .add(SOLID_AS.terms.Activity, AS.Update),
+          .add(SOLID_AS.terms.Activity, AS.Update),
       })),
       setRepresentation: jest.fn(async(): Promise<any> => modified),
       deleteResource: jest.fn(async(): Promise<any> => modified),
@@ -128,7 +128,7 @@ describe('A MonitoringStore', (): void => {
     expect(source.hasResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' });
   });
 
-  it('fires specific created, deleted and updated events', async(): Promise<void> => {
+  it('fires specific created, deleted and updated events.', async(): Promise<void> => {
     const deletedCb = jest.fn();
     store.on('deleted', deletedCb);
     const updatedCb = jest.fn();

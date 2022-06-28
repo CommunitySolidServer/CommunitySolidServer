@@ -51,14 +51,21 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   }
 
   private emitChanged(changes: Record<string, RepresentationMetadata>): Record<string, RepresentationMetadata> {
-    
-    for (const [key, value] of Object.entries(changes)) {
+    for (const [ key, value ] of Object.entries(changes)) {
       const activity = value.get(SOLID_AS.terms.Activity)?.value;
       this.emit('changed', { path: key }, activity);
-      switch(activity) {
-        case AS.Create: this.emit('created', { path: key }); break;
-        case AS.Delete: this.emit('deleted', { path: key }); break;
-        case AS.Update: this.emit('updated', { path: key }); break;
+      switch (activity) {
+        case AS.Create:
+          this.emit('created', { path: key });
+          break;
+        case AS.Delete:
+          this.emit('deleted', { path: key });
+          break;
+        case AS.Update:
+          this.emit('updated', { path: key });
+          break;
+        default:
+          break;
       }
     }
 

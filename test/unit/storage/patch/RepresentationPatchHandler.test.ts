@@ -1,6 +1,6 @@
-import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { PatchHandlerInput } from '../../../../src/storage/patch/PatchHandler';
 import type { RepresentationPatcher } from '../../../../src/storage/patch/RepresentationPatcher';
 import { RepresentationPatchHandler } from '../../../../src/storage/patch/RepresentationPatchHandler';
