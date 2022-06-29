@@ -15,10 +15,11 @@ export * from './authorization/access/AgentClassAccessChecker';
 export * from './authorization/access/AgentGroupAccessChecker';
 
 // Authorization/Permissions
-export * from './authorization/permissions/Permissions';
+export * from './authorization/permissions/AclPermission';
 export * from './authorization/permissions/ModesExtractor';
 export * from './authorization/permissions/MethodModesExtractor';
 export * from './authorization/permissions/N3PatchModesExtractor';
+export * from './authorization/permissions/Permissions';
 export * from './authorization/permissions/SparqlUpdateModesExtractor';
 
 // Authorization
