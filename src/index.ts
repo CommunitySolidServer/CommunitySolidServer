@@ -447,6 +447,7 @@ export * from './util/ContentTypes';
 export * from './util/FetchUtil';
 export * from './util/GuardedStream';
 export * from './util/HeaderUtil';
+export * from './util/IterableUtil';
 export * from './util/PathUtil';
 export * from './util/PromiseUtil';
 export * from './util/QuadUtil';
