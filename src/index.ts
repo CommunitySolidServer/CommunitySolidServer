@@ -28,10 +28,12 @@ export * from './authorization/AllStaticReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
 export * from './authorization/OwnerPermissionReader';
+export * from './authorization/ParentContainerReader';
 export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
 export * from './authorization/UnionPermissionReader';
+export * from './authorization/WebAclAuxiliaryReader';
 export * from './authorization/WebAclReader';
 
 // HTTP/Auxiliary
