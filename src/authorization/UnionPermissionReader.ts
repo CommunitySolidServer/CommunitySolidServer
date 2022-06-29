@@ -1,7 +1,9 @@
 import type { CredentialGroup } from '../authentication/Credentials';
 import { UnionHandler } from '../util/handlers/UnionHandler';
+import { IdentifierMap } from '../util/map/IdentifierMap';
+import { getDefault } from '../util/map/MapUtil';
 import type { PermissionReader } from './PermissionReader';
-import type { Permission, PermissionSet } from './permissions/Permissions';
+import type { Permission, PermissionMap } from './permissions/Permissions';
 
 /**
  * Combines the results of multiple PermissionReaders.
@@ -12,20 +14,30 @@ export class UnionPermissionReader extends UnionHandler<PermissionReader> {
     super(readers);
   }
 
-  protected async combine(results: PermissionSet[]): Promise<PermissionSet> {
-    const result: PermissionSet = {};
-    for (const permissionSet of results) {
-      for (const [ key, value ] of Object.entries(permissionSet) as [ CredentialGroup, Permission | undefined ][]) {
-        result[key] = this.applyPermissions(value, result[key]);
-      }
+  protected async combine(results: PermissionMap[]): Promise<PermissionMap> {
+    const result: PermissionMap = new IdentifierMap();
+    for (const permissionMap of results) {
+      this.mergePermissionMaps(permissionMap, result);
     }
     return result;
   }
 
   /**
+   * Merges all entries of the given map into the result map.
+   */
+  private mergePermissionMaps(permissionMap: PermissionMap, result: PermissionMap): void {
+    for (const [ identifier, permissionSet ] of permissionMap) {
+      for (const [ credential, permission ] of Object.entries(permissionSet) as [CredentialGroup, Permission][]) {
+        const resultSet = getDefault(result, identifier, {});
+        resultSet[credential] = this.mergePermissions(permission, resultSet[credential]);
+      }
+    }
+  }
+
+  /**
    * Adds the given permissions to the result object according to the combination rules of the class.
    */
-  private applyPermissions(permissions?: Permission, result: Permission = {}): Permission {
+  private mergePermissions(permissions?: Permission, result: Permission = {}): Permission {
     if (!permissions) {
       return result;
     }

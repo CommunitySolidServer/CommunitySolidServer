@@ -2,23 +2,27 @@ import type { CredentialSet } from '../../../src/authentication/Credentials';
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { OwnerPermissionReader } from '../../../src/authorization/OwnerPermissionReader';
 import { AclMode } from '../../../src/authorization/permissions/AclPermission';
-import type { AccessMode } from '../../../src/authorization/permissions/Permissions';
+import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type {
   AccountSettings,
   AccountStore,
 } from '../../../src/identity/interaction/email-password/storage/AccountStore';
+import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
+import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
+import { compareMaps } from '../../util/Util';
 
 describe('An OwnerPermissionReader', (): void => {
-  const owner = 'http://test.com/alice/profile/card#me';
-  const podBaseUrl = 'http://test.com/alice/';
+  const owner = 'http://example.com/alice/profile/card#me';
+  const podBaseUrl = 'http://example.com/alice/';
   let credentials: CredentialSet;
   let identifier: ResourceIdentifier;
-  let modes: Set<AccessMode>;
+  let requestedModes: AccessMap;
   let settings: AccountSettings;
   let accountStore: jest.Mocked<AccountStore>;
   let aclStrategy: jest.Mocked<AuxiliaryIdentifierStrategy>;
+  const identifierStrategy = new SingleRootIdentifierStrategy('http://example.com/');
   let reader: OwnerPermissionReader;
 
   beforeEach(async(): Promise<void> => {
@@ -26,7 +30,7 @@ describe('An OwnerPermissionReader', (): void => {
 
     identifier = { path: `${podBaseUrl}.acl` };
 
-    modes = new Set<AccessMode | AclMode>([ AclMode.control ]) as Set<AccessMode>;
+    requestedModes = new IdentifierSetMultiMap([[ identifier, AclMode.control ]]) as any;
 
     settings = {
       useIdp: true,
@@ -47,44 +51,45 @@ describe('An OwnerPermissionReader', (): void => {
       isAuxiliaryIdentifier: jest.fn((id): boolean => id.path.endsWith('.acl')),
     } as any;
 
-    reader = new OwnerPermissionReader(accountStore, aclStrategy);
+    reader = new OwnerPermissionReader(accountStore, aclStrategy, identifierStrategy);
   });
 
   it('returns empty permissions for non-ACL resources.', async(): Promise<void> => {
     identifier.path = podBaseUrl;
-    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 
   it('returns empty permissions if there is no agent WebID.', async(): Promise<void> => {
     credentials = {};
-    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 
   it('returns empty permissions if the agent has no account.', async(): Promise<void> => {
-    credentials.agent!.webId = 'http://test.com/someone/else';
-    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
+    credentials.agent!.webId = 'http://example.com/someone/else';
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 
   it('returns empty permissions if the account has no pod.', async(): Promise<void> => {
     delete settings.podBaseUrl;
-    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 
   it('returns empty permissions if the target identifier is not in the pod.', async(): Promise<void> => {
     identifier.path = 'http://somewhere.else/.acl';
-    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 
   it('returns full permissions if the owner is accessing an ACL resource in their pod.', async(): Promise<void> => {
-    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({
-      [CredentialGroup.agent]: {
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap([[
+      identifier,
+      { [CredentialGroup.agent]: {
         read: true,
         write: true,
         append: true,
         create: true,
         delete: true,
         control: true,
-      },
-    });
+      }},
+    ]]));
   });
 });
