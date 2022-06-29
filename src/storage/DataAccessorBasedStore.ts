@@ -176,9 +176,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Write the data. New containers should never be made for a POST request.
-    const writeChanges = await this.writeData(newID, representation, isContainer, false, false);
-
-    return writeChanges;
+    return this.writeData(newID, representation, isContainer, false, false);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,

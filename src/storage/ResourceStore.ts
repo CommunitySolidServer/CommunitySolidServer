@@ -39,7 +39,9 @@ export interface ResourceStore extends ResourceSet {
    * @param representation - New representation of the resource.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Info about resources that were possibly modified.
+   * @returns An object containing one property for each resource that was created, updated or deleted
+   * by this operation. Where the key of the property is the path of the resource (string) and the value is an
+   * instance of RepresentationMetadata containing extra information about the change of the resource.
    */
   setRepresentation: (
     identifier: ResourceIdentifier,
@@ -53,7 +55,9 @@ export interface ResourceStore extends ResourceSet {
    * @param representation - Representation of the new resource
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Info about the newly created resource.
+   * @returns An object containing one property for each resource that was created, updated or deleted
+   * by this operation. Where the key of the property is the path of the resource (string) and the value is an
+   * instance of RepresentationMetadata containing extra information about the change of the resource.
    */
   addResource: (
     container: ResourceIdentifier,
@@ -66,7 +70,9 @@ export interface ResourceStore extends ResourceSet {
    * @param identifier - Identifier of resource to delete.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Info about resources that were possibly modified.
+   * @returns An object containing one property for each resource that was created, updated or deleted
+   * by this operation. Where the key of the property is the path of the resource (string) and the value is an
+   * instance of RepresentationMetadata containing extra information about the change of the resource.
    */
   deleteResource: (
     identifier: ResourceIdentifier,
@@ -80,7 +86,9 @@ export interface ResourceStore extends ResourceSet {
    * @param patch - Description of which parts to update.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Info about resources that were possibly modified.
+   * @returns An object containing one property for each resource that was created, updated or deleted
+   * by this operation. Where the key of the property is the path of the resource (string) and the value is an
+   * instance of RepresentationMetadata containing extra information about the change of the resource.
    */
   modifyResource: (
     identifier: ResourceIdentifier,
