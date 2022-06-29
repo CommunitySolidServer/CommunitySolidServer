@@ -438,6 +438,7 @@ export * from './util/locking/VoidLocker';
 
 // Util/Map
 export * from './util/map/HashMap';
+export * from './util/map/IdentifierMap';
 export * from './util/map/SetMultiMap';
 export * from './util/map/WrappedSetMultiMap';
 

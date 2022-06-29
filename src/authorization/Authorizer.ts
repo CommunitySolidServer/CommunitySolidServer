@@ -1,7 +1,6 @@
 import type { CredentialSet } from '../authentication/Credentials';
-import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
-import type { AccessMode, PermissionSet } from './permissions/Permissions';
+import type { AccessMap, PermissionMap } from './permissions/Permissions';
 
 export interface AuthorizerInput {
   /**
@@ -9,17 +8,13 @@ export interface AuthorizerInput {
    */
   credentials: CredentialSet;
   /**
-   * Identifier of the resource that will be read/modified.
+   * Requested access modes per resource.
    */
-  identifier: ResourceIdentifier;
+  requestedModes: AccessMap;
   /**
-   * Modes that are requested on the resource.
+   * Actual permissions available per resource and per credential group.
    */
-  modes: Set<AccessMode>;
-  /**
-   * Permissions that are available for the request.
-   */
-  permissionSet: PermissionSet;
+  availablePermissions: PermissionMap;
 }
 
 /**
