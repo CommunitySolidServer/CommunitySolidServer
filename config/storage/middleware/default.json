@@ -46,7 +46,7 @@
         "@id": "urn:solid-server:default:ShaclValidator",
         "@type": "ShaclValidator",
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
-        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
+        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" }
       }
     },
     {

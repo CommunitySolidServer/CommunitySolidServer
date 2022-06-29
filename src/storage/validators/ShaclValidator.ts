@@ -117,7 +117,7 @@ export class ShaclValidator extends ShapeValidator {
       targetClassesPresent = targetClassesPresent || dataStore.countQuads(null, null, targetClass, null) > 0;
     }
     if (!targetClassesPresent) {
-      throw new BadRequestHttpError(`${'Data not accepted as no nodes in the body conform' +
+      throw new BadRequestHttpError(`${'Data not accepted as no nodes in the body conform ' +
      'to any of the target classes of '}${shapeURL}`);
     }
   }

@@ -1,3 +1,4 @@
+import type { Store } from 'n3';
 import { DataFactory } from 'n3';
 import type { Term } from 'rdf-js';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
@@ -54,40 +55,24 @@ export class ShapeValidationStore extends PassthroughStore {
         isContainerIdentifier(this.metadataStrategy.getSubjectIdentifier(identifier))) {
       const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);
       // Retrieve shapes from new and current representation
-      const preferences = { type: { [INTERNAL_QUADS]: 1 }};
-      const newRepresentation = await this.converter.handleSafe({
-        identifier,
-        representation: await cloneRepresentation(representation),
-        preferences,
-      });
-      const dataStore = await readableToQuads(newRepresentation.data);
-      const newShapes = dataStore.getObjects(
-        namedNode(subjectIdentifier.path), LDP.terms.constrainedBy, null,
-      );
+      const dataStore = await this.representationToStore(identifier, await cloneRepresentation(representation));
+      const newShapes = this.extractShapes(identifier, dataStore);
 
-      const currentRepresentation = await this.converter.handleSafe({
+      const currentShapes = this.extractShapes(
         identifier,
-        representation: await this.source.getRepresentation(identifier, {}),
-        preferences,
-      });
-
-      dataStore.addQuads((await readableToQuads(currentRepresentation.data)).getQuads(null, null, null, null));
-      const shapes = dataStore.getObjects(
-        namedNode(subjectIdentifier.path), LDP.terms.constrainedBy, null,
+        await this.representationToStore(identifier, await this.source.getRepresentation(identifier, {})),
       );
-      shapes.forEach((shape: Term): any => this.logger.debug(`${shape.value}`));
+      newShapes.forEach((shape: string): any => this.logger.debug(`New shape: ${shape}`));
+      currentShapes.forEach((shape: string): any => this.logger.debug(`Shape already present: ${shape}`));
       // Verify that only there is at most one shapeConstraint per container
       // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/942#issuecomment-1143789703
-      if (shapes.length > 1) {
+      if (newShapes.length > 1) {
         throw new BadRequestHttpError('A container can only be constrained by at most one shape resource.');
       }
       // Verify that no (non-auxiliary) resources are available in the container (children = 0)
       // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/942#issuecomment-1143789703
-      // note: when re adding the same via SPARQL update this gives an error. BUT it should not give an error,
-      //  thus fix is needed
-      // if the newshape is the same as shape then it is actually ok
-      if (newShapes.length === 1 &&
-          dataStore.getObjects(namedNode(subjectIdentifier.path), LDP.terms.contains, null).length > 0) {
+      const children = dataStore.getObjects(namedNode(subjectIdentifier.path), LDP.terms.contains, null);
+      if ((newShapes.length === 1 && !(currentShapes[0] === newShapes[0])) && children.length > 0) {
         throw new BadRequestHttpError(
           'A container can only be constrained when there are no resources present in that container.',
         );
@@ -110,5 +95,35 @@ export class ShapeValidationStore extends PassthroughStore {
       }
     }
     return this.source.setRepresentation(identifier, representation, conditions);
+  }
+
+  /**
+   * Transforms the data of a representation to quads.
+   * @param identifier - Identifier of the resource.
+   * @param representation - Corresponding Representation.
+   * @returns N3 store of the data of the Representation.
+   */
+  private async representationToStore(identifier: ResourceIdentifier, representation: Representation): Promise<Store> {
+    const preferences = { type: { [INTERNAL_QUADS]: 1 }};
+
+    representation = await this.converter.handleSafe({
+      identifier,
+      representation: await cloneRepresentation(representation),
+      preferences,
+    });
+
+    return await readableToQuads(representation.data);
+  }
+
+  /**
+   * Extracts the shape URL(s) from a metadata resource.
+   * @param identifier - Identifier of the resource.
+   * @param store - N3 store of the corresponding resource (data)
+   * @returns A list of shape URL(s).
+   */
+  private extractShapes(identifier: ResourceIdentifier, store: Store): string[] {
+    return store.getObjects(
+      namedNode(this.metadataStrategy.getSubjectIdentifier(identifier).path), LDP.terms.constrainedBy, null,
+    ).map((shape: Term): string => shape.value);
   }
 }
