@@ -29,6 +29,7 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
  * [How to use the Identity Provider](identity-provider.md)
  * [How to automate authentication](client-credentials.md)
  * [How to automatically seed pods on startup](seeding-pods.md)
+ * [How to constrain containers to only have resources that conform to a shape](constrained-containers.md)
 
 ## What the internals look like
 
