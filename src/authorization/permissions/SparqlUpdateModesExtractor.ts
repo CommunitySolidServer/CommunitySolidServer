@@ -4,7 +4,9 @@ import type { Representation } from '../../http/representation/Representation';
 import type { SparqlUpdatePatch } from '../../http/representation/SparqlUpdatePatch';
 import type { ResourceSet } from '../../storage/ResourceSet';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 import { ModesExtractor } from './ModesExtractor';
+import type { AccessMap } from './Permissions';
 import { AccessMode } from './Permissions';
 
 /**
@@ -34,31 +36,31 @@ export class SparqlUpdateModesExtractor extends ModesExtractor {
     }
   }
 
-  public async handle({ body, target }: Operation): Promise<Set<AccessMode>> {
+  public async handle({ body, target }: Operation): Promise<AccessMap> {
     // Verified in `canHandle` call
     const update = (body as SparqlUpdatePatch).algebra as Algebra.DeleteInsert;
-    const modes = new Set<AccessMode>();
+    const requiredModes: AccessMap = new IdentifierSetMultiMap();
 
     if (this.isNop(update)) {
-      return modes;
+      return requiredModes;
     }
 
     // Access modes inspired by the requirements on N3 Patch requests
     if (this.hasConditions(update)) {
-      modes.add(AccessMode.read);
+      requiredModes.add(target, AccessMode.read);
     }
     if (this.hasInserts(update)) {
-      modes.add(AccessMode.append);
+      requiredModes.add(target, AccessMode.append);
       if (!await this.resourceSet.hasResource(target)) {
-        modes.add(AccessMode.create);
+        requiredModes.add(target, AccessMode.create);
       }
     }
     if (this.hasDeletes(update)) {
-      modes.add(AccessMode.read);
-      modes.add(AccessMode.write);
+      requiredModes.add(target, AccessMode.read);
+      requiredModes.add(target, AccessMode.write);
     }
 
-    return modes;
+    return requiredModes;
   }
 
   private isSparql(data: Representation): data is SparqlUpdatePatch {
