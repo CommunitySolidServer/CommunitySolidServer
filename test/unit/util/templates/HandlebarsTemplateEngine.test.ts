@@ -1,23 +1,31 @@
+import { NotImplementedHttpError } from '../../../../src';
 import { HandlebarsTemplateEngine } from '../../../../src/util/templates/HandlebarsTemplateEngine';
 
-jest.mock('../../../../src/util/templates/TemplateEngine', (): any => ({
-  readTemplate: jest.fn(async({ templateString }): Promise<string> => `${templateString}: {{detail}}`),
+jest.mock('../../../../src/util/templates/TemplateUtil', (): any => ({
+  getTemplateFilePath: jest.fn((template): string => template),
+  readTemplate: jest.fn(async(): Promise<string> => `{{detail}}`),
 }));
 
 describe('A HandlebarsTemplateEngine', (): void => {
-  const template = { templateString: 'xyz' };
   const contents = { detail: 'a&b' };
   let templateEngine: HandlebarsTemplateEngine;
 
   beforeEach((): void => {
-    templateEngine = new HandlebarsTemplateEngine('http://localhost:3000/', template);
-  });
-
-  it('uses the default template when no template was passed.', async(): Promise<void> => {
-    await expect(templateEngine.render(contents)).resolves.toBe('xyz: a&amp;b');
+    templateEngine = new HandlebarsTemplateEngine('http://localhost:3000/');
   });
 
   it('uses the passed template.', async(): Promise<void> => {
-    await expect(templateEngine.render(contents, { templateString: 'my' })).resolves.toBe('my: a&amp;b');
+    await expect(templateEngine.handleSafe({ contents, template: 'someTemplate.hbs' }))
+      .resolves.toBe('a&amp;b');
+  });
+
+  it('throws an exception for unsupported template files.', async(): Promise<void> => {
+    await expect(templateEngine.handleSafe({ contents, template: 'someTemplate.txt' }))
+      .rejects.toThrow(NotImplementedHttpError);
+  });
+
+  it('throws an exception if no template was passed.', async(): Promise<void> => {
+    await expect(templateEngine.handleSafe({ contents }))
+      .rejects.toThrow(NotImplementedHttpError);
   });
 });

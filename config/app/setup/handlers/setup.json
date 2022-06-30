@@ -26,15 +26,15 @@
           "engines": [
             {
               "comment": "Renders the main setup template.",
-              "@type": "EjsTemplateEngine",
-              "template": "@css:templates/setup/index.html.ejs",
-              "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+              "@type": "StaticTemplateEngine",
+              "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
+              "template": "@css:templates/setup/index.html.ejs"
             },
             {
               "comment": "Will embed the result of the first engine into the main HTML template.",
-              "@type": "EjsTemplateEngine",
-              "template": "@css:templates/main.html.ejs",
-              "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+              "@type": "StaticTemplateEngine",
+              "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
+              "template": "@css:templates/main.html.ejs"
             }
           ]
         }
@@ -62,10 +62,7 @@
         "@type": "TemplatedResourcesGenerator",
         "templateFolder": "@css:templates/root/empty",
         "factory": { "@type": "ExtensionBasedMapperFactory" },
-        "templateEngine": {
-          "@type": "HandlebarsTemplateEngine",
-          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
-        },
+        "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
         "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
         "store": { "@id": "urn:solid-server:default:ResourceStore"}
       },

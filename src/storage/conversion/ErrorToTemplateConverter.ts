@@ -65,8 +65,8 @@ export class ErrorToTemplateConverter extends BaseTypedRepresentationConverter {
       try {
         const templateFile = `${error.errorCode}${this.extension}`;
         assert(isValidFileName(templateFile), 'Invalid error template name');
-        description = await this.templateEngine.render(error.details ?? {},
-          { templateFile, templatePath: this.codeTemplatesPath });
+        description = await this.templateEngine.handleSafe({ contents: error.details ?? {},
+          template: { templateFile, templatePath: this.codeTemplatesPath }});
       } catch {
         // In case no template is found, or rendering errors, we still want to convert
       }
@@ -74,8 +74,9 @@ export class ErrorToTemplateConverter extends BaseTypedRepresentationConverter {
 
     // Render the main template, embedding the rendered error description
     const { name, message, stack } = error;
-    const variables = { name, message, stack, description };
-    const rendered = await this.templateEngine.render(variables, { templateFile: this.mainTemplatePath });
+    const contents = { name, message, stack, description };
+    const rendered = await this.templateEngine
+      .handleSafe({ contents, template: { templateFile: this.mainTemplatePath }});
 
     return new BasicRepresentation(rendered, representation.metadata, this.contentType);
   }

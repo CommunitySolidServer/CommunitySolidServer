@@ -4,13 +4,20 @@ import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngi
 describe('A ChainedTemplateEngine', (): void => {
   const contents = { title: 'myTitle' };
   const template = { templateFile: '/template.tmpl' };
+  const input = { contents, template };
   let engines: jest.Mocked<TemplateEngine>[];
   let engine: ChainedTemplateEngine;
 
   beforeEach(async(): Promise<void> => {
     engines = [
-      { render: jest.fn().mockResolvedValue('body1') },
-      { render: jest.fn().mockResolvedValue('body2') },
+      {
+        canHandle: jest.fn(),
+        handle: jest.fn().mockResolvedValue('body1'),
+      } as any,
+      {
+        canHandle: jest.fn(),
+        handleSafe: jest.fn().mockResolvedValue('body2'),
+      } as any,
     ];
 
     engine = new ChainedTemplateEngine(engines);
@@ -21,19 +28,19 @@ describe('A ChainedTemplateEngine', (): void => {
   });
 
   it('chains the engines.', async(): Promise<void> => {
-    await expect(engine.render(contents, template)).resolves.toBe('body2');
-    expect(engines[0].render).toHaveBeenCalledTimes(1);
-    expect(engines[0].render).toHaveBeenLastCalledWith(contents, template);
-    expect(engines[1].render).toHaveBeenCalledTimes(1);
-    expect(engines[1].render).toHaveBeenLastCalledWith({ ...contents, body: 'body1' });
+    await expect(engine.handleSafe(input)).resolves.toBe('body2');
+    expect(engines[0].handle).toHaveBeenCalledTimes(1);
+    expect(engines[0].handle).toHaveBeenLastCalledWith(input);
+    expect(engines[1].handleSafe).toHaveBeenCalledTimes(1);
+    expect(engines[1].handleSafe).toHaveBeenLastCalledWith({ contents: { ...contents, body: 'body1' }});
   });
 
   it('can use a different field to pass along the body.', async(): Promise<void> => {
     engine = new ChainedTemplateEngine(engines, 'different');
-    await expect(engine.render(contents, template)).resolves.toBe('body2');
-    expect(engines[0].render).toHaveBeenCalledTimes(1);
-    expect(engines[0].render).toHaveBeenLastCalledWith(contents, template);
-    expect(engines[1].render).toHaveBeenCalledTimes(1);
-    expect(engines[1].render).toHaveBeenLastCalledWith({ ...contents, different: 'body1' });
+    await expect(engine.handleSafe(input)).resolves.toBe('body2');
+    expect(engines[0].handle).toHaveBeenCalledTimes(1);
+    expect(engines[0].handle).toHaveBeenLastCalledWith(input);
+    expect(engines[1].handleSafe).toHaveBeenCalledTimes(1);
+    expect(engines[1].handleSafe).toHaveBeenLastCalledWith({ contents: { ...contents, different: 'body1' }});
   });
 });

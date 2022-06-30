@@ -33,8 +33,8 @@ describe('A DynamicJsonToTemplateConverter', (): void => {
     input = { identifier, representation, preferences };
 
     templateEngine = {
-      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
-    };
+      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+    } as any;
     converter = new DynamicJsonToTemplateConverter(templateEngine);
   });
 
@@ -63,8 +63,8 @@ describe('A DynamicJsonToTemplateConverter', (): void => {
     await expect(readableToString(result.data)).resolves.toBe('<html>');
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render).toHaveBeenLastCalledWith({ json: true }, { templateFile });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateEngine.handleSafe).toHaveBeenLastCalledWith({ contents: { json: true }, template: { templateFile }});
   });
 
   it('supports missing type preferences.', async(): Promise<void> => {

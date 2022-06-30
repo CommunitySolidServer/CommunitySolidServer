@@ -11,8 +11,8 @@ describe('A MarkdownToHtmlConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     templateEngine = {
-      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
-    };
+      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+    } as any;
     converter = new MarkdownToHtmlConverter(templateEngine);
   });
 
@@ -29,9 +29,9 @@ describe('A MarkdownToHtmlConverter', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render).toHaveBeenLastCalledWith(
-      { htmlBody: '<p>Text <code>code</code> more text.</p>\n' },
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateEngine.handleSafe).toHaveBeenLastCalledWith(
+      { contents: { htmlBody: '<p>Text <code>code</code> more text.</p>\n' }},
     );
   });
 });

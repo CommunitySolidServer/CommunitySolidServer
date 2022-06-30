@@ -9,10 +9,7 @@
       "factory": {
         "@type": "ExtensionBasedMapperFactory"
       },
-      "templateEngine": {
-        "@type": "HandlebarsTemplateEngine",
-        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
-      },
+      "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
       "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
       "store": { "@id": "urn:solid-server:default:ResourceStore"}
     }
