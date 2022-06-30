@@ -8,37 +8,63 @@ import { AS, SOLID_AS } from '../../../src/util/Vocabularies';
 describe('A MonitoringStore', (): void => {
   let store: MonitoringStore;
   let source: ResourceStore;
+
   let changedCallback: () => void;
-  const modified = {
-    'http://example.org/modified/1': new RepresentationMetadata({ path: 'http://example.org/modified/1' })
+  let createdCallback: () => void;
+  let updatedCallback: () => void;
+  let deletedCallback: () => void;
+
+  const addResourceReturnMock = {
+    'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
       .add(SOLID_AS.terms.Activity, AS.Create),
-    'http://example.org/modified/2': new RepresentationMetadata({ path: 'http://example.org/modified/2' })
+    'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
       .add(SOLID_AS.terms.Activity, AS.Update),
-    'http://example.org/modified/3': new RepresentationMetadata({ path: 'http://example.org/modified/3' })
+  };
+  const setRepresentationReturnMock = {
+    'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
+      .add(SOLID_AS.terms.Activity, AS.Update),
+  };
+  const deleteResourceReturnMock = {
+    'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
       .add(SOLID_AS.terms.Activity, AS.Delete),
+    'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
+      .add(SOLID_AS.terms.Activity, AS.Update),
+  };
+  const modifyResourceReturnMock = {
+    'http://example.org/foo/bar/old': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
+      .add(SOLID_AS.terms.Activity, AS.Delete),
+    'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
+      .add(SOLID_AS.terms.Activity, AS.Create),
+    'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
+      .add(SOLID_AS.terms.Activity, AS.Update),
   };
 
   beforeEach(async(): Promise<void> => {
     source = {
       getRepresentation: jest.fn(async(): Promise<any> => ({ success: true })),
-      addResource: jest.fn(async(): Promise<any> => ({
-        'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
-          .add(SOLID_AS.terms.Activity, AS.Create),
-        'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
-          .add(SOLID_AS.terms.Activity, AS.Update),
-      })),
-      setRepresentation: jest.fn(async(): Promise<any> => modified),
-      deleteResource: jest.fn(async(): Promise<any> => modified),
-      modifyResource: jest.fn(async(): Promise<any> => modified),
+      addResource: jest.fn(async(): Promise<any> => addResourceReturnMock),
+      setRepresentation: jest.fn(async(): Promise<any> => setRepresentationReturnMock),
+      deleteResource: jest.fn(async(): Promise<any> => deleteResourceReturnMock),
+      modifyResource: jest.fn(async(): Promise<any> => modifyResourceReturnMock),
       hasResource: jest.fn(async(): Promise<any> => undefined),
     };
     store = new MonitoringStore(source);
+
     changedCallback = jest.fn();
+    createdCallback = jest.fn();
+    updatedCallback = jest.fn();
+    deletedCallback = jest.fn();
     store.on('changed', changedCallback);
+    store.on('created', createdCallback);
+    store.on('updated', updatedCallback);
+    store.on('deleted', deletedCallback);
   });
 
   afterEach(async(): Promise<void> => {
     store.removeListener('changed', changedCallback);
+    store.removeListener('created', createdCallback);
+    store.removeListener('updated', updatedCallback);
+    store.removeListener('deleted', deletedCallback);
   });
 
   it('calls getRepresentation directly from the source.', async(): Promise<void> => {
@@ -62,64 +88,81 @@ describe('A MonitoringStore', (): void => {
     expect(source.addResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
 
-  it('fires container and resource change events after addResource.', async(): Promise<void> => {
+  it('fires appropriate events according to the return value of source.addResource.', async(): Promise<void> => {
     const result = store.addResource({ path: 'http://example.org/foo/bar/' }, {} as Representation);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(2);
     expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.Update);
     expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Create);
+    expect(createdCallback).toHaveBeenCalledTimes(1);
+    expect(createdCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
+    expect(updatedCallback).toHaveBeenCalledTimes(1);
+    expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' });
+    expect(deletedCallback).toHaveBeenCalledTimes(0);
   });
 
   it('calls setRepresentation directly from the source.', async(): Promise<void> => {
     await expect(store.setRepresentation({ path: 'http://example.org/foo/bar' }, {} as Representation))
-      .resolves.toEqual(modified);
+      .resolves.toEqual(setRepresentationReturnMock);
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(source.setRepresentation).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
 
-  it('fires all modified change events after setRepresentation.', async(): Promise<void> => {
+  it('fires appropriate events according to the return value of source.setRepresentation.', async(): Promise<void> => {
     const result = store.setRepresentation({ path: 'http://example.org/foo/bar' }, {} as Representation);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
-    expect(changedCallback).toHaveBeenCalledTimes(3);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' }, AS.Create);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' }, AS.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' }, AS.Delete);
+    expect(changedCallback).toHaveBeenCalledTimes(1);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Update);
+    expect(createdCallback).toHaveBeenCalledTimes(0);
+    expect(updatedCallback).toHaveBeenCalledTimes(1);
+    expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
+    expect(deletedCallback).toHaveBeenCalledTimes(0);
   });
 
   it('calls deleteResource directly from the source.', async(): Promise<void> => {
     await expect(store.deleteResource({ path: 'http://example.org/foo/bar' }))
-      .resolves.toEqual(modified);
+      .resolves.toEqual(deleteResourceReturnMock);
     expect(source.deleteResource).toHaveBeenCalledTimes(1);
     expect(source.deleteResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, undefined);
   });
 
-  it('fires all modified change events after deleteResource.', async(): Promise<void> => {
+  it('fires appropriate events according to the return value of source.deleteResource.', async(): Promise<void> => {
     const result = store.deleteResource({ path: 'http://example.org/foo/bar' });
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
-    expect(changedCallback).toHaveBeenCalledTimes(3);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' }, AS.Create);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' }, AS.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' }, AS.Delete);
+    expect(changedCallback).toHaveBeenCalledTimes(2);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Delete);
+    expect(createdCallback).toHaveBeenCalledTimes(0);
+    expect(updatedCallback).toHaveBeenCalledTimes(1);
+    expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' });
+    expect(deletedCallback).toHaveBeenCalledTimes(1);
+    expect(deletedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
   });
 
   it('calls modifyResource directly from the source.', async(): Promise<void> => {
     await expect(store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch))
-      .resolves.toEqual(modified);
+      .resolves.toEqual(modifyResourceReturnMock);
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
     expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
 
-  it('fires all modified change events after modifyResource.', async(): Promise<void> => {
+  it('fires appropriate events according to the return value of source.modifyResource.', async(): Promise<void> => {
     const result = store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(3);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' }, AS.Create);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' }, AS.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' }, AS.Delete);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Create);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/old' }, AS.Delete);
+    expect(createdCallback).toHaveBeenCalledTimes(1);
+    expect(createdCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
+    expect(updatedCallback).toHaveBeenCalledTimes(1);
+    expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' });
+    expect(deletedCallback).toHaveBeenCalledTimes(1);
+    expect(deletedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/old' });
   });
 
   it('calls hasResource directly from the source.', async(): Promise<void> => {
@@ -128,45 +171,16 @@ describe('A MonitoringStore', (): void => {
     expect(source.hasResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' });
   });
 
-  it('fires specific created, deleted and updated events.', async(): Promise<void> => {
-    const deletedCb = jest.fn();
-    store.on('deleted', deletedCb);
-    const updatedCb = jest.fn();
-    store.on('updated', updatedCb);
-    const createdCb = jest.fn();
-    store.on('created', createdCb);
-    await store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
-
-    expect(createdCb).toHaveBeenCalledTimes(1);
-    expect(createdCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/1' });
-    expect(updatedCb).toHaveBeenCalledTimes(1);
-    expect(updatedCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/2' });
-    expect(deletedCb).toHaveBeenCalledTimes(1);
-    expect(deletedCb).toHaveBeenCalledWith({ path: 'http://example.org/modified/3' });
-
-    store.removeListener('created', createdCb);
-    store.removeListener('deleted', deletedCb);
-    store.removeListener('updated', updatedCb);
-  });
-
   it('should not emit an extra event when the Activity is not a valid AS value.', async(): Promise<void> => {
     source.addResource = jest.fn(async(): Promise<any> => ({
       path: new RepresentationMetadata({ path: 'path' }).add(SOLID_AS.terms.Activity, 'SomethingRandom'),
     }));
-    const deletedCb = jest.fn();
-    store.on('deleted', deletedCb);
-    const updatedCb = jest.fn();
-    store.on('updated', updatedCb);
-    const createdCb = jest.fn();
-    store.on('created', createdCb);
+
     await store.addResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
 
-    expect(createdCb).toHaveBeenCalledTimes(0);
-    expect(updatedCb).toHaveBeenCalledTimes(0);
-    expect(deletedCb).toHaveBeenCalledTimes(0);
-
-    store.removeListener('created', createdCb);
-    store.removeListener('deleted', deletedCb);
-    store.removeListener('updated', updatedCb);
+    expect(changedCallback).toHaveBeenCalledTimes(1);
+    expect(createdCallback).toHaveBeenCalledTimes(0);
+    expect(updatedCallback).toHaveBeenCalledTimes(0);
+    expect(deletedCallback).toHaveBeenCalledTimes(0);
   });
 });
