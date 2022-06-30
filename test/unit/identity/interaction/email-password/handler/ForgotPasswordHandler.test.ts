@@ -28,7 +28,7 @@ describe('A ForgotPasswordHandler', (): void => {
     } as any;
 
     templateEngine = {
-      render: jest.fn().mockResolvedValue(html),
+      handleSafe: jest.fn().mockResolvedValue(html),
     } as any;
 
     resetRoute = {

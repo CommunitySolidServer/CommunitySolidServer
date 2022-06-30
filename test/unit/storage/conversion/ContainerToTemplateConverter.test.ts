@@ -15,8 +15,8 @@ describe('A ContainerToTemplateConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     templateEngine = {
-      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
-    };
+      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+    } as any;
     converter = new ContainerToTemplateConverter(templateEngine, 'text/html', identifierStrategy);
   });
 
@@ -51,50 +51,52 @@ describe('A ContainerToTemplateConverter', (): void => {
     expect(converted.metadata.contentType).toBe('text/html');
     await expect(readableToString(converted.data)).resolves.toBe('<html>');
 
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render).toHaveBeenCalledWith({
-      identifier: container.path,
-      name: 'my-container',
-      container: true,
-      children: [
-        {
-          identifier: `${container.path}d/`,
-          name: 'd',
-          container: true,
-        },
-        {
-          identifier: `${container.path}a`,
-          name: 'a',
-          container: false,
-        },
-        {
-          identifier: `${container.path}b`,
-          name: 'b',
-          container: false,
-        },
-        {
-          identifier: `${container.path}c%20c`,
-          name: 'c c',
-          container: false,
-        },
-      ],
-      parents: [
-        {
-          identifier: 'http://test.com/',
-          name: 'test.com',
-          container: true,
-        },
-        {
-          identifier: 'http://test.com/foo/',
-          name: 'foo',
-          container: true,
-        },
-        {
-          identifier: 'http://test.com/foo/bar/',
-          name: 'bar',
-          container: true,
-        },
-      ],
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateEngine.handleSafe).toHaveBeenCalledWith({
+      contents: {
+        identifier: container.path,
+        name: 'my-container',
+        container: true,
+        children: [
+          {
+            identifier: `${container.path}d/`,
+            name: 'd',
+            container: true,
+          },
+          {
+            identifier: `${container.path}a`,
+            name: 'a',
+            container: false,
+          },
+          {
+            identifier: `${container.path}b`,
+            name: 'b',
+            container: false,
+          },
+          {
+            identifier: `${container.path}c%20c`,
+            name: 'c c',
+            container: false,
+          },
+        ],
+        parents: [
+          {
+            identifier: 'http://test.com/',
+            name: 'test.com',
+            container: true,
+          },
+          {
+            identifier: 'http://test.com/foo/',
+            name: 'foo',
+            container: true,
+          },
+          {
+            identifier: 'http://test.com/foo/bar/',
+            name: 'bar',
+            container: true,
+          },
+        ],
+      },
     });
   });
 
@@ -108,13 +110,15 @@ describe('A ContainerToTemplateConverter', (): void => {
     ], 'internal/quads', false);
     await converter.handle({ identifier: container, representation, preferences });
 
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render).toHaveBeenCalledWith({
-      identifier: container.path,
-      name: 'test.com',
-      container: true,
-      children: expect.objectContaining({ length: 3 }),
-      parents: [],
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateEngine.handleSafe).toHaveBeenCalledWith({
+      contents: {
+        identifier: container.path,
+        name: 'test.com',
+        container: true,
+        children: expect.objectContaining({ length: 3 }),
+        parents: [],
+      },
     });
   });
 
@@ -124,13 +128,15 @@ describe('A ContainerToTemplateConverter', (): void => {
     jest.spyOn(identifierStrategy, 'isRootContainer').mockReturnValueOnce(true);
     await converter.handle({ identifier: container, representation, preferences });
 
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render).toHaveBeenCalledWith({
-      identifier: container.path,
-      name: container.path,
-      container: true,
-      children: [],
-      parents: [],
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateEngine.handleSafe).toHaveBeenCalledWith({
+      contents: {
+        identifier: container.path,
+        name: container.path,
+        container: true,
+        children: [],
+        parents: [],
+      },
     });
   });
 });

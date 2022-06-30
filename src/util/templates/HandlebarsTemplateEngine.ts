@@ -1,32 +1,26 @@
-/* eslint-disable tsdoc/syntax */
-// tsdoc/syntax cannot handle `@range`
-import type { TemplateDelegate } from 'handlebars';
 import { compile } from 'handlebars';
-import type { TemplateEngine, Template } from './TemplateEngine';
-import { readTemplate } from './TemplateEngine';
+import { ExtensionBasedTemplateEngine } from './ExtensionBasedTemplateEngine';
+import type { TemplateEngineInput } from './TemplateEngine';
+import { readTemplate } from './TemplateUtil';
 import Dict = NodeJS.Dict;
 
 /**
  * Fills in Handlebars templates.
  */
-export class HandlebarsTemplateEngine<T extends Dict<any> = Dict<any>> implements TemplateEngine<T> {
-  private readonly applyTemplate: Promise<TemplateDelegate>;
+export class HandlebarsTemplateEngine<T extends Dict<any> = Dict<any>> extends ExtensionBasedTemplateEngine<T> {
   private readonly baseUrl: string;
 
   /**
-   * @params baseUrl - Base URL of the server.
-   * @param template - The default template @range {json}
+   * @param baseUrl - Base URL of the server.
+   * @param supportedExtensions - The extensions that are supported by this template engine (defaults to 'hbs').
    */
-  public constructor(baseUrl: string, template?: Template) {
+  public constructor(baseUrl: string, supportedExtensions = [ 'hbs' ]) {
+    super(supportedExtensions);
     this.baseUrl = baseUrl;
-    this.applyTemplate = readTemplate(template)
-      .then((templateString: string): TemplateDelegate => compile(templateString));
   }
 
-  public async render(contents: T): Promise<string>;
-  public async render<TCustom = T>(contents: TCustom, template: Template): Promise<string>;
-  public async render<TCustom = T>(contents: TCustom, template?: Template): Promise<string> {
-    const applyTemplate = template ? compile(await readTemplate(template)) : await this.applyTemplate;
+  public async handle({ contents, template }: TemplateEngineInput<T>): Promise<string> {
+    const applyTemplate = compile(await readTemplate(template));
     return applyTemplate({ ...contents, baseUrl: this.baseUrl });
   }
 }

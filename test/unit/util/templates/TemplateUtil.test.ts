@@ -1,10 +1,10 @@
 import { resolveAssetPath } from '../../../../src/util/PathUtil';
-import { getTemplateFilePath, readTemplate } from '../../../../src/util/templates/TemplateEngine';
+import { getTemplateFilePath, readTemplate } from '../../../../src/util/templates/TemplateUtil';
 import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
 
-describe('TemplateEngine', (): void => {
+describe('TemplateUtil', (): void => {
   describe('#getTemplateFilePath', (): void => {
     const templateFile = 'template.xyz';
     const templatePath = 'other';

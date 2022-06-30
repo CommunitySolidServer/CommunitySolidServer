@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Template engine that finds the appropriate template engine to use based on the template extension.",
+      "@id": "urn:solid-server:default:TemplateEngine",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        {
+          "comment": "Template engine that supports EJS templates.",
+          "@type": "EjsTemplateEngine",
+          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        },
+        {
+          "comment": "Template engine that supports Handlebars (HBS) templates",
+          "@type": "HandlebarsTemplateEngine",
+          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        }
+      ]
+    }
+  ]
+}

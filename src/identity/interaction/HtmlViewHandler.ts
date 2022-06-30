@@ -55,7 +55,7 @@ export class HtmlViewHandler extends InteractionHandler {
   public async handle({ operation, oidcInteraction }: InteractionHandlerInput): Promise<Representation> {
     const template = this.templates[operation.target.path];
     const contents = { idpIndex: this.idpIndex, authenticating: Boolean(oidcInteraction) };
-    const result = await this.templateEngine.render(contents, { templateFile: template });
+    const result = await this.templateEngine.handleSafe({ contents, template: { templateFile: template }});
     return new BasicRepresentation(result, operation.target, TEXT_HTML);
   }
 }

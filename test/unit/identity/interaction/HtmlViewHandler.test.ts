@@ -35,8 +35,8 @@ describe('An HtmlViewHandler', (): void => {
     };
 
     templateEngine = {
-      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
-    };
+      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+    } as any;
 
     handler = new HtmlViewHandler(index, templateEngine, templates);
   });
@@ -70,17 +70,23 @@ describe('An HtmlViewHandler', (): void => {
     const result = await handler.handle({ operation });
     expect(result.metadata.contentType).toBe(TEXT_HTML);
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render)
-      .toHaveBeenLastCalledWith({ idpIndex, authenticating: false }, { templateFile: '/templates/login.html.ejs' });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateEngine.handleSafe)
+      .toHaveBeenLastCalledWith({
+        contents: { idpIndex, authenticating: false },
+        template: { templateFile: '/templates/login.html.ejs' },
+      });
   });
 
   it('sets authenticating to true if there is an active interaction.', async(): Promise<void> => {
     const result = await handler.handle({ operation, oidcInteraction: {} as any });
     expect(result.metadata.contentType).toBe(TEXT_HTML);
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render)
-      .toHaveBeenLastCalledWith({ idpIndex, authenticating: true }, { templateFile: '/templates/login.html.ejs' });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateEngine.handleSafe)
+      .toHaveBeenLastCalledWith({
+        contents: { idpIndex, authenticating: true },
+        template: { templateFile: '/templates/login.html.ejs' },
+      });
   });
 });

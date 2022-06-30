@@ -453,8 +453,11 @@ export * from './util/map/WrappedSetMultiMap';
 // Util/Templates
 export * from './util/templates/ChainedTemplateEngine';
 export * from './util/templates/EjsTemplateEngine';
+export * from './util/templates/ExtensionBasedTemplateEngine';
 export * from './util/templates/HandlebarsTemplateEngine';
+export * from './util/templates/StaticTemplateEngine';
 export * from './util/templates/TemplateEngine';
+export * from './util/templates/TemplateUtil';
 
 // Util
 export * from './util/ContentTypes';

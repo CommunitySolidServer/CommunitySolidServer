@@ -17,7 +17,11 @@ The following changes pertain to the imports in the default configs:
 - ...
 
 The following changes are relevant for v5 custom configs that replaced certain features.
-- ...
+
+- Updated template configs.
+    - `/app/main/general/templates.json` was added to configure a generic template engine handler.
+    - `/app/main/default.json` now imports the above config file.
+    - All files configuring template engines.
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.

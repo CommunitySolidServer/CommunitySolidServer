@@ -43,13 +43,13 @@ export class ContainerToTemplateConverter extends BaseTypedRepresentationConvert
   }
 
   public async handle({ identifier, representation }: RepresentationConverterArgs): Promise<Representation> {
-    const rendered = await this.templateEngine.render({
+    const rendered = await this.templateEngine.handleSafe({ contents: {
       identifier: identifier.path,
       name: this.getLocalName(identifier.path),
       container: true,
       children: await this.getChildResources(identifier, representation.data),
       parents: this.getParentContainers(identifier),
-    });
+    }});
     return new BasicRepresentation(rendered, representation.metadata, this.contentType);
   }
 

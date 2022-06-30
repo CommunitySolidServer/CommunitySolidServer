@@ -37,8 +37,8 @@ describe('A SetupHttpHandler', (): void => {
     };
 
     templateEngine = {
-      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
-    };
+      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+    } as any;
 
     converter = {
       handleSafe: jest.fn((input: RepresentationConverterArgs): Representation => {

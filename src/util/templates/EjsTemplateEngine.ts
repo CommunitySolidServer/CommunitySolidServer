@@ -1,35 +1,26 @@
-/* eslint-disable tsdoc/syntax */
-// tsdoc/syntax cannot handle `@range`
-import type { TemplateFunction } from 'ejs';
-import { compile, render } from 'ejs';
-import type { TemplateEngine, Template } from './TemplateEngine';
-import { getTemplateFilePath, readTemplate } from './TemplateEngine';
+import { render } from 'ejs';
+import { ExtensionBasedTemplateEngine } from './ExtensionBasedTemplateEngine';
+import type { TemplateEngineInput } from './TemplateEngine';
+import { getTemplateFilePath, readTemplate } from './TemplateUtil';
 import Dict = NodeJS.Dict;
 
 /**
  * Fills in EJS templates.
  */
-export class EjsTemplateEngine<T extends Dict<any> = Dict<any>> implements TemplateEngine<T> {
-  private readonly applyTemplate: Promise<TemplateFunction>;
+export class EjsTemplateEngine<T extends Dict<any> = Dict<any>> extends ExtensionBasedTemplateEngine<T> {
   private readonly baseUrl: string;
 
   /**
    * @param baseUrl - Base URL of the server.
-   * @param template - The default template @range {json}
+   * @param supportedExtensions - The extensions that are supported by this template engine (defaults to 'ejs').
    */
-  public constructor(baseUrl: string, template?: Template) {
-    // EJS requires the `filename` parameter to be able to include partial templates
-    const filename = getTemplateFilePath(template);
+  public constructor(baseUrl: string, supportedExtensions = [ 'ejs' ]) {
+    super(supportedExtensions);
     this.baseUrl = baseUrl;
-
-    this.applyTemplate = readTemplate(template)
-      .then((templateString: string): TemplateFunction => compile(templateString, { filename }));
   }
 
-  public async render(contents: T): Promise<string>;
-  public async render<TCustom = T>(contents: TCustom, template: Template): Promise<string>;
-  public async render<TCustom = T>(contents: TCustom, template?: Template): Promise<string> {
+  public async handle({ contents, template }: TemplateEngineInput<T>): Promise<string> {
     const options = { ...contents, filename: getTemplateFilePath(template), baseUrl: this.baseUrl };
-    return template ? render(await readTemplate(template), options) : (await this.applyTemplate)(options);
+    return render(await readTemplate(template), options);
   }
 }

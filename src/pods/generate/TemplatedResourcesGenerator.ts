@@ -206,9 +206,9 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   /**
    * Creates a read stream from the file and applies the template if necessary.
    */
-  private async processFile(link: TemplateResourceLink, options: Dict<string>): Promise<Guarded<Readable>> {
+  private async processFile(link: TemplateResourceLink, contents: Dict<string>): Promise<Guarded<Readable>> {
     if (link.isTemplate) {
-      const rendered = await this.templateEngine.render(options, { templateFile: link.filePath });
+      const rendered = await this.templateEngine.handleSafe({ contents, template: { templateFile: link.filePath }});
       return guardedStreamFrom(rendered);
     }
     return guardStream(createReadStream(link.filePath));
