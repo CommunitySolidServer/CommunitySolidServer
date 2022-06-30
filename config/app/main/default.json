@@ -1,5 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/app/main/general/templates.json"
+  ],
   "@graph": [
     {
       "comment": "This is the entry point to the application. It can be used to both start and stop the server.",

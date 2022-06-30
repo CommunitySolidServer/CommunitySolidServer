@@ -24,7 +24,7 @@ export class MarkdownToHtmlConverter extends BaseTypedRepresentationConverter {
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
     const markdown = await readableToString(representation.data);
     const htmlBody = marked(markdown);
-    const html = await this.templateEngine.render({ htmlBody });
+    const html = await this.templateEngine.handleSafe({ contents: { htmlBody }});
 
     return new BasicRepresentation(html, representation.metadata, TEXT_HTML);
   }

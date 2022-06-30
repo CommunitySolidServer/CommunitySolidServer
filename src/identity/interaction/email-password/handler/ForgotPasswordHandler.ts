@@ -75,7 +75,7 @@ export class ForgotPasswordHandler extends BaseInteractionHandler {
   private async sendResetMail(recordId: string, email: string): Promise<void> {
     this.logger.info(`Sending password reset to ${email}`);
     const resetLink = `${this.resetRoute.getPath()}?rid=${encodeURIComponent(recordId)}`;
-    const renderedEmail = await this.templateEngine.render({ resetLink });
+    const renderedEmail = await this.templateEngine.handleSafe({ contents: { resetLink }});
     await this.emailSender.handleSafe({
       recipient: email,
       subject: 'Reset your password',

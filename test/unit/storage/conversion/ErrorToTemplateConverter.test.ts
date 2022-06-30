@@ -18,8 +18,8 @@ describe('An ErrorToTemplateConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     templateEngine = {
-      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
-    };
+      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+    } as any;
     converter = new ErrorToTemplateConverter(templateEngine,
       { mainTemplatePath, codeTemplatesPath, extension, contentType });
   });
@@ -38,31 +38,33 @@ describe('An ErrorToTemplateConverter', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render).toHaveBeenLastCalledWith(
-      { name: 'Error', message: 'error text', stack: error.stack },
-      { templateFile: mainTemplatePath },
-    );
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateEngine.handleSafe).toHaveBeenLastCalledWith({
+      contents: { name: 'Error', message: 'error text', stack: error.stack },
+      template: { templateFile: mainTemplatePath },
+    });
   });
 
   it('calls the template engine with all HTTP error fields.', async(): Promise<void> => {
     const error = new BadRequestHttpError('error text');
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
-    templateEngine.render.mockRejectedValueOnce(new Error('error-specific template not found'));
+    templateEngine.handleSafe.mockRejectedValueOnce(new Error('error-specific template not found'));
     await expect(prom).resolves.toBeDefined();
 
     const result = await prom;
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(2);
-    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
-      {},
-      { templatePath: '/templates/codes', templateFile: 'H400.html' });
-    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
-      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack },
-      { templateFile: mainTemplatePath });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(2);
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(1, {
+      contents: {},
+      template: { templatePath: '/templates/codes', templateFile: 'H400.html' },
+    });
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(2, {
+      contents: { name: 'BadRequestHttpError', message: 'error text', stack: error.stack },
+      template: { templateFile: mainTemplatePath },
+    });
   });
 
   it('only adds stack if it is defined.', async(): Promise<void> => {
@@ -70,20 +72,22 @@ describe('An ErrorToTemplateConverter', (): void => {
     delete error.stack;
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
-    templateEngine.render.mockRejectedValueOnce(new Error('error-specific template not found'));
+    templateEngine.handleSafe.mockRejectedValueOnce(new Error('error-specific template not found'));
     await expect(prom).resolves.toBeDefined();
 
     const result = await prom;
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(2);
-    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
-      {},
-      { templatePath: '/templates/codes', templateFile: 'H400.html' });
-    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
-      { name: 'BadRequestHttpError', message: 'error text' },
-      { templateFile: mainTemplatePath });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(2);
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(1, {
+      contents: {},
+      template: { templatePath: '/templates/codes', templateFile: 'H400.html' },
+    });
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(2, {
+      contents: { name: 'BadRequestHttpError', message: 'error text' },
+      template: { templateFile: mainTemplatePath },
+    });
   });
 
   it('adds additional information if an error code description is found.', async(): Promise<void> => {
@@ -95,13 +99,15 @@ describe('An ErrorToTemplateConverter', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(2);
-    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
-      { key: 'val' },
-      { templatePath: '/templates/codes', templateFile: 'E0001.html' });
-    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
-      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
-      { templateFile: mainTemplatePath });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(2);
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(1, {
+      contents: { key: 'val' },
+      template: { templatePath: '/templates/codes', templateFile: 'E0001.html' },
+    });
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(2, {
+      contents: { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
+      template: { templateFile: mainTemplatePath },
+    });
   });
 
   it('sends an empty object for additional error code parameters if none are defined.', async(): Promise<void> => {
@@ -114,33 +120,37 @@ describe('An ErrorToTemplateConverter', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(2);
-    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
-      {},
-      { templatePath: '/templates/codes', templateFile: 'E0001.html' });
-    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
-      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
-      { templateFile: mainTemplatePath });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(2);
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(1, {
+      contents: {},
+      template: { templatePath: '/templates/codes', templateFile: 'E0001.html' },
+    });
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(2, {
+      contents: { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
+      template: { templateFile: mainTemplatePath },
+    });
   });
 
   it('converts errors with a code as usual if no corresponding template is found.', async(): Promise<void> => {
     const error = new BadRequestHttpError('error text', { errorCode: 'invalid' });
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
-    templateEngine.render.mockRejectedValueOnce(new Error('error-specific template not found'));
+    templateEngine.handleSafe.mockRejectedValueOnce(new Error('error-specific template not found'));
     await expect(prom).resolves.toBeDefined();
 
     const result = await prom;
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(2);
-    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
-      {},
-      { templatePath: '/templates/codes', templateFile: 'invalid.html' });
-    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
-      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack },
-      { templateFile: mainTemplatePath });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(2);
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(1, {
+      contents: {},
+      template: { templatePath: '/templates/codes', templateFile: 'invalid.html' },
+    });
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(2, {
+      contents: { name: 'BadRequestHttpError', message: 'error text', stack: error.stack },
+      template: { templateFile: mainTemplatePath },
+    });
   });
 
   it('has default template options.', async(): Promise<void> => {
@@ -153,12 +163,14 @@ describe('An ErrorToTemplateConverter', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/markdown');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(2);
-    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
-      { key: 'val' },
-      { templatePath: resolveModulePath('templates/error/descriptions/'), templateFile: 'E0001.md.hbs' });
-    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
-      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
-      { templateFile: resolveModulePath('templates/error/main.md.hbs') });
+    expect(templateEngine.handleSafe).toHaveBeenCalledTimes(2);
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(1, {
+      contents: { key: 'val' },
+      template: { templatePath: resolveModulePath('templates/error/descriptions/'), templateFile: 'E0001.md.hbs' },
+    });
+    expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(2, {
+      contents: { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
+      template: { templateFile: resolveModulePath('templates/error/main.md.hbs') },
+    });
   });
 });

@@ -6,9 +6,9 @@
       "@id": "urn:solid-server:default:MarkdownToHtmlConverter",
       "@type": "MarkdownToHtmlConverter",
       "templateEngine": {
-        "@type": "EjsTemplateEngine",
-        "template": "@css:templates/main.html.ejs",
-        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        "@type": "StaticTemplateEngine",
+        "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
+        "template": "@css:templates/main.html.ejs"
       }
     },
     {
@@ -16,9 +16,9 @@
       "@id": "urn:solid-server:default:ContainerToTemplateConverter",
       "@type": "ContainerToTemplateConverter",
       "templateEngine": {
-        "@type": "HandlebarsTemplateEngine",
-        "template": "@css:templates/container.md.hbs",
-        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        "@type": "StaticTemplateEngine",
+        "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
+        "template": "@css:templates/container.md.hbs"
       },
       "contentType": "text/markdown",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }

@@ -76,7 +76,7 @@ export class SetupHttpHandler extends OperationHttpHandler {
    * Returns the HTML representation of the setup page.
    */
   private async handleGet(operation: Operation): Promise<ResponseDescription> {
-    const result = await this.templateEngine.render({});
+    const result = await this.templateEngine.handleSafe({ contents: {}});
     const representation = new BasicRepresentation(result, operation.target, TEXT_HTML);
     return new OkResponseDescription(representation.metadata, representation.data);
   }
