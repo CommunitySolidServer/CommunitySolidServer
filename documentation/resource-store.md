@@ -29,6 +29,14 @@ and all the entries in `config/storage/backend`.
 ## MonitoringStore
 This store emits the events that are necessary to emit notifications when resources change.
 
+There are 4 different events that can be emitted:
+- `this.emit('changed', identifier, 'Create' | 'Update' | 'Delete')`: is emitted for every resource that was changed/effected by a call to the store.
+- `this.emit('created', identifier)`: is emitted for every resource that was newly created by the call to the store (if it is marked as such by its child store).
+- `this.emit('updated', identifier)`: is emitted for every resource that was updated by the call to the store (if it is marked as such by its child store).
+- `this.emit('deleted', identifier)`: is emitted for every resource that was deleted by the call to the store (if it is marked as such by its child store).
+
+Every `created`, `updated` or `deleted` event is accompanied by an equivalent `changed` event but not visa versa.
+
 ## IndexRepresentationStore
 When doing a GET request on a container `/container/`,
 this container returns the contents of `/container/index.html` instead if HTML is the preferred response type.
