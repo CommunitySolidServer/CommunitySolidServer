@@ -7,9 +7,9 @@ as described in https://github.com/inrupt/solid-client-authn-js/issues/2103.
 ## v4.0.0
 ### New features
 - The server can be started with a new parameter to automatically generate accounts and pods, 
-  for more info see [here](documentation/seeding-pods.md).
+  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/seeding-pods/).
 - It is now possible to automate authentication requests using Client Credentials,
-  for more info see [here](documentation/client-credentials.md).
+  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/client-credentials/).
 - A new `RedirectingHttpHandler` class has been added which can be used to redirect certain URLs.
 - A new default configuration `config/https-file-cli.json` 
   that can set the HTTPS parameters through the CLI has been added.
