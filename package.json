@@ -10,6 +10,9 @@
   ],
   "contributors": [
     "Joachim Van Herwegen <joachim.vanherwegen@ugent.be>",
+    "Thomas Dupont <thomas.dupont@ugent.be>",
+    "Wannes Kerckhove <wannes.kerckhove@ugent.be>",
+    "Jasper Vaneessen <jasper.vaneessen@ugent.be>",
     "Ruben Taelman <ruben.taelman@ugent.be> (https://www.rubensworks.net/)",
     "Ruben Verborgh <ruben.verborgh@ugent.be> (https://ruben.verborgh.org/)"
   ],
@@ -47,7 +50,7 @@
     "docker:setup": "./test/docker/docker-setup.sh",
     "docker:start": "./test/docker/docker-start.sh",
     "docker:stop": "./test/docker/docker-stop.sh",
-    "docs": "typedoc",
+    "typedocs": "typedoc --customCss ./documentation/typedoc.css",
     "jest": "jest --coverageReporters text-summary --",
     "lint": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
     "prepare": "npm run build",
