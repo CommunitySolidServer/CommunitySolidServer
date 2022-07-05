@@ -7,10 +7,6 @@
       "@type": "MappedMetadataWriter",
       "headerMap": [
         {
-          "MappedMetadataWriter:_headerMap_key": "http://www.w3.org/ns/ma-ont#format",
-          "MappedMetadataWriter:_headerMap_value": "Content-Type"
-        },
-        {
           "MappedMetadataWriter:_headerMap_key": "urn:npm:solid:community-server:http:location",
           "MappedMetadataWriter:_headerMap_value": "Location"
         }
