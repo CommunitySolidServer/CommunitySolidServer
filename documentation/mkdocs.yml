@@ -1,0 +1,89 @@
+docs_dir: markdown
+
+theme:
+  name: 'material'
+  custom_dir: overrides
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night 
+        name: Switch to dark mode
+      primary: deep purple
+      accent: deep orange
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+      primary: deep purple
+      accent: deep orange
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.top
+    - navigation.indexes
+
+site_name: 'Community Solid Server'
+site_url: https://communitysolidserver.github.io/CommunitySolidServer
+
+repo_url: https://github.com/CommunitySolidServer/CommunitySolidServer
+repo_name: CommunitySolidServer
+edit_uri: ""
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - def_list
+  - footnotes
+  - meta
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.tilde
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences 
+  - pymdownx.smartsymbols
+
+
+extra:
+  version: 
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/CommunitySolidServer/CommunitySolidServer
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/solidproject/community-server
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/package/@solid/community-server
+    - icon: fontawesome/brands/gitter
+      link: https://gitter.im/CommunitySolidServer/community
+
+nav:
+  - Welcome: 
+    - README.md
+  - Usage:    
+    - 'Example request': example-requests.md
+    - 'Identity provider': identity-provider.md
+    - 'Client credentials': client-credentials.md
+    - 'Seeding Pods': seeding-pods.md
+  - Architecture:
+    - Architecture: architecture.md
+    - Dependency injection: dependency-injection.md
+  - Contributing: 
+    - Pull requests: making-changes.md
+    - Releases: release.md
+  - API: ./docs/" target="_blank
+
+# To write documentation locally, execute the next line and browse to http://localhost:8000 
+# docker run --rm -it -p 8000:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material

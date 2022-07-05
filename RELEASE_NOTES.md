@@ -53,7 +53,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
 
-## V4.0.1
+## v4.0.1
 Freezes the `oidc-provider` dependency to prevent a potential issue with the solid authn client
 as described in https://github.com/inrupt/solid-client-authn-js/issues/2103.
 
