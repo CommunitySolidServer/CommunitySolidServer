@@ -603,10 +603,12 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}a/b/resource` };
       const result = store.setRepresentation(resourceID, representation);
       await expect(result).resolves.toEqual({
+        [`${root}`]: expect.any(RepresentationMetadata),
         [`${root}a/`]: expect.any(RepresentationMetadata),
         [`${root}a/b/`]: expect.any(RepresentationMetadata),
         [`${root}a/b/resource`]: expect.any(RepresentationMetadata),
       });
+      expect((await result)[`${root}`].get(SOLID_AS.terms.Activity)?.value).toBe(AS.Update);
       expect((await result)[`${root}a/`].get(SOLID_AS.terms.Activity)?.value).toBe(AS.Create);
       expect((await result)[`${root}a/b/`].get(SOLID_AS.terms.Activity)?.value).toBe(AS.Create);
       expect((await result)[`${root}a/b/resource`].get(SOLID_AS.terms.Activity)?.value).toBe(AS.Create);

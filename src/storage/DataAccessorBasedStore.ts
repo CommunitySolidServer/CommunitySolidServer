@@ -631,13 +631,8 @@ export class DataAccessorBasedStore implements ResourceStore {
       {} :
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
     const changes = await this.writeData(container, new BasicRepresentation([], container), true, false, false);
-    const filteredChanges = Object.entries(changes).reduce(
-      (acc, [ key, value ]): Record<string, RepresentationMetadata> =>
-        value.get(SOLID_AS.terms.Activity)?.value === AS.Create ? { ...acc, [key]: value } : acc,
-      {},
-    );
 
-    return { ...ancestors, ...filteredChanges };
+    return { ...changes, ...ancestors };
   }
 
   private createActivityMetadata(id: ResourceIdentifier, activity: string): RepresentationMetadata {
