@@ -35,7 +35,8 @@ There are 4 different events that can be emitted:
 - `this.emit('updated', identifier)`: is emitted for every resource that was updated by the call to the store (if it is marked as such by its child store).
 - `this.emit('deleted', identifier)`: is emitted for every resource that was deleted by the call to the store (if it is marked as such by its child store).
 
-Every `created`, `updated` or `deleted` event is accompanied by an equivalent `changed` event but not visa versa.
+Every `created`, `updated` or `deleted` event is accompanied by an equivalent `changed` event but not visa versa. The child store is responsible for adding the correct metadata to its return object, if it fails to do so, only a `changed` event will be fired and no other specific event.
+If the child store sets all metadata correctly every type of change will result in 2 events being fired.
 
 ## IndexRepresentationStore
 When doing a GET request on a container `/container/`,
