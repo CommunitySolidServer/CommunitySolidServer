@@ -39,8 +39,7 @@ export class PostOperationHandler extends OperationHandler {
     }
     const result = await this.store.addResource(operation.target, operation.body, operation.conditions);
     const createdIdentifier = Object.entries(result).find(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ([ key, value ]): boolean => value.get(SOLID_AS.terms.Activity)?.value === AS.Create,
+      ([ , value ]): boolean => value.get(SOLID_AS.terms.Activity)?.value === AS.Create,
     )![0];
     return new CreatedResponseDescription(createResourceIdentifier(createdIdentifier));
   }

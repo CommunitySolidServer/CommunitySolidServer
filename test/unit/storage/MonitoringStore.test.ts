@@ -71,16 +71,16 @@ describe('A MonitoringStore', (): void => {
     updatedCallback = jest.fn();
     deletedCallback = jest.fn();
     store.on('changed', changedCallback);
-    store.on('created', createdCallback);
-    store.on('updated', updatedCallback);
-    store.on('deleted', deletedCallback);
+    store.on(AS.Create, createdCallback);
+    store.on(AS.Update, updatedCallback);
+    store.on(AS.Delete, deletedCallback);
   });
 
   afterEach(async(): Promise<void> => {
     store.removeListener('changed', changedCallback);
-    store.removeListener('created', createdCallback);
-    store.removeListener('updated', updatedCallback);
-    store.removeListener('deleted', deletedCallback);
+    store.removeListener(AS.Create, createdCallback);
+    store.removeListener(AS.Update, updatedCallback);
+    store.removeListener(AS.Delete, deletedCallback);
   });
 
   it('calls getRepresentation directly from the source.', async(): Promise<void> => {

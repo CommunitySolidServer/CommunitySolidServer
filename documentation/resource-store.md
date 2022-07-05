@@ -30,13 +30,14 @@ and all the entries in `config/storage/backend`.
 This store emits the events that are necessary to emit notifications when resources change.
 
 There are 4 different events that can be emitted:
-- `this.emit('changed', identifier, 'Create' | 'Update' | 'Delete')`: is emitted for every resource that was changed/effected by a call to the store.
-- `this.emit('created', identifier)`: is emitted for every resource that was created by the call to the store.
-- `this.emit('updated', identifier)`: is emitted for every resource that was updated by the call to the store.
-- `this.emit('deleted', identifier)`: is emitted for every resource that was deleted by the call to the store.
+- `this.emit('changed', identifier, AS.Create | AS.Update | AS.Delete | undefined)`: is emitted for every resource that was changed/effected by a call to the store.
+- `this.emit(AS.Create, identifier)`: is emitted for every resource that was created by the call to the store.
+- `this.emit(AS.Update, identifier)`: is emitted for every resource that was updated by the call to the store.
+- `this.emit(AS.Delete, identifier)`: is emitted for every resource that was deleted by the call to the store.
 
-Every `created`, `updated` or `deleted` event is accompanied by an equivalent `changed` event but not visa versa. The child store is responsible for adding the correct metadata to its return object, if it fails to do so, only a `changed` event will be fired and no other specific event.
-If the child store sets all metadata correctly every type of change will result in 2 events being fired.
+A `changed` event will always be emitted if a resource was changed.
+If the correct metadata was set by the source `ResourceStore`, an addition field will be sent along indicating the type of change,
+and an additional corresponding event will be emitted, depending on what the change is.
 
 ## IndexRepresentationStore
 When doing a GET request on a container `/container/`,
