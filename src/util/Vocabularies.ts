@@ -73,8 +73,8 @@ export const ACL = createUriAndTermNamespace('http://www.w3.org/ns/auth/acl#',
 
 export const AS = createUriAndTermNamespace('https://www.w3.org/ns/activitystreams#',
   'Create',
-  'Update',
   'Delete',
+  'Update',
 );
 
 export const AUTH = createUriAndTermNamespace('urn:solid:auth:',

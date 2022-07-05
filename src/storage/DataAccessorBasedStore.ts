@@ -216,7 +216,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
+    conditions?: Conditions): Promise<never> {
     if (conditions) {
       let metadata: RepresentationMetadata | undefined;
       try {

@@ -21,8 +21,12 @@ describe('A PostOperationHandler', (): void => {
     operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
       addResource: jest.fn(async(): Promise<Record<string, RepresentationMetadata>> => ({
-        newPath: new RepresentationMetadata({ path: 'newPath' }).add(SOLID_AS.terms.Activity, AS.Create),
-        parent: new RepresentationMetadata({ path: 'parent' }).add(SOLID_AS.terms.Activity, AS.Update),
+        'https://example.com/parent/newPath': new RepresentationMetadata(
+          { path: 'https://example.com/parent/newPath' },
+        ).add(SOLID_AS.terms.Activity, AS.Create),
+        'https://example.com/parent/': new RepresentationMetadata(
+          { path: 'https://example.come/parent/' },
+        ).add(SOLID_AS.terms.Activity, AS.Update),
       })),
     } as unknown as ResourceStore;
     handler = new PostOperationHandler(store);
@@ -43,7 +47,7 @@ describe('A PostOperationHandler', (): void => {
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(201);
     expect(result.metadata).toBeInstanceOf(RepresentationMetadata);
-    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe('newPath');
+    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe('https://example.com/parent/newPath');
     expect(result.data).toBeUndefined();
     expect(store.addResource).toHaveBeenCalledTimes(1);
     expect(store.addResource).toHaveBeenLastCalledWith(operation.target, body, conditions);

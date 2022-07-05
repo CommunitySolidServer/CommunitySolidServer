@@ -49,7 +49,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - Both `TemplateEngine` implementations now take a `baseUrl` parameter as input.
 - The `IdentityProviderFactory` and `ConvertingErrorHandler` now additionally take a `PreferenceParser` as input.
 - Error handlers now take the incoming HttpRequest as input instead of just the preferences.
-- `ResourceStore` had some of its function signatures changed to return more information about the changes made inside the store. Return types of `setRepresentation`, `addResource`, `deleteResource` and `modifyResource` have been changed from `Promise<ResourceIdentifier[]>` to `Promise<Record<string, RepresentationMetadata>>`.
+- `ResourceStore` functions that change a resource now return metadata for every changed resource.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
 
