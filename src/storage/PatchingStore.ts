@@ -1,11 +1,10 @@
 import type { Patch } from '../http/representation/Patch';
-import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './Conditions';
 import { PassthroughStore } from './PassthroughStore';
 import type { PatchHandler } from './patch/PatchHandler';
-import type { ResourceStore } from './ResourceStore';
+import type { ResourceStore, ResourceStoreResponse } from './ResourceStore';
 
 /**
  * {@link ResourceStore} using decorator pattern for the `modifyResource` function.
@@ -21,7 +20,7 @@ export class PatchingStore<T extends ResourceStore = ResourceStore> extends Pass
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<Record<string, RepresentationMetadata>> {
+    conditions?: Conditions): Promise<ResourceStoreResponse> {
     try {
       return await this.source.modifyResource(identifier, patch, conditions);
     } catch (error: unknown) {

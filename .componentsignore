@@ -15,6 +15,7 @@
   "Promise",
   "Readonly",
   "RegExp",
+  "ResourceStoreResponse",
   "Set",
   "Settings",
   "Template",

@@ -1,7 +1,7 @@
 import type { Representation } from '../../http/representation/Representation';
-import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import type { ResourceStoreResponse } from '../ResourceStore';
 import type { PatchHandlerInput } from './PatchHandler';
 import { PatchHandler } from './PatchHandler';
 import type { RepresentationPatcher } from './RepresentationPatcher';
@@ -24,7 +24,7 @@ export class RepresentationPatchHandler extends PatchHandler {
   }
 
   public async handle({ source, patch, identifier }: PatchHandlerInput):
-  Promise<Record<string, RepresentationMetadata>> {
+  Promise<ResourceStoreResponse> {
     // Get the representation from the store
     let representation: Representation | undefined;
     try {

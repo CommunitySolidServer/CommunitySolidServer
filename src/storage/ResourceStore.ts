@@ -7,6 +7,13 @@ import type { Conditions } from './Conditions';
 import type { ResourceSet } from './ResourceSet';
 
 /**
+ * An object containing one property for each resource that was created, updated or deleted
+ * by this operation. Where the key of the property is the path of the resource (string) and the value is an
+ * instance of RepresentationMetadata containing extra information about the change of the resource.
+ */
+export type ResourceStoreResponse = Record<string, RepresentationMetadata>;
+
+/**
  * A ResourceStore represents a collection of resources.
  * It has been designed such that each of its methods
  * can be implemented in an atomic way:  for each CRUD operation, only one
@@ -39,15 +46,13 @@ export interface ResourceStore extends ResourceSet {
    * @param representation - New representation of the resource.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns An object containing one property for each resource that was created, updated or deleted
-   * by this operation. Where the key of the property is the path of the resource (string) and the value is an
-   * instance of RepresentationMetadata containing extra information about the change of the resource.
+   * @returns A {@link ResourceStoreResponse}.
    */
   setRepresentation: (
     identifier: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<Record<string, RepresentationMetadata>>;
+  ) => Promise<ResourceStoreResponse>;
 
   /**
    * Creates a new resource in the container.
@@ -55,29 +60,25 @@ export interface ResourceStore extends ResourceSet {
    * @param representation - Representation of the new resource
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns An object containing one property for each resource that was created, updated or deleted
-   * by this operation. Where the key of the property is the path of the resource (string) and the value is an
-   * instance of RepresentationMetadata containing extra information about the change of the resource.
+   * @returns A {@link ResourceStoreResponse}.
    */
   addResource: (
     container: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<Record<string, RepresentationMetadata>>;
+  ) => Promise<ResourceStoreResponse>;
 
   /**
    * Deletes a resource.
    * @param identifier - Identifier of resource to delete.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns An object containing one property for each resource that was created, updated or deleted
-   * by this operation. Where the key of the property is the path of the resource (string) and the value is an
-   * instance of RepresentationMetadata containing extra information about the change of the resource.
+   * @returns A {@link ResourceStoreResponse}.
    */
   deleteResource: (
     identifier: ResourceIdentifier,
     conditions?: Conditions,
-  ) => Promise<Record<string, RepresentationMetadata>>;
+  ) => Promise<ResourceStoreResponse>;
 
   /**
    * Sets or updates the representation of a resource,
@@ -86,13 +87,11 @@ export interface ResourceStore extends ResourceSet {
    * @param patch - Description of which parts to update.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns An object containing one property for each resource that was created, updated or deleted
-   * by this operation. Where the key of the property is the path of the resource (string) and the value is an
-   * instance of RepresentationMetadata containing extra information about the change of the resource.
+   * @returns A {@link ResourceStoreResponse}.
    */
   modifyResource: (
     identifier: ResourceIdentifier,
     patch: Patch,
     conditions?: Conditions,
-  ) => Promise<Record<string, RepresentationMetadata>>;
+  ) => Promise<ResourceStoreResponse>;
 }
