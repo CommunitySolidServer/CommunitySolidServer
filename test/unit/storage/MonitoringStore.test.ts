@@ -15,28 +15,44 @@ describe('A MonitoringStore', (): void => {
   let deletedCallback: () => void;
 
   const addResourceReturnMock = {
-    'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
-      .add(SOLID_AS.terms.Activity, AS.Create),
-    'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
-      .add(SOLID_AS.terms.Activity, AS.Update),
+    'http://example.org/foo/bar/new': new RepresentationMetadata(
+      { path: 'http://example.org/foo/bar/new' },
+      { [SOLID_AS.terms.Activity.value]: AS.Create },
+    ),
+    'http://example.org/foo/bar/': new RepresentationMetadata(
+      { path: 'http://example.org/foo/bar/' },
+      { [SOLID_AS.terms.Activity.value]: AS.Update },
+    ),
   };
   const setRepresentationReturnMock = {
-    'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
-      .add(SOLID_AS.terms.Activity, AS.Update),
+    'http://example.org/foo/bar/new': new RepresentationMetadata(
+      { path: 'http://example.org/foo/bar/new' },
+      { [SOLID_AS.terms.Activity.value]: AS.Update },
+    ),
   };
   const deleteResourceReturnMock = {
-    'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
-      .add(SOLID_AS.terms.Activity, AS.Delete),
-    'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
-      .add(SOLID_AS.terms.Activity, AS.Update),
+    'http://example.org/foo/bar/new': new RepresentationMetadata(
+      { path: 'http://example.org/foo/bar/new' },
+      { [SOLID_AS.terms.Activity.value]: AS.Delete },
+    ),
+    'http://example.org/foo/bar/': new RepresentationMetadata(
+      { path: 'http://example.org/foo/bar/' },
+      { [SOLID_AS.terms.Activity.value]: AS.Update },
+    ),
   };
   const modifyResourceReturnMock = {
-    'http://example.org/foo/bar/old': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
-      .add(SOLID_AS.terms.Activity, AS.Delete),
-    'http://example.org/foo/bar/new': new RepresentationMetadata({ path: 'http://example.org/foo/bar/new' })
-      .add(SOLID_AS.terms.Activity, AS.Create),
-    'http://example.org/foo/bar/': new RepresentationMetadata({ path: 'http://example.org/foo/bar/' })
-      .add(SOLID_AS.terms.Activity, AS.Update),
+    'http://example.org/foo/bar/old': new RepresentationMetadata(
+      { path: 'http://example.org/foo/bar/new' },
+      { [SOLID_AS.terms.Activity.value]: AS.Delete },
+    ),
+    'http://example.org/foo/bar/new': new RepresentationMetadata(
+      { path: 'http://example.org/foo/bar/new' },
+      { [SOLID_AS.terms.Activity.value]: AS.Create },
+    ),
+    'http://example.org/foo/bar/': new RepresentationMetadata(
+      { path: 'http://example.org/foo/bar/' },
+      { [SOLID_AS.terms.Activity.value]: AS.Update },
+    ),
   };
 
   beforeEach(async(): Promise<void> => {
@@ -173,7 +189,10 @@ describe('A MonitoringStore', (): void => {
 
   it('should not emit an extra event when the Activity is not a valid AS value.', async(): Promise<void> => {
     source.addResource = jest.fn(async(): Promise<any> => ({
-      path: new RepresentationMetadata({ path: 'path' }).add(SOLID_AS.terms.Activity, 'SomethingRandom'),
+      'http://example.com/path': new RepresentationMetadata(
+        { path: 'http://example.com/path' },
+        { [SOLID_AS.terms.Activity.value]: 'SomethingRandom' },
+      ),
     }));
 
     await store.addResource({ path: 'http://example.org/foo/bar' }, {} as Patch);

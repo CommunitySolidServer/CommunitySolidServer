@@ -270,23 +270,21 @@ export class DataAccessorBasedStore implements ResourceStore {
     const changes: Record<string, RepresentationMetadata> = {};
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
-      const deletedIdentifiers = await this.safelyDeleteAuxiliaryResources(auxiliaries);
-      deletedIdentifiers.forEach((deletedIdentifier): void => {
-        changes[deletedIdentifier.path] =
-          new RepresentationMetadata(deletedIdentifier).add(SOLID_AS.terms.Activity, AS.Delete);
-      });
+      for (const deletedId of await this.safelyDeleteAuxiliaryResources(auxiliaries)) {
+        changes[deletedId.path] = this.createActivityMetadata(deletedId, AS.Delete);
+      }
     }
 
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const container = this.identifierStrategy.getParentContainer(identifier);
-      changes[container.path] = new RepresentationMetadata(container).add(SOLID_AS.terms.Activity, AS.Update);
+      changes[container.path] = this.createActivityMetadata(container, AS.Update);
 
       // Update modified date of parent
       await this.updateContainerModifiedDate(container);
     }
 
     await this.accessor.deleteResource(identifier);
-    changes[identifier.path] = new RepresentationMetadata(identifier).add(SOLID_AS.terms.Activity, AS.Delete);
+    changes[identifier.path] = this.createActivityMetadata(identifier, AS.Delete);
     return changes;
   }
 
@@ -392,13 +390,13 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
       const parent = this.identifierStrategy.getParentContainer(identifier);
       if (!createContainers) {
-        changes[parent.path] = new RepresentationMetadata(parent).add(SOLID_AS.terms.Activity, AS.Update);
+        changes[parent.path] = this.createActivityMetadata(parent, AS.Update);
       } else {
         const createdContainers = await this.createRecursiveContainers(parent);
         changes = { ...changes, ...createdContainers };
 
         if (Object.keys(createdContainers).length === 0) {
-          changes[parent.path] = new RepresentationMetadata(parent).add(SOLID_AS.terms.Activity, AS.Update);
+          changes[parent.path] = this.createActivityMetadata(parent, AS.Update);
         }
       }
 
@@ -413,8 +411,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
 
-    changes[identifier.path] =
-      new RepresentationMetadata(identifier).add(SOLID_AS.terms.Activity, exists ? AS.Update : AS.Create);
+    changes[identifier.path] = this.createActivityMetadata(identifier, exists ? AS.Update : AS.Create);
     return changes;
   }
 
@@ -641,5 +638,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     );
 
     return { ...ancestors, ...filteredChanges };
+  }
+
+  private createActivityMetadata(id: ResourceIdentifier, activity: string): RepresentationMetadata {
+    return new RepresentationMetadata(id, { [SOLID_AS.terms.Activity.value]: activity });
   }
 }

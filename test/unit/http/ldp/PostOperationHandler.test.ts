@@ -23,10 +23,12 @@ describe('A PostOperationHandler', (): void => {
       addResource: jest.fn(async(): Promise<Record<string, RepresentationMetadata>> => ({
         'https://example.com/parent/newPath': new RepresentationMetadata(
           { path: 'https://example.com/parent/newPath' },
-        ).add(SOLID_AS.terms.Activity, AS.Create),
+          { [SOLID_AS.terms.Activity.value]: AS.Create },
+        ),
         'https://example.com/parent/': new RepresentationMetadata(
           { path: 'https://example.come/parent/' },
-        ).add(SOLID_AS.terms.Activity, AS.Update),
+          { [SOLID_AS.terms.Activity.value]: AS.Update },
+        ),
       })),
     } as unknown as ResourceStore;
     handler = new PostOperationHandler(store);
