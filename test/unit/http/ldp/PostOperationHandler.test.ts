@@ -4,7 +4,7 @@ import { BasicRepresentation } from '../../../../src/http/representation/BasicRe
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
-import type { ResourceStore, ResourceStoreResponse } from '../../../../src/storage/ResourceStore';
+import type { ResourceStore, ChangeMap } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { AS, SOLID_AS, SOLID_HTTP } from '../../../../src/util/Vocabularies';
@@ -20,7 +20,7 @@ describe('A PostOperationHandler', (): void => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
-      addResource: jest.fn(async(): Promise<ResourceStoreResponse> => ({
+      addResource: jest.fn(async(): Promise<ChangeMap> => ({
         'https://example.com/parent/newPath': new RepresentationMetadata(
           { path: 'https://example.com/parent/newPath' },
           { [SOLID_AS.terms.Activity.value]: AS.Create },

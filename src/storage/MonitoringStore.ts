@@ -5,7 +5,7 @@ import type { RepresentationPreferences } from '../http/representation/Represent
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { AS, SOLID_AS } from '../util/Vocabularies';
 import type { Conditions } from './Conditions';
-import type { ResourceStore, ResourceStoreResponse } from './ResourceStore';
+import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 /**
  * Store that notifies listeners of changes to its source
@@ -30,26 +30,26 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceStoreResponse> {
+    conditions?: Conditions): Promise<ChangeMap> {
     return this.emitChanged(await this.source.addResource(container, representation, conditions));
   }
 
   public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ResourceStoreResponse> {
+    conditions?: Conditions): Promise<ChangeMap> {
     return this.emitChanged(await this.source.deleteResource(identifier, conditions));
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceStoreResponse> {
+    conditions?: Conditions): Promise<ChangeMap> {
     return this.emitChanged(await this.source.setRepresentation(identifier, representation, conditions));
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceStoreResponse> {
+    conditions?: Conditions): Promise<ChangeMap> {
     return this.emitChanged(await this.source.modifyResource(identifier, patch, conditions));
   }
 
-  private emitChanged(changes: ResourceStoreResponse): ResourceStoreResponse {
+  private emitChanged(changes: ChangeMap): ChangeMap {
     for (const [ key, value ] of Object.entries(changes)) {
       const activity = value.get(SOLID_AS.terms.Activity)?.value;
       this.emit('changed', { path: key }, activity);

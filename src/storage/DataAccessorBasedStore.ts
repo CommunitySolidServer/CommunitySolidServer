@@ -44,7 +44,7 @@ import {
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
-import type { ResourceStore, ResourceStoreResponse } from './ResourceStore';
+import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 /**
  * ResourceStore which uses a DataAccessor for backend access.
@@ -140,7 +140,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions):
-  Promise<ResourceStoreResponse> {
+  Promise<ChangeMap> {
     this.validateIdentifier(container);
 
     const parentMetadata = await this.getSafeNormalizedMetadata(container);
@@ -180,7 +180,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceStoreResponse> {
+    conditions?: Conditions): Promise<ChangeMap> {
     this.validateIdentifier(identifier);
 
     // Check if the resource already exists
@@ -233,8 +233,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions):
-  Promise<ResourceStoreResponse> {
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ChangeMap> {
     this.validateIdentifier(identifier);
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
@@ -267,7 +266,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.4: "When a contained resource is deleted,
     // the server MUST also delete the associated auxiliary resources"
     // https://solid.github.io/specification/protocol#deleting-resources
-    const changes: ResourceStoreResponse = {};
+    const changes: ChangeMap = {};
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
       for (const deletedId of await this.safelyDeleteAuxiliaryResources(auxiliaries)) {
@@ -363,7 +362,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @returns Identifiers of resources that were possibly modified.
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers: boolean, exists: boolean): Promise<ResourceStoreResponse> {
+    createContainers: boolean, exists: boolean): Promise<ChangeMap> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
@@ -386,7 +385,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
-    let changes: ResourceStoreResponse = {};
+    let changes: ChangeMap = {};
     if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
       const parent = this.identifierStrategy.getParentContainer(identifier);
       if (!createContainers) {
@@ -606,8 +605,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
    * @param container - Identifier of the container which will need to exist.
    */
-  protected async createRecursiveContainers(container: ResourceIdentifier):
-  Promise<ResourceStoreResponse> {
+  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<ChangeMap> {
     // Verify whether the container already exists
     try {
       const metadata = await this.getNormalizedMetadata(container);
