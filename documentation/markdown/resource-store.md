@@ -36,7 +36,7 @@ There are 4 different events that can be emitted:
 - `this.emit(AS.Delete, identifier)`: is emitted for every resource that was deleted by the call to the store.
 
 A `changed` event will always be emitted if a resource was changed.
-If the correct metadata was set by the source `ResourceStore`, an addition field will be sent along indicating the type of change,
+If the correct metadata was set by the source `ResourceStore`, an additional field will be sent along indicating the type of change,
 and an additional corresponding event will be emitted, depending on what the change is.
 
 ## IndexRepresentationStore
