@@ -81,6 +81,8 @@ docker run --rm -v ~/Solid:/data -p 3000:3000 -it solidproject/community-server:
 docker run --rm -p 3000:3000 -it solidproject/community-server -c config/default.json
 # Or use your own configuration mapped to the right directory
 docker run --rm -v ~/solid-config:/config -p 3000:3000 -it solidproject/community-server -c /config/my-config.json
+# Or use environment variables to configure your css instance
+docker run --rm -v ~/Solid:/data -p 3000:3000 -it -e CSS_CONFIG=config/file-no-setup.json -e CSS_LOGGING_LEVEL=debug solidproject/community-server
 ```
 
 ### 🗃️ Helm Chart
@@ -118,6 +120,15 @@ to some commonly used settings:
 | `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                |
 | `--seededPodConfigJson` |                           | Path to the file that keeps track of seeded Pod configurations. |
 | `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.                                                |
+
+### 🖥️ Environment variables
+Parameters can also be passed through environment variables. 
+
+They are prefixed with `CSS_` and converted from `camelCase` to `CAMEL_CASE`
+
+> eg. `--showStackTrace` => `CSS_SHOW_STACK_TRACE`
+
+**Note: command-line arguments will always override environment variables!**
 
 ### 🧶 Custom configurations
 More substantial changes to server behavior can be achieved
