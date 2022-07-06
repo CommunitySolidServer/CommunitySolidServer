@@ -290,6 +290,43 @@ describe('AppRunner', (): void => {
       expect(app.start).toHaveBeenLastCalledWith();
     });
 
+    it('runs the server honoring env variables.', async(): Promise<void> => {
+      // Set logging level to debug
+      const { env } = process;
+      const OLD_STATE = env.CSS_LOGGING_LEVEL;
+      env.CSS_LOGGING_LEVEL = 'debug';
+      await expect(new AppRunner().runCli([ 'node', 'script' ])).resolves.toBeUndefined();
+
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+      // Check logLevel to be set to debug instead of default `info`
+      expect(ComponentsManager.build).toHaveBeenCalledWith({
+        dumpErrorState: true,
+        logLevel: 'debug',
+        mainModulePath: joinFilePath(__dirname, '../../../'),
+      });
+      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+      expect(manager.configRegistry.register)
+        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
+      expect(manager.instantiate).toHaveBeenCalledTimes(2);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(1);
+      expect(cliExtractor.handleSafe).toHaveBeenCalledWith([ 'node', 'script' ]);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(1);
+      expect(settingsResolver.handleSafe).toHaveBeenCalledWith(defaultParameters);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(2,
+        'urn:solid-server:default:App',
+        { variables: defaultVariables });
+      expect(app.start).toHaveBeenCalledTimes(1);
+      expect(app.start).toHaveBeenLastCalledWith();
+
+      // Reset env
+      if (OLD_STATE) {
+        env.CSS_LOGGING_LEVEL = OLD_STATE;
+      } else {
+        delete env.CSS_LOGGING_LEVEL;
+      }
+    });
+
     it('throws an error if the server could not start.', async(): Promise<void> => {
       app.start.mockRejectedValueOnce(new Error('Fatal'));
 
