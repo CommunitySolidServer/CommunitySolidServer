@@ -3,6 +3,7 @@
   "BaseHttpError",
   "BasicConditions",
   "BasicRepresentation",
+  "ChangeMap",
   "CredentialSet",
   "Dict",
   "Error",

@@ -3,12 +3,11 @@ import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
-import type { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { ResourceStore, ChangeMap } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
+import { AS, SOLID_AS, SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A PostOperationHandler', (): void => {
   let operation: Operation;
@@ -21,7 +20,16 @@ describe('A PostOperationHandler', (): void => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
-      addResource: jest.fn(async(): Promise<ResourceIdentifier> => ({ path: 'newPath' } as ResourceIdentifier)),
+      addResource: jest.fn(async(): Promise<ChangeMap> => ({
+        'https://example.com/parent/newPath': new RepresentationMetadata(
+          { path: 'https://example.com/parent/newPath' },
+          { [SOLID_AS.terms.Activity.value]: AS.Create },
+        ),
+        'https://example.com/parent/': new RepresentationMetadata(
+          { path: 'https://example.come/parent/' },
+          { [SOLID_AS.terms.Activity.value]: AS.Update },
+        ),
+      })),
     } as unknown as ResourceStore;
     handler = new PostOperationHandler(store);
   });
@@ -41,7 +49,7 @@ describe('A PostOperationHandler', (): void => {
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(201);
     expect(result.metadata).toBeInstanceOf(RepresentationMetadata);
-    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe('newPath');
+    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe('https://example.com/parent/newPath');
     expect(result.data).toBeUndefined();
     expect(store.addResource).toHaveBeenCalledTimes(1);
     expect(store.addResource).toHaveBeenLastCalledWith(operation.target, body, conditions);

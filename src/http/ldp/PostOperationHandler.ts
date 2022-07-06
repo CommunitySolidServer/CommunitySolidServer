@@ -2,8 +2,10 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { AS, SOLID_AS } from '../../util/Vocabularies';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
+import { createResourceIdentifier } from '../representation/ResourceIdentifier';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
 
@@ -35,7 +37,10 @@ export class PostOperationHandler extends OperationHandler {
       this.logger.warn('POST requests require the Content-Type header to be set');
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
-    const identifier = await this.store.addResource(operation.target, operation.body, operation.conditions);
-    return new CreatedResponseDescription(identifier);
+    const result = await this.store.addResource(operation.target, operation.body, operation.conditions);
+    const createdIdentifier = Object.entries(result).find(
+      ([ , value ]): boolean => value.get(SOLID_AS.terms.Activity)?.value === AS.Create,
+    )![0];
+    return new CreatedResponseDescription(createResourceIdentifier(createdIdentifier));
   }
 }

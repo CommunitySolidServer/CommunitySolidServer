@@ -65,6 +65,7 @@ These changes are relevant if you wrote custom modules for the server that depen
   * Changed type for `finalizer` attribute in `App` from `Finalizable` to `Finalizer` and updated the calling code in `App.stop()`.
   * Removed the now obsolete `ParallelFinalizer` util class.
 - Added a lock cleanup on initialize for lock implementations `RedisLocker` and `FileSystemResourceLocker`.
+- `ResourceStore` functions that change a resource now return metadata for every changed resource.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
 

@@ -1,9 +1,17 @@
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { Conditions } from './Conditions';
 import type { ResourceSet } from './ResourceSet';
+
+/**
+ * An object containing one property for each resource that was created, updated or deleted
+ * by this operation. Where the key of the property is the path of the resource (string) and the value is an
+ * instance of RepresentationMetadata containing extra information about the change of the resource.
+ */
+export type ChangeMap = Record<string, RepresentationMetadata>;
 
 /**
  * A ResourceStore represents a collection of resources.
@@ -38,13 +46,13 @@ export interface ResourceStore extends ResourceSet {
    * @param representation - New representation of the resource.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Identifiers of resources that were possibly modified.
+   * @returns A {@link ChangeMap}.
    */
   setRepresentation: (
     identifier: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<ResourceIdentifier[]>;
+  ) => Promise<ChangeMap>;
 
   /**
    * Creates a new resource in the container.
@@ -52,25 +60,25 @@ export interface ResourceStore extends ResourceSet {
    * @param representation - Representation of the new resource
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns The identifier of the newly created resource.
+   * @returns A {@link ChangeMap}.
    */
   addResource: (
     container: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<ResourceIdentifier>;
+  ) => Promise<ChangeMap>;
 
   /**
    * Deletes a resource.
    * @param identifier - Identifier of resource to delete.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Identifiers of resources that were possibly modified.
+   * @returns A {@link ChangeMap}.
    */
   deleteResource: (
     identifier: ResourceIdentifier,
     conditions?: Conditions,
-  ) => Promise<ResourceIdentifier[]>;
+  ) => Promise<ChangeMap>;
 
   /**
    * Sets or updates the representation of a resource,
@@ -79,11 +87,11 @@ export interface ResourceStore extends ResourceSet {
    * @param patch - Description of which parts to update.
    * @param conditions - Optional conditions under which to proceed.
    *
-   * @returns Identifiers of resources that were possibly modified.
+   * @returns A {@link ChangeMap}.
    */
   modifyResource: (
     identifier: ResourceIdentifier,
     patch: Patch,
     conditions?: Conditions,
-  ) => Promise<ResourceIdentifier[]>;
+  ) => Promise<ChangeMap>;
 }
