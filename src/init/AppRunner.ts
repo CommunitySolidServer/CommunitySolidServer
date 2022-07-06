@@ -22,6 +22,8 @@ const CORE_CLI_PARAMETERS = {
   mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
 } as const;
 
+const ENV_VAR_PREFIX = 'CSS';
+
 /**
  * A class that can be used to instantiate and start a server based on a Component.js configuration.
  */
@@ -112,7 +114,9 @@ export class AppRunner {
       .usage('node ./bin/server.js [args]')
       .options(CORE_CLI_PARAMETERS)
       // We disable help here as it would only show the core parameters
-      .help(false);
+      .help(false)
+      // We also read from environment variables
+      .env(ENV_VAR_PREFIX);
 
     const params = await yargv.parse();
 
