@@ -122,6 +122,11 @@ export * from './http/representation/RepresentationPreferences';
 export * from './http/representation/ResourceIdentifier';
 export * from './http/representation/SparqlUpdatePatch';
 
+// HTTP/well-known
+export * from './http/well-known/AggregateWellKnownBuilder';
+export * from './http/well-known/WellKnownBuilder';
+export * from './http/well-known/WellKnownHandler';
+
 // HTTP
 export * from './http/Operation';
 export * from './http/UnsecureWebSocketsProtocol';
@@ -240,6 +245,13 @@ export * from './logging/VoidLogger';
 export * from './logging/VoidLoggerFactory';
 export * from './logging/WinstonLogger';
 export * from './logging/WinstonLoggerFactory';
+
+// Notification/webhook-subscription-2021
+export * from './notification/webhook-subscription-2021/JwksEndpointWellKnownBuilder';
+
+// Notification
+export * from './notification/NotificationContextWellKnownBuilder';
+export * from './notification/NotificationEndpointWellKnownBuilder';
 
 // Pods/Generate/Variables
 export * from './pods/generate/variables/BaseUrlHandler';
