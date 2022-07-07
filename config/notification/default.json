@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/notification/notification-well-known-builder.json"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:NotificationHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+
+      ]
+    }
+  ]
+}

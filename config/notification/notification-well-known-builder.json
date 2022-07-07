@@ -1,0 +1,34 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "The well known builder for all things pertaining to notifications",
+      "@id": "urn:solid-server:default:NotificationWellKnownBuilder",
+      "@type": "AggregateWellKnownBuilder",
+      "wellKnownBuilders": [
+        { "@id": "urn:solid-server:default:NotificationContextWellKnownBuilder" },
+        { "@id": "urn:solid-server:default:NotificationEndpointWellKnownBuilder" },
+        { "@id": "urn:solid-server:default:JwksEndpointWellKnownBuilder" }
+      ]
+    },
+    {
+      "comment": "WellKnownBuilder to add @context to .well-known/solid",
+      "@id": "urn:solid-server:default:NotificationContextWellKnownBuilder",
+      "@type": "NotificationContextWellKnownBuilder"
+    },
+    {
+      "comment": "WellKnownBuilder to add the notification endpoint to .well-known/solid",
+      "@id": "urn:solid-server:default:NotificationEndpointWellKnownBuilder",
+      "@type": "NotificationEndpointWellKnownBuilder",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "notificationEndpointPath": "gateway"
+    },
+    {
+      "comment": "WellKnownBuilder to add the JWKS edpoint to .well-known/solid",
+      "@id": "urn:solid-server:default:JwksEndpointWellKnownBuilder",
+      "@type": "JwksEndpointWellKnownBuilder",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "jwksEndpointPath": ".well-known/podjwks"
+    }
+  ]
+}
