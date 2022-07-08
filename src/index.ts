@@ -44,6 +44,10 @@ export * from './http/auxiliary/RoutingAuxiliaryStrategy';
 export * from './http/auxiliary/SuffixAuxiliaryIdentifierStrategy';
 export * from './http/auxiliary/Validator';
 
+// HTTP/client
+export * from './http/client/BaseHttpClient';
+export * from './http/client/HttpClient';
+
 // HTTP/Input/Body
 export * from './http/input/body/BodyParser';
 export * from './http/input/body/N3PatchBodyParser';
@@ -86,6 +90,10 @@ export * from './http/ldp/OperationHandler';
 export * from './http/ldp/PatchOperationHandler';
 export * from './http/ldp/PostOperationHandler';
 export * from './http/ldp/PutOperationHandler';
+
+// HTTP/notification
+export * from './http/notification/NotificationGatewayHttpHandler';
+export * from './http/notification/NotificationSubscriptionHttpHandler';
 
 // HTTP/Output/Error
 export * from './http/output/error/ConvertingErrorHandler';
@@ -248,10 +256,15 @@ export * from './logging/WinstonLoggerFactory';
 
 // Notification/webhook-subscription-2021
 export * from './notification/webhook-subscription-2021/JwksEndpointWellKnownBuilder';
+export * from './notification/webhook-subscription-2021/WebHookSubscription2021Handler';
 
 // Notification
+export * from './notification/BaseSubscriptionHandler';
 export * from './notification/NotificationContextWellKnownBuilder';
 export * from './notification/NotificationEndpointWellKnownBuilder';
+export * from './notification/Subscription';
+export * from './notification/SubscriptionHandler';
+export * from './notification/Topic';
 
 // Pods/Generate/Variables
 export * from './pods/generate/variables/BaseUrlHandler';
