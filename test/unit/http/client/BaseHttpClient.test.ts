@@ -6,13 +6,17 @@ let responseListener: any;
 const mockRequest = {
   on: jest.fn((event: string, listener: any): any => {
     switch (event) {
-      case 'error': return errorListener = listener;
-      case 'response': return responseListener = listener;
+      case 'error':
+        errorListener = listener;
+        break;
+      case 'response':
+        responseListener = listener;
+        break;
       default:
     }
   }),
   write: jest.fn(),
-  end: jest.fn(() => responseListener({ statusCode: 200 })),
+  end: jest.fn((): any => responseListener({ statusCode: 200 })),
 };
 
 jest.mock('http', (): any => ({ request: (): any => mockRequest }));
@@ -21,7 +25,7 @@ jest.mock('https', (): any => ({ request: (): any => mockRequest }));
 describe('A BaseHttpClient', (): void => {
   let client: BaseHttpClient;
 
-  beforeEach(() => {
+  beforeEach((): void => {
     client = new BaseHttpClient();
   });
 
