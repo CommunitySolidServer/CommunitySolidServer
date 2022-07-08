@@ -1,0 +1,45 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the notification subscription endpoint.",
+      "@id": "urn:solid-server:default:NotificationSubscriptionHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "POST" ],
+      "args_allowedPathNames": [ "^/subscription" ],
+      "args_handler": { "@id": "urn:solid-server:default:NotificationSubscriptionParsingHandler" }
+    },
+    {
+      "comment": "Handles notification subscription input parsing.",
+      "@id": "urn:solid-server:default:NotificationSubscriptionParsingHandler",
+      "@type": "ParsingHttpHandler",
+      "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
+      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_operationHandler": { "@id": "urn:solid-server:default:NotificationSubscriptionHttpHandler" }
+    },
+    {
+      "comment": "Handles notification subscription behaviour.",
+      "@id": "urn:solid-server:default:NotificationSubscriptionHttpHandler",
+      "@type": "NotificationSubscriptionHttpHandler",
+      "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
+      "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
+      "notificationStorage": { "@id": "urn:solid-server:default:NotificationStorage"},
+      "subscriptionHandlers": [
+        { "@id": "urn:solid-server:default:WebHookSubscription2021Handler"}
+      ],
+      "source": { "@id": "urn:solid-server:default:ResourceStore"}
+    },
+    {
+      "comment": "Handles WebHookSubscription2021 subscriptions",
+      "@id": "urn:solid-server:default:WebHookSubscription2021Handler",
+      "@type": "WebHookSubscription2021Handler",
+      "httpClient": { "@type": "BaseHttpClient" },
+      "webhookUnsubscribePath": "webhook",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    }
+  ]
+}

@@ -13,6 +13,11 @@
       "comment": "Internal value storage.",
       "@id": "urn:solid-server:default:KeyValueStorage",
       "@type": "MemoryMapStorage"
+    },
+    {
+      "comment": "Storage used for notification management.",
+      "@id": "urn:solid-server:default:NotificationStorage",
+      "@type": "MemoryMapStorage"
     }
   ]
 }
