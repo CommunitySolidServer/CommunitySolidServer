@@ -1,28 +1,40 @@
-import { concat, filter, map, reduce } from '../../../src/util/IterableUtil';
+import { concat, filter, find, map, reduce } from '../../../src/util/IterableUtil';
 
 describe('IterableUtil', (): void => {
-  describe('#mapIterable', (): void => {
+  describe('#map', (): void => {
     it('maps the values to a new iterable.', async(): Promise<void> => {
       const input = [ 1, 2, 3 ];
       expect([ ...map(input, (val): number => val + 3) ]).toEqual([ 4, 5, 6 ]);
     });
   });
 
-  describe('#filterIterable', (): void => {
+  describe('#filter', (): void => {
     it('filters the values of the iterable.', async(): Promise<void> => {
       const input = [ 1, 2, 3 ];
       expect([ ...filter(input, (val): boolean => val % 2 === 1) ]).toEqual([ 1, 3 ]);
     });
   });
 
-  describe('#concatIterables', (): void => {
+  describe('#concat', (): void => {
     it('concatenates all the iterables.', async(): Promise<void> => {
       const input = [[ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ]];
       expect([ ...concat(input) ]).toEqual([ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]);
     });
   });
 
-  describe('#reduceIterable', (): void => {
+  describe('#find', (): void => {
+    it('finds the matching value.', async(): Promise<void> => {
+      const input = [[ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ]];
+      expect(find(input, (entry): boolean => entry.includes(5))).toEqual([ 4, 5, 6 ]);
+    });
+
+    it('returns undefined if there is no match.', async(): Promise<void> => {
+      const input = [[ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ]];
+      expect(find(input, (entry): boolean => entry.includes(0))).toBeUndefined();
+    });
+  });
+
+  describe('#reduce', (): void => {
     it('reduces the values in an iterable.', async(): Promise<void> => {
       const input = [ 1, 2, 3 ];
       expect(reduce(input, (acc, cur): number => acc + cur)).toBe(6);
