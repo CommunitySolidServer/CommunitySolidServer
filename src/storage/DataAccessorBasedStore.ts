@@ -19,6 +19,8 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { PreconditionFailedHttpError } from '../util/errors/PreconditionFailedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
+import { concat } from '../util/IterableUtil';
+import { IdentifierMap } from '../util/map/IdentifierMap';
 import {
   ensureTrailingSlash,
   isContainerIdentifier,
@@ -266,24 +268,24 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.4: "When a contained resource is deleted,
     // the server MUST also delete the associated auxiliary resources"
     // https://solid.github.io/specification/protocol#deleting-resources
-    const changes: ChangeMap = {};
+    const changes: ChangeMap = new IdentifierMap();
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
       for (const deletedId of await this.safelyDeleteAuxiliaryResources(auxiliaries)) {
-        changes[deletedId.path] = this.createActivityMetadata(deletedId, AS.Delete);
+        this.addActivityMetadata(changes, deletedId, AS.terms.Delete);
       }
     }
 
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const container = this.identifierStrategy.getParentContainer(identifier);
-      changes[container.path] = this.createActivityMetadata(container, AS.Update);
+      this.addActivityMetadata(changes, container, AS.terms.Update);
 
       // Update modified date of parent
       await this.updateContainerModifiedDate(container);
     }
 
     await this.accessor.deleteResource(identifier);
-    changes[identifier.path] = this.createActivityMetadata(identifier, AS.Delete);
+    this.addActivityMetadata(changes, identifier, AS.terms.Delete);
     return changes;
   }
 
@@ -385,18 +387,17 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
-    let changes: ChangeMap = {};
+    let changes: ChangeMap = new IdentifierMap();
     if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
       const parent = this.identifierStrategy.getParentContainer(identifier);
-      if (!createContainers) {
-        changes[parent.path] = this.createActivityMetadata(parent, AS.Update);
-      } else {
-        const createdContainers = await this.createRecursiveContainers(parent);
-        changes = { ...changes, ...createdContainers };
 
-        if (Object.keys(createdContainers).length === 0) {
-          changes[parent.path] = this.createActivityMetadata(parent, AS.Update);
-        }
+      if (createContainers) {
+        changes = await this.createRecursiveContainers(parent);
+      }
+
+      // No changes means the parent container exists and will be updated
+      if (changes.size === 0) {
+        this.addActivityMetadata(changes, parent, AS.terms.Update);
       }
 
       // Parent container is also modified
@@ -410,7 +411,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
 
-    changes[identifier.path] = this.createActivityMetadata(identifier, exists ? AS.Update : AS.Create);
+    this.addActivityMetadata(changes, identifier, exists ? AS.terms.Update : AS.terms.Create);
     return changes;
   }
 
@@ -609,7 +610,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Verify whether the container already exists
     try {
       const metadata = await this.getNormalizedMetadata(container);
-      // See #480
+      // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/480
       // Solid, §3.1: "If two URIs differ only in the trailing slash, and the server has associated a resource with
       // one of them, then the other URI MUST NOT correspond to another resource. Instead, the server MAY respond to
       // requests for the latter URI with a 301 redirect to the former."
@@ -617,7 +618,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (!isContainerPath(metadata.identifier.value)) {
         throw new ForbiddenHttpError(`Creating container ${container.path} conflicts with an existing resource.`);
       }
-      return {};
+      return new IdentifierMap();
     } catch (error: unknown) {
       if (!NotFoundHttpError.isInstance(error)) {
         throw error;
@@ -625,15 +626,21 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Create the container, starting with its parent
-    const ancestors = this.identifierStrategy.isRootContainer(container) ?
-      {} :
+    const ancestors: ChangeMap = this.identifierStrategy.isRootContainer(container) ?
+      new IdentifierMap() :
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
     const changes = await this.writeData(container, new BasicRepresentation([], container), true, false, false);
 
-    return { ...changes, ...ancestors };
+    return new IdentifierMap(concat([ changes, ancestors ]));
   }
 
-  private createActivityMetadata(id: ResourceIdentifier, activity: string): RepresentationMetadata {
-    return new RepresentationMetadata(id, { [SOLID_AS.terms.Activity.value]: activity });
+  /**
+   * Generates activity metadata for a resource and adds it to the {@link ChangeMap}
+   * @param map - ChangeMap to update.
+   * @param id - Identifier of the resource being changed.
+   * @param activity - Which activity is taking place.
+   */
+  private addActivityMetadata(map: ChangeMap, id: ResourceIdentifier, activity: NamedNode): void {
+    map.set(id, new RepresentationMetadata(id, { [SOLID_AS.Activity]: activity }));
   }
 }

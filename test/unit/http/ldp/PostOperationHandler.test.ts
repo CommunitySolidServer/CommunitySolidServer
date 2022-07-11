@@ -4,33 +4,29 @@ import { BasicRepresentation } from '../../../../src/http/representation/BasicRe
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
-import type { ResourceStore, ChangeMap } from '../../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { IdentifierMap } from '../../../../src/util/map/IdentifierMap';
 import { AS, SOLID_AS, SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A PostOperationHandler', (): void => {
   let operation: Operation;
   let body: Representation;
   const conditions = new BasicConditions({});
-  let store: ResourceStore;
+  let store: jest.Mocked<ResourceStore>;
   let handler: PostOperationHandler;
 
   beforeEach(async(): Promise<void> => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
-      addResource: jest.fn(async(): Promise<ChangeMap> => ({
-        'https://example.com/parent/newPath': new RepresentationMetadata(
-          { path: 'https://example.com/parent/newPath' },
-          { [SOLID_AS.terms.Activity.value]: AS.Create },
-        ),
-        'https://example.com/parent/': new RepresentationMetadata(
-          { path: 'https://example.come/parent/' },
-          { [SOLID_AS.terms.Activity.value]: AS.Update },
-        ),
-      })),
-    } as unknown as ResourceStore;
+      addResource: jest.fn().mockResolvedValue(new IdentifierMap([
+        [{ path: 'https://example.com/parent/newPath' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Create }) ],
+        [{ path: 'https://example.com/parent/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+      ])),
+    } as any;
     handler = new PostOperationHandler(store);
   });
 
@@ -53,5 +49,12 @@ describe('A PostOperationHandler', (): void => {
     expect(result.data).toBeUndefined();
     expect(store.addResource).toHaveBeenCalledTimes(1);
     expect(store.addResource).toHaveBeenLastCalledWith(operation.target, body, conditions);
+  });
+
+  it('errors if the store returns no created identifier.', async(): Promise<void> => {
+    store.addResource.mockResolvedValueOnce(new IdentifierMap([
+      [{ path: 'https://example.com/parent/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+    ]));
+    await expect(handler.handle({ operation })).rejects.toThrow(InternalServerError);
   });
 });
