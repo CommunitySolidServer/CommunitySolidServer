@@ -3,15 +3,16 @@ import type { Representation } from '../http/representation/Representation';
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
+import type { IdentifierMap } from '../util/map/IdentifierMap';
 import type { Conditions } from './Conditions';
 import type { ResourceSet } from './ResourceSet';
 
 /**
- * An object containing one property for each resource that was created, updated or deleted
- * by this operation. Where the key of the property is the path of the resource (string) and the value is an
- * instance of RepresentationMetadata containing extra information about the change of the resource.
+ * An {@link IdentifierMap} containing one entry for each resource that was created, updated or deleted
+ * by this operation. Where the value is a {@link RepresentationMetadata}
+ * containing extra information about the change of the resource.
  */
-export type ChangeMap = Record<string, RepresentationMetadata>;
+export type ChangeMap = IdentifierMap<RepresentationMetadata>;
 
 /**
  * A ResourceStore represents a collection of resources.

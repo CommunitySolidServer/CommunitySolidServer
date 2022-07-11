@@ -2,7 +2,8 @@ import type { Patch } from '../../../src/http/representation/Patch';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import { MonitoringStore } from '../../../src/storage/MonitoringStore';
-import type { ResourceStore } from '../../../src/storage/ResourceStore';
+import type { ChangeMap, ResourceStore } from '../../../src/storage/ResourceStore';
+import { IdentifierMap } from '../../../src/util/map/IdentifierMap';
 import { AS, SOLID_AS } from '../../../src/util/Vocabularies';
 
 describe('A MonitoringStore', (): void => {
@@ -14,55 +15,31 @@ describe('A MonitoringStore', (): void => {
   let updatedCallback: () => void;
   let deletedCallback: () => void;
 
-  const addResourceReturnMock = {
-    'http://example.org/foo/bar/new': new RepresentationMetadata(
-      { path: 'http://example.org/foo/bar/new' },
-      { [SOLID_AS.terms.Activity.value]: AS.Create },
-    ),
-    'http://example.org/foo/bar/': new RepresentationMetadata(
-      { path: 'http://example.org/foo/bar/' },
-      { [SOLID_AS.terms.Activity.value]: AS.Update },
-    ),
-  };
-  const setRepresentationReturnMock = {
-    'http://example.org/foo/bar/new': new RepresentationMetadata(
-      { path: 'http://example.org/foo/bar/new' },
-      { [SOLID_AS.terms.Activity.value]: AS.Update },
-    ),
-  };
-  const deleteResourceReturnMock = {
-    'http://example.org/foo/bar/new': new RepresentationMetadata(
-      { path: 'http://example.org/foo/bar/new' },
-      { [SOLID_AS.terms.Activity.value]: AS.Delete },
-    ),
-    'http://example.org/foo/bar/': new RepresentationMetadata(
-      { path: 'http://example.org/foo/bar/' },
-      { [SOLID_AS.terms.Activity.value]: AS.Update },
-    ),
-  };
-  const modifyResourceReturnMock = {
-    'http://example.org/foo/bar/old': new RepresentationMetadata(
-      { path: 'http://example.org/foo/bar/new' },
-      { [SOLID_AS.terms.Activity.value]: AS.Delete },
-    ),
-    'http://example.org/foo/bar/new': new RepresentationMetadata(
-      { path: 'http://example.org/foo/bar/new' },
-      { [SOLID_AS.terms.Activity.value]: AS.Create },
-    ),
-    'http://example.org/foo/bar/': new RepresentationMetadata(
-      { path: 'http://example.org/foo/bar/' },
-      { [SOLID_AS.terms.Activity.value]: AS.Update },
-    ),
-  };
+  const addResourceReturnMock: ChangeMap = new IdentifierMap([
+    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Create }) ],
+    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+  ]);
+  const setRepresentationReturnMock: ChangeMap = new IdentifierMap([
+    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+  ]);
+  const deleteResourceReturnMock: ChangeMap = new IdentifierMap([
+    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Delete }) ],
+    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+  ]);
+  const modifyResourceReturnMock: ChangeMap = new IdentifierMap([
+    [{ path: 'http://example.org/foo/bar/old' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Delete }) ],
+    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Create }) ],
+    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+  ]);
 
   beforeEach(async(): Promise<void> => {
     source = {
-      getRepresentation: jest.fn(async(): Promise<any> => ({ success: true })),
-      addResource: jest.fn(async(): Promise<any> => addResourceReturnMock),
-      setRepresentation: jest.fn(async(): Promise<any> => setRepresentationReturnMock),
-      deleteResource: jest.fn(async(): Promise<any> => deleteResourceReturnMock),
-      modifyResource: jest.fn(async(): Promise<any> => modifyResourceReturnMock),
-      hasResource: jest.fn(async(): Promise<any> => undefined),
+      getRepresentation: jest.fn().mockResolvedValue({ success: true }),
+      addResource: jest.fn().mockResolvedValue(addResourceReturnMock),
+      setRepresentation: jest.fn().mockResolvedValue(setRepresentationReturnMock),
+      deleteResource: jest.fn().mockResolvedValue(deleteResourceReturnMock),
+      modifyResource: jest.fn().mockResolvedValue(modifyResourceReturnMock),
+      hasResource: jest.fn().mockResolvedValue(true),
     };
     store = new MonitoringStore(source);
 
@@ -74,13 +51,6 @@ describe('A MonitoringStore', (): void => {
     store.on(AS.Create, createdCallback);
     store.on(AS.Update, updatedCallback);
     store.on(AS.Delete, deletedCallback);
-  });
-
-  afterEach(async(): Promise<void> => {
-    store.removeListener('changed', changedCallback);
-    store.removeListener(AS.Create, createdCallback);
-    store.removeListener(AS.Update, updatedCallback);
-    store.removeListener(AS.Delete, deletedCallback);
   });
 
   it('calls getRepresentation directly from the source.', async(): Promise<void> => {
@@ -96,10 +66,8 @@ describe('A MonitoringStore', (): void => {
   });
 
   it('calls addResource directly from the source.', async(): Promise<void> => {
-    await expect(store.addResource({ path: 'http://example.org/foo/bar' }, {} as Representation)).resolves.toEqual({
-      'http://example.org/foo/bar/new': expect.any(RepresentationMetadata),
-      'http://example.org/foo/bar/': expect.any(RepresentationMetadata),
-    });
+    await expect(store.addResource({ path: 'http://example.org/foo/bar' }, {} as Representation))
+      .resolves.toBe(addResourceReturnMock);
     expect(source.addResource).toHaveBeenCalledTimes(1);
     expect(source.addResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
@@ -109,8 +77,8 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Create);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.terms.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.terms.Create);
     expect(createdCallback).toHaveBeenCalledTimes(1);
     expect(createdCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
     expect(updatedCallback).toHaveBeenCalledTimes(1);
@@ -130,7 +98,7 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(1);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.terms.Update);
     expect(createdCallback).toHaveBeenCalledTimes(0);
     expect(updatedCallback).toHaveBeenCalledTimes(1);
     expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
@@ -149,8 +117,8 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Delete);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.terms.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.terms.Delete);
     expect(createdCallback).toHaveBeenCalledTimes(0);
     expect(updatedCallback).toHaveBeenCalledTimes(1);
     expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' });
@@ -170,9 +138,9 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(3);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.Create);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/old' }, AS.Delete);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.terms.Create);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.terms.Update);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/old' }, AS.terms.Delete);
     expect(createdCallback).toHaveBeenCalledTimes(1);
     expect(createdCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
     expect(updatedCallback).toHaveBeenCalledTimes(1);
@@ -182,18 +150,15 @@ describe('A MonitoringStore', (): void => {
   });
 
   it('calls hasResource directly from the source.', async(): Promise<void> => {
-    await expect(store.hasResource({ path: 'http://example.org/foo/bar' })).resolves.toBeUndefined();
+    await expect(store.hasResource({ path: 'http://example.org/foo/bar' })).resolves.toBe(true);
     expect(source.hasResource).toHaveBeenCalledTimes(1);
     expect(source.hasResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' });
   });
 
   it('should not emit an extra event when the Activity is not a valid AS value.', async(): Promise<void> => {
-    source.addResource = jest.fn(async(): Promise<any> => ({
-      'http://example.com/path': new RepresentationMetadata(
-        { path: 'http://example.com/path' },
-        { [SOLID_AS.terms.Activity.value]: 'SomethingRandom' },
-      ),
-    }));
+    source.addResource = jest.fn().mockResolvedValue(new IdentifierMap([
+      [{ path: 'http://example.org/path' }, new RepresentationMetadata({ [SOLID_AS.Activity]: 'SomethingRandom' }) ],
+    ]));
 
     await store.addResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
 
