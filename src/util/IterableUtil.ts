@@ -51,6 +51,27 @@ export function* concat<T>(iterables: Iterable<Iterable<T>>): Iterable<T> {
 }
 
 /**
+ * Returns the first element in the provided iterable that satisfies the provided testing function.
+ * If no values satisfy the testing function, `undefined` is returned.
+ * Similar to the {@link Array.prototype.find} function.
+ * See the documentation of the above function for more details.
+ *
+ * @param iterable - Iterable on which to call the map function.
+ * @param callbackFn - Function that is called to test every element.
+ * @param thisArg - Value to use as `this` when executing `callbackFn`.
+ */
+export function find<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean, thisArg?: any):
+T | undefined {
+  const boundMapFn = callbackFn.bind(thisArg);
+  const count = 0;
+  for (const value of iterable) {
+    if (boundMapFn(value, count)) {
+      return value;
+    }
+  }
+}
+
+/**
  * Similar to the {@link Array.prototype.reduce} function, but for an iterable.
  * See the documentation of the above function for more details.
  * The first element will be used as the initial value.
