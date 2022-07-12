@@ -18,6 +18,7 @@
   "RegExp",
   "Set",
   "Settings",
+  "Subscription",
   "Template",
   "TemplateEngine",
   "ValuePreferencesArg",

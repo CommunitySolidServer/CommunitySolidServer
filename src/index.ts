@@ -94,6 +94,7 @@ export * from './http/ldp/PutOperationHandler';
 // HTTP/notification
 export * from './http/notification/NotificationGatewayHttpHandler';
 export * from './http/notification/NotificationSubscriptionHttpHandler';
+export * from './http/notification/WebHookSubscription2021UnsubscribeHttpHandler';
 
 // HTTP/Output/Error
 export * from './http/output/error/ConvertingErrorHandler';
