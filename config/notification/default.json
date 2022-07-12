@@ -11,7 +11,8 @@
       "@type": "WaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:NotificationGatewayHandler" },
-        { "@id": "urn:solid-server:default:NotificationSubscriptionHandler" }
+        { "@id": "urn:solid-server:default:NotificationSubscriptionHandler" },
+        { "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeHandler" }
       ]
     }
   ]

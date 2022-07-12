@@ -8,7 +8,7 @@
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
       "args_allowedMethods": [ "POST" ],
-      "args_allowedPathNames": [ "^/subscription" ],
+      "args_allowedPathNames": [ "^/subscribe" ],
       "args_handler": { "@id": "urn:solid-server:default:NotificationSubscriptionParsingHandler" }
     },
     {
@@ -38,8 +38,38 @@
       "@id": "urn:solid-server:default:WebHookSubscription2021Handler",
       "@type": "WebHookSubscription2021Handler",
       "httpClient": { "@type": "BaseHttpClient" },
-      "webhookUnsubscribePath": "webhook",
+      "webhookUnsubscribePath": "unsubscribe/webhook",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    },
+
+
+    {
+      "comment": "Handles WebHookSubscription2021 unsubscribe route.",
+      "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "DELETE" ],
+      "args_allowedPathNames": [ "^/unsubscribe/webhook/.*" ],
+      "args_handler": { "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeParsingHandler" }
+    },
+    {
+      "comment": "Handles notification webhook unsubscribe input parsing.",
+      "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeParsingHandler",
+      "@type": "ParsingHttpHandler",
+      "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
+      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_operationHandler": { "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeHttpHandler" }
+    },
+    { 
+      "comment": "Handles notification webhook unsubscribe behaviour.",
+      "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeHttpHandler",
+      "@type": "WebHookSubscription2021UnsubscribeHttpHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
+      "notificationStorage": { "@id": "urn:solid-server:default:NotificationStorage"}
     }
   ]
 }
