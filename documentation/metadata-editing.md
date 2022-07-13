@@ -61,7 +61,7 @@ we first send a `HEAD` request to the resource to obtain the URL of its descript
 curl --head 'http://localhost:3000/foo/'
 ```
 
-which will at least the following response
+which will produce a response with at least these headers:
 
 ```shell
 HTTP/1.1 200 OK
