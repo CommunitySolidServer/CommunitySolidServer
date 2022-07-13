@@ -19,7 +19,7 @@
               "defaultType": "text/turtle"
             },
             {
-              "comment": "Converts the input stream into an N3.js store.",
+              "comment": "Converts the input stream into an RDF/JS Dataset.",
               "@id": "urn:solid-server:default:RdfPatcher",
               "@type": "RdfPatcher",
               "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDFStore" }
@@ -48,43 +48,38 @@
       "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
       "immutablePatterns": [
         {
-          "comment": "Pattern corresponding to the root storage of a Solid Pod.",
+          "comment": "The root storage of a Pod is managed by the server.",
           "@type": "FilterPattern",
           "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
           "object": "http://www.w3.org/ns/pim/space#Storage"
         },
         {
-          "comment": "Pattern corresponding to the containment of resources.",
+          "comment": "Resource containment is managed by LDP.",
           "@type": "FilterPattern",
           "predicate": "http://www.w3.org/ns/ldp#contains"
         },
         {
-          "comment": "Pattern corresponding to describing the location of the metadata resource.",
-          "@type": "FilterPattern",
-          "predicate": "http://purl.org/dc/terms/description"
-        },
-        {
-          "comment": "Pattern corresponding to describing the location of the access control resource.",
+          "comment": "The ACL resource is managed by the server.",
           "@type": "FilterPattern",
           "predicate": "http://www.w3.org/ns/auth/acl#accessControl"
         },
         {
-          "comment": "Pattern corresponding to describing the size of the resource.",
+          "comment": "The size of the resource is managed by the server.",
           "@type": "FilterPattern",
           "predicate": "http://www.w3.org/ns/posix/stat#size"
         },
         {
-          "comment": "Pattern corresponding to describing the last modified timestamp of a resource.",
+          "comment": "The last modified timestamp of a resource is managed by the server.",
           "@type": "FilterPattern",
           "predicate": "http://www.w3.org/ns/posix/stat#mtime"
         },
         {
-          "comment": "Pattern corresponding to describing the last modified datetime of a resource.",
+          "comment": "The last modified datetime of a resource is managed by the server.",
           "@type": "FilterPattern",
           "predicate": "http://purl.org/dc/terms/modified"
         },
         {
-          "comment": "Pattern corresponding to describing the content type of a resource.",
+          "comment": "The content type of a resource is managed by the server.",
           "@type": "FilterPattern",
           "predicate": "http://www.w3.org/ns/ma-ont#format"
         }
