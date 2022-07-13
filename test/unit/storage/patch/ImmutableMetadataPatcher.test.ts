@@ -38,8 +38,12 @@ describe('A ImmutableMetadataPatcher', (): void => {
   beforeEach(async(): Promise<void> => {
     patcher = {
       canHandle: jest.fn(),
-      handle: jest.fn(async(): Promise<Store> => new Store([
-        quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)) ])),
+      handle: jest.fn(async(patcherInput: RdfStorePatcherInput): Promise<Store> => {
+        const patcherStore = new Store([
+          quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)) ]);
+        patcherInput.store = patcherStore;
+        return patcherStore;
+      }),
     } as any;
     metaStrategy = new SimpleSuffixStrategy('.meta');
     store = new Store();
@@ -119,10 +123,14 @@ describe('A ImmutableMetadataPatcher', (): void => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
       new FilterPattern(undefined, `${base}p`, `${base}o`),
     ]);
-    patcher.handle = jest.fn(async(): Promise<Store> => new Store([
-      quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
-      quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}o`)),
-    ]));
+    patcher.handle = jest.fn(async(patcherInput: RdfStorePatcherInput): Promise<Store> => {
+      const patcherStore = new Store([
+        quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
+        quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}o`)),
+      ]);
+      patcherInput.store = patcherStore;
+      return patcherStore;
+    });
 
     const result = await handler.handleSafe(input);
     expect(result).toBeRdfIsomorphic([
@@ -135,9 +143,13 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that replaces immutable triples.', async(): Promise<void> => {
     input.store.addQuad(namedNode(base), RDF.terms.type, PIM.terms.Storage);
-    patcher.handle = jest.fn(async(): Promise<Store> => new Store([
-      quad(namedNode(`${base}newRoot`), RDF.terms.type, PIM.terms.Storage),
-    ]));
+    patcher.handle = jest.fn(async(patcherInput: RdfStorePatcherInput): Promise<Store> => {
+      const patcherStore = new Store([
+        quad(namedNode(`${base}newRoot`), RDF.terms.type, PIM.terms.Storage),
+      ]);
+      patcherInput.store = patcherStore;
+      return patcherStore;
+    });
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
       new FilterPattern(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
     ]);

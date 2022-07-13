@@ -1,14 +1,15 @@
-import { Store } from 'n3';
+import type { Store } from 'n3';
+import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { HashMap } from '../../util/map/HashMap';
 import type { FilterPattern } from '../../util/QuadUtil';
-import { serializeQuads } from '../../util/QuadUtil';
-import { readableToString } from '../../util/StreamUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
 import { RdfStorePatcher } from './RdfStorePatcher';
+import namedNode = DataFactory.namedNode;
 
 /**
  * Guarantees that certain PATCH operations MUST NOT update certain triples in metadata resources.
@@ -39,28 +40,41 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
   }
 
   public async handle(input: RdfStorePatcherInput): Promise<Store> {
-    const inputStore = new Store(input.store.getQuads(null, null, null, null));
-    const patchedStore = await this.patcher.handle(input);
-    const inputImmutable: Quad[] = [];
-    const patchedImmutable: Quad[] = [];
-
+    const immutablePatternMap = new HashMap<FilterPattern, Quad[]>(
+      ({ subject, predicate, object }: FilterPattern): string => {
+        subject = subject ?? namedNode('subject');
+        predicate = predicate ?? namedNode('predicate');
+        object = object ?? namedNode('object');
+        return subject.value + predicate.value + object.value;
+      },
+    );
     for (const { subject, predicate, object } of this.immutablePatterns) {
-      inputImmutable.push(...inputStore.getQuads(subject, predicate, object, null));
-      patchedImmutable.push(...patchedStore.getQuads(subject, predicate, object, null));
+      const matches = input.store.getQuads(subject, predicate, object, null);
+      immutablePatternMap.set({ subject, predicate, object }, matches);
     }
 
-    this.logger.debug(`input stream immutable: ${await readableToString(serializeQuads(inputImmutable))}`);
-    this.logger.debug(`output stream immutable: ${await readableToString(serializeQuads(patchedImmutable))}`);
+    await this.patcher.handle(input);
 
-    // Filter out differences using custom filter
-    if (inputImmutable.length !== patchedImmutable.length) {
-      throw new ConflictHttpError('Not allowed to change this type of metadata.');
-    }
-    const changed = inputImmutable.some((inputQuad): boolean => !patchedImmutable
-      .some((patchedQuad): boolean => inputQuad.equals(patchedQuad)));
-    if (changed) {
-      throw new ConflictHttpError('Not allowed to change this type of metadata.');
-    }
-    return patchedStore;
+    immutablePatternMap.forEach((originalQuads: Quad[], { subject, predicate, object }: FilterPattern): void => {
+      const quads = input.store.getQuads(subject, predicate, object, null);
+      subject = subject ?? namedNode('');
+      predicate = predicate ?? namedNode('');
+      object = object ?? namedNode('');
+      if (quads.length !== originalQuads.length) {
+        throw new ConflictHttpError(
+          `Not allowed to metadata of the form "<${subject.value}> <${predicate.value}> <${object.value}>.".`,
+        );
+      }
+
+      const changed = quads.some((inputQuad): boolean => !originalQuads
+        .some((patchedQuad): boolean => inputQuad.equals(patchedQuad)));
+      if (changed) {
+        throw new ConflictHttpError(
+          `Not allowed to metadata of the form "<${subject.value}> <${predicate.value}> <${object.value}>.".`,
+        );
+      }
+    });
+
+    return input.store;
   }
 }
