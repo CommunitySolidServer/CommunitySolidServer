@@ -41,8 +41,6 @@
       "webhookUnsubscribePath": "unsubscribe/webhook",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
     },
-
-
     {
       "comment": "Handles WebHookSubscription2021 unsubscribe route.",
       "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeHandler",

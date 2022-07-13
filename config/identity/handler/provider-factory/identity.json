@@ -55,6 +55,12 @@
           "Session": 1209600
         }
       }
+    },
+    {
+      "comment": "Generates JWKS",
+      "@id": "urn:solid-server:default:JwksKeyGenerator",
+      "@type": "BasicJwksKeyGenerator",
+      "storage": { "@id": "urn:solid-server:default:KeyValueStorage" }
     }
   ]
 }
