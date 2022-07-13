@@ -48,6 +48,9 @@ export * from './http/auxiliary/Validator';
 export * from './http/client/BaseHttpClient';
 export * from './http/client/HttpClient';
 
+// HTTP/identity
+export * from './http/identity/PodJwksHttpHandler';
+
 // HTTP/Input/Body
 export * from './http/input/body/BodyParser';
 export * from './http/input/body/N3PatchBodyParser';
@@ -141,7 +144,9 @@ export * from './http/Operation';
 export * from './http/UnsecureWebSocketsProtocol';
 
 // Identity/Configuration
+export * from './identity/configuration/BasicJwksKeyGenerator';
 export * from './identity/configuration/IdentityProviderFactory';
+export * from './identity/configuration/JwksKeyGenerator';
 export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Credentials
