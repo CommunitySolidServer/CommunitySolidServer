@@ -44,6 +44,10 @@ export class WebHookSubscription2021UnsubscribeHttpHandler extends OperationHttp
     }
     const splitUrl = request.url.split('/');
     const subscriptionId = splitUrl[splitUrl.length - 1];
+    // The id should contain the encoded baseurl, 3x ~ and some more characters.
+    // This check will NOT guarantee that the id is valid but invalid ids getting through this will
+    // result in a BadRequestHttpError down the line.
+    // This check mainly exists to provide a better error message to the user.
     const match = new RegExp(`(${encodeURIComponent(this.baseUrl)}.+?)~~~.+`, 'u').exec(subscriptionId);
     if (!match || !match[1]) {
       throw new BadRequestHttpError('Invalid subscription id');
@@ -59,7 +63,7 @@ export class WebHookSubscription2021UnsubscribeHttpHandler extends OperationHttp
 
     const newSubs: Record<string, Subscription> = {};
     for (const [ key, value ] of Object.entries(topic.subscriptions)) {
-      if (key !== webid && (value as any)?.id === subscription.id) {
+      if (key !== webid && (value as any)?.id !== subscription.id) {
         newSubs[key] = value;
       }
     }
