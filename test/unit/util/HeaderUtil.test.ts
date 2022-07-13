@@ -1,6 +1,6 @@
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
-import {
+import { ContentType,
   addHeader,
   hasScheme,
   matchesAuthorizationScheme,
@@ -11,8 +11,7 @@ import {
   parseAcceptLanguage,
   parseContentType,
   parseForwarded,
-  parseLinkHeader,
-} from '../../../src/util/HeaderUtil';
+  parseLinkHeader } from '../../../src/util/HeaderUtil';
 
 describe('HeaderUtil', (): void => {
   describe('#parseAccept', (): void => {
@@ -467,6 +466,23 @@ describe('HeaderUtil', (): void => {
 
     it('is case insensitive: schemes with different case, result in a correct match.', (): void => {
       expect(hasScheme('wss://example.com', 'http', 'WSS')).toBeTruthy();
+    });
+  });
+  describe('A ContentType instance', (): void => {
+    it('can serialize to a correct header value string with parameters.', (): void => {
+      const contentType: ContentType = new ContentType(
+        'text/plain',
+        {
+          charset: 'utf-8',
+          extra: 'test',
+        },
+      );
+      expect(contentType.toHeaderValueString()).toBe('text/plain; charset=utf-8; extra=test');
+    });
+
+    it('can serialize to a correct header value string without parameters.', (): void => {
+      const contentType: ContentType = new ContentType('text/plain');
+      expect(contentType.toHeaderValueString()).toBe('text/plain');
     });
   });
 });

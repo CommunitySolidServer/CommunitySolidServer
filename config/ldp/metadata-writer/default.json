@@ -3,6 +3,7 @@
   "import": [
     "css:config/ldp/metadata-writer/writers/allow-accept.json",
     "css:config/ldp/metadata-writer/writers/constant.json",
+    "css:config/ldp/metadata-writer/writers/content-type.json",
     "css:config/ldp/metadata-writer/writers/link-rel.json",
     "css:config/ldp/metadata-writer/writers/mapped.json",
     "css:config/ldp/metadata-writer/writers/modified.json",
@@ -17,6 +18,7 @@
       "handlers": [
         { "@id": "urn:solid-server:default:MetadataWriter_AllowAccept" },
         { "@id": "urn:solid-server:default:MetadataWriter_Constant" },
+        { "@id": "urn:solid-server:default:MetadataWriter_ContentType" },
         { "@id": "urn:solid-server:default:MetadataWriter_Mapped" },
         { "@id": "urn:solid-server:default:MetadataWriter_Modified" },
         { "@id": "urn:solid-server:default:MetadataWriter_LinkRel" },

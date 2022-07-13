@@ -10,6 +10,7 @@ const baseUrl = `http://localhost:${port}`;
 const documents = [
   [ '/turtle', 'text/turtle', '# Test' ],
   [ '/markdown', 'text/markdown', '# Test' ],
+  [ '/plain', 'text/plain; charset=utf-8', '# Test' ],
 ];
 
 const cases: [string, string, string][] = [
@@ -27,6 +28,8 @@ const cases: [string, string, string][] = [
   [ '/markdown', 'text/html', 'text/html,*/*;q=0.8' ],
   [ '/markdown', 'text/html', 'text/markdown;q=0.1, text/html;q=0.9' ],
   [ '/markdown', 'application/octet-stream', 'application/octet-stream' ],
+  [ '/plain', 'text/plain; charset=utf-8', 'text/plain' ],
+  [ '/plain', 'text/plain; charset=utf-8', 'text/plain;q=0.1, text/markdown;q=0.9' ],
 ];
 
 describe('Content negotiation', (): void => {

@@ -1,7 +1,10 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { find } from '../../util/IterableUtil';
+import { AS, SOLID_AS } from '../../util/Vocabularies';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
@@ -35,8 +38,12 @@ export class PostOperationHandler extends OperationHandler {
       this.logger.warn('POST requests require the Content-Type header to be set');
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
-
-    const identifier = await this.store.addResource(operation.target, operation.body, operation.conditions);
-    return new CreatedResponseDescription(identifier);
+    const changes = await this.store.addResource(operation.target, operation.body, operation.conditions);
+    const createdIdentifier = find(changes.keys(), (identifier): boolean =>
+      Boolean(changes.get(identifier)?.has(SOLID_AS.terms.Activity, AS.terms.Create)));
+    if (!createdIdentifier) {
+      throw new InternalServerError('Operation was successful but no created identifier was returned.');
+    }
+    return new CreatedResponseDescription(createdIdentifier);
   }
 }

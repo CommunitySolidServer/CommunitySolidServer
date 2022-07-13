@@ -1,7 +1,7 @@
 import type { Patch } from '../../http/representation/Patch';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
-import type { ResourceStore } from '../ResourceStore';
+import type { ResourceStore, ChangeMap } from '../ResourceStore';
 
 export type PatchHandlerInput<T extends ResourceStore = ResourceStore> = {
   source: T;
@@ -13,4 +13,4 @@ export type PatchHandlerInput<T extends ResourceStore = ResourceStore> = {
  * Executes the given Patch.
  */
 export abstract class PatchHandler<T extends ResourceStore = ResourceStore>
-  extends AsyncHandler<PatchHandlerInput<T>, ResourceIdentifier[]> {}
+  extends AsyncHandler<PatchHandlerInput<T>, ChangeMap> {}

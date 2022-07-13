@@ -14,8 +14,13 @@
     {
       "comment": "Makes sure the expiring storage cleanup timer is stopped when the application needs to stop.",
       "@id": "urn:solid-server:default:Finalizer",
-      "@type": "ParallelFinalizer",
-      "finalizers": [ { "@id": "urn:solid-server:default:ExpiringAclCache" } ]
+      "@type": "ParallelHandler",
+      "handlers": [ 
+        { 
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:ExpiringAclCache" }
+        } 
+      ]
     }
   ]
 }

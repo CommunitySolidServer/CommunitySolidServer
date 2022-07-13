@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import type { TLSSocket } from 'tls';
 import type { WebSocket } from 'ws';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
@@ -47,7 +48,7 @@ class WebSocketListener extends EventEmitter {
     // Store the HTTP host and protocol
     const forwarded = parseForwarded(headers);
     this.host = forwarded.host ?? headers.host ?? 'localhost';
-    this.protocol = forwarded.proto === 'https' || (socket as any).secure ? 'https:' : 'http:';
+    this.protocol = forwarded.proto === 'https' || (socket as TLSSocket).encrypted ? 'https:' : 'http:';
   }
 
   private stop(): void {
@@ -91,10 +92,10 @@ class WebSocketListener extends EventEmitter {
       // Resolve and verify the URL
       const resolved = new URL(path, `${this.protocol}${this.host}`);
       if (resolved.host !== this.host) {
-        throw new Error(`Mismatched host: ${resolved.host} instead of ${this.host}`);
+        throw new Error(`Mismatched host: expected ${this.host} but got ${resolved.host}`);
       }
       if (resolved.protocol !== this.protocol) {
-        throw new Error(`Mismatched protocol: ${resolved.protocol} instead of ${this.protocol}`);
+        throw new Error(`Mismatched protocol: expected ${this.protocol} but got ${resolved.protocol}`);
       }
       // Subscribe to the URL
       const url = resolved.href;

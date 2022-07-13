@@ -1,5 +1,6 @@
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { PatchHandlerInput } from '../../../../src/storage/patch/PatchHandler';
 import type { RepresentationPatcher } from '../../../../src/storage/patch/RepresentationPatcher';
 import { RepresentationPatchHandler } from '../../../../src/storage/patch/RepresentationPatchHandler';
@@ -21,7 +22,9 @@ describe('A RepresentationPatchHandler', (): void => {
   beforeEach(async(): Promise<void> => {
     source = {
       getRepresentation: jest.fn().mockResolvedValue(representation),
-      setRepresentation: jest.fn().mockResolvedValue([ identifier ]),
+      setRepresentation: jest.fn().mockResolvedValue({
+        [identifier.path]: new RepresentationMetadata(identifier),
+      }),
     } as any;
 
     input = { source, identifier, patch };
@@ -34,7 +37,9 @@ describe('A RepresentationPatchHandler', (): void => {
   });
 
   it('calls the patcher with the representation from the store.', async(): Promise<void> => {
-    await expect(handler.handle(input)).resolves.toEqual([ identifier ]);
+    await expect(handler.handle(input)).resolves.toEqual({
+      [identifier.path]: new RepresentationMetadata(identifier),
+    });
 
     expect(patcher.handleSafe).toHaveBeenCalledTimes(1);
     expect(patcher.handleSafe).toHaveBeenLastCalledWith({ identifier, patch, representation });
@@ -46,7 +51,9 @@ describe('A RepresentationPatchHandler', (): void => {
   it('calls the patcher with no representation if there is none.', async(): Promise<void> => {
     source.getRepresentation.mockRejectedValueOnce(new NotFoundHttpError());
 
-    await expect(handler.handle(input)).resolves.toEqual([ identifier ]);
+    await expect(handler.handle(input)).resolves.toEqual({
+      [identifier.path]: new RepresentationMetadata(identifier),
+    });
 
     expect(patcher.handleSafe).toHaveBeenCalledTimes(1);
     expect(patcher.handleSafe).toHaveBeenLastCalledWith({ identifier, patch });

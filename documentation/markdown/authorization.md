@@ -4,7 +4,7 @@ Authorization is usually handled by the `AuthorizingHttpHandler`,
 and goes in the following steps:
 
  1. Identify the credentials of the agent making the call.
- 2. Extract which access modes are needed for the request.
+ 2. Extract which access modes are needed for which resources.
  3. Reading the permissions the agent has.
  4. Compare the above results to see if the request is allowed.
 
@@ -23,7 +23,7 @@ linking the type of credentials to their specific values.
 
 ## Modes extraction
 Access modes are a predefined list of `read`, `write`, `append`, `create` and `delete`.
-The `ModesExtractor`s determine which modes will be necessary,
+The `ModesExtractor`s determine which modes will be necessary and for which resources,
 based on the request contents.
 The `MethodModesExtractor` determines modes based on the HTTP method.
 A GET request will always need the `read` mode for example.
@@ -35,14 +35,16 @@ which parses the N3 Patch body to know if it will add new data or only delete da
 `PermissionReaders` take the input of the above to determine which permissions are available for which credentials.
 The modes from the previous step are not yet needed,
 but can be used as optimization as we only need to know if we have permission on those modes.
-Each reader can potentially return a potential answer if it only checks specific cases.
+Each reader returns all the information it can find based on the resources and modes it receives.
 Those results then get combined in the `UnionPermissionReader`.
-In the default configuration there are currently 4 relevant permission readers that get combined:
+In the default configuration the following readers are combined.
 
-1. `PathBasedReader` rejects all permissions for certain paths, to prevent access to internal data.
-2. `OwnerPermissionReader` grants control permissions to agents that are trying to access data in a pod that they own.
-3. `AuxiliaryReader` handles all permissions for auxiliary resources by requesting those of the subject resource if necessary.
-4. `WebAclReader` reads out the relevant `.acl` resource to read out the defined permissions.
+* `PathBasedReader` rejects all permissions for certain paths, to prevent access to internal data.
+* `OwnerPermissionReader` grants control permissions to agents that are trying to access data in a pod that they own.
+* `AuxiliaryReader` handles all permissions for auxiliary resources by requesting those of the subject resource if necessary.
+* `ParentContainerReader` checks the necessary permissions on a parent container when creating or deleting a resource.
+* `WebAclAuxiliaryReader` determines permissions on ACL resources by requesting if the subject resource has control permissions.
+* `WebAclReader` reads out the relevant ACL resource to read out the defined permissions.
 
 All of the above is if you have WebACL enabled.
 It is also possible to always grant all permissions for debugging reasons

@@ -6,7 +6,7 @@ import type { Conditions } from './Conditions';
 import { PassthroughConverter } from './conversion/PassthroughConverter';
 import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import { PassthroughStore } from './PassthroughStore';
-import type { ResourceStore } from './ResourceStore';
+import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 /**
  * Store that provides (optional) conversion of incoming and outgoing {@link Representation}s.
@@ -40,7 +40,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
   }
 
   public async addResource(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
+    conditions?: Conditions): Promise<ChangeMap> {
     // We can potentially run into problems here if we convert a turtle document where the base IRI is required,
     // since we don't know the resource IRI yet at this point.
     representation = await this.inConverter.handleSafe({ identifier, representation, preferences: this.inPreferences });
@@ -48,7 +48,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     representation = await this.inConverter.handleSafe({ identifier, representation, preferences: this.inPreferences });
     return this.source.setRepresentation(identifier, representation, conditions);
   }

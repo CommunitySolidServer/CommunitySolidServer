@@ -15,11 +15,12 @@ const VALID_ACL_MODES = new Set([ AccessMode.read, AccessMode.write, AccessMode.
  */
 export class WebAclMetadataCollector extends OperationMetadataCollector {
   public async handle({ metadata, operation }: OperationMetadataCollectorInput): Promise<void> {
-    if (!operation.permissionSet || !VALID_METHODS.has(operation.method)) {
+    const permissionSet = operation.availablePermissions?.get(operation.target);
+    if (!permissionSet || !VALID_METHODS.has(operation.method)) {
       return;
     }
-    const user: AclPermission = operation.permissionSet.agent ?? {};
-    const everyone: AclPermission = operation.permissionSet.public ?? {};
+    const user: AclPermission = permissionSet.agent ?? {};
+    const everyone: AclPermission = permissionSet.public ?? {};
 
     const modes = new Set<AccessMode>([ ...Object.keys(user), ...Object.keys(everyone) ] as AccessMode[]);
 

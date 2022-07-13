@@ -8,7 +8,7 @@ import { getDefaultVariables, getPresetConfigPath, getTestConfigPath, instantiat
 const port = getPort('SparqlStorage');
 const baseUrl = `http://localhost:${port}/`;
 
-describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
+describeIf('docker')('A server with a SPARQL endpoint as storage', (): void => {
   let app: App;
 
   beforeAll(async(): Promise<void> => {
