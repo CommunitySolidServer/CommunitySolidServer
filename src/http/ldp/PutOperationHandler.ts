@@ -61,7 +61,7 @@ export class PutOperationHandler extends OperationHandler {
     // We check here instead of in `setRepresentation`
     // so we can still add specific metadata triples such as `pim:storage` internally.
     if (exists && targetIsContainer) {
-      throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
+      throw new ConflictHttpError('Existing containers cannot be updated via PUT.');
     }
 
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
