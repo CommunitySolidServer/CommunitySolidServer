@@ -34,8 +34,7 @@
       },
       "metadataStrategy": {
         "@id": "urn:solid-server:default:MetadataStrategy"
-      },
-      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+      }
     },
 
     {

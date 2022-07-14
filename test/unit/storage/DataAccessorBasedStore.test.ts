@@ -2,7 +2,7 @@ import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory, Store } from 'n3';
-import { CONTENT_TYPE_TERM, serializeQuads } from '../../../src';
+import { CONTENT_TYPE_TERM } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
@@ -10,12 +10,9 @@ import { RepresentationMetadata } from '../../../src/http/representation/Represe
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
 import { BasicConditions } from '../../../src/storage/BasicConditions';
-import type {
-  RepresentationConverter,
-  RepresentationConverterArgs,
-} from '../../../src/storage/conversion/RepresentationConverter';
+
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
-import { INTERNAL_QUADS, TEXT_TURTLE } from '../../../src/util/ContentTypes';
+import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
@@ -106,7 +103,6 @@ describe('A DataAccessorBasedStore', (): void => {
   let containerMetadata: RepresentationMetadata;
   let representation: Representation;
   const resourceData = 'text';
-  let converter: RepresentationConverter;
 
   beforeEach(async(): Promise<void> => {
     mockDate = jest.spyOn(global, 'Date').mockReturnValue(now as any);
@@ -116,16 +112,7 @@ describe('A DataAccessorBasedStore', (): void => {
     auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
     const metadataStrategy = new SimpleSuffixStrategy('.meta');
 
-    converter = {
-      canHandle: jest.fn(),
-      handle: jest.fn(),
-      handleSafe: jest.fn(async(input: RepresentationConverterArgs): Promise<any> =>
-        input.representation),
-    };
-
-    store = new DataAccessorBasedStore(
-      accessor, identifierStrategy, auxiliaryStrategy, metadataStrategy, converter,
-    );
+    store = new DataAccessorBasedStore(accessor, identifierStrategy, auxiliaryStrategy, metadataStrategy);
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [
@@ -618,11 +605,7 @@ describe('A DataAccessorBasedStore', (): void => {
         literal('something'),
       ) ];
       accessor.data[resourceID.path] = representation;
-      const readable = serializeQuads(quads, TEXT_TURTLE);
-      const metaRepresentation = new BasicRepresentation(readable, resourceID, TEXT_TURTLE);
-
-      converter.handleSafe = jest.fn(async(): Promise<Representation> =>
-        new BasicRepresentation(guardedStreamFrom(quads), resourceID, INTERNAL_QUADS));
+      const metaRepresentation = new BasicRepresentation(guardedStreamFrom(quads), resourceID, INTERNAL_QUADS);
 
       const result = await store.setRepresentation(metaResourceID, metaRepresentation);
       const generatedMetaID = [ ...result.keys() ].find((id): boolean => id.path !== resourceID.path);

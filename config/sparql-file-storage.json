@@ -73,8 +73,7 @@
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
       "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
-      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
-      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
     },
     {
       "@id": "urn:solid-server:default:SparqlResourceStore",
@@ -86,8 +85,7 @@
         "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
         "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
         "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
-        "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
-        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+        "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
       }
     }
   ]

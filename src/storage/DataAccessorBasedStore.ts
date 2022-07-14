@@ -45,7 +45,6 @@ import {
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
-import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 /**
@@ -78,15 +77,13 @@ export class DataAccessorBasedStore implements ResourceStore {
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly auxiliaryStrategy: AuxiliaryStrategy;
   private readonly metadataStrategy: AuxiliaryStrategy;
-  private readonly converter: RepresentationConverter;
 
   public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy,
-    auxiliaryStrategy: AuxiliaryStrategy, metadataStrategy: AuxiliaryStrategy, converter: RepresentationConverter) {
+    auxiliaryStrategy: AuxiliaryStrategy, metadataStrategy: AuxiliaryStrategy) {
     this.accessor = accessor;
     this.identifierStrategy = identifierStrategy;
     this.auxiliaryStrategy = auxiliaryStrategy;
     this.metadataStrategy = metadataStrategy;
-    this.converter = converter;
   }
 
   public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
@@ -410,22 +407,17 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     const changes: ChangeMap = new IdentifierMap();
 
+    // Tranform representation data to quads and add them to the metadata object
     const metadata = new RepresentationMetadata(subjectIdentifier);
-    let rdf = representation;
-    if (!representation.isEmpty) {
-      rdf = await this.converter.handleSafe({
-        identifier,
-        representation,
-        preferences: { type: { [INTERNAL_QUADS]: 1 }},
-      });
-    }
-
-    const quads = await arrayifyStream(rdf.data);
+    const quads = await arrayifyStream(representation.data);
     metadata.addQuads(quads);
 
+    // Remove the response metadata as this must not be stored
+    // Also remove the content type of the metadata as the servers controls how this is stored internally
     this.removeResponseMetadata(metadata);
     metadata.removeAll(CONTENT_TYPE_TERM);
     await this.accessor.writeMetadata(subjectIdentifier, metadata);
+
     this.addActivityMetadata(changes, identifier, AS.terms.Create);
     return changes;
   }
