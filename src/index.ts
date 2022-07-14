@@ -45,6 +45,7 @@ export * from './http/auxiliary/SuffixAuxiliaryIdentifierStrategy';
 export * from './http/auxiliary/Validator';
 
 // HTTP/client
+export * from './http/client/AuthHttpClient';
 export * from './http/client/BaseHttpClient';
 export * from './http/client/HttpClient';
 
