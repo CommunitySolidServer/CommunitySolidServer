@@ -10,6 +10,7 @@
   "EventEmitter",
   "HttpErrorOptions",
   "HttpResponse",
+  "JWK",
   "NodeJS.Dict",
   "Permission",
   "PermissionSet",

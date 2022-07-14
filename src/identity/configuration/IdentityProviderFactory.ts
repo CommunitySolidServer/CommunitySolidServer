@@ -25,6 +25,7 @@ import { joinUrl } from '../../util/PathUtil';
 import type { ClientCredentials } from '../interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { InteractionHandler } from '../interaction/InteractionHandler';
 import type { AdapterFactory } from '../storage/AdapterFactory';
+import { JwksKeyGenerator } from './JwksKeyGenerator';
 import type { ProviderFactory } from './ProviderFactory';
 
 export interface IdentityProviderFactoryArgs {
@@ -64,6 +65,10 @@ export interface IdentityProviderFactoryArgs {
    * Used to write out errors thrown by the OIDC library.
    */
   responseWriter: ResponseWriter;
+  /**
+   * Used to generate and cache/store JWKS
+   */
+  jwksKeyGenerator: JwksKeyGenerator;
 }
 
 const JWKS_KEY = 'jwks';
@@ -87,6 +92,7 @@ export class IdentityProviderFactory implements ProviderFactory {
   private readonly showStackTrace: boolean;
   private readonly errorHandler: ErrorHandler;
   private readonly responseWriter: ResponseWriter;
+  private readonly jwksKeyGenerator: JwksKeyGenerator;
 
   private readonly jwtAlg = 'ES256';
   private provider?: Provider;
@@ -107,6 +113,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     this.showStackTrace = args.showStackTrace;
     this.errorHandler = args.errorHandler;
     this.responseWriter = args.responseWriter;
+    this.jwksKeyGenerator = args.jwksKeyGenerator;
   }
 
   public async getProvider(): Promise<Provider> {
@@ -156,7 +163,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     };
 
     // Cast necessary due to typing conflict between jose 2.x and 3.x
-    config.jwks = await this.generateJwks() as any;
+    config.jwks = await this.jwksKeyGenerator.getPrivateJwks(JWKS_KEY, this.jwtAlg);
     config.cookies = {
       ...config.cookies,
       keys: await this.generateCookieKeys(),
@@ -175,29 +182,6 @@ export class IdentityProviderFactory implements ProviderFactory {
     };
 
     return config;
-  }
-
-  /**
-   * Generates a JWKS using a single JWK.
-   * The JWKS will be cached so subsequent calls return the same key.
-   */
-  private async generateJwks(): Promise<{ keys: JWK[] }> {
-    // Check to see if the keys are already saved
-    const jwks = await this.storage.get(JWKS_KEY) as { keys: JWK[] } | undefined;
-    if (jwks) {
-      return jwks;
-    }
-    // If they are not, generate and save them
-    const { privateKey } = await generateKeyPair(this.jwtAlg);
-    const jwk = await exportJWK(privateKey);
-    // Required for Solid authn client
-    jwk.alg = this.jwtAlg;
-    // In node v15.12.0 the JWKS does not get accepted because the JWK is not a plain object,
-    // which is why we convert it into a plain object here.
-    // Potentially this can be changed at a later point in time to `{ keys: [ jwk ]}`.
-    const newJwks = { keys: [{ ...jwk }]};
-    await this.storage.set(JWKS_KEY, newJwks);
-    return newJwks;
   }
 
   /**
