@@ -1,3 +1,4 @@
+import type { JWK } from 'jose';
 import { BasicJwksKeyGenerator } from '../../../../src/identity/configuration/BasicJwksKeyGenerator';
 import type { JwksKeyGenerator } from '../../../../src/identity/configuration/JwksKeyGenerator';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
@@ -5,11 +6,11 @@ import { MemoryMapStorage } from '../../../../src/storage/keyvalue/MemoryMapStor
 
 jest.mock('jose', (): any => ({
   generateKeyPair: jest.fn(async(): Promise<any> => ({ privateKey: 'PRIVATE', publicKey: 'PUBLIC' })),
-  exportJWK: jest.fn(async(key: any): Promise<any> => ({ key })),
+  exportJWK: jest.fn(async(key: any): Promise<JWK> => ({ key })),
 }));
 
 describe('A BasicJwksKeyGenerator', (): void => {
-  let storage: KeyValueStorage<string, { keys: any[] }>;
+  let storage: KeyValueStorage<string, { keys: JWK[] }>;
   let basicJwksKeyGenerator: JwksKeyGenerator;
 
   beforeEach((): void => {
@@ -27,9 +28,16 @@ describe('A BasicJwksKeyGenerator', (): void => {
     });
 
     it('should return the correct private key.', async(): Promise<void> => {
-      await storage.set('test:private', { keys: [{ alg: 'RS256', key: 'PRIVATE' }]});
+      await storage.set('test:private', { keys: [
+        { alg: 'RS256', key: 'PRIVATE' } as unknown as JWK,
+      ]});
       const result = basicJwksKeyGenerator.getPrivateJwks('test');
       await expect(result).resolves.toMatchObject({ keys: [{ alg: 'RS256', key: 'PRIVATE' }]});
+    });
+
+    it('should use the alg provided by the user.', async(): Promise<void> => {
+      const result = basicJwksKeyGenerator.getPrivateJwks('test', 'MOCK-ALG');
+      await expect(result).resolves.toMatchObject({ keys: [{ alg: 'MOCK-ALG', key: 'PRIVATE' }]});
     });
   });
 
@@ -44,7 +52,9 @@ describe('A BasicJwksKeyGenerator', (): void => {
     });
 
     it('should return the correct public key.', async(): Promise<void> => {
-      await storage.set('test:public', { keys: [{ alg: 'RS256', key: 'PUBLIC' }]});
+      await storage.set('test:public', { keys: [
+        { alg: 'RS256', key: 'PUBLIC' } as unknown as JWK,
+      ]});
       const result = basicJwksKeyGenerator.getPublicJwks('test');
       await expect(result).resolves.toMatchObject({ keys: [{ alg: 'RS256', key: 'PUBLIC' }]});
     });
