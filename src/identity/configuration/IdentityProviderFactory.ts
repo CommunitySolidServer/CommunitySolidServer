@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention, tsdoc/syntax */
-// import/no-unresolved can't handle jose imports
 // tsdoc/syntax can't handle {json} parameter
 import { randomBytes } from 'crypto';
-import type { JWK } from 'jose';
-import { exportJWK, generateKeyPair } from 'jose';
-import type { Account,
+import type {
+  Account,
   Adapter,
   Configuration,
   ErrorOut,
   KoaContextWithOIDC,
   ResourceServer,
   UnknownObject,
-  errors } from 'oidc-provider';
+  errors,
+} from 'oidc-provider';
 import { Provider } from 'oidc-provider';
 import type { Operation } from '../../http/Operation';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
@@ -25,7 +24,7 @@ import { joinUrl } from '../../util/PathUtil';
 import type { ClientCredentials } from '../interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { InteractionHandler } from '../interaction/InteractionHandler';
 import type { AdapterFactory } from '../storage/AdapterFactory';
-import { JwksKeyGenerator } from './JwksKeyGenerator';
+import type { JwksKeyGenerator } from './JwksKeyGenerator';
 import type { ProviderFactory } from './ProviderFactory';
 
 export interface IdentityProviderFactoryArgs {
