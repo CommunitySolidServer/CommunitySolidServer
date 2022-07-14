@@ -21,6 +21,7 @@
       "args_showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_jwksKeyGenerator": { "@id": "urn:solid-server:default:JwksKeyGenerator" },
       "config": {
         "claims": {
           "openid": [ "azp" ],
