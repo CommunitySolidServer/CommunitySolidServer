@@ -199,12 +199,12 @@ jobs:
         name: "Test docker image 'edge'"
         if: github.ref == 'refs/heads/main'
         run: |
-          docker run --rm solidproject/community-server:edge --version
+          docker run --rm --pull never solidproject/community-server:edge --version
       - 
         name: "Test docker image 'latest'"
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          docker run --rm solidproject/community-server:latest --version
+          docker run --rm --pull never solidproject/community-server:latest --version
       - 
         name: Build and push
         uses: docker/build-push-action@v3
@@ -265,7 +265,7 @@ jobs:
       - 
         name: "Test docker image 'next'"
         run: |
-          docker run --rm solidproject/community-server:next --version
+          docker run --rm --pull never solidproject/community-server:next --version
       - 
         name: Build and push
         uses: docker/build-push-action@v3
