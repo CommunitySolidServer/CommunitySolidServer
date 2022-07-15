@@ -2,7 +2,7 @@ import type { EventEmitter } from 'events';
 import type { CredentialsExtractor } from '../../authentication/CredentialsExtractor';
 import type { PermissionReader } from '../../authorization/PermissionReader';
 import { AccessMode } from '../../authorization/permissions/Permissions';
-import type { PermissionSet } from '../../authorization/permissions/Permissions';
+import type { PermissionMap } from '../../authorization/permissions/Permissions';
 import type { OperationHandlerInput } from '../../http/ldp/OperationHandler';
 import { OkResponseDescription } from '../../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../../http/output/response/ResponseDescription';
@@ -16,6 +16,7 @@ import type { OperationHttpHandlerInput } from '../../server/OperationHttpHandle
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 import { AS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 
@@ -78,12 +79,15 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
     if (!credentials.agent?.webId) {
       throw new BadRequestHttpError('No WebId present in request');
     }
-    const permissionSet: PermissionSet = await this.permissionReader.handleSafe({
+    const topicIdentifier = { path: topicURI };
+    const permissionMap: PermissionMap = await this.permissionReader.handleSafe({
       credentials,
-      identifier: { path: topicURI },
-      modes: new Set([ AccessMode.read ]),
+      requestedModes: new IdentifierSetMultiMap<AccessMode>([
+        [ topicIdentifier, AccessMode.read ],
+      ]),
     });
-    if (!permissionSet.public?.read && !permissionSet.agent?.read) {
+    const permissionSet = permissionMap.get(topicIdentifier);
+    if (!permissionSet?.public?.read && !permissionSet?.agent?.read) {
       throw new BadRequestHttpError('Agent not allowed to read resource.');
     }
 

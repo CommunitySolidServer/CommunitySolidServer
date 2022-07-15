@@ -60,6 +60,18 @@ export async function flushPromises(): Promise<void> {
 }
 
 /**
+ * Compares the contents of the given two maps.
+ */
+export function compareMaps<TKey, TVal>(map1: Map<TKey, TVal>, map2: Map<TKey, TVal>): void {
+  expect(new Set(map1.keys())).toEqual(new Set(map2.keys()));
+  // Looping like this also allows us to compare SetMultiMaps
+  for (const key of map1.keys()) {
+    // Adding key for better error output
+    expect({ key, value: map1.get(key) }).toEqual({ key, value: map2.get(key) });
+  }
+}
+
+/**
  * Mocks (some) functions of the fs system library.
  * It is important that you call `jest.mock('fs');` in your test file before calling this!!!
  *

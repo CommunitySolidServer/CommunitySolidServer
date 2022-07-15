@@ -7,6 +7,9 @@ import { AS, SOLID_AS } from '../util/Vocabularies';
 import type { Conditions } from './Conditions';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 
+// The ActivityStream terms for which we emit an event
+const emittedActivities: Set<string> = new Set([ AS.Create, AS.Delete, AS.Update ]);
+
 /**
  * Store that notifies listeners of changes to its source
  * by emitting a `changed` event.
@@ -50,11 +53,11 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   }
 
   private emitChanged(changes: ChangeMap): ChangeMap {
-    for (const [ key, value ] of Object.entries(changes)) {
-      const activity = value.get(SOLID_AS.terms.Activity)?.value;
-      this.emit('changed', { path: key }, activity);
-      if (activity && [ AS.Create, AS.Delete, AS.Update ].includes(activity)) {
-        this.emit(activity, { path: key });
+    for (const [ identifier, metadata ] of changes) {
+      const activity = metadata.get(SOLID_AS.terms.Activity);
+      this.emit('changed', identifier, activity);
+      if (activity && emittedActivities.has(activity.value)) {
+        this.emit(activity.value, identifier);
       }
     }
 

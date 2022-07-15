@@ -50,6 +50,11 @@ The following changes are relevant for v4 custom configs that replaced certain f
   - `/app/identity/handler/account-store/default.json` 
   - `/identity/ownership/token.json`
   - `/ldp/authorization/readers/access-checkers/agent-group.json`
+  - `/ldp/handler/*`
+- `IntermediateModesExtractor` has been added to the `ModesExtractors`
+  - `/ldp/modes/default.json`
+- The `PermissionReader` structure has changed to be more consistent.
+  - `/ldp/authorization/*`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
@@ -66,6 +71,8 @@ These changes are relevant if you wrote custom modules for the server that depen
   * Removed the now obsolete `ParallelFinalizer` util class.
 - Added a lock cleanup on initialize for lock implementations `RedisLocker` and `FileSystemResourceLocker`.
 - `ResourceStore` functions that change a resource now return metadata for every changed resource.
+- All permission related interfaces have changed to support permissions over multiple identifiers.
+- `IdentifierStrategy` has a new `contains` method.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
 

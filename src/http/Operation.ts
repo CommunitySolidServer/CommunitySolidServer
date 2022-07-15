@@ -1,4 +1,4 @@
-import type { PermissionSet } from '../authorization/permissions/Permissions';
+import type { PermissionMap } from '../authorization/permissions/Permissions';
 import type { Conditions } from '../storage/Conditions';
 import type { Representation } from './representation/Representation';
 import type { RepresentationPreferences } from './representation/RepresentationPreferences';
@@ -27,7 +27,7 @@ export interface Operation {
   /**
    * The permissions available for the current operation.
    */
-  permissionSet?: PermissionSet;
+  availablePermissions?: PermissionMap;
   /**
    * Representation of the body and metadata headers.
    */

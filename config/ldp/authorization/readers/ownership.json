@@ -6,7 +6,8 @@
       "@id": "urn:solid-server:default:OwnerPermissionReader",
       "@type": "OwnerPermissionReader",
       "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
-      "aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
+      "aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
     }
   ]
 }

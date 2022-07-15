@@ -15,10 +15,12 @@ export * from './authorization/access/AgentClassAccessChecker';
 export * from './authorization/access/AgentGroupAccessChecker';
 
 // Authorization/Permissions
-export * from './authorization/permissions/Permissions';
+export * from './authorization/permissions/AclPermission';
+export * from './authorization/permissions/IntermediateCreateExtractor';
 export * from './authorization/permissions/ModesExtractor';
 export * from './authorization/permissions/MethodModesExtractor';
 export * from './authorization/permissions/N3PatchModesExtractor';
+export * from './authorization/permissions/Permissions';
 export * from './authorization/permissions/SparqlUpdateModesExtractor';
 
 // Authorization
@@ -26,10 +28,12 @@ export * from './authorization/AllStaticReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
 export * from './authorization/OwnerPermissionReader';
+export * from './authorization/ParentContainerReader';
 export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
 export * from './authorization/UnionPermissionReader';
+export * from './authorization/WebAclAuxiliaryReader';
 export * from './authorization/WebAclReader';
 
 // HTTP/Auxiliary
@@ -109,6 +113,7 @@ export * from './http/output/error/SafeErrorHandler';
 // HTTP/Output/Metadata
 export * from './http/output/metadata/AllowAcceptHeaderWriter';
 export * from './http/output/metadata/ConstantMetadataWriter';
+export * from './http/output/metadata/ContentTypeMetadataWriter';
 export * from './http/output/metadata/LinkRelMetadataWriter';
 export * from './http/output/metadata/MappedMetadataWriter';
 export * from './http/output/metadata/MetadataWriter';
@@ -467,6 +472,13 @@ export * from './util/locking/ResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
 export * from './util/locking/VoidLocker';
 
+// Util/Map
+export * from './util/map/HashMap';
+export * from './util/map/IdentifierMap';
+export * from './util/map/MapUtil';
+export * from './util/map/SetMultiMap';
+export * from './util/map/WrappedSetMultiMap';
+
 // Util/Templates
 export * from './util/templates/ChainedTemplateEngine';
 export * from './util/templates/EjsTemplateEngine';
@@ -478,6 +490,7 @@ export * from './util/ContentTypes';
 export * from './util/FetchUtil';
 export * from './util/GuardedStream';
 export * from './util/HeaderUtil';
+export * from './util/IterableUtil';
 export * from './util/PathUtil';
 export * from './util/PromiseUtil';
 export * from './util/QuadUtil';

@@ -1,5 +1,6 @@
 import { createReadStream } from 'fs';
 import fetch from 'cross-fetch';
+import type { Quad } from 'n3';
 import { DataFactory, Parser, Store } from 'n3';
 import { joinFilePath, PIM, RDF } from '../../src/';
 import type { App } from '../../src/';
@@ -11,7 +12,8 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig, removeFolder,
+  instantiateFromConfig,
+  removeFolder,
 } from './Config';
 const { literal, namedNode, quad } = DataFactory;
 
@@ -395,5 +397,71 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   it('returns 415 for unsupported PATCH types.', async(): Promise<void> => {
     const response = await fetch(baseUrl, { method: 'PATCH', headers: { 'content-type': 'text/plain' }, body: 'abc' });
     expect(response.status).toBe(415);
+  });
+
+  it('maintains prefixes after PATCH operations.', async(): Promise<void> => {
+    // POST
+    const body = [ '@prefix test: <http://test.com/>.',
+      'test:s1 test:p1 test:o1.',
+      'test:s2 test:p2 test:o2.' ].join('\n');
+    let response = await postResource(baseUrl, { contentType: 'text/turtle', body });
+    const documentUrl = response.headers.get('location')!;
+
+    // PATCH
+    const query = [ 'PREFIX test: <http://test.com/>',
+      'DELETE { test:s1 test:p1 test:o1 }',
+      'INSERT { test:s3 test:p3 test:o3. test:s4 test:p4 test:o4 }',
+      'WHERE {}',
+    ].join('\n');
+    await patchResource(documentUrl, query, true);
+
+    // GET
+    response = await getResource(documentUrl);
+    const parser = new Parser();
+    const quads: Quad[] = [];
+    let prefixes: any = {};
+    const text = await response.clone().text();
+    const promise = new Promise<void>((resolve, reject): void => {
+      parser.parse(text, (error, aQuad, prefixHash): any => {
+        if (aQuad) {
+          quads.push(aQuad);
+        }
+        if (!aQuad) {
+          prefixes = prefixHash;
+          resolve();
+        }
+        if (error) {
+          reject(error);
+        }
+      });
+    });
+
+    await promise;
+
+    const expected = [
+      quad(
+        namedNode('http://test.com/s2'),
+        namedNode('http://test.com/p2'),
+        namedNode('http://test.com/o2'),
+      ),
+      quad(
+        namedNode('http://test.com/s3'),
+        namedNode('http://test.com/p3'),
+        namedNode('http://test.com/o3'),
+      ),
+      quad(
+        namedNode('http://test.com/s4'),
+        namedNode('http://test.com/p4'),
+        namedNode('http://test.com/o4'),
+      ),
+    ];
+    await expectQuads(response, expected, true);
+    expect(prefixes).toEqual({
+      test: 'http://test.com/',
+    });
+    expect(quads).toHaveLength(3);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
   });
 });

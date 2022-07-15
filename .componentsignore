@@ -1,4 +1,5 @@
 [
+  "AccessMap",
   "Adapter",
   "BaseHttpError",
   "BasicConditions",
@@ -8,16 +9,17 @@
   "Dict",
   "Error",
   "EventEmitter",
+  "HashMap",
   "HttpErrorOptions",
   "HttpResponse",
+  "IdentifierMap",
+  "IdentifierSetMultiMap",
   "JWK",
   "NodeJS.Dict",
-  "Permission",
-  "PermissionSet",
+  "PermissionMap",
   "Promise",
   "Readonly",
   "RegExp",
-  "Set",
   "Settings",
   "Subscription",
   "Template",
@@ -26,5 +28,6 @@
   "VariableBindings",
   "UnionHandler",
   "WinstonLogger",
+  "WrappedSetMultiMap",
   "YargsOptions"
 ]

@@ -3,7 +3,9 @@ import type { N3Patch } from '../../http/representation/N3Patch';
 import { isN3Patch } from '../../http/representation/N3Patch';
 import type { ResourceSet } from '../../storage/ResourceSet';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 import { ModesExtractor } from './ModesExtractor';
+import type { AccessMap } from './Permissions';
 import { AccessMode } from './Permissions';
 
 /**
@@ -33,28 +35,28 @@ export class N3PatchModesExtractor extends ModesExtractor {
     }
   }
 
-  public async handle({ body, target }: Operation): Promise<Set<AccessMode>> {
+  public async handle({ body, target }: Operation): Promise<AccessMap> {
     const { deletes, inserts, conditions } = body as N3Patch;
 
-    const accessModes = new Set<AccessMode>();
+    const requiredModes: AccessMap = new IdentifierSetMultiMap();
 
     // When ?conditions is non-empty, servers MUST treat the request as a Read operation.
     if (conditions.length > 0) {
-      accessModes.add(AccessMode.read);
+      requiredModes.add(target, AccessMode.read);
     }
     // When ?insertions is non-empty, servers MUST (also) treat the request as an Append operation.
     if (inserts.length > 0) {
-      accessModes.add(AccessMode.append);
+      requiredModes.add(target, AccessMode.append);
       if (!await this.resourceSet.hasResource(target)) {
-        accessModes.add(AccessMode.create);
+        requiredModes.add(target, AccessMode.create);
       }
     }
     // When ?deletions is non-empty, servers MUST treat the request as a Read and Write operation.
     if (deletes.length > 0) {
-      accessModes.add(AccessMode.read);
-      accessModes.add(AccessMode.write);
+      requiredModes.add(target, AccessMode.read);
+      requiredModes.add(target, AccessMode.write);
     }
 
-    return accessModes;
+    return requiredModes;
   }
 }

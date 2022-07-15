@@ -1,7 +1,8 @@
-import type { CredentialGroup } from '../authentication/Credentials';
+import type { CredentialGroup, CredentialSet } from '../authentication/Credentials';
+import { IdentifierMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { Permission, PermissionSet } from './permissions/Permissions';
+import type { Permission, PermissionMap, PermissionSet } from './permissions/Permissions';
 
 /**
  * PermissionReader which sets all permissions to true or false
@@ -21,12 +22,19 @@ export class AllStaticReader extends PermissionReader {
     });
   }
 
-  public async handle({ credentials }: PermissionReaderInput): Promise<PermissionSet> {
+  public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
+    const availablePermissions = new IdentifierMap<PermissionSet>();
+    const permissions = this.createPermissions(credentials);
+    for (const [ identifier ] of requestedModes) {
+      availablePermissions.set(identifier, permissions);
+    }
+    return availablePermissions;
+  }
+
+  private createPermissions(credentials: CredentialSet): PermissionSet {
     const result: PermissionSet = {};
-    for (const [ key, value ] of Object.entries(credentials) as [CredentialGroup, Permission][]) {
-      if (value) {
-        result[key] = this.permissions;
-      }
+    for (const group of Object.keys(credentials) as CredentialGroup[]) {
+      result[group] = this.permissions;
     }
     return result;
   }

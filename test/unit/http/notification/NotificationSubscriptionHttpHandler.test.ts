@@ -29,7 +29,9 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
       handleSafe: jest.fn().mockResolvedValue({ agent: { webId: mockWebId }}),
     } as unknown as CredentialsExtractor;
     mockPermissionReader = {
-      handleSafe: jest.fn().mockResolvedValue({ public: { read: true }, agent: { read: true }}),
+      handleSafe: jest.fn().mockResolvedValue({
+        get: jest.fn().mockReturnValue({ public: { read: true }, agent: { read: true }}),
+      }),
     } as unknown as PermissionReader;
     notificationStorage = new MemoryMapStorage<Topic>();
     source = new EventEmitter();
@@ -123,7 +125,9 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
     });
 
     it('should throw when the user does not have access to the topic/resource.', async(): Promise<void> => {
-      mockPermissionReader.handleSafe = jest.fn().mockResolvedValue({ agent: { read: false }});
+      mockPermissionReader.handleSafe = jest.fn().mockResolvedValue({
+        get: jest.fn().mockReturnValue({ agent: { read: false }}),
+      });
       await expect(handler.handle(mockInput)).rejects.toThrow(BadRequestHttpError);
     });
 
