@@ -19,7 +19,7 @@
   "Promise",
   "Readonly",
   "RegExp",
-  "Settings",
+  "Shorthand",
   "Template",
   "TemplateEngine",
   "ValuePreferencesArg",

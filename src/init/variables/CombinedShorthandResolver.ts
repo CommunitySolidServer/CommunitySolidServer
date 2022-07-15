@@ -1,14 +1,14 @@
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
-import type { SettingsExtractor } from './extractors/SettingsExtractor';
-import { SettingsResolver } from './SettingsResolver';
+import type { ShorthandExtractor } from './extractors/ShorthandExtractor';
+import { ShorthandResolver } from './ShorthandResolver';
 
 /**
- * Generates variable values by running a set of {@link SettingsExtractor}s on the input.
+ * Generates variable values by running a set of {@link ShorthandExtractor}s on the input.
  */
-export class CombinedSettingsResolver extends SettingsResolver {
-  public readonly resolvers: Record<string, SettingsExtractor>;
+export class CombinedShorthandResolver extends ShorthandResolver {
+  public readonly resolvers: Record<string, ShorthandExtractor>;
 
-  public constructor(resolvers: Record<string, SettingsExtractor>) {
+  public constructor(resolvers: Record<string, ShorthandExtractor>) {
     super();
     this.resolvers = resolvers;
   }

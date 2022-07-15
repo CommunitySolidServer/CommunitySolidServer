@@ -1,12 +1,12 @@
 import { ensureTrailingSlash } from '../../../util/PathUtil';
-import type { Settings } from '../Types';
-import { SettingsExtractor } from './SettingsExtractor';
+import type { Shorthand } from '../Types';
+import { ShorthandExtractor } from './ShorthandExtractor';
 
 /**
- * A {@link SettingsExtractor} that that generates the base URL based on the input `baseUrl` value,
+ * A {@link ShorthandExtractor} that that generates the base URL based on the input `baseUrl` value,
  * or by using the port if the first isn't provided.
  */
-export class BaseUrlExtractor extends SettingsExtractor {
+export class BaseUrlExtractor extends ShorthandExtractor {
   private readonly defaultPort: number;
 
   public constructor(defaultPort = 3000) {
@@ -14,7 +14,7 @@ export class BaseUrlExtractor extends SettingsExtractor {
     this.defaultPort = defaultPort;
   }
 
-  public async handle(args: Settings): Promise<unknown> {
+  public async handle(args: Shorthand): Promise<unknown> {
     if (typeof args.baseUrl === 'string') {
       return ensureTrailingSlash(args.baseUrl);
     }
