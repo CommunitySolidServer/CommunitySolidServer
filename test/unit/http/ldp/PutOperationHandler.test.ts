@@ -37,6 +37,7 @@ describe('A PutOperationHandler', (): void => {
 
   it('creates a new container when there is no content-type.', async(): Promise<void> => {
     operation.target.path = 'http://test.com/foo/';
+    operation.body.metadata.contentType = undefined;
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(201);
   });

@@ -190,6 +190,30 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
+  it('can create a container without content-type.', async(): Promise<void> => {
+    // Create container
+    const containerUrl = `${baseUrl}testcontainer0/`;
+    const slug = 'testcontainer1/';
+    const putResponse = await fetch(containerUrl, {
+      method: 'PUT',
+    });
+    const postResponse = await fetch(baseUrl, {
+      method: 'Post',
+      headers: {
+        slug,
+        link: `<http://www.w3.org/ns/ldp#Container>; rel="type"`,
+      },
+    });
+
+    expect(putResponse.status).toBe(201);
+    expect(putResponse.headers.get('location')).toBe(containerUrl);
+    expect(postResponse.status).toBe(201);
+    expect(postResponse.headers.get('location')).toBe(baseUrl + slug);
+
+    // DELETE
+    expect(await deleteResource(containerUrl)).toBeUndefined();
+    expect(await deleteResource(baseUrl + slug)).toBeUndefined();
+  });
   it('cannot remove a container when the container contains a document.', async(): Promise<void> => {
     // Create container
     const containerUrl = `${baseUrl}testfolder1/`;
