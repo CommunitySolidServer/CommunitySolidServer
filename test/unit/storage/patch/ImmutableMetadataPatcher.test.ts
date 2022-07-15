@@ -7,6 +7,7 @@ import { ImmutableMetadataPatcher } from '../../../../src/storage/patch/Immutabl
 import type { RepresentationPatcherInput } from '../../../../src/storage/patch/RepresentationPatcher';
 import type { SparqlUpdatePatcher } from '../../../../src/storage/patch/SparqlUpdatePatcher';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
+import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { FilterPattern } from '../../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
@@ -64,6 +65,11 @@ describe('A ImmutableMetadataPatcher', (): void => {
   it('throws an error when trying to handle a non metadata resource identifier.', async(): Promise<void> => {
     input.identifier = identifier;
     await expect(handler.handleSafe(input)).rejects.toThrow(NotImplementedHttpError);
+  });
+
+  it('throws an error when no representation is given as input.', async(): Promise<void> => {
+    input.representation = undefined;
+    await expect(handler.handle(input)).rejects.toThrow(InternalServerError);
   });
 
   it('handles patches if they do not change immutable metadata.', async(): Promise<void> => {

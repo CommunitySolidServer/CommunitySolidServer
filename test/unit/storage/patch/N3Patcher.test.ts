@@ -7,6 +7,7 @@ import type { SparqlUpdatePatch } from '../../../../src/http/representation/Spar
 import { N3Patcher } from '../../../../src/storage/patch/N3Patcher';
 import type { RepresentationPatcherInput } from '../../../../src/storage/patch/RepresentationPatcher';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
+import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 const { namedNode, quad, variable } = DataFactory;
 
@@ -45,6 +46,11 @@ describe('An N3Patcher', (): void => {
     patch.conditions = [];
     const result = await patcher.handle(input);
     expect(result.dataset).toBe(store);
+  });
+
+  it('throws an error when no representation is given as input.', async(): Promise<void> => {
+    input.representation = undefined;
+    await expect(patcher.handle(input)).rejects.toThrow(InternalServerError);
   });
 
   it('can delete and insert triples.', async(): Promise<void> => {
