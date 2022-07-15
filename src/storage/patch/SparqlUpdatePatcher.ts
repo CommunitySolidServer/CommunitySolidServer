@@ -6,6 +6,7 @@ import type { Patch } from '../../http/representation/Patch';
 import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
 import type { SparqlUpdatePatch } from '../../http/representation/SparqlUpdatePatch';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { readableToString } from '../../util/StreamUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
@@ -38,18 +39,23 @@ export class SparqlUpdatePatcher extends RepresentationPatcher<RdfDatasetReprese
     // Verify the patch
     const op = (patch as SparqlUpdatePatch).algebra;
 
+    if (!representation) {
+      throw new InternalServerError('Patcher requires a representation as input.');
+    }
+    const store = representation.dataset;
+
     // In case of a NOP we can skip everything
     if (op.type === Algebra.types.NOP) {
-      return representation!;
+      return representation;
     }
 
     this.validateUpdate(op);
     await this.patch({
       identifier,
       patch,
-      store: representation!.dataset,
+      store,
     });
-    return representation!;
+    return representation;
   }
 
   private isSparqlUpdate(patch: Patch): patch is SparqlUpdatePatch {

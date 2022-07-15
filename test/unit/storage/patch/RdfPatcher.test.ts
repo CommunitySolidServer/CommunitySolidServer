@@ -1,18 +1,20 @@
-import { Store, DataFactory } from 'n3';
+import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
+import type { RdfDatasetRepresentation } from '../../../../src/http/representation/RdfDatasetRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { RdfPatcher } from '../../../../src/storage/patch/RdfPatcher';
-import type { RdfStorePatcher, RdfStorePatcherInput } from '../../../../src/storage/patch/RdfStorePatcher';
+import type { RepresentationPatcher,
+  RepresentationPatcherInput } from '../../../../src/storage/patch/RepresentationPatcher';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { readableToQuads } from '../../../../src/util/StreamUtil';
 const { quad, namedNode } = DataFactory;
 import 'jest-rdf';
 
 describe('An RdfPatcher,', (): void => {
-  let patcher: jest.Mocked<RdfStorePatcher>;
+  let patcher: jest.Mocked<RepresentationPatcher<RdfDatasetRepresentation>>;
   let startQuads: Quad[];
   let rdfPatcher: RdfPatcher;
   let identifier: ResourceIdentifier;
@@ -35,7 +37,8 @@ describe('An RdfPatcher,', (): void => {
       handleSafe: jest.fn(),
     };
     patcher.handle.mockImplementation(
-      async(input: RdfStorePatcherInput): Promise<Store> => Promise.resolve(input.store),
+      async(input: RepresentationPatcherInput<RdfDatasetRepresentation>):
+      Promise<RdfDatasetRepresentation> => Promise.resolve(input.representation!),
     );
 
     rdfPatcher = new RdfPatcher(patcher);
@@ -56,7 +59,6 @@ describe('An RdfPatcher,', (): void => {
     const store = await readableToQuads(result.data);
     expect(store).toBeRdfIsomorphic([]);
     expect(patcher.handle).toHaveBeenCalledTimes(1);
-    expect(patcher.handle).toHaveBeenLastCalledWith({ identifier, patch, store: new Store() });
   });
 
   it('transforms the representation to a store to patch.', async(): Promise<void> => {
@@ -64,6 +66,6 @@ describe('An RdfPatcher,', (): void => {
     const store = await readableToQuads(result.data);
     expect(store).toBeRdfIsomorphic(startQuads);
     expect(patcher.handle).toHaveBeenCalledTimes(1);
-    expect(patcher.handle).toHaveBeenLastCalledWith({ identifier, patch, store: new Store(startQuads) });
+    expect(patcher.handle).toHaveBeenLastCalledWith({ identifier, patch, representation });
   });
 });

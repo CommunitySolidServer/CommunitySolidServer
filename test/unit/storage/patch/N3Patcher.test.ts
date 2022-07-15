@@ -1,17 +1,18 @@
 import 'jest-rdf';
 import { DataFactory, Store } from 'n3';
-import type { SparqlUpdatePatch } from '../../../../src';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { N3Patch } from '../../../../src/http/representation/N3Patch';
+import type { RdfDatasetRepresentation } from '../../../../src/http/representation/RdfDatasetRepresentation';
+import type { SparqlUpdatePatch } from '../../../../src/http/representation/SparqlUpdatePatch';
 import { N3Patcher } from '../../../../src/storage/patch/N3Patcher';
-import type { RdfStorePatcherInput } from '../../../../src/storage/patch/RdfStorePatcher';
+import type { RepresentationPatcherInput } from '../../../../src/storage/patch/RepresentationPatcher';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 const { namedNode, quad, variable } = DataFactory;
 
 describe('An N3Patcher', (): void => {
   let patch: N3Patch;
-  let input: RdfStorePatcherInput;
+  let input: RepresentationPatcherInput<RdfDatasetRepresentation>;
   const patcher = new N3Patcher();
   let store: Store;
 
@@ -23,10 +24,12 @@ describe('An N3Patcher', (): void => {
 
     store = new Store();
 
+    const representation = new BasicRepresentation() as RdfDatasetRepresentation;
+    representation.dataset = store;
     input = {
       patch,
       identifier: { path: 'http://example.com/foo' },
-      store,
+      representation,
     };
   });
 
@@ -41,18 +44,18 @@ describe('An N3Patcher', (): void => {
     patch.inserts = [];
     patch.conditions = [];
     const result = await patcher.handle(input);
-    expect(result).toBe(store);
+    expect(result.dataset).toBe(store);
   });
 
   it('can delete and insert triples.', async(): Promise<void> => {
     patch.deletes = [ quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')) ];
     patch.inserts = [ quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')) ];
-    input.store.addQuads([
+    input.representation?.dataset.addQuads([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
       quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
     ]);
     const result = await patcher.handle(input);
-    expect(result).toBeRdfIsomorphic([
+    expect(result.dataset).toBeRdfIsomorphic([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
       quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')),
     ]);
@@ -61,7 +64,7 @@ describe('An N3Patcher', (): void => {
   it('can create new representations using insert.', async(): Promise<void> => {
     patch.inserts = [ quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')) ];
     const result = await patcher.handle(input);
-    expect(result).toBeRdfIsomorphic([
+    expect(result.dataset).toBeRdfIsomorphic([
       quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')),
     ]);
   });
@@ -70,12 +73,12 @@ describe('An N3Patcher', (): void => {
     patch.conditions = [ quad(variable('v'), namedNode('ex:p1'), namedNode('ex:o1')) ];
     patch.deletes = [ quad(variable('v'), namedNode('ex:p1'), namedNode('ex:o1')) ];
     patch.inserts = [ quad(variable('v'), namedNode('ex:p2'), namedNode('ex:o2')) ];
-    input.store.addQuads([
+    input.representation?.dataset.addQuads([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
       quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
     ]);
     const result = await patcher.handle(input);
-    expect(result).toBeRdfIsomorphic([
+    expect(result.dataset).toBeRdfIsomorphic([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
       quad(namedNode('ex:s1'), namedNode('ex:p2'), namedNode('ex:o2')),
     ]);
@@ -83,7 +86,7 @@ describe('An N3Patcher', (): void => {
 
   it('errors if the conditions find no match.', async(): Promise<void> => {
     patch.conditions = [ quad(variable('v'), namedNode('ex:p3'), namedNode('ex:o3')) ];
-    input.store.addQuads([
+    input.representation?.dataset.addQuads([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
       quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
     ]);
@@ -96,7 +99,7 @@ describe('An N3Patcher', (): void => {
 
   it('errors if the conditions find multiple matches.', async(): Promise<void> => {
     patch.conditions = [ quad(variable('v'), namedNode('ex:p0'), namedNode('ex:o0')) ];
-    input.store.addQuads([
+    input.representation?.dataset.addQuads([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
       quad(namedNode('ex:s1'), namedNode('ex:p0'), namedNode('ex:o0')),
     ]);
@@ -109,7 +112,7 @@ describe('An N3Patcher', (): void => {
 
   it('errors if the delete triples have no match.', async(): Promise<void> => {
     patch.deletes = [ quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')) ];
-    input.store.addQuads([
+    input.representation?.dataset.addQuads([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
     ]);
     const prom = patcher.handle(input);
@@ -125,12 +128,12 @@ describe('An N3Patcher', (): void => {
       quad(variable('v'), namedNode('ex:p1'), namedNode('ex:o1')),
       quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
     ];
-    input.store.addQuads([
+    input.representation?.dataset.addQuads([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
       quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
     ]);
     const result = await patcher.handle(input);
-    expect(result).toBeRdfIsomorphic([
+    expect(result.dataset).toBeRdfIsomorphic([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
     ]);
   });

@@ -4,6 +4,7 @@ import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { HashMap } from '../../util/map/HashMap';
 import type { FilterPattern } from '../../util/QuadUtil';
@@ -40,6 +41,11 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
   }
 
   public async handle(input: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<RdfDatasetRepresentation> {
+    if (!input.representation) {
+      throw new InternalServerError('Patcher requires a representation as input.');
+    }
+    const store = input.representation.dataset;
+
     const immutablePatternMap = new HashMap<FilterPattern, Quad[]>(
       ({ subject, predicate, object }: FilterPattern): string => {
         subject = subject ?? namedNode('subject');
@@ -49,14 +55,14 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
       },
     );
     for (const { subject, predicate, object } of this.immutablePatterns) {
-      const matches = input.representation!.dataset.getQuads(subject, predicate, object, null);
+      const matches = store.getQuads(subject, predicate, object, null);
       immutablePatternMap.set({ subject, predicate, object }, matches);
     }
 
-    await this.patcher.handle(input);
+    const patchedRepresentation = await this.patcher.handle(input);
 
     immutablePatternMap.forEach((originalQuads: Quad[], { subject, predicate, object }: FilterPattern): void => {
-      const quads = input.representation!.dataset.getQuads(subject, predicate, object, null);
+      const quads = patchedRepresentation.dataset.getQuads(subject, predicate, object, null);
       subject = subject ?? namedNode('');
       predicate = predicate ?? namedNode('');
       object = object ?? namedNode('');
@@ -75,6 +81,6 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
       }
     });
 
-    return input.representation!;
+    return input.representation;
   }
 }

@@ -11,6 +11,7 @@ import type { RdfDatasetRepresentation } from '../../http/representation/RdfData
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { uniqueQuads } from '../../util/QuadUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
@@ -40,20 +41,25 @@ export class N3Patcher extends RepresentationPatcher<RdfDatasetRepresentation> {
   }
 
   public async handle(input: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<RdfDatasetRepresentation> {
+    if (!input.representation) {
+      throw new InternalServerError('Patcher requires a representation as input.');
+    }
+    const store = input.representation.dataset;
+
     const patch = input.patch as N3Patch;
 
     // No work to be done if the patch is empty
     if (patch.deletes.length === 0 && patch.inserts.length === 0 && patch.conditions.length === 0) {
       this.logger.debug('Empty patch, returning input.');
-      return input.representation!;
+      return input.representation;
     }
 
     await this.patch({
       identifier: input.identifier,
       patch,
-      store: input.representation!.dataset,
+      store,
     });
-    return input.representation!;
+    return input.representation;
   }
 
   /**

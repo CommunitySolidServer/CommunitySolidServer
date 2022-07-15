@@ -1,3 +1,4 @@
+import type { Representation } from '../../../../src';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -16,7 +17,7 @@ describe('A RepresentationPatchHandler', (): void => {
   const patchResult = new BasicRepresentation('', 'application/trig');
   let input: PatchHandlerInput;
   let source: jest.Mocked<ResourceStore>;
-  let patcher: jest.Mocked<RepresentationPatcher>;
+  let patcher: jest.Mocked<RepresentationPatcher<Representation>>;
   let handler: RepresentationPatchHandler;
 
   beforeEach(async(): Promise<void> => {
