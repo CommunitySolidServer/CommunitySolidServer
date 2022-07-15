@@ -214,11 +214,11 @@ export * from './init/cli/YargsCliExtractor';
 export * from './init/variables/extractors/KeyExtractor';
 export * from './init/variables/extractors/AssetPathExtractor';
 export * from './init/variables/extractors/BaseUrlExtractor';
-export * from './init/variables/extractors/SettingsExtractor';
+export * from './init/variables/extractors/ShorthandExtractor';
 
 // Init/Variables
-export * from './init/variables/CombinedSettingsResolver';
-export * from './init/variables/SettingsResolver';
+export * from './init/variables/CombinedShorthandResolver';
+export * from './init/variables/ShorthandResolver';
 
 // Init
 export * from './init/App';
