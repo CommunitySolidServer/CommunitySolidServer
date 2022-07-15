@@ -57,16 +57,14 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ChangeMap> {
-    if (representation.metadata.contentType) {
-      representation = await this.inConverter.handleSafe(
-        { identifier, representation, preferences: this.inPreferences },
-      );
-    }
-
     // When it is a metadata resource, convert it to Internal Quads
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       representation = await this.inConverter.handleSafe(
         { identifier, representation, preferences: { type: { [INTERNAL_QUADS]: 1 }}},
+      );
+    } else if (representation.metadata.contentType) {
+      representation = await this.inConverter.handleSafe(
+        { identifier, representation, preferences: this.inPreferences },
       );
     }
     return this.source.setRepresentation(identifier, representation, conditions);
