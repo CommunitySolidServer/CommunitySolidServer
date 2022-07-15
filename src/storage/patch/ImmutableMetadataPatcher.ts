@@ -1,14 +1,14 @@
-import type { Store } from 'n3';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
+import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { HashMap } from '../../util/map/HashMap';
 import type { FilterPattern } from '../../util/QuadUtil';
-import type { RdfStorePatcherInput } from './RdfStorePatcher';
-import { RdfStorePatcher } from './RdfStorePatcher';
+import type { RepresentationPatcherInput } from './RepresentationPatcher';
+import { RepresentationPatcher } from './RepresentationPatcher';
 import namedNode = DataFactory.namedNode;
 
 /**
@@ -17,14 +17,14 @@ import namedNode = DataFactory.namedNode;
  * List of triples that must not be updated are given during instantiation with the ImmutableTriple class.
  * When there is a change to an Immutable Triple, then a ConflictError will be thrown.
  */
-export class ImmutableMetadataPatcher extends RdfStorePatcher {
+export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRepresentation> {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly patcher: RdfStorePatcher;
+  private readonly patcher: RepresentationPatcher<RdfDatasetRepresentation>;
   private readonly metadataStrategy: AuxiliaryStrategy;
   private readonly immutablePatterns: FilterPattern[];
 
-  public constructor(patcher: RdfStorePatcher, metadataStrategy: AuxiliaryStrategy,
+  public constructor(patcher: RepresentationPatcher<RdfDatasetRepresentation>, metadataStrategy: AuxiliaryStrategy,
     immutablePatterns: FilterPattern[]) {
     super();
     this.patcher = patcher;
@@ -32,14 +32,14 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
     this.immutablePatterns = immutablePatterns;
   }
 
-  public async canHandle(input: RdfStorePatcherInput): Promise<void> {
+  public async canHandle(input: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<void> {
     if (!this.metadataStrategy.isAuxiliaryIdentifier(input.identifier)) {
       throw new NotImplementedHttpError('This handler only supports metadata resources.');
     }
     await this.patcher.canHandle(input);
   }
 
-  public async handle(input: RdfStorePatcherInput): Promise<Store> {
+  public async handle(input: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<RdfDatasetRepresentation> {
     const immutablePatternMap = new HashMap<FilterPattern, Quad[]>(
       ({ subject, predicate, object }: FilterPattern): string => {
         subject = subject ?? namedNode('subject');
@@ -49,14 +49,14 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
       },
     );
     for (const { subject, predicate, object } of this.immutablePatterns) {
-      const matches = input.store.getQuads(subject, predicate, object, null);
+      const matches = input.representation!.dataset.getQuads(subject, predicate, object, null);
       immutablePatternMap.set({ subject, predicate, object }, matches);
     }
 
     await this.patcher.handle(input);
 
     immutablePatternMap.forEach((originalQuads: Quad[], { subject, predicate, object }: FilterPattern): void => {
-      const quads = input.store.getQuads(subject, predicate, object, null);
+      const quads = input.representation!.dataset.getQuads(subject, predicate, object, null);
       subject = subject ?? namedNode('');
       predicate = predicate ?? namedNode('');
       object = object ?? namedNode('');
@@ -75,6 +75,6 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
       }
     });
 
-    return input.store;
+    return input.representation!;
   }
 }

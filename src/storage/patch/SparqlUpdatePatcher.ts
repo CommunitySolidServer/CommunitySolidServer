@@ -3,19 +3,21 @@ import type { Store } from 'n3';
 import { DataFactory } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
 import type { Patch } from '../../http/representation/Patch';
+import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
 import type { SparqlUpdatePatch } from '../../http/representation/SparqlUpdatePatch';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { readableToString } from '../../util/StreamUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
-import { RdfStorePatcher } from './RdfStorePatcher';
+import type { RepresentationPatcherInput } from './RepresentationPatcher';
+import { RepresentationPatcher } from './RepresentationPatcher';
 
 /**
  * Supports application/sparql-update PATCH requests on RDF resources.
  *
  * Only DELETE/INSERT updates without variables are supported.
  */
-export class SparqlUpdatePatcher extends RdfStorePatcher {
+export class SparqlUpdatePatcher extends RepresentationPatcher<RdfDatasetRepresentation> {
   protected readonly logger = getLoggerFor(this);
 
   private readonly engine: QueryEngine;
@@ -25,28 +27,29 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
     this.engine = new QueryEngine();
   }
 
-  public async canHandle({ patch }: RdfStorePatcherInput): Promise<void> {
+  public async canHandle({ patch }: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<void> {
     if (!this.isSparqlUpdate(patch)) {
       throw new NotImplementedHttpError('Only SPARQL update patches are supported');
     }
   }
 
-  public async handle({ identifier, patch, store }: RdfStorePatcherInput): Promise<Store> {
+  public async handle({ identifier, patch, representation }: RepresentationPatcherInput<RdfDatasetRepresentation>):
+  Promise<RdfDatasetRepresentation> {
     // Verify the patch
     const op = (patch as SparqlUpdatePatch).algebra;
 
     // In case of a NOP we can skip everything
     if (op.type === Algebra.types.NOP) {
-      return store;
+      return representation!;
     }
 
     this.validateUpdate(op);
-
-    return this.patch({
+    await this.patch({
       identifier,
       patch,
-      store,
+      store: representation!.dataset,
     });
+    return representation!;
   }
 
   private isSparqlUpdate(patch: Patch): patch is SparqlUpdatePatch {

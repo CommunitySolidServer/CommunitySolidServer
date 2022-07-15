@@ -14,10 +14,10 @@ import { RepresentationPatcher } from './RepresentationPatcher';
  * the result of the wrapped patcher will be converted to the provided `defaultType`.
  * In case no `defaultType` is provided, the patcher output will be returned directly.
  */
-export class ConvertingPatcher extends RepresentationPatcher {
+export class ConvertingPatcher extends RepresentationPatcher<Representation> {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly patcher: RepresentationPatcher;
+  private readonly patcher: RepresentationPatcher<Representation>;
   private readonly converter: RepresentationConverter;
   private readonly intermediateType?: string;
   private readonly defaultType?: string;
@@ -28,8 +28,8 @@ export class ConvertingPatcher extends RepresentationPatcher {
    * @param intermediateType - Content-type of the intermediate Representation if conversion is needed.
    * @param defaultType - Content-type in case a new resource gets created and needs to be converted.
    */
-  public constructor(patcher: RepresentationPatcher, converter: RepresentationConverter, intermediateType?: string,
-    defaultType?: string) {
+  public constructor(patcher: RepresentationPatcher<Representation>, converter: RepresentationConverter,
+    intermediateType?: string, defaultType?: string) {
     super();
     this.patcher = patcher;
     this.converter = converter;
@@ -37,7 +37,7 @@ export class ConvertingPatcher extends RepresentationPatcher {
     this.defaultType = defaultType;
   }
 
-  public async canHandle(input: RepresentationPatcherInput): Promise<void> {
+  public async canHandle(input: RepresentationPatcherInput<Representation>): Promise<void> {
     // Verify the converter can handle the input representation if needed
     const { identifier, representation } = input;
     let convertedPlaceholder = representation;
@@ -51,7 +51,7 @@ export class ConvertingPatcher extends RepresentationPatcher {
     await this.patcher.canHandle({ ...input, representation: convertedPlaceholder });
   }
 
-  public async handle(input: RepresentationPatcherInput): Promise<Representation> {
+  public async handle(input: RepresentationPatcherInput<Representation>): Promise<Representation> {
     const { identifier, representation } = input;
     let outputType: string | undefined;
     let converted = representation;

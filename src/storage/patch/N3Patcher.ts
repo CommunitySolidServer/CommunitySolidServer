@@ -7,19 +7,21 @@ import { Generator, Wildcard } from 'sparqljs';
 import type { SparqlGenerator } from 'sparqljs';
 import { isN3Patch } from '../../http/representation/N3Patch';
 import type { N3Patch } from '../../http/representation/N3Patch';
+import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { uniqueQuads } from '../../util/QuadUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
-import { RdfStorePatcher } from './RdfStorePatcher';
+import type { RepresentationPatcherInput } from './RepresentationPatcher';
+import { RepresentationPatcher } from './RepresentationPatcher';
 
 /**
  * Applies an N3 Patch to a representation, or creates a new one if required.
  * Follows all the steps from Solid, §5.3.1: https://solid.github.io/specification/protocol#n3-patch
  */
-export class N3Patcher extends RdfStorePatcher {
+export class N3Patcher extends RepresentationPatcher<RdfDatasetRepresentation> {
   protected readonly logger = getLoggerFor(this);
 
   private readonly engine: QueryEngine;
@@ -31,26 +33,27 @@ export class N3Patcher extends RdfStorePatcher {
     this.generator = new Generator();
   }
 
-  public async canHandle({ patch }: RdfStorePatcherInput): Promise<void> {
+  public async canHandle({ patch }: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<void> {
     if (!isN3Patch(patch)) {
       throw new NotImplementedHttpError('Only N3 Patch updates are supported');
     }
   }
 
-  public async handle(input: RdfStorePatcherInput): Promise<Store> {
+  public async handle(input: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<RdfDatasetRepresentation> {
     const patch = input.patch as N3Patch;
 
     // No work to be done if the patch is empty
     if (patch.deletes.length === 0 && patch.inserts.length === 0 && patch.conditions.length === 0) {
       this.logger.debug('Empty patch, returning input.');
-      return input.store;
+      return input.representation!;
     }
 
-    return this.patch({
+    await this.patch({
       identifier: input.identifier,
       patch,
-      store: input.store,
+      store: input.representation!.dataset,
     });
+    return input.representation!;
   }
 
   /**

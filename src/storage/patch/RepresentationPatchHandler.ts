@@ -19,9 +19,9 @@ import type { RepresentationPatcher } from './RepresentationPatcher';
 export class RepresentationPatchHandler extends PatchHandler {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly patcher: RepresentationPatcher;
+  private readonly patcher: RepresentationPatcher<Representation>;
 
-  public constructor(patcher: RepresentationPatcher) {
+  public constructor(patcher: RepresentationPatcher<Representation>) {
     super();
     this.patcher = patcher;
   }

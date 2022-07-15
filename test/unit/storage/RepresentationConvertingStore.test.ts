@@ -75,10 +75,10 @@ describe('A RepresentationConvertingStore', (): void => {
     const resourceID = { path: 'identifier.meta' };
 
     await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
-    expect(inConverter.handleSafe).toHaveBeenCalledTimes(2);
-    expect(inConverter.handleSafe).toHaveBeenNthCalledWith(2, {
+    expect(inConverter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(inConverter.handleSafe).toHaveBeenNthCalledWith(1, {
       identifier: resourceID,
-      representation: convertedIn,
+      representation,
       preferences: { type: { [INTERNAL_QUADS]: 1 }},
     });
     expect(source.setRepresentation).toHaveBeenLastCalledWith(resourceID, convertedIn, undefined);
