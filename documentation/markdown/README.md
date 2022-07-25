@@ -18,7 +18,7 @@ it is always possible we miss something,
 so please report it if you find incorrect information or links that no longer work.
 
 An introductory tutorial that gives a quick overview of the Solid and CSS basics can be found
-[here](https://github.com/KNowledgeOnWebScale/solid-linked-data-workshops-hands-on-exercises/blob/main/css-tutorial.md).
+[here](https://github.com/CommunitySolidServer/tutorials/blob/main/getting-started.md).
 This is a good way to get started with the server and its setup.
 
 If you want to know what is new in the latest version,
