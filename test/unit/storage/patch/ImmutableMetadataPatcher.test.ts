@@ -45,7 +45,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
       handle: jest.fn(async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>):
       Promise<RdfDatasetRepresentation> => {
         const patcherStore = new Store([
-          quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)) ]);
+          quad(namedNode(`${base}foo`), namedNode(`${base}p`), namedNode(`${base}o`)) ]);
         patcherInput.representation!.dataset = patcherStore;
         return patcherInput.representation!;
       }),
@@ -75,7 +75,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
   it('handles patches if they do not change immutable metadata.', async(): Promise<void> => {
     const result = await handler.handleSafe(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)),
+      quad(namedNode(`${base}foo`), namedNode(`${base}p`), namedNode(`${base}o`)),
     ]);
     expect(patcher.handle).toHaveBeenCalledTimes(1);
     expect(patcher.handle).toHaveBeenLastCalledWith(input);
@@ -86,7 +86,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
     const result = await handler.handleSafe(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)),
+      quad(namedNode(`${base}foo`), namedNode(`${base}p`), namedNode(`${base}o`)),
     ]);
     expect(patcher.handle).toHaveBeenCalledTimes(1);
     expect(patcher.handle).toHaveBeenLastCalledWith(input);
@@ -94,7 +94,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that change immutable triples based on subject alone.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new FilterPattern(`${base}s`),
+      new FilterPattern(`${base}foo`),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
@@ -156,7 +156,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
   });
 
   it('rejects patches that replaces immutable triples.', async(): Promise<void> => {
-    input.representation!.dataset.addQuad(namedNode(base), RDF.terms.type, PIM.terms.Storage);
+    input.representation!.dataset.addQuad(namedNode(identifier.path), RDF.terms.type, PIM.terms.Storage);
     patcher.handle = jest.fn(async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>):
     Promise<RdfDatasetRepresentation> => {
       const patcherStore = new Store([
@@ -176,7 +176,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that change immutable triples.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new FilterPattern(`${base}s`, `${base}p`, `${base}o`),
+      new FilterPattern(`${base}foo`, `${base}p`, `${base}o`),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);

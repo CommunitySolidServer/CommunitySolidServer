@@ -633,20 +633,29 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   });
 
   it('can not update metadata triples that are deemed immutable.', async(): Promise<void> => {
-    const metaUrl = baseUrl + metaSuffix;
+    const containerUrl = `${baseUrl}foo/`;
+    const metaUrl = containerUrl + metaSuffix;
+
+    // PUT
+    await putResource(containerUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
+
+    // PATCH
     const pimResponse = await fetch(metaUrl, {
       method: 'PATCH',
       headers: { 'content-type': 'application/sparql-update' },
-      body: `INSERT DATA {<a> <${RDF.type}> <${PIM.Storage}>.}`,
+      body: `INSERT DATA {<${containerUrl}> <${RDF.type}> <${PIM.Storage}>.}`,
     });
     expect(pimResponse.status).toBe(409);
 
     const ldpResponse = await fetch(metaUrl, {
       method: 'PATCH',
       headers: { 'content-type': 'application/sparql-update' },
-      body: `INSERT DATA {<a> <${LDP.contains}> <b>.}`,
+      body: `INSERT DATA {<${containerUrl}> <${LDP.contains}> <b>.}`,
     });
     expect(ldpResponse.status).toBe(409);
+
+    // DELETE
+    expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
   it('can not create metadata resource of a metadata resource.', async(): Promise<void> => {
@@ -661,7 +670,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   it('returns metadata resource location in link header.', async(): Promise<void> => {
     const response = await fetch(baseUrl, { method: 'HEAD' });
-    expect(response.headers.get('link')).toContain(`<${baseUrl}${metaSuffix}>; rel="describedby"`);
+    expect(response.headers.get('link')).toContain(`<${baseUrl}${metaSuffix}>; rel="describedBy"`);
   });
 
   it('can read metadata.', async(): Promise<void> => {

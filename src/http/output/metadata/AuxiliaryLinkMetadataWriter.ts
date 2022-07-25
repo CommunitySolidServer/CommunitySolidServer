@@ -21,7 +21,7 @@ export class AuxiliaryLinkMetadataWriter extends MetadataWriter {
     const identifier = { path: input.metadata.identifier.value };
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const metadataIdentifier = this.metadataStrategy.getAuxiliaryIdentifier(identifier);
-      addHeader(input.response, 'Link', `<${metadataIdentifier.path}>; rel="describedby"`);
+      addHeader(input.response, 'Link', `<${metadataIdentifier.path}>; rel="describedBy"`);
     }
   }
 }
