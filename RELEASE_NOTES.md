@@ -7,6 +7,7 @@
   you should also upgrade to prevent warnings and conflicts.
 - A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
+- Added possibility to register and unregister notification webhooks.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
