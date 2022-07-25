@@ -46,6 +46,8 @@ import {
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
+import namedNode = DataFactory.namedNode;
+import { serializeQuads } from '../util/QuadUtil';
 
 /**
  * ResourceStore which uses a DataAccessor for backend access.
@@ -206,6 +208,14 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Check if the resource already exists
     const oldMetadata = await this.getSafeNormalizedMetadata(identifier);
 
+    if (identifier.path === 'http://localhost:3123/resource') {
+      // Todo: continue here
+      this.logger.info(`old metadata should be preserved: ${
+        representation.metadata.has(SOLID_META.terms.preserve, namedNode(this.metadataStrategy.getAuxiliaryIdentifier(identifier).path), SOLID_META.terms.ResponseMetadata)}`);
+      this.logger.info(`${identifier.path} ${SOLID_META.preserve} ${this.metadataStrategy.getAuxiliaryIdentifier(identifier).path}`);
+      const serialized = serializeQuads(representation.metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata), 'text/turtle');
+      console.log(await arrayifyStream(serialized));
+    }
     // Might want to redirect in the future.
     // See #480
     // Solid, §3.1: "If two URIs differ only in the trailing slash, and the server has associated a resource with

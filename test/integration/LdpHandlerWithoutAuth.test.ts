@@ -633,11 +633,11 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   });
 
   it('can not update metadata triples that are deemed immutable.', async(): Promise<void> => {
-    const containerUrl = `${baseUrl}foo/`;
+    const containerUrl = `${baseUrl}immutable/`;
     const metaUrl = containerUrl + metaSuffix;
 
     // PUT
-    await putResource(containerUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
+    await putResource(containerUrl, { contentType: 'text/turtle' });
 
     // PATCH
     const pimResponse = await fetch(metaUrl, {

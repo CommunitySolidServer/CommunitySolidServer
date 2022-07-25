@@ -8,11 +8,32 @@
       "linkRelMap": [
         {
           "LinkRelParser:_linkRelMap_key": "type",
-          "LinkRelParser:_linkRelMap_value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+          "LinkRelParser:_linkRelMap_value": {
+            "@type": "LinkRelObject",
+            "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "filter": {
+              "@list": [
+                "http://www.w3.org/ns/ldp#BasicContainer",
+                "http://www.w3.org/ns/ldp#Container",
+                "http://www.w3.org/ns/ldp#Resource"
+              ]
+            }
+          }
         },
         {
           "LinkRelParser:_linkRelMap_key": "http://www.w3.org/ns/ldp#inbox",
-          "LinkRelParser:_linkRelMap_value": "http://www.w3.org/ns/ldp#inbox"
+          "LinkRelParser:_linkRelMap_value": {
+            "@type": "LinkRelObject",
+            "value": "http://www.w3.org/ns/ldp#inbox"
+          }
+        },
+        {
+          "LinkRelParser:_linkRelMap_key": "preserve",
+          "LinkRelParser:_linkRelMap_value": {
+            "@type": "LinkRelObject",
+            "value": "urn:npm:solid:community-server:meta:preserve",
+            "ephemeral": true
+          }
         }
       ]
     }
