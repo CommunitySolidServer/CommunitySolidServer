@@ -48,10 +48,9 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
 
     const immutablePatternMap = new HashMap<FilterPattern, Quad[]>(
       ({ subject, predicate, object }: FilterPattern): string => {
-        subject = subject ?? namedNode('subject');
         predicate = predicate ?? namedNode('predicate');
         object = object ?? namedNode('object');
-        return subject.value + predicate.value + object.value;
+        return subject!.value + predicate.value + object.value;
       },
     );
     for (const immutablePattern of this.immutablePatterns) {
@@ -66,12 +65,11 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
 
     immutablePatternMap.forEach((originalQuads: Quad[], { subject, predicate, object }: FilterPattern): void => {
       const quads = patchedRepresentation.dataset.getQuads(subject, predicate, object, null);
-      subject = subject ?? namedNode('');
       predicate = predicate ?? namedNode('');
       object = object ?? namedNode('');
       if (quads.length !== originalQuads.length) {
         throw new ConflictHttpError(
-          `Not allowed to edit metadata of the form "<${subject.value}> <${predicate.value}> <${object.value}>.".`,
+          `Not allowed to edit metadata of the form "<${subject!.value}> <${predicate.value}> <${object.value}>.".`,
         );
       }
 
@@ -79,7 +77,7 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
         .some((patchedQuad): boolean => inputQuad.equals(patchedQuad)));
       if (changed) {
         throw new ConflictHttpError(
-          `Not allowed to edit metadata of the form "<${subject.value}> <${predicate.value}> <${object.value}>.".`,
+          `Not allowed to edit metadata of the form "<${subject!.value}> <${predicate.value}> <${object.value}>.".`,
         );
       }
     });

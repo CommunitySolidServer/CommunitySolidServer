@@ -20,7 +20,9 @@ describe('A LinkRelMetadataWriter', (): void => {
     const metadata = new RepresentationMetadata(identifier);
 
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ link: `<${identifier.path}.meta>; rel="describedBy"` });
+    expect(response.getHeaders()).toEqual({ link: [
+      `<${identifier.path}.meta>; rel="describedBy"`,
+      `<${identifier.path}.acl>; rel="acl"` ]});
   });
 
   it('does not add link headers for auxiliary resources.', async(): Promise<void> => {

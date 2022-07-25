@@ -6,11 +6,6 @@
       "@id": "urn:solid-server:default:AclStrategy",
       "@type": "ComposedAuxiliaryStrategy",
       "identifierStrategy": { "@id": "urn:solid-server:default:AclIdentifierStrategy" },
-      "metadataGenerator": {
-        "@type": "LinkMetadataGenerator",
-        "link": "http://www.w3.org/ns/auth/acl#accessControl",
-        "identifierStrategy": { "@id": "urn:solid-server:default:AclIdentifierStrategy" }
-      },
       "validator": {
         "@type": "RdfValidator",
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }

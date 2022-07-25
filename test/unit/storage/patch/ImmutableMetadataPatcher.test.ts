@@ -11,7 +11,6 @@ import { InternalServerError } from '../../../../src/util/errors/InternalServerE
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { FilterPattern } from '../../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
-import { PIM, RDF } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 import 'jest-rdf';
 const { namedNode, quad } = DataFactory;
@@ -58,7 +57,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
     input = { representation, patch, identifier: metaIdentifier };
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new FilterPattern(`${base}a`, `${base}b`, `${base}c`),
+      new FilterPattern(`${base}foo`, `${base}b`, `${base}c`),
     ]);
   });
 
@@ -156,17 +155,17 @@ describe('A ImmutableMetadataPatcher', (): void => {
   });
 
   it('rejects patches that replaces immutable triples.', async(): Promise<void> => {
-    input.representation!.dataset.addQuad(namedNode(identifier.path), RDF.terms.type, PIM.terms.Storage);
+    input.representation!.dataset.addQuad(namedNode(identifier.path), namedNode(`${base}p`), namedNode(`${base}o1`));
     patcher.handle = jest.fn(async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>):
     Promise<RdfDatasetRepresentation> => {
       const patcherStore = new Store([
-        quad(namedNode(`${base}newRoot`), RDF.terms.type, PIM.terms.Storage),
+        quad(namedNode(identifier.path), namedNode(`${base}p`), namedNode(`${base}o2`)),
       ]);
       patcherInput.representation!.dataset = patcherStore;
       return patcherInput.representation!;
     });
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new FilterPattern(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
+      new FilterPattern(`${base}foo`, `${base}p`),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
