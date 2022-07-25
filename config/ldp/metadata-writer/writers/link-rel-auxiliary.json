@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Creates the Link headers for the auxiliary resources.",
+      "@id": "urn:solid-server:default:MetadataWriter_LinkRelAuxiliary",
+      "@type": "AuxiliaryLinkMetadataWriter",
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+    }
+  ]
+}

@@ -99,6 +99,7 @@ export * from './http/output/error/SafeErrorHandler';
 
 // HTTP/Output/Metadata
 export * from './http/output/metadata/AllowAcceptHeaderWriter';
+export * from './http/output/metadata/AuxiliaryLinkMetadataWriter';
 export * from './http/output/metadata/ConstantMetadataWriter';
 export * from './http/output/metadata/ContentTypeMetadataWriter';
 export * from './http/output/metadata/LinkRelMetadataWriter';

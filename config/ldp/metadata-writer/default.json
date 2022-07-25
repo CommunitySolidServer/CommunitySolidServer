@@ -5,6 +5,7 @@
     "css:config/ldp/metadata-writer/writers/constant.json",
     "css:config/ldp/metadata-writer/writers/content-type.json",
     "css:config/ldp/metadata-writer/writers/link-rel.json",
+    "css:config/ldp/metadata-writer/writers/link-rel-auxiliary.json",
     "css:config/ldp/metadata-writer/writers/mapped.json",
     "css:config/ldp/metadata-writer/writers/modified.json",
     "css:config/ldp/metadata-writer/writers/wac-allow.json",
@@ -19,9 +20,10 @@
         { "@id": "urn:solid-server:default:MetadataWriter_AllowAccept" },
         { "@id": "urn:solid-server:default:MetadataWriter_Constant" },
         { "@id": "urn:solid-server:default:MetadataWriter_ContentType" },
+        { "@id": "urn:solid-server:default:MetadataWriter_LinkRel" },
+        { "@id": "urn:solid-server:default:MetadataWriter_LinkRelAuxiliary" },
         { "@id": "urn:solid-server:default:MetadataWriter_Mapped" },
         { "@id": "urn:solid-server:default:MetadataWriter_Modified" },
-        { "@id": "urn:solid-server:default:MetadataWriter_LinkRel" },
         { "@id": "urn:solid-server:default:MetadataWriter_WacAllow" },
         { "@id": "urn:solid-server:default:MetadataWriter_WwwAuth" }
       ]
