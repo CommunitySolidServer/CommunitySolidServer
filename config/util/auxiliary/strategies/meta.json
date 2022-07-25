@@ -6,11 +6,6 @@
       "@id": "urn:solid-server:default:MetadataStrategy",
       "@type": "ComposedAuxiliaryStrategy",
       "identifierStrategy": { "@id": "urn:solid-server:default:MetadataIdentifierStrategy" },
-      "metadataGenerator": {
-        "@type": "LinkMetadataGenerator",
-        "link": "http://purl.org/dc/terms/description",
-        "identifierStrategy": { "@id": "urn:solid-server:default:MetadataIdentifierStrategy" }
-      },
       "ownAuthorization": false,
       "requiredInRoot": false
     },

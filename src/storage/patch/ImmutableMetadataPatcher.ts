@@ -54,7 +54,10 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
         return subject.value + predicate.value + object.value;
       },
     );
-    for (const { subject, predicate, object } of this.immutablePatterns) {
+    for (const immutablePattern of this.immutablePatterns) {
+      const { predicate, object } = immutablePattern;
+      const subject = immutablePattern.subject ??
+          namedNode(this.metadataStrategy.getSubjectIdentifier(input.identifier).path);
       const matches = store.getQuads(subject, predicate, object, null);
       immutablePatternMap.set({ subject, predicate, object }, matches);
     }
@@ -68,7 +71,7 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
       object = object ?? namedNode('');
       if (quads.length !== originalQuads.length) {
         throw new ConflictHttpError(
-          `Not allowed to metadata of the form "<${subject.value}> <${predicate.value}> <${object.value}>.".`,
+          `Not allowed to edit metadata of the form "<${subject.value}> <${predicate.value}> <${object.value}>.".`,
         );
       }
 
@@ -76,7 +79,7 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
         .some((patchedQuad): boolean => inputQuad.equals(patchedQuad)));
       if (changed) {
         throw new ConflictHttpError(
-          `Not allowed to metadata of the form "<${subject.value}> <${predicate.value}> <${object.value}>.".`,
+          `Not allowed to edit metadata of the form "<${subject.value}> <${predicate.value}> <${object.value}>.".`,
         );
       }
     });
