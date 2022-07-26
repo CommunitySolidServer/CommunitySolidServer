@@ -37,6 +37,7 @@ export class RdfPatcher extends RepresentationPatcher<Representation> {
 
   public async handle({ identifier, patch, representation }: RepresentationPatcherInput<Representation>):
   Promise<Representation> {
+    let metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
     if (representation && representation.metadata.contentType !== INTERNAL_QUADS) {
       this.logger.error('Received non-quad data. This should not happen so there is probably a configuration error.');
       throw new InternalServerError('Quad stream was expected for patching.');
@@ -49,6 +50,8 @@ export class RdfPatcher extends RepresentationPatcher<Representation> {
 
     if (representation) {
       inputRepresentation.dataset = await readableToQuads(representation.data);
+      // eslint-disable-next-line prefer-destructuring
+      metadata = representation.metadata;
     } else {
       inputRepresentation.dataset = new Store();
     }
@@ -61,7 +64,6 @@ export class RdfPatcher extends RepresentationPatcher<Representation> {
     });
 
     // Return the n3 store to the representation
-    const metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
     const data = patchedRepresentation.dataset.match() as unknown as Readable;
     return new BasicRepresentation(data, metadata, false);
   }
