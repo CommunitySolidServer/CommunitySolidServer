@@ -670,7 +670,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   it('returns metadata resource location in link header.', async(): Promise<void> => {
     const response = await fetch(baseUrl, { method: 'HEAD' });
-    expect(response.headers.get('link')).toContain(`<${baseUrl}${metaSuffix}>; rel="describedBy"`);
+    expect(response.headers.get('link')).toContain(`<${baseUrl}${metaSuffix}>; rel="describedby"`);
   });
 
   it('can read metadata.', async(): Promise<void> => {

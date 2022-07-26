@@ -17,6 +17,21 @@
       "@id": "urn:solid-server:default:AclIdentifierStrategy",
       "@type": "SuffixAuxiliaryIdentifierStrategy",
       "suffix": ".acl"
+    },
+    {
+      "comment": "Creates the Link header for the acl resources.",
+      "@id": "urn:solid-server:default:MetadataWriter_LinkRelAcl",
+      "@type": "AuxiliaryLinkMetadataWriter",
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "specificStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
+      "relationType" : "acl"
+    },
+    {
+      "@id": "urn:solid-server:default:MetadataWriter",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:MetadataWriter_LinkRelAcl" }
+      ]
     }
   ]
 }

@@ -4,10 +4,10 @@ import type { Logger } from '../../../logging/Logger';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { parseLinkHeader } from '../../../util/HeaderUtil';
+import { SOLID_META } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataParser } from './MetadataParser';
 import namedNode = DataFactory.namedNode;
-import { SOLID_META } from '../../../util/Vocabularies';
 
 /**
  * Parses Link headers with a specific `rel` value and adds them as metadata with the given predicate.
@@ -28,7 +28,7 @@ export class LinkRelParser extends MetadataParser {
     }
   }
 }
-// Todo: integration and unit tests!!
+
 /**
  * Represents the values that are parsed as metadata
  */
@@ -67,13 +67,13 @@ export class LinkRelObject {
     if (this.objectAllowed(object)) {
       if (this.ephemeral) {
         metadata.add(this.value, namedNode(object), SOLID_META.terms.ResponseMetadata);
-        logger.info(`"<${metadata.identifier.value}> <${this.value.value}> <${object}>." ` +
+        logger.debug(`"<${metadata.identifier.value}> <${this.value.value}> <${object}>." ` +
 `will not be stored permanent into the metadata.`);
       } else {
         metadata.add(this.value, namedNode(object));
       }
     } else {
-      logger.info(
+      logger.debug(
         `"<${metadata.identifier.value}> <${this.value.value}> <${object}>." will not be added to the metadata`,
       );
     }

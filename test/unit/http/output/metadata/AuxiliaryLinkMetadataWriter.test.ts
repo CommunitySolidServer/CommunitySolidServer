@@ -8,7 +8,7 @@ import { SimpleSuffixStrategy } from '../../../../util/SimpleSuffixStrategy';
 describe('A LinkRelMetadataWriter', (): void => {
   const auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
   const metadataStrategy = new SimpleSuffixStrategy('.meta');
-  const writer = new AuxiliaryLinkMetadataWriter(auxiliaryStrategy, metadataStrategy);
+  const writer = new AuxiliaryLinkMetadataWriter(auxiliaryStrategy, metadataStrategy, 'test');
   let identifier: ResourceIdentifier;
 
   beforeEach((): void => {
@@ -20,9 +20,8 @@ describe('A LinkRelMetadataWriter', (): void => {
     const metadata = new RepresentationMetadata(identifier);
 
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ link: [
-      `<${identifier.path}.meta>; rel="describedBy"`,
-      `<${identifier.path}.acl>; rel="acl"` ]});
+    expect(response.getHeaders()).toEqual({ link:
+      `<${identifier.path}.meta>; rel="test"` });
   });
 
   it('does not add link headers for auxiliary resources.', async(): Promise<void> => {

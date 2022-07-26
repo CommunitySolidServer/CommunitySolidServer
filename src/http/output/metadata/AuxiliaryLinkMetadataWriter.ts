@@ -9,21 +9,21 @@ export class AuxiliaryLinkMetadataWriter extends MetadataWriter {
   protected readonly logger = getLoggerFor(this);
 
   private readonly auxiliaryStrategy: AuxiliaryStrategy;
-  private readonly metadataStrategy: AuxiliaryStrategy;
+  private readonly specificStrategy: AuxiliaryStrategy;
+  private readonly relationType: string;
 
-  public constructor(auxiliaryStrategy: AuxiliaryStrategy, metadataStrategy: AuxiliaryStrategy) {
+  public constructor(auxiliaryStrategy: AuxiliaryStrategy, specificStrategy: AuxiliaryStrategy, relationType: string) {
     super();
     this.auxiliaryStrategy = auxiliaryStrategy;
-    this.metadataStrategy = metadataStrategy;
+    this.specificStrategy = specificStrategy;
+    this.relationType = relationType;
   }
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
     const identifier = { path: input.metadata.identifier.value };
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
-      const metadataIdentifier = this.metadataStrategy.getAuxiliaryIdentifier(identifier);
-
-      addHeader(input.response, 'Link', `<${metadataIdentifier.path}>; rel="describedBy"`);
-      addHeader(input.response, 'Link', `<${identifier.path}.acl>; rel="acl"`);
+      const auxiliaryIdentifier = this.specificStrategy.getAuxiliaryIdentifier(identifier);
+      addHeader(input.response, 'Link', `<${auxiliaryIdentifier.path}>; rel="${this.relationType}"`);
     }
   }
 }

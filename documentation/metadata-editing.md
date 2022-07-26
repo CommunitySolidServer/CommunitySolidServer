@@ -63,7 +63,7 @@ which will produce a response with at least these headers:
 
 ```shell
 HTTP/1.1 200 OK
-Link: <http://localhost:3000/foo/.meta>; rel="describedBy"
+Link: <http://localhost:3000/foo/.meta>; rel="describedby"
 ```
 Now that we have the URL of the description resource,
 we create a patch for adding the inbox in the description of the resource.
