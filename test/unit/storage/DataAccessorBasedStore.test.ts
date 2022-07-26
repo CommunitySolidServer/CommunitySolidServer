@@ -103,6 +103,7 @@ describe('A DataAccessorBasedStore', (): void => {
   let containerMetadata: RepresentationMetadata;
   let representation: Representation;
   const resourceData = 'text';
+  const metadataStrategy = new SimpleSuffixStrategy('.meta');
 
   beforeEach(async(): Promise<void> => {
     mockDate = jest.spyOn(global, 'Date').mockReturnValue(now as any);
@@ -110,7 +111,6 @@ describe('A DataAccessorBasedStore', (): void => {
     accessor = new SimpleDataAccessor();
 
     auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
-    const metadataStrategy = new SimpleSuffixStrategy('.meta');
 
     store = new DataAccessorBasedStore(accessor, identifierStrategy, auxiliaryStrategy, metadataStrategy);
 
@@ -626,6 +626,29 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
       accessor.data[`${resourceID.path}.meta`] = representation;
       await expect(store.setRepresentation(metametaResourceID, representation)).rejects.toThrow(ConflictHttpError);
+    });
+
+    it('preserves the old metadata of a resource.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const representationWithMetadata: Representation = {
+        binary: true,
+        data: guardedStreamFrom([ resourceData ]),
+        metadata: new RepresentationMetadata(
+          { [CONTENT_TYPE]: 'text/plain',
+            [RDF.type]: namedNode(LDP.Resource),
+            [RDF.type]: namedNode('http://example.org/Type') },
+        ),
+        isEmpty: false,
+      };
+      await store.setRepresentation(resourceID, representationWithMetadata);
+
+      const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
+      representation.metadata.add(
+        SOLID_META.terms.preserve, namedNode(metaResourceID.path), SOLID_META.terms.ResponseMetadata,
+      );
+
+      await store.setRepresentation(resourceID, representation);
+      expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toHaveLength(2);
     });
   });
 
