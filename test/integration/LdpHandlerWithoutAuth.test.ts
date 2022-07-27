@@ -678,4 +678,52 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(response.status).toBe(200);
     await expectQuads(response, [ quad(namedNode(baseUrl), namedNode(RDF.type), namedNode(PIM.Storage)) ]);
   });
+
+  it('preserves metadata when link header is present.', async(): Promise<void> => {
+    const resourceUrl = `${baseUrl}preserved`;
+    const metaUrl = resourceUrl + metaSuffix;
+    // PUT
+    await putResource(resourceUrl, { contentType: 'text/turtle', body: '<a> <b> <c>.' });
+
+    // PATCH
+    await patchResource(metaUrl, `INSERT DATA {<${baseUrl}a> <${baseUrl}b> <${baseUrl}c>.}`, 'sparql', true);
+
+    // PUT
+    const preserveResource = await fetch(resourceUrl, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/turtle',
+        link: `<${metaUrl}>;rel="preserve"`,
+      },
+      body: '<a> <b> <d>.',
+    });
+    expect(preserveResource.status).toBe(205);
+
+    const metadataResponse = await fetch(metaUrl);
+    const metadata = await metadataResponse.text();
+    expect(metadata).toContain(`<${baseUrl}a> <${baseUrl}b> <${baseUrl}c>.`);
+
+    // DELETE
+    await deleteResource(resourceUrl);
+  });
+
+  it('clears metadata by default.', async(): Promise<void> => {
+    const resourceUrl = `${baseUrl}notPreserved`;
+    const metaUrl = resourceUrl + metaSuffix;
+    // PUT
+    await putResource(resourceUrl, { contentType: 'text/turtle', body: '<a> <b> <c>.' });
+
+    // PATCH
+    await patchResource(metaUrl, `INSERT DATA {<a> <b> <c>.}`, 'sparql', true);
+
+    // PUT
+    await putResource(resourceUrl, { contentType: 'text/turtle', body: '<a> <b> <d>.', exists: true });
+
+    const metadataResponse = await fetch(metaUrl);
+    const metadata = await metadataResponse.text();
+    expect(metadata).not.toContain(`<${baseUrl}a> <${baseUrl}b> <${baseUrl}c>.`);
+
+    // DELETE
+    await deleteResource(resourceUrl);
+  });
 });

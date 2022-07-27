@@ -628,7 +628,7 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(store.setRepresentation(metametaResourceID, representation)).rejects.toThrow(ConflictHttpError);
     });
 
-    it('preserves the old metadata of a resource.', async(): Promise<void> => {
+    it('preserves the old metadata of a resource when preserve triple is present.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       const representationWithMetadata: Representation = {
         binary: true,
@@ -649,6 +649,10 @@ describe('A DataAccessorBasedStore', (): void => {
 
       await store.setRepresentation(resourceID, representation);
       expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toHaveLength(2);
+      expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic(
+        [ quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
+          quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')) ],
+      );
     });
   });
 

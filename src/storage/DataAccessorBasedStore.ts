@@ -208,13 +208,13 @@ export class DataAccessorBasedStore implements ResourceStore {
     const oldMetadata = await this.getSafeNormalizedMetadata(identifier);
 
     // Preserve the old metadata
-    if (representation.metadata.has(
+    if (oldMetadata && representation.metadata.has(
       SOLID_META.terms.preserve,
       namedNode(this.metadataStrategy.getAuxiliaryIdentifier(identifier).path),
       SOLID_META.terms.ResponseMetadata,
     )) {
       // Preserve all the quads from the old metadata apart from the ContentType
-      const quads = oldMetadata?.quads() ?? [];
+      const quads = oldMetadata.quads();
       const { contentType } = representation.metadata;
 
       representation.metadata.addQuads(quads);
