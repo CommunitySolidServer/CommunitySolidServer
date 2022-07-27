@@ -65,6 +65,7 @@
       "comment": "SparqlDataAccessor only accepts quad objects so data to that route needs to be converted",
       "@id": "urn:solid-server:default:SparqlResourceStore",
       "@type": "RepresentationConvertingStore",
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
       "options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
       "options_inType": "internal/quads",
       "source": {
