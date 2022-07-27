@@ -1,0 +1,31 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server-app-setup:default:CliExtractor",
+      "@type": "YargsCliExtractor",
+      "parameters": [
+        {
+          "@type": "YargsParameter",
+          "name": "httpsKey",
+          "options": {
+            "demandOption": true,
+            "requiresArg": true,
+            "type": "string",
+            "describe": "File path to the HTTPS key."
+          }
+        },
+        {
+          "@type": "YargsParameter",
+          "name": "httpsCert",
+          "options": {
+            "demandOption": true,
+            "requiresArg": true,
+            "type": "string",
+            "describe": "File path to the HTTPS certificate."
+          }
+        }
+      ]
+    }
+  ]
+}
