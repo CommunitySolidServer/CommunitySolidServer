@@ -1,13 +1,13 @@
-import { CombinedSettingsResolver } from '../../../../src/init/variables/CombinedSettingsResolver';
-import type { SettingsExtractor } from '../../../../src/init/variables/extractors/SettingsExtractor';
+import { CombinedShorthandResolver } from '../../../../src/init/variables/CombinedShorthandResolver';
+import type { ShorthandExtractor } from '../../../../src/init/variables/extractors/ShorthandExtractor';
 
-describe('A CombinedSettingsResolver', (): void => {
+describe('A CombinedShorthandResolver', (): void => {
   const values = { test: 'data' };
   const varPort = 'urn:solid-server:default:variable:port';
   const varLog = 'urn:solid-server:default:variable:loggingLevel';
-  let resolverPort: jest.Mocked<SettingsExtractor>;
-  let resolverLog: jest.Mocked<SettingsExtractor>;
-  let resolver: CombinedSettingsResolver;
+  let resolverPort: jest.Mocked<ShorthandExtractor>;
+  let resolverLog: jest.Mocked<ShorthandExtractor>;
+  let resolver: CombinedShorthandResolver;
 
   beforeEach(async(): Promise<void> => {
     resolverPort = {
@@ -18,7 +18,7 @@ describe('A CombinedSettingsResolver', (): void => {
       handleSafe: jest.fn().mockResolvedValue('info'),
     } as any;
 
-    resolver = new CombinedSettingsResolver({
+    resolver = new CombinedShorthandResolver({
       [varPort]: resolverPort,
       [varLog]: resolverLog,
     });

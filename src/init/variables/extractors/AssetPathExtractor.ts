@@ -1,12 +1,13 @@
 import { resolveAssetPath } from '../../../util/PathUtil';
-import type { Settings } from '../Types';
-import { SettingsExtractor } from './SettingsExtractor';
+import type { Shorthand } from '../Types';
+import { ShorthandExtractor } from './ShorthandExtractor';
 
 /**
- * A {@link SettingsExtractor} that converts a path value to an absolute asset path by making use of `resolveAssetPath`.
+ * A {@link ShorthandExtractor} that converts a path value to an absolute asset path
+ * by making use of `resolveAssetPath`.
  * Returns the default path in case it is defined and no path was found in the map.
  */
-export class AssetPathExtractor extends SettingsExtractor {
+export class AssetPathExtractor extends ShorthandExtractor {
   private readonly key: string;
   private readonly defaultPath?: string;
 
@@ -16,7 +17,7 @@ export class AssetPathExtractor extends SettingsExtractor {
     this.defaultPath = defaultPath;
   }
 
-  public async handle(args: Settings): Promise<unknown> {
+  public async handle(args: Shorthand): Promise<unknown> {
     const path = args[this.key] ?? this.defaultPath;
     if (path) {
       if (typeof path !== 'string') {

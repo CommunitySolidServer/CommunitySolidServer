@@ -67,19 +67,19 @@
     },
     {
       "comment": "Adds resolvers to assign the CLI values to the Components.js variables.",
-      "@id": "urn:solid-server-app-setup:default:SettingsResolver",
-      "@type": "CombinedSettingsResolver",
+      "@id": "urn:solid-server-app-setup:default:ShorthandResolver",
+      "@type": "CombinedShorthandResolver",
       "resolvers": [
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:custom:variable:httpsKey",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:custom:variable:httpsKey",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
             "key": "httpsKey"
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:custom:variable:httpsCert",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:custom:variable:httpsCert",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
             "key": "httpsCert"
           }

@@ -7,6 +7,7 @@
   you should also upgrade to prevent warnings and conflicts.
 - A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
+- When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
 - Metadata of resources can now be edited by PATCHing its description resource. See the [documentation](./documentation/metadata-editing.md) for more information.
 
 ### Data migration
@@ -26,7 +27,7 @@ The following changes pertain to the imports in the default configs:
   making them threadsafe.
 
 The following changes are relevant for v4 custom configs that replaced certain features.
-- `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
+- `config/app/variables/*` was changed to support the new `YargsCliExtractor` format and `SettingsResolver` rename.
 - `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
 - The content-length parser has been moved from the default configuration to the quota configurations.
    - `/ldp/metadata-parser/default.json`
@@ -82,6 +83,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `ResourceStore` functions that change a resource now return metadata for every changed resource.
 - All permission related interfaces have changed to support permissions over multiple identifiers.
 - `IdentifierStrategy` has a new `contains` method.
+- `SettingsResolver` was renamed to `ShorthandResolver`, together with all related classes and parameters.
 - `DataAccessor` interface is changed. There is now a new method called `writeMetadata`.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
