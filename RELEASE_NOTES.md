@@ -57,14 +57,16 @@ The following changes are relevant for v4 custom configs that replaced certain f
   - `/ldp/modes/default.json`
 - The `PermissionReader` structure has changed to be more consistent.
   - `/ldp/authorization/*`
-- The `PutOperationHandler` constructor now has an extra argument: `metadataStrategy`, resulting in a change in `config/ldp/handler/components/operation-handler.json`
-- A new key-value pair was added to `config/ldp/metadata-writer/writers/link-rel.json`, which allows generating the link to the description resource
-- The `DataAccessorBasedStore` constructor now has two new arguments: `metadataStrategy` and `converter`. As a result following configuration files are changed:
-  - `config/sparql-file-storage.json`
-  - `config/storage/backend/*`
-- `config/storage/middleware/stores/patching.json` has changed significantly to allow description resources to be patched.
+- The `PutOperationHandler` constructor now has an extra argument: `metadataStrategy`, resulting in a change in `/ldp/handler/components/operation-handler.json`
+- `.acl` and `.meta` are now generated for every non-auxiliary by `AuxiliaryLinkMetadataWriter` through an update in `/util/auxiliary/strategies/acl.json` and the creation of `/ldp/metadata-writer/writers/link-rel-metadata.json` 
+  - As a result the key-value for `acl` resources was removed from `/ldp/metadata-writer/writers/link-rel.json`
+- The `DataAccessorBasedStore` constructor now has two new arguments: `metadataStrategy`. As a result following configuration files are changed:
+  - `/sparql-file-storage.json`
+  - `/storage/backend/*`
+- `/storage/middleware/stores/patching.json` has changed significantly to allow description resources to be patched.
 - The metadata auxiliary strategy was added to the default list of auxiliary strategies.
-  - `config/util/auxiliary/*`
+  - `/util/auxiliary/*`
+- Parsing link headers is updated in `/ldp/metadata-parser/parsers/link.json` as it now uses a `LinkRelObject` as a value
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
