@@ -10,7 +10,7 @@ import type { CliArgv, Shorthand } from '../variables/Types';
  * but that does mean that this class should not error if they are present,
  * e.g., by being strict throwing an error on these unexpected parameters.
  *
- * The following core CLI parameters are mandatory:
+ * In case strict mode is preferred, the following should be added to the list of known parameters:
  *  - -c / \--config
  *  - -m / \--mainModulePath
  *  - -l / \--loggingLevel
