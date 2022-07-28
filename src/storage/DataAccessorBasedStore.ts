@@ -433,7 +433,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     metadata.removeAll(CONTENT_TYPE_TERM);
     await this.accessor.writeMetadata(subjectIdentifier, metadata);
 
-    this.addActivityMetadata(changes, identifier, AS.terms.Create);
+    this.addActivityMetadata(changes, identifier, AS.terms.Update);
     return changes;
   }
 

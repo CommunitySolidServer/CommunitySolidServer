@@ -20,7 +20,8 @@
           "templateEngine": {
             "@type": "HandlebarsTemplateEngine",
             "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
-          }
+          },
+          "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
         },
         "args_storageKey": "idpContainerInitialized",
         "args_storage": { "@id": "urn:solid-server:default:SetupStorage" }

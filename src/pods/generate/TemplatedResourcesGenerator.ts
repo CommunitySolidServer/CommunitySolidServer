@@ -1,6 +1,7 @@
 import { createReadStream, promises as fsPromises } from 'fs';
 import type { Readable } from 'stream';
 import { Parser } from 'n3';
+import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -12,6 +13,8 @@ import type {
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { joinFilePath, isContainerIdentifier, resolveAssetPath } from '../../util/PathUtil';
+import { serializeQuads } from '../../util/QuadUtil';
+import { addResourceMetadata } from '../../util/ResourceUtil';
 import { guardedStreamFrom, readableToString } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import type { Resource, ResourcesGenerator } from './ResourcesGenerator';
@@ -35,6 +38,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private readonly factory: FileIdentifierMapperFactory;
   private readonly templateEngine: TemplateEngine;
   private readonly templateExtension: string;
+  private readonly metadataStrategy: AuxiliaryStrategy;
 
   /**
    * A mapper is needed to convert the template file paths to identifiers relative to the given base identifier.
@@ -44,13 +48,15 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
    * @param templateEngine - Template engine for generating the resources.
    * @param templateExtension - The extension of files that need to be interpreted as templates.
    *                            Will be removed to generate the identifier.
+   * @param metadataStrategy - The metadataStrategy
    */
   public constructor(templateFolder: string, factory: FileIdentifierMapperFactory, templateEngine: TemplateEngine,
-    templateExtension = '.hbs') {
+    metadataStrategy: AuxiliaryStrategy, templateExtension = '.hbs') {
     this.templateFolder = resolveAssetPath(templateFolder);
     this.factory = factory;
     this.templateEngine = templateEngine;
     this.templateExtension = templateExtension;
+    this.metadataStrategy = metadataStrategy;
   }
 
   public async* generate(location: ResourceIdentifier, options: Dict<string>): AsyncIterable<Resource> {
@@ -72,13 +78,13 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete links[folderLink.identifier.path];
 
-    yield this.generateResource(folderLink, options, metaLink);
+    yield* this.generateResource(folderLink, options, metaLink);
 
     for (const { link, meta } of Object.values(links)) {
       if (isContainerIdentifier(link.identifier)) {
         yield* this.processFolder(link, mapper, options);
       } else {
-        yield this.generateResource(link, options, meta);
+        yield* this.generateResource(link, options, meta);
       }
     }
   }
@@ -124,8 +130,8 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
    * In the case of documents the corresponding template will be used.
    * If a ResourceLink of metadata is provided the corresponding data will be added as metadata.
    */
-  private async generateResource(link: TemplateResourceLink, options: Dict<string>, metaLink?: TemplateResourceLink):
-  Promise<Resource> {
+  private async* generateResource(link: TemplateResourceLink, options: Dict<string>, metaLink?: TemplateResourceLink):
+  AsyncIterable<Resource> {
     let data: Guarded<Readable> | undefined;
     const metadata = new RepresentationMetadata(link.identifier);
 
@@ -135,16 +141,25 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
       metadata.contentType = link.contentType;
     }
 
-    // Add metadata from meta file if there is one
-    if (metaLink) {
-      const rawMetadata = await this.generateMetadata(metaLink, options);
-      metadata.addQuads(rawMetadata.quads());
-    }
-
-    return {
+    yield {
       identifier: link.identifier,
       representation: new BasicRepresentation(data ?? [], metadata),
     };
+    // Add metadata from meta file if there is one
+    if (metaLink) {
+      // Niet gebaseerd op metadata quads, maar gebruik "addResourceMetadata" function
+      // die moet wel beginnen met de container Identifier en daarna aangepast worden door de meta identifier
+      // de meta identifier moet gebaseerd zijn op de suffix -> niewe constructor
+      const rawMetadata = await this.generateMetadata(metaLink, options);
+      const metaIdentifier = this.metadataStrategy.getAuxiliaryIdentifier(link.identifier);
+      const descriptionMeta = new RepresentationMetadata(metaIdentifier);
+      descriptionMeta.contentType = metaLink.contentType;
+      addResourceMetadata(rawMetadata, isContainerIdentifier(link.identifier));
+      yield {
+        identifier: metaIdentifier,
+        representation: new BasicRepresentation(serializeQuads(rawMetadata.quads()), descriptionMeta),
+      };
+    }
   }
 
   /**

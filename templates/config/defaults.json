@@ -19,9 +19,16 @@
         "@id": "urn:solid-server:template:variable:baseUrl"
       }
     },
-
     {
       "@id": "urn:solid-server:template:ResourceStore",
+      "@type": "RepresentationConvertingStore",
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+      "options_outConverter": { "@id": "urn:solid-server:default:UiEnabledConverter" },
+      "source": { "@id": "urn:solid-server:template:ResourceStore_Backend" }
+    },
+    {
+      "@id": "urn:solid-server:template:ResourceStore_Backend",
       "@type": "DataAccessorBasedStore",
       "accessor": {
         "@id": "urn:solid-server:template:DataAccessor"
@@ -36,7 +43,6 @@
         "@id": "urn:solid-server:default:MetadataStrategy"
       }
     },
-
     {
       "@id": "urn:solid-server:template:variable:baseUrl",
       "@type": "Variable"
