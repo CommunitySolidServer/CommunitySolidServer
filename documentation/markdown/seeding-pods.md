@@ -27,7 +27,7 @@ For example, to set up a pod without registering the generated WebID with the Id
     "podName": "example",
     "email": "hello@example.com",
     "password": "abc123",
-    "webId": "https://pod.inrupt.com/example/profile/card#me",
+    "webId": "https://id.inrupt.com/example",
     "register": false
   }
 ]
