@@ -12,7 +12,7 @@ import type { Account,
   ResourceServer,
   UnknownObject,
   errors } from 'oidc-provider';
-import { Provider } from 'oidc-provider';
+import { Provider, interactionPolicy } from 'oidc-provider';
 import type { Operation } from '../../http/Operation';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
@@ -26,6 +26,7 @@ import type { ClientCredentials } from '../interaction/email-password/credential
 import type { InteractionHandler } from '../interaction/InteractionHandler';
 import type { AdapterFactory } from '../storage/AdapterFactory';
 import type { ProviderFactory } from './ProviderFactory';
+import { switchAccountPrompt } from './switchAccountPrompt';
 
 export interface IdentityProviderFactoryArgs {
   /**
@@ -311,6 +312,14 @@ export class IdentityProviderFactory implements ProviderFactory {
         throw new InternalServerError('Could not correctly redirect for the given interaction.');
       },
     };
+
+    // Create the Interaction Policy
+    const basePolicy = interactionPolicy.base();
+    config.interactions.policy = [
+      switchAccountPrompt,
+      basePolicy.get('login')!,
+      basePolicy.get('consent')!,
+    ];
 
     config.routes = {
       authorization: this.createRoute('auth'),

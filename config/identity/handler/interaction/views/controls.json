@@ -18,6 +18,10 @@
           "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:LoginRoute" }
         },
         {
+          "ControlHandler:_controls_key": "switchaccount",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:SwitchAccountRoute" }
+        },
+        {
           "ControlHandler:_controls_key": "forgotPassword",
           "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:ForgotPasswordRoute" }
         },

@@ -49,6 +49,20 @@ export class LoginHandler extends BaseInteractionHandler {
 
   public async handlePost({ operation, oidcInteraction }: InteractionHandlerInput): Promise<never> {
     const { email, password, remember } = await this.parseInput(operation);
+    const webId = await this.emailLogin(email, password);
+
+    // Update the interaction to get the redirect URL
+    const login: InteractionResults['login'] = {
+      accountId: webId,
+      remember,
+    };
+    oidcInteraction!.result = { login, hasAskedToSwitchAccount: true };
+    await oidcInteraction!.save(oidcInteraction!.exp - Math.floor(Date.now() / 1000));
+
+    throw new FoundHttpError(oidcInteraction!.returnTo);
+  }
+
+  public async emailLogin(email: string, password: string): Promise<string> {
     // Try to log in, will error if email/password combination is invalid
     const webId = await this.accountStore.authenticate(email, password);
     const settings = await this.accountStore.getSettings(webId);
@@ -57,16 +71,7 @@ export class LoginHandler extends BaseInteractionHandler {
       throw new BadRequestHttpError('This server is not an identity provider for this account.');
     }
     this.logger.debug(`Logging in user ${email}`);
-
-    // Update the interaction to get the redirect URL
-    const login: InteractionResults['login'] = {
-      accountId: webId,
-      remember,
-    };
-    oidcInteraction!.result = { login };
-    await oidcInteraction!.save(oidcInteraction!.exp - Math.floor(Date.now() / 1000));
-
-    throw new FoundHttpError(oidcInteraction!.returnTo);
+    return webId;
   }
 
   /**

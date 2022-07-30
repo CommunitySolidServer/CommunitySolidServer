@@ -16,6 +16,10 @@
         "@id": "urn:solid-server:auth:password:PromptHandler",
         "promptRoutes": [
           {
+            "PromptHandler:_promptRoutes_key": "switchaccount",
+            "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:auth:password:SwitchAccountRoute" }
+          },
+          {
             "PromptHandler:_promptRoutes_key": "login",
             "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:auth:password:LoginRoute" }
           },

@@ -120,6 +120,28 @@ export class IdentityTestState {
   }
 
   /**
+   * Triggers the options for the switch account UI
+   */
+  public async switchAccount(
+    url: string, continueWithCurrentLogin: boolean, email?: string, password?: string,
+  ): Promise<string> {
+    let formData: string;
+    if (continueWithCurrentLogin) {
+      formData = stringify({ continueWithCurrentLogin: 'true' });
+    } else if (!continueWithCurrentLogin && email && password) {
+      formData = stringify({ continueWithCurrentLogin: 'false', email, password });
+    } else {
+      throw new Error('An email or password must be provided if continueWithCurrentLogin is false');
+    }
+    let res = await this.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    res = await this.fetchIdp(json.location);
+    expect(res.status).toBe(303);
+    return res.headers.get('location')!;
+  }
+
+  /**
    * Handles the consent screen at the given URL and the followup redirect back to the client.
    */
   public async consent(url: string): Promise<void> {

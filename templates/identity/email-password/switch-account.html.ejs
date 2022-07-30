@@ -1,0 +1,64 @@
+<div id="switchAccount">
+  <p id="loginMessage"></p>
+  <form method="post" id="switchAccountForm">
+    <p class="actions"></p>
+      <input type="hidden" name="continueWithCurrentLogin", value="true" />
+      <button type="submit">Continue</button>
+      <button onclick="switchAccountSelected(event);">Switch Account</button>
+    </p>
+  </form>
+</div>
+<div id="login">
+  <h1>Log in</h1>
+  <form method="post" id="loginForm">
+    <p class="error" id="error"></p>
+
+    <fieldset>
+      <legend>Your account</legend>
+      <ol>
+        <li>
+          <label for="email">Email</label>
+          <input id="email" type="email" name="email" autofocus>
+        </li>
+        <li>
+          <label for="password">Password</label>
+          <input id="password" type="password" name="password">
+        </li>
+        <li class="checkbox">
+          <label><input type="checkbox" name="remember" value="yes" checked>Stay logged in</label>
+        </li>
+      </ol>
+    </fieldset>
+
+    <input type="hidden" name="continueWithCurrentLogin", value="false" />
+
+    <p class="actions"><button type="submit" name="submit">Log in</button></p>
+  </form>
+</div>
+
+
+<script>
+  setVisibility('switchAccount', true);
+  setVisibility('login', false);
+
+  function switchAccountSelected(e) {
+    e.preventDefault();
+    setVisibility('switchAccount', false);
+    setVisibility('login', true);
+  }
+
+  // Update the login information
+  (async() => {
+    const res = await fetch('', { headers: { accept: 'application/json' } })
+    const { webId } = await res.json();
+
+    const strong = document.createElement('strong');
+    strong.appendChild(document.createTextNode(webId));
+    const p = document.getElementById('loginMessage');
+    p.appendChild(document.createTextNode('You are logged in as '));
+    p.append(strong);
+  })()
+
+  addPostListener('switchAccountForm', 'error', '', () => { throw new Error('Error in Switch Account') });
+  addPostListener('loginForm', 'error', '', () => { throw new Error('Error in Login') });
+</script>

@@ -29,6 +29,10 @@
           "HtmlViewHandler:_templates_value": { "@id": "urn:solid-server:auth:password:LoginRoute" }
         },
         {
+          "HtmlViewHandler:_templates_key": "@css:templates/identity/email-password/switch-account.html.ejs",
+          "HtmlViewHandler:_templates_value": { "@id": "urn:solid-server:auth:password:SwitchAccountRoute" }
+        },
+        {
           "HtmlViewHandler:_templates_key": "@css:templates/identity/email-password/consent.html.ejs",
           "HtmlViewHandler:_templates_value": { "@id": "urn:solid-server:auth:password:ConsentRoute" }
         },

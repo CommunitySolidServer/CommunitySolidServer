@@ -170,13 +170,18 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('can log in again.', async(): Promise<void> => {
-      const url = await state.startSession();
+      const switchAccountUrl = await state.startSession();
 
-      const res = await state.fetchIdp(url);
-      expect(res.status).toBe(200);
+      const switchAccountRes = await state.fetchIdp(switchAccountUrl);
+      expect(switchAccountRes.status).toBe(200);
 
-      // Will receive confirm screen here instead of login screen
-      await state.consent(url);
+      // Will receive switch account screen here instead of login or confirm screen
+      const consentUrl = await state.switchAccount(switchAccountUrl, true);
+
+      const consentRes = await state.fetchIdp(consentUrl);
+      expect(consentRes.status).toBe(200);
+
+      await state.consent(consentUrl);
 
       expect(state.session.info?.webId).toBe(webId);
     });

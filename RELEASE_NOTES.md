@@ -26,6 +26,7 @@ The following changes pertain to the imports in the default configs:
   making them threadsafe.
 - 2 new options have been added for the `/http/server-factory/` imports: `https-websockets.json` and `https-no-websockets.json`,
   which allow starting the server with HTTPS by adding 2 new CLI parameters `httpsKey` and `httpsCert`.
+- IDP includes a "Switch Account" page.
 
 The following changes are relevant for v4 custom configs that replaced certain features.
 - `/app/variables/*` was changed to support the new `YargsCliExtractor` format and `SettingsResolver` rename.
@@ -58,6 +59,7 @@ The following changes are relevant for v4 custom configs that replaced certain f
   - `/ldp/modes/default.json`
 - The `PermissionReader` structure has changed to be more consistent.
   - `/ldp/authorization/*`
+- The configuration at `identity/*` has been updated for the switch account page.
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.

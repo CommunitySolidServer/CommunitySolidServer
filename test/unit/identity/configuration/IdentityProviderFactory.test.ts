@@ -15,6 +15,7 @@ import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 /* eslint-disable @typescript-eslint/naming-convention */
 jest.mock('oidc-provider', (): any => ({
   Provider: jest.fn().mockImplementation((issuer: string, config: Configuration): any => ({ issuer, config })),
+  interactionPolicy: jest.requireActual('oidc-provider').interactionPolicy,
 }));
 
 const routes = {

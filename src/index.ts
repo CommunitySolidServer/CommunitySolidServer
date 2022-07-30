@@ -148,6 +148,7 @@ export * from './identity/interaction/email-password/handler/ForgotPasswordHandl
 export * from './identity/interaction/email-password/handler/LoginHandler';
 export * from './identity/interaction/email-password/handler/RegistrationHandler';
 export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
+export * from './identity/interaction/email-password/handler/SwitchAccountHandler';
 
 // Identity/Interaction/Email-Password/Storage
 export * from './identity/interaction/email-password/storage/AccountStore';

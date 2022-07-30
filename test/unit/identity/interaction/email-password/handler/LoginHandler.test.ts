@@ -76,6 +76,9 @@ describe('A LoginHandler', (): void => {
     expect(accountStore.authenticate).toHaveBeenCalledTimes(1);
     expect(accountStore.authenticate).toHaveBeenLastCalledWith(email, 'password!');
     expect(oidcInteraction.save).toHaveBeenCalledTimes(1);
-    expect(oidcInteraction.result).toEqual({ login: { accountId: webId, remember: false }});
+    expect(oidcInteraction.result).toEqual({
+      login: { accountId: webId, remember: false },
+      hasAskedToSwitchAccount: true,
+    });
   });
 });
