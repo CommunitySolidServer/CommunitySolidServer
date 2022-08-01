@@ -1,12 +1,12 @@
 import fetch from 'cross-fetch';
 import { v4 } from 'uuid';
-import { ConflictHttpError } from '../../dist';
 import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
 import { AccessMode as AM } from '../../src/authorization/permissions/Permissions';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { TEXT_TURTLE } from '../../src/util/ContentTypes';
+import { ConflictHttpError } from '../../src/util/errors/ConflictHttpError';
 import { ensureTrailingSlash, joinUrl } from '../../src/util/PathUtil';
 import { AclHelper } from '../util/AclHelper';
 import { getPort } from '../util/Util';

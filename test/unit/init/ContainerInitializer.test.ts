@@ -1,10 +1,10 @@
-import { ConflictHttpError } from '../../../dist';
 import { ContainerInitializer } from '../../../src/init/ContainerInitializer';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
 import type { Resource, ResourcesGenerator } from '../../../src/pods/generate/ResourcesGenerator';
 import type { KeyValueStorage } from '../../../src/storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
+import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 
 jest.mock('../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { warn: jest.fn(), debug: jest.fn(), info: jest.fn() } as any;
