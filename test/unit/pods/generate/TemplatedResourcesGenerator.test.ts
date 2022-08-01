@@ -1,4 +1,3 @@
-import { DataFactory } from 'n3';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { TemplatedResourcesGenerator } from '../../../../src/pods/generate/TemplatedResourcesGenerator';
 import type {
@@ -9,9 +8,8 @@ import type {
 import { ensureTrailingSlash, trimTrailingSlashes } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { HandlebarsTemplateEngine } from '../../../../src/util/templates/HandlebarsTemplateEngine';
+import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 import { mockFileSystem } from '../../../util/Util';
-
-const { namedNode } = DataFactory;
 
 jest.mock('fs');
 
@@ -48,7 +46,8 @@ async function genToArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
 describe('A TemplatedResourcesGenerator', (): void => {
   const rootFilePath = '/templates/pod';
   // Using handlebars engine since it's smaller than any possible dummy
-  const generator = new TemplatedResourcesGenerator(rootFilePath, new DummyFactory(), new HandlebarsTemplateEngine('http://test.com/'));
+  const metadataStrategy = new SimpleSuffixStrategy('.meta');
+  const generator = new TemplatedResourcesGenerator(rootFilePath, new DummyFactory(), new HandlebarsTemplateEngine('http://test.com/'), metadataStrategy);
   let cache: { data: any };
   const template = '<{{webId}}> a <http://xmlns.com/foaf/0.1/Person>.';
   const location = { path: 'http://test.com/alice/' };
@@ -111,26 +110,28 @@ describe('A TemplatedResourcesGenerator', (): void => {
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     expect(identifiers).toEqual([
       location,
+      { path: `${location.path}.meta` },
       { path: `${location.path}container/` },
       { path: `${location.path}container/template` },
+      { path: `${location.path}container/template.meta` },
     ]);
+
     // Root has the 1 raw metadata triple (with <> changed to its identifier) and content-type
     const rootMetadata = result[0].representation.metadata;
     expect(rootMetadata.identifier.value).toBe(location.path);
-    expect(rootMetadata.quads()).toHaveLength(1);
-    expect(rootMetadata.get(namedNode('pre:has'))?.value).toBe('metadata');
     expect(rootMetadata.contentType).toBeUndefined();
+    expect(await readableToString(result[1].representation.data)).toContain(`<${location.path}> <pre:has> "metadata"`);
 
     // Container has no metadata triples besides content-type
-    const contMetadata = result[1].representation.metadata;
+    const contMetadata = result[2].representation.metadata;
     expect(contMetadata.identifier.value).toBe(`${location.path}container/`);
     expect(contMetadata.quads()).toHaveLength(0);
 
     // Document has the 1 raw metadata triple (with <> changed to its identifier) and content-type
-    const docMetadata = result[2].representation.metadata;
+    const docMetadata = result[3].representation.metadata;
     expect(docMetadata.identifier.value).toBe(`${location.path}container/template`);
-    expect(docMetadata.quads()).toHaveLength(2);
-    expect(docMetadata.get(namedNode('pre:has'))?.value).toBe('metadata');
     expect(docMetadata.contentType).toBe('text/turtle');
+    expect(await readableToString(result[4].representation.data))
+      .toContain(`<${location.path}container/template> <pre:has> "metadata"`);
   });
 });

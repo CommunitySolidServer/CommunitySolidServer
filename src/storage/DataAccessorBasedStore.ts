@@ -206,6 +206,11 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Check if the resource already exists
     const oldMetadata = await this.getSafeNormalizedMetadata(identifier);
+    // We do not allow PUT on an already existing Container
+    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1023371546
+    if (oldMetadata && isContainerIdentifier(identifier)) {
+      throw new ConflictHttpError('Existing containers cannot be updated via PUT.');
+    }
 
     // Preserve the old metadata
     if (oldMetadata && representation.metadata.has(

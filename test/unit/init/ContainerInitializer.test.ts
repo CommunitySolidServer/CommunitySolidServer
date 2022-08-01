@@ -1,3 +1,4 @@
+import { ConflictHttpError } from '../../../dist';
 import { ContainerInitializer } from '../../../src/init/ContainerInitializer';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
@@ -69,5 +70,15 @@ describe('A ContainerInitializer', (): void => {
     expect(store.setRepresentation).toHaveBeenCalledTimes(2);
     expect(logger.warn).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenLastCalledWith('Failed to create resource /.acl: bad input');
+  });
+
+  it('does not log warnings when container resource creation fails.', async(): Promise<void> => {
+    store.setRepresentation.mockRejectedValueOnce(new ConflictHttpError('bad input'));
+    generatorData = [
+      { identifier: { path: 'http://test.com/foo/' }, representation: '/container/' as any },
+    ];
+    await expect(initializer.handle()).resolves.toBeUndefined();
+    expect(generator.generate).toHaveBeenCalledTimes(1);
+    expect(store.setRepresentation).toHaveBeenCalledTimes(1);
   });
 });

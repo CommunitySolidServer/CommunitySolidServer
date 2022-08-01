@@ -654,6 +654,13 @@ describe('A DataAccessorBasedStore', (): void => {
           quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')) ],
       );
     });
+
+    it('errors when trying to set a container representation when it already exists.', async(): Promise<void> => {
+      const resourceID = { path: `${root}container/` };
+      accessor.data[resourceID.path] = representation;
+
+      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(ConflictHttpError);
+    });
   });
 
   describe('modifying a Representation', (): void => {

@@ -1,3 +1,4 @@
+import { Util } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
@@ -21,7 +22,7 @@ export class AuxiliaryLinkMetadataWriter extends MetadataWriter {
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
     const identifier = { path: input.metadata.identifier.value };
-    if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
+    if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) && !Util.isBlankNode(input.metadata.identifier)) {
       const auxiliaryIdentifier = this.specificStrategy.getAuxiliaryIdentifier(identifier);
       addHeader(input.response, 'Link', `<${auxiliaryIdentifier.path}>; rel="${this.relationType}"`);
     }

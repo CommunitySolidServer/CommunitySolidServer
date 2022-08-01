@@ -1,5 +1,6 @@
 import fetch from 'cross-fetch';
 import { v4 } from 'uuid';
+import { ConflictHttpError } from '../../dist';
 import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
 import { AccessMode as AM } from '../../src/authorization/permissions/Permissions';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
@@ -192,7 +193,13 @@ describe.each(stores)('A request on a server with %s', (name, { storeConfig, tea
       const parent = targetingContainer && method !== 'POST' ? root : container;
 
       // Create C/ and set up permissions
-      await store.setRepresentation({ path: parent }, new BasicRepresentation([], TEXT_TURTLE));
+      try {
+        await store.setRepresentation({ path: parent }, new BasicRepresentation([], TEXT_TURTLE));
+      } catch (error: unknown) {
+        if (!ConflictHttpError.isInstance(error)) {
+          throw error;
+        }
+      }
 
       await aclHelper.setSimpleAcl(parent, [
         // In case we are targeting C/ we assume everything is allowed by the parent
@@ -214,7 +221,13 @@ describe.each(stores)('A request on a server with %s', (name, { storeConfig, tea
     });
 
     it('target exists.', async(): Promise<void> => {
-      await store.setRepresentation({ path: targetUrl }, new BasicRepresentation(DEFAULT_BODY, TEXT_TURTLE));
+      try {
+        await store.setRepresentation({ path: targetUrl }, new BasicRepresentation(DEFAULT_BODY, TEXT_TURTLE));
+      } catch (error: unknown) {
+        if (!ConflictHttpError.isInstance(error)) {
+          throw error;
+        }
+      }
       const response = await fetch(targetUrl, init);
       expect(response.status).toBe(existsCode);
     });

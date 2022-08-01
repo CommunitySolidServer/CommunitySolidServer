@@ -598,7 +598,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       headers: { 'content-type': 'text/turtle' },
       body: '<a> <b> <c>.',
     });
-    expect(putResponse.status).toBe(409);
+    expect(putResponse.status).toBe(405);
 
     // PATCH
     const patchResponse = await fetch(documentMetaURL, {
