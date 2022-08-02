@@ -6,7 +6,6 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { HashMap } from '../../util/map/HashMap';
 import type { FilterPattern } from '../../util/QuadUtil';
 import type { RepresentationPatcherInput } from './RepresentationPatcher';
 import { RepresentationPatcher } from './RepresentationPatcher';
@@ -46,41 +45,41 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
     }
     const store = input.representation.dataset;
 
-    const immutablePatternMap = new HashMap<FilterPattern, Quad[]>(
-      ({ subject, predicate, object }: FilterPattern): string => {
-        predicate = predicate ?? namedNode('predicate');
-        object = object ?? namedNode('object');
-        return subject!.value + predicate.value + object.value;
-      },
-    );
+    const immutablePatternMap = new Map<FilterPattern, Quad[]>();
+    const baseSubject = namedNode(this.metadataStrategy.getSubjectIdentifier(input.identifier).path);
+
     for (const immutablePattern of this.immutablePatterns) {
       const { predicate, object } = immutablePattern;
-      const subject = immutablePattern.subject ??
-          namedNode(this.metadataStrategy.getSubjectIdentifier(input.identifier).path);
+      const subject = immutablePattern.subject ?? baseSubject;
       const matches = store.getQuads(subject, predicate, object, null);
       immutablePatternMap.set({ subject, predicate, object }, matches);
     }
 
     const patchedRepresentation = await this.patcher.handle(input);
 
-    immutablePatternMap.forEach((originalQuads: Quad[], { subject, predicate, object }: FilterPattern): void => {
+    for (const [ filterPattern, originalQuads ] of immutablePatternMap.entries()) {
+      const { subject, predicate, object } = filterPattern;
       const quads = patchedRepresentation.dataset.getQuads(subject, predicate, object, null);
-      predicate = predicate ?? namedNode('');
-      object = object ?? namedNode('');
+
       if (quads.length !== originalQuads.length) {
+        const predicateString = predicate ? `<${predicate.value}>` : '?p';
+        const objectString = object ? `<${object.value}>` : '?o';
+
         throw new ConflictHttpError(
-          `Not allowed to edit metadata of the form "<${subject!.value}> <${predicate.value}> <${object.value}>.".`,
+          `Not allowed to edit metadata of the form "<${subject!.value}> ${predicateString} ${objectString}.".`,
         );
       }
-
       const changed = quads.some((inputQuad): boolean => !originalQuads
         .some((patchedQuad): boolean => inputQuad.equals(patchedQuad)));
       if (changed) {
+        const predicateString = predicate ? `<${predicate.value}>` : '?p';
+        const objectString = object ? `<${object.value}>` : '?o';
+
         throw new ConflictHttpError(
-          `Not allowed to edit metadata of the form "<${subject!.value}> <${predicate.value}> <${object.value}>.".`,
+          `Not allowed to edit metadata of the form "<${subject!.value}> ${predicateString} ${objectString}.".`,
         );
       }
-    });
+    }
 
     return input.representation;
   }

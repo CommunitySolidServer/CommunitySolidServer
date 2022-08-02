@@ -37,7 +37,7 @@ export class QuadToRdfConverter extends BaseTypedRepresentationConverter {
     quads.data = transformSafely<Quad>(quads.data, {
       objectMode: true,
       transform(quad: Quad): void {
-        if (quad.graph.value === SOLID_META.terms.ResponseMetadata.value) {
+        if (quad.graph.equals(SOLID_META.terms.ResponseMetadata)) {
           this.push(DataFactory.quad(quad.subject, quad.predicate, quad.object));
         } else {
           this.push(quad);

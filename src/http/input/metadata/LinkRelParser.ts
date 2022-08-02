@@ -38,9 +38,9 @@ export class LinkRelObject {
   public readonly filter: string[];
 
   /**
-   * @param value - The value that will be used as predicate
-   * @param ephemeral - (Optional) Indicates whether it will be stored by the server
-   * @param filter - (Optional) Contains the only values that can be used with the given predicate
+   * @param value - The value that will be used as predicate.
+   * @param ephemeral - (Optional) Indicates whether it will be stored by the server.
+   * @param filter - (Optional) Contains the only values that can be used with the given predicate.
    */
   public constructor(value: string, ephemeral?: boolean, filter?: string[]) {
     this.value = namedNode(value);
@@ -50,17 +50,17 @@ export class LinkRelObject {
 
   /**
    * Calculates whether the object can be added to the metadata
-   * @param object - The link target
+   * @param object - The link target.
    * @returns a boolean to indicate whether it can be added to the metadata or not
    */
   private objectAllowed(object: string): boolean {
-    return this.filter.length === 0 || this.filter.includes(object);
+    return this.filter.includes(object);
   }
 
   /**
    * Adds the object to the metadata when it is allowed
-   * @param object - The link target
-   * @param metadata - Metadata of the resource
+   * @param object - The link target.
+   * @param metadata - Metadata of the resource.
    * @param logger - Logger
    */
   public addToMetadata(object: string, metadata: RepresentationMetadata, logger: Logger): void {
@@ -68,7 +68,7 @@ export class LinkRelObject {
       if (this.ephemeral) {
         metadata.add(this.value, namedNode(object), SOLID_META.terms.ResponseMetadata);
         logger.debug(`"<${metadata.identifier.value}> <${this.value.value}> <${object}>." ` +
-`will not be stored permanent into the metadata.`);
+`will not be stored permanently in the metadata.`);
       } else {
         metadata.add(this.value, namedNode(object));
       }

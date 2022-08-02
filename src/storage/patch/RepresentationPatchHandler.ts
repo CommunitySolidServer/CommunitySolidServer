@@ -30,8 +30,7 @@ export class RepresentationPatchHandler extends PatchHandler {
     // Get the representation from the store
     let representation: Representation | undefined;
     try {
-      // Prevent internal types from being converted
-      // because converting to an actual content type would result in a materialized ResponseMetadata graph
+      // Internal types are converted unless specified otherwise like we do here
       representation = await source.getRepresentation(identifier, { type: { '*/*': 1, [INTERNAL_ALL]: 1 }});
     } catch (error: unknown) {
       // Solid, §5.1: "When a successful PUT or PATCH request creates a resource,
@@ -49,7 +48,7 @@ export class RepresentationPatchHandler extends PatchHandler {
     // Solid, §5.3: "Servers MUST NOT allow HTTP PUT or PATCH on a container to update its containment triples;
     // if the server receives such a request, it MUST respond with a 409 status code."
     if (isContainerIdentifier(identifier)) {
-      throw new ConflictHttpError('Not allowed to execute PATCH request on containers.');
+      throw new ConflictHttpError('Not allowed to execute PATCH requests on containers.');
     }
 
     // Write it back to the store

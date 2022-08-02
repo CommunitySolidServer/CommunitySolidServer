@@ -216,7 +216,6 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (oldMetadata && representation.metadata.has(
       SOLID_META.terms.preserve,
       namedNode(this.metadataStrategy.getAuxiliaryIdentifier(identifier).path),
-      SOLID_META.terms.ResponseMetadata,
     )) {
       // Preserve all the quads from the old metadata apart from the ContentType
       const quads = oldMetadata.quads();
@@ -403,7 +402,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Write the given metadata resource to the DataAccessor.
-   * @param identifier - Identifier of the resource.
+   * @param identifier - Identifier of the metadata.
    * @param representation - Corresponding Representation.
    *
    * @returns Identifiers of resources that were possibly modified.
@@ -438,7 +437,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     metadata.removeAll(CONTENT_TYPE_TERM);
     await this.accessor.writeMetadata(subjectIdentifier, metadata);
 
-    this.addActivityMetadata(changes, identifier, AS.terms.Update);
+    this.addActivityMetadata(changes, subjectIdentifier, AS.terms.Update);
     return changes;
   }
 

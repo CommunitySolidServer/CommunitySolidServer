@@ -27,10 +27,9 @@ export class RdfPatcher extends RepresentationPatcher<Representation> {
 
   public async canHandle({ identifier, patch, representation }: RepresentationPatcherInput<Representation>):
   Promise<void> {
-    // Wat als representation undefined is?
-    const newRepresentation: RdfDatasetRepresentation = representation as RdfDatasetRepresentation;
+    let newRepresentation: RdfDatasetRepresentation | undefined;
     if (representation) {
-      newRepresentation.dataset = new Store();
+      newRepresentation = { ...representation as RdfDatasetRepresentation, dataset: new Store() };
     }
     await this.patcher.canHandle({ identifier, patch, representation: newRepresentation });
   }
@@ -50,8 +49,7 @@ export class RdfPatcher extends RepresentationPatcher<Representation> {
 
     if (representation) {
       inputRepresentation.dataset = await readableToQuads(representation.data);
-      // eslint-disable-next-line prefer-destructuring
-      metadata = representation.metadata;
+      ({ metadata } = representation);
     } else {
       inputRepresentation.dataset = new Store();
     }
@@ -64,6 +62,7 @@ export class RdfPatcher extends RepresentationPatcher<Representation> {
     });
 
     // Return the n3 store to the representation
+    // This casting is necessary due to N3.js typings not being precise enough
     const data = patchedRepresentation.dataset.match() as unknown as Readable;
     return new BasicRepresentation(data, metadata, false);
   }

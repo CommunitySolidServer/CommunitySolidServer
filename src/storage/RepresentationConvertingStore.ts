@@ -45,9 +45,9 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
 
   public async addResource(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ChangeMap> {
-    // We can potentially run into problems here if we convert a turtle document where the base IRI is required,
-    // since we don't know the resource IRI yet at this point.
     if (representation.metadata.contentType) {
+      // We can potentially run into problems here if we convert a turtle document where the base IRI is required,
+      // since we don't know the resource IRI yet at this point.
       representation = await this.inConverter.handleSafe(
         { identifier, representation, preferences: this.inPreferences },
       );
@@ -57,7 +57,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ChangeMap> {
-    // When it is a metadata resource, convert it to Internal Quads
+    // When it is a metadata resource, convert it to Quads as those are expected in the later stores
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       representation = await this.inConverter.handleSafe(
         { identifier, representation, preferences: { type: { [INTERNAL_QUADS]: 1 }}},
