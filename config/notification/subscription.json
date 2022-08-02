@@ -8,7 +8,7 @@
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
       "args_allowedMethods": [ "POST" ],
-      "args_allowedPathNames": [ "^/subscribe" ],
+      "args_allowedPathNames": [ "^/subscription" ],
       "args_handler": { "@id": "urn:solid-server:default:NotificationSubscriptionParsingHandler" }
     },
     {
@@ -31,6 +31,8 @@
       "subscriptionHandlers": [
         { "@id": "urn:solid-server:default:WebHookSubscription2021Handler"}
       ],
+      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "ignoreFolders": [ "^\\.internal.*" ],
       "source": { "@id": "urn:solid-server:default:ResourceStore"}
     },
     {
