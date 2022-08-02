@@ -16,8 +16,7 @@
     {
       "comment": [
         "Configure routing to send all requests containing /file/ to the file store, containing /memory/ to the memory store and /sparql/ to the sparql endpoint store.",
-        "The root .acl file will be stored in the sparql endpoint store.",
-        "The root .meta file will be stored in the sparql endpoint store."
+        "The root ACL and metadata resources will be stored in the sparql endpoint store."
       ],
       "@id": "urn:solid-server:default:RouterRule",
       "@type": "RegexRouterRule",
@@ -25,11 +24,7 @@
       "rules": [
         {
           "@type": "RegexRule",
-          "regex": "^/(\\.acl)?$",
-          "store": { "@id": "urn:solid-server:default:SparqlResourceStore" }
-        },        {
-          "@type": "RegexRule",
-          "regex": "^/(\\.meta)?$",
+          "regex": "^/(\\.acl|\\.meta)?$",
           "store": { "@id": "urn:solid-server:default:SparqlResourceStore" }
         },
         {

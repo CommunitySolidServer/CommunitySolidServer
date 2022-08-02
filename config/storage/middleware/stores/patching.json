@@ -19,18 +19,18 @@
               "defaultType": "text/turtle"
             },
             {
-              "comment": "Converts the input stream into an RDF/JS Dataset.",
-              "@id": "urn:solid-server:default:RdfPatcher",
-              "@type": "RdfPatcher",
-              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDFStore" }
-            },
-            {
               "@type": "StaticThrowHandler",
               "error": { "@type": "UnsupportedMediaTypeHttpError" }
             }
           ]
         }
       }
+    },
+    {
+      "comment": "Converts the input stream into an RDF/JS Dataset.",
+      "@id": "urn:solid-server:default:RdfPatcher",
+      "@type": "RdfPatcher",
+      "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDFStore" }
     },
     {
       "@id": "urn:solid-server:default:PatchHandler_RDFStore",
@@ -57,11 +57,6 @@
           "comment": "Resource containment is managed by LDP.",
           "@type": "FilterPattern",
           "predicate": "http://www.w3.org/ns/ldp#contains"
-        },
-        {
-          "comment": "The ACL resource is managed by the server.",
-          "@type": "FilterPattern",
-          "predicate": "http://www.w3.org/ns/auth/acl#accessControl"
         },
         {
           "comment": "The size of the resource is managed by the server.",

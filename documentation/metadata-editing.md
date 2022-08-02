@@ -39,7 +39,8 @@ The CSS will throw an error (409 `ConflictHttpError`) when trying to change this
 ### Preserving metadata
 
 `PUT` requests on a resource will reset the description resource. 
-There is however a way to keep the contents of description resource prior to the `PUT` request: adding a preserve link header.
+There is however a way to keep the contents of description resource prior to the `PUT` request:
+adding the HTTP `Link` header targeting the description resource with `rel="preserve"`.
 
 When the resource URL is `http://localhost:3000/foobar`, preserving its description resource when updating its contents can be achieved like in the following example:
 
@@ -49,6 +50,7 @@ curl -X PUT 'http://localhost:3000/foobar' \
 -H 'Link: <http://localhost:3000/foobar.meta>;rel="preserve"' \
 -d "<ex:s> <ex:p> <ex:o>." 
 ```
+
 ## Impact on creating containers
 
 When creating a container the input body is ignored
@@ -85,7 +87,7 @@ we create a patch for adding the inbox in the description of the resource.
 curl -X PATCH 'http://localhost:3000/foo/.meta' \
 -H 'Content-Type: text/n3' \
 --data-raw '@prefix solid: <http://www.w3.org/ns/solid/terms#>.
-`<> a solid:InsertDeletePatch;`
+<> a solid:InsertDeletePatch;
 solid:inserts { <http://localhost:3000/foo/> <http://www.w3.org/ns/ldp#inbox> <http://localhost:3000/inbox/>. }.'
 ```
 
