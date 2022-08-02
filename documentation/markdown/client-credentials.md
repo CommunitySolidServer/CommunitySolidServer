@@ -2,7 +2,7 @@
 
 One potential issue for scripts and other applications is that it requires user interaction to log in and authenticate.
 The CSS offers an alternative solution for such cases by making use of Client Credentials.
-Once you have created an account as described in the [Identity Provider section](dependency-injection.md),
+Once you have created an account as described in the [Identity Provider section](identity-provider.md),
 users can request a token that apps can use to authenticate without user input.
 
 All requests to the client credentials API currently require you
