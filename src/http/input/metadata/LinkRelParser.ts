@@ -35,26 +35,26 @@ export class LinkRelParser extends MetadataParser {
 export class LinkRelObject {
   public readonly value: NamedNode;
   public readonly ephemeral: boolean;
-  public readonly filter: string[];
+  public readonly allowList: string[] | undefined;
 
   /**
-   * @param value - The value that will be used as predicate.
+   * @param value - The value corresponding to the `rel` value that will be used as predicate in the metadata.
    * @param ephemeral - (Optional) Indicates whether it will be stored by the server.
-   * @param filter - (Optional) Contains the only values that can be used with the given predicate.
+   * @param allowList - (Optional) Contains the objects that are allowed to be used with the given predicate.
    */
-  public constructor(value: string, ephemeral?: boolean, filter?: string[]) {
+  public constructor(value: string, ephemeral?: boolean, allowList?: string[]) {
     this.value = namedNode(value);
     this.ephemeral = ephemeral ?? false;
-    this.filter = filter ?? [];
+    this.allowList = allowList;
   }
 
   /**
-   * Calculates whether the object can be added to the metadata
+   * Checks whether the object can be added to the metadata
    * @param object - The link target.
    * @returns a boolean to indicate whether it can be added to the metadata or not
    */
   private objectAllowed(object: string): boolean {
-    return this.filter.includes(object);
+    return this.allowList?.includes(object) ?? true;
   }
 
   /**

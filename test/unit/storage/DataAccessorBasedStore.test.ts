@@ -583,9 +583,7 @@ describe('A DataAccessorBasedStore', (): void => {
       ) ], resourceID);
 
       const result = await store.setRepresentation(metaResourceID, metaRepresentation);
-      const generatedMetaID = [ ...result.keys() ].find((id): boolean => id.path !== resourceID.path);
-      expect(generatedMetaID).toBeDefined();
-      expect(generatedMetaID).toEqual(metaResourceID);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.Activity)).toEqual(AS.terms.Update);
       expect(accessor.data[resourceID.path].metadata.quads()).toBeRdfIsomorphic([
         quad(
           namedNode(resourceID.path),
@@ -608,9 +606,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const metaRepresentation = new BasicRepresentation(guardedStreamFrom(quads), resourceID, INTERNAL_QUADS);
 
       const result = await store.setRepresentation(metaResourceID, metaRepresentation);
-      const generatedMetaID = [ ...result.keys() ].find((id): boolean => id.path !== resourceID.path);
-      expect(generatedMetaID).toBeDefined();
-      expect(generatedMetaID).toEqual(metaResourceID);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.Activity)).toEqual(AS.terms.Update);
       expect(accessor.data[resourceID.path].metadata.quads()).toBeRdfIsomorphic(quads);
     });
 
