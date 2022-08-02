@@ -1,4 +1,5 @@
 <h1>Authorize</h1>
+<p id="webId">Your WebID: </p>
 <p>The following client wants to do authorized requests in your name:</p>
 <ul id="clientInfo">
 </ul>
@@ -16,7 +17,28 @@
   <p class="actions"><button autofocus type="submit" name="submit">Consent</button></p>
 </form>
 
+<button onclick="logOut()">Log out</button>
+
 <script>
+  async function logOut() {
+    const res = await fetch('', {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify({ logOut: true }),
+    });
+    const json = await res.json();
+    location.href = json.location;
+  }
+</script>
+
+<script>
+  function addWebId(webId) {
+    const p = document.getElementById('webId');
+    const strong = document.createElement('strong')
+    strong.appendChild(document.createTextNode(webId));
+    p.appendChild(strong);
+  }
+
   const clientInfo = document.getElementById('clientInfo');
   function addClientInfo(text, value) {
     if (value) {
@@ -31,8 +53,9 @@
 
   // Update the client information
   (async() => {
-    const res = await fetch('', { headers: { accept: 'application/json' } })
-    const { client } = await res.json();
+    const res = await fetch('', { headers: { accept: 'application/json' } });
+    const { webId, client } = await res.json();
+    addWebId(webId);
     addClientInfo('Name', client.client_name);
     addClientInfo('ID', client.client_id);
   })()
