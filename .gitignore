@@ -8,3 +8,4 @@
 /node_modules
 /test/tmp
 tsconfig.tsbuildinfo
+.DS_Store

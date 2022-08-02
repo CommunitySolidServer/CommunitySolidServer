@@ -23,6 +23,8 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
   protected readonly logger = getLoggerFor(this);
   protected readonly baseRequestURI: string;
   protected readonly rootFilepath: string;
+  // Extension to use as a fallback when the media type is not supported (could be made configurable).
+  protected readonly unknownMediaTypeExtension = 'unknown';
 
   public constructor(base: string, rootFilepath: string) {
     this.baseRequestURI = trimTrailingSlashes(base);
@@ -85,7 +87,10 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
    */
   protected async mapUrlToDocumentPath(identifier: ResourceIdentifier, filePath: string, contentType?: string):
   Promise<ResourceLink> {
-    contentType = await this.getContentTypeFromUrl(identifier, contentType);
+    // Don't try to get content-type from URL when the file path refers to a document with unknown media type.
+    if (!filePath.endsWith(`.${this.unknownMediaTypeExtension}`)) {
+      contentType = await this.getContentTypeFromUrl(identifier, contentType);
+    }
     this.logger.debug(`The path for ${identifier.path} is ${filePath}`);
     return { identifier, filePath, contentType, isMetadata: this.isMetadataPath(filePath) };
   }

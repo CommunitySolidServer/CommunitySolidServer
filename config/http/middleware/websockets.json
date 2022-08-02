@@ -1,9 +1,9 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/http/middleware/handlers/constant-headers.json",
-    "files-scs:config/http/middleware/handlers/cors.json",
-    "files-scs:config/http/middleware/handlers/updates-via.json"
+    "css:config/http/middleware/handlers/constant-headers.json",
+    "css:config/http/middleware/handlers/cors.json",
+    "css:config/http/middleware/handlers/updates-via.json"
   ],
   "@graph": [
     {

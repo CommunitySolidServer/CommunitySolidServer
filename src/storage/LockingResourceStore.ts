@@ -10,7 +10,7 @@ import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteL
 import { endOfStream } from '../util/StreamUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './Conditions';
-import type { ResourceStore } from './ResourceStore';
+import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 /**
  * Store that for every call acquires a lock before executing it on the requested resource,
@@ -46,27 +46,27 @@ export class LockingResourceStore implements AtomicResourceStore {
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
+    conditions?: Conditions): Promise<ChangeMap> {
     return this.locks.withWriteLock(this.getLockIdentifier(container),
-      async(): Promise<ResourceIdentifier> => this.source.addResource(container, representation, conditions));
+      async(): Promise<ChangeMap> => this.source.addResource(container, representation, conditions));
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ResourceIdentifier[]> => this.source.setRepresentation(identifier, representation, conditions));
+      async(): Promise<ChangeMap> => this.source.setRepresentation(identifier, representation, conditions));
   }
 
   public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ResourceIdentifier[]> => this.source.deleteResource(identifier, conditions));
+      async(): Promise<ChangeMap> => this.source.deleteResource(identifier, conditions));
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ResourceIdentifier[]> => this.source.modifyResource(identifier, patch, conditions));
+      async(): Promise<ChangeMap> => this.source.modifyResource(identifier, patch, conditions));
   }
 
   /**

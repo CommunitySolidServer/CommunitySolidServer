@@ -5,12 +5,12 @@ import type { App } from '../../src';
 import type { RedisLocker } from '../../src/util/locking/RedisLocker';
 import type { RedisReadWriteLock, RedisResourceLock } from '../../src/util/locking/scripts/RedisLuaScripts';
 import { REDIS_LUA_SCRIPTS } from '../../src/util/locking/scripts/RedisLuaScripts';
-import { describeIf, flushPromises, getPort } from '../util/Util';
+import { describeIf, getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 /**
  * Test the general functionality of the server using a RedisLocker with Read-Write strategy.
  */
-describeIf('docker', 'A server with a RedisLocker', (): void => {
+describeIf('docker')('A server with a RedisLocker', (): void => {
   const port = getPort('RedisLocker');
   const baseUrl = `http://localhost:${port}/`;
   let app: App;
@@ -190,65 +190,47 @@ describeIf('docker', 'A server with a RedisLocker', (): void => {
 
     it('can acquire the same readLock simultaneously.', async(): Promise<void> => {
       let res = '';
-      const emitter = new EventEmitter();
-      const unlocks = [ 0, 1, 2 ].map((num): Promise<any> =>
-        new Promise<any>((resolve): any => emitter.on(`release${num}`, resolve)));
+      let countdown = 3;
+      const releaseSignal = new EventEmitter();
+      releaseSignal.on('countdown', (): void => {
+        countdown -= 1;
+        // Start releasing locks after 3 inits of the promises below
+        if (countdown === 0) {
+          [ 1, 0, 2 ].forEach((num): unknown => releaseSignal.emit(`release${num}`));
+        }
+      });
       const promises = [ 0, 1, 2 ].map((num): Promise<any> =>
-        locker.withReadLock(identifier, async(): Promise<number> => {
+        locker.withReadLock(identifier, async(): Promise<void> => {
           res += `l${num}`;
-          await unlocks[num];
+          await new Promise<void>((resolve): any => {
+            releaseSignal.on(`release${num}`, resolve);
+            releaseSignal.emit('countdown');
+          });
           res += `r${num}`;
-          return num;
         }));
 
-      await flushPromises();
-
-      emitter.emit('release1');
-      await flushPromises();
-      await expect(promises[1]).resolves.toBe(1);
-      emitter.emit('release0');
-      await flushPromises();
-      await expect(promises[0]).resolves.toBe(0);
-      emitter.emit('release2');
-      await flushPromises();
-      await expect(promises[2]).resolves.toBe(2);
-
-      expect(res).toContain('l0l1l2');
-      expect(res).toContain('r1r0r2');
+      await Promise.all(promises);
+      expect(res).toBe('l0l1l2r1r0r2');
     });
 
     it('cannot acquire the same writeLock simultaneously.', async(): Promise<void> => {
       let res = '';
-      const emitter = new EventEmitter();
-      const unlocks = [ 0, 1, 2 ].map((num): Promise<any> =>
-        new Promise<any>((resolve): any => emitter.on(`release${num}`, resolve)));
-      const promises = [ 0, 1, 2 ].map((num): Promise<any> =>
-        locker.withWriteLock(identifier, async(): Promise<number> => num));
 
-      const l1 = promises[1].then(async(): Promise<void> => {
-        res += 'l1';
-        await unlocks[1];
-        res += 'r1';
-      });
-      const l0 = promises[0].then(async(): Promise<void> => {
+      await expect(locker.withWriteLock(identifier, async(): Promise<void> => {
         res += 'l0';
-        await unlocks[0];
+        await expect(locker.withWriteLock(identifier, (): void => {
+          res += 'l1';
+          res += 'r1';
+        })).rejects.toThrow();
         res += 'r0';
-      });
-      const l2 = promises[2].then(async(): Promise<void> => {
+      })).resolves.toBeUndefined();
+
+      await expect(locker.withWriteLock(identifier, async(): Promise<void> => {
         res += 'l2';
-        await unlocks[2];
         res += 'r2';
-      });
+      })).resolves.toBeUndefined();
 
-      emitter.emit('release1');
-      emitter.emit('release0');
-      emitter.emit('release2');
-      await Promise.all([ l0, l1, l2 ]);
-
-      expect(res).toContain('l0r0');
-      expect(res).toContain('l1r1');
-      expect(res).toContain('l2r2');
+      expect(res).toBe('l0r0l2r2');
     });
   });
 
@@ -399,4 +381,3 @@ describeIf('docker', 'A server with a RedisLocker', (): void => {
     });
   });
 });
-

@@ -70,8 +70,20 @@ const store = {
 const redis: jest.Mocked<Redis & RedisResourceLock & RedisReadWriteLock> = {
   defineCommand: jest.fn(),
   quit: jest.fn(),
-  keys: jest.fn().mockResolvedValue([]),
-  del: jest.fn(),
+  keys: jest.fn().mockImplementation(async(pattern: string): Promise<string[]> =>
+    Object.keys(store.internal)
+      .filter((value: string): boolean => new RegExp(pattern, 'u').test(value))),
+  del: jest.fn().mockImplementation(async(...keys: string[]): Promise<number> => {
+    let deletedEntries = 0;
+    for (const key of keys) {
+      if (typeof store.internal[key] !== 'undefined') {
+        deletedEntries += 1;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete store.internal[key];
+    }
+    return deletedEntries;
+  }),
   acquireReadLock: jest.fn().mockImplementation(async(key: string): Promise<number> =>
     store.acquireReadLock(key)),
   acquireWriteLock: jest.fn().mockImplementation(async(key: string): Promise<number | null | 'OK'> =>
@@ -407,29 +419,14 @@ describe('A RedisLocker', (): void => {
     });
 
     describe('finalize()', (): void => {
-      it('should quit when there are no more keys when finalize() is called.', async(): Promise<void> => {
-      // This works since the Redis is simply a mock and quit should have cleared the internal store
-        await locker.withWriteLock(resource1, async(): Promise<any> => {
+      it('should call quit and clear Read-Write locks when finalize() is called.', async(): Promise<void> => {
+        const promise = locker.withWriteLock(resource1, async(): Promise<any> => {
           await locker.finalize();
+          expect(Object.keys(store.internal)).toHaveLength(0);
           expect(redis.quit).toHaveBeenCalledTimes(1);
         });
-      });
-      it('should clear all lock keys when finalize() is called.', async(): Promise<void> => {
-        redis.keys.mockResolvedValueOnce([ '__L__k1', '__L__k2' ]);
-        // This works since the Redis is simply a mock and quit should have cleared the internal store
-        await locker.withWriteLock(resource1, async(): Promise<any> => {
-          await locker.finalize();
-          expect(redis.quit).toHaveBeenCalledTimes(1);
-        });
-      });
-
-      it('should clear all rw keys when finalize() is called.', async(): Promise<void> => {
-        redis.keys.mockResolvedValueOnce([ '__RW__k1', '__RW__k2' ]);
-        // This works since the Redis is simply a mock and quit should have cleared the internal store
-        await locker.withWriteLock(resource1, async(): Promise<any> => {
-          await locker.finalize();
-          expect(redis.quit).toHaveBeenCalledTimes(1);
-        });
+        // Auto-release of Read-Write lock should result in an exception, as the Locker has been finalized.
+        await expect(promise).rejects.toThrow(/Invalid state/u);
       });
     });
   });
@@ -521,17 +518,27 @@ describe('A RedisLocker', (): void => {
       });
     });
 
+    describe('initialize()', (): void => {
+      it('should clear all locks when initialize() is called.', async(): Promise<void> => {
+        await locker.acquire({ path: 'path1' });
+        await locker.acquire({ path: 'path2' });
+        await locker.initialize();
+        expect(Object.keys(store.internal)).toHaveLength(0);
+      });
+    });
+
     describe('finalize()', (): void => {
       it('should clear all locks (even when empty) when finalize() is called.', async(): Promise<void> => {
         await locker.finalize();
+        expect(Object.keys(store.internal)).toHaveLength(0);
         expect(redis.quit).toHaveBeenCalledTimes(1);
       });
 
       it('should clear all locks when finalize() is called.', async(): Promise<void> => {
-        redis.keys
-          .mockResolvedValueOnce([ '__L__k1', '__L__k2' ])
-          .mockResolvedValueOnce([ '__L__k1', '__L__k2' ]);
+        await locker.acquire({ path: 'path1' });
+        await locker.acquire({ path: 'path2' });
         await locker.finalize();
+        expect(Object.keys(store.internal)).toHaveLength(0);
         expect(redis.quit).toHaveBeenCalledTimes(1);
       });
     });

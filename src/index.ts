@@ -15,10 +15,12 @@ export * from './authorization/access/AgentClassAccessChecker';
 export * from './authorization/access/AgentGroupAccessChecker';
 
 // Authorization/Permissions
-export * from './authorization/permissions/Permissions';
+export * from './authorization/permissions/AclPermission';
+export * from './authorization/permissions/IntermediateCreateExtractor';
 export * from './authorization/permissions/ModesExtractor';
 export * from './authorization/permissions/MethodModesExtractor';
 export * from './authorization/permissions/N3PatchModesExtractor';
+export * from './authorization/permissions/Permissions';
 export * from './authorization/permissions/SparqlUpdateModesExtractor';
 
 // Authorization
@@ -26,10 +28,12 @@ export * from './authorization/AllStaticReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
 export * from './authorization/OwnerPermissionReader';
+export * from './authorization/ParentContainerReader';
 export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
 export * from './authorization/UnionPermissionReader';
+export * from './authorization/WebAclAuxiliaryReader';
 export * from './authorization/WebAclReader';
 
 // HTTP/Auxiliary
@@ -96,6 +100,7 @@ export * from './http/output/error/SafeErrorHandler';
 // HTTP/Output/Metadata
 export * from './http/output/metadata/AllowAcceptHeaderWriter';
 export * from './http/output/metadata/ConstantMetadataWriter';
+export * from './http/output/metadata/ContentTypeMetadataWriter';
 export * from './http/output/metadata/LinkRelMetadataWriter';
 export * from './http/output/metadata/MappedMetadataWriter';
 export * from './http/output/metadata/MetadataWriter';
@@ -187,9 +192,15 @@ export * from './identity/storage/WebIdAdapterFactory';
 export * from './identity/IdentityProviderHttpHandler';
 export * from './identity/OidcHttpHandler';
 
+// Init/Cluster
+export * from './init/cluster/ClusterManager';
+export * from './init/cluster/SingleThreaded';
+export * from './init/cluster/WorkerManager';
+
 // Init/Final
 export * from './init/final/Finalizable';
-export * from './init/final/ParallelFinalizer';
+export * from './init/final/FinalizableHandler';
+export * from './init/final/Finalizer';
 
 // Init/Setup
 export * from './init/setup/SetupHandler';
@@ -203,11 +214,11 @@ export * from './init/cli/YargsCliExtractor';
 export * from './init/variables/extractors/KeyExtractor';
 export * from './init/variables/extractors/AssetPathExtractor';
 export * from './init/variables/extractors/BaseUrlExtractor';
-export * from './init/variables/extractors/SettingsExtractor';
+export * from './init/variables/extractors/ShorthandExtractor';
 
 // Init/Variables
-export * from './init/variables/CombinedSettingsResolver';
-export * from './init/variables/SettingsResolver';
+export * from './init/variables/CombinedShorthandResolver';
+export * from './init/variables/ShorthandResolver';
 
 // Init
 export * from './init/App';
@@ -216,11 +227,13 @@ export * from './init/BaseUrlVerifier';
 export * from './init/CliResolver';
 export * from './init/ConfigPodInitializer';
 export * from './init/ContainerInitializer';
+export * from './init/Initializable';
+export * from './init/InitializableHandler';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
+export * from './init/ModuleVersionVerifier';
 export * from './init/SeededPodInitializer';
 export * from './init/ServerInitializer';
-export * from './init/ModuleVersionVerifier';
 
 // Logging
 export * from './logging/LazyLoggerFactory';
@@ -269,7 +282,6 @@ export * from './server/HttpResponse';
 export * from './server/HttpServerFactory';
 export * from './server/OperationHttpHandler';
 export * from './server/ParsingHttpHandler';
-export * from './server/RedirectingHttpHandler';
 export * from './server/WebSocketHandler';
 export * from './server/WebSocketServerFactory';
 
@@ -280,7 +292,7 @@ export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
 // Server/Util
-export * from './server/util/RedirectAllHttpHandler';
+export * from './server/util/RedirectingHttpHandler';
 export * from './server/util/RouterHandler';
 
 // Storage/Accessors
@@ -288,6 +300,7 @@ export * from './storage/accessors/AtomicDataAccessor';
 export * from './storage/accessors/AtomicFileDataAccessor';
 export * from './storage/accessors/DataAccessor';
 export * from './storage/accessors/FileDataAccessor';
+export * from './storage/accessors/FilterMetadataDataAccessor';
 export * from './storage/accessors/InMemoryDataAccessor';
 export * from './storage/accessors/PassthroughDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
@@ -401,6 +414,7 @@ export * from './util/handlers/ConditionalHandler';
 export * from './util/handlers/HandlerUtil';
 export * from './util/handlers/MethodFilterHandler';
 export * from './util/handlers/ParallelHandler';
+export * from './util/handlers/ProcessHandler';
 export * from './util/handlers/SequenceHandler';
 export * from './util/handlers/StaticHandler';
 export * from './util/handlers/StaticThrowHandler';
@@ -417,13 +431,21 @@ export * from './util/identifiers/SubdomainIdentifierStrategy';
 // Util/Locking
 export * from './util/locking/ExpiringReadWriteLocker';
 export * from './util/locking/EqualReadWriteLocker';
+export * from './util/locking/FileSystemResourceLocker';
 export * from './util/locking/GreedyReadWriteLocker';
+export * from './util/locking/MemoryResourceLocker';
 export * from './util/locking/ReadWriteLocker';
 export * from './util/locking/RedisLocker';
 export * from './util/locking/ResourceLocker';
-export * from './util/locking/SingleThreadedResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
 export * from './util/locking/VoidLocker';
+
+// Util/Map
+export * from './util/map/HashMap';
+export * from './util/map/IdentifierMap';
+export * from './util/map/MapUtil';
+export * from './util/map/SetMultiMap';
+export * from './util/map/WrappedSetMultiMap';
 
 // Util/Templates
 export * from './util/templates/ChainedTemplateEngine';
@@ -436,6 +458,7 @@ export * from './util/ContentTypes';
 export * from './util/FetchUtil';
 export * from './util/GuardedStream';
 export * from './util/HeaderUtil';
+export * from './util/IterableUtil';
 export * from './util/PathUtil';
 export * from './util/PromiseUtil';
 export * from './util/QuadUtil';

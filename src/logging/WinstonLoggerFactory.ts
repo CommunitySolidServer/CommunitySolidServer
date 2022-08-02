@@ -1,6 +1,6 @@
 import { createLogger, format, transports } from 'winston';
 import type * as Transport from 'winston-transport';
-import type { Logger } from './Logger';
+import type { Logger, LogMetadata } from './Logger';
 import type { LoggerFactory } from './LoggerFactory';
 import { WinstonLogger } from './WinstonLogger';
 
@@ -17,6 +17,13 @@ export class WinstonLoggerFactory implements LoggerFactory {
     this.level = level;
   }
 
+  private readonly clusterInfo = (meta: LogMetadata): string => {
+    if (meta.isPrimary) {
+      return 'Primary';
+    }
+    return `W-${meta.pid ?? '???'}`;
+  };
+
   public createLogger(label: string): Logger {
     return new WinstonLogger(createLogger({
       level: this.level,
@@ -24,8 +31,10 @@ export class WinstonLoggerFactory implements LoggerFactory {
         format.label({ label }),
         format.colorize(),
         format.timestamp(),
-        format.printf(({ level: levelInner, message, label: labelInner, timestamp }: Record<string, any>): string =>
-          `${timestamp} [${labelInner}] ${levelInner}: ${message}`),
+        format.metadata({ fillExcept: [ 'level', 'timestamp', 'label', 'message' ]}),
+        format.printf(({ level: levelInner, message, label: labelInner, timestamp, metadata: meta }:
+        Record<string, any>): string =>
+          `${timestamp} [${labelInner}] {${this.clusterInfo(meta)}} ${levelInner}: ${message}`),
       ),
       transports: this.createTransports(),
     }));

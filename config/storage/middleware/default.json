@@ -1,9 +1,9 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/middleware/stores/converting.json",
-    "files-scs:config/storage/middleware/stores/locking.json",
-    "files-scs:config/storage/middleware/stores/patching.json"
+    "css:config/storage/middleware/stores/converting.json",
+    "css:config/storage/middleware/stores/locking.json",
+    "css:config/storage/middleware/stores/patching.json"
   ],
   "@graph": [
     {
@@ -16,25 +16,28 @@
       "comment": "Sets up a stack of utility stores used by most instances.",
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "MonitoringStore",
-      "MonitoringStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Index" }
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Index" }
     },
     {
       "comment": "When a container with an index.html document is accessed, serve that HTML document instead of the container.",
       "@id": "urn:solid-server:default:ResourceStore_Index",
       "@type": "IndexRepresentationStore",
-      "IndexRepresentationStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Locking" }
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Locking" }
     },
     {
       "@id": "urn:solid-server:default:ResourceStore_Locking",
-      "LockingResourceStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Patching" }
+      "@type": "LockingResourceStore",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Patching" }
     },
     {
       "@id": "urn:solid-server:default:ResourceStore_Patching",
-      "PatchingStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Converting" }
+      "@type": "PatchingStore",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Converting" }
     },
     {
       "@id": "urn:solid-server:default:ResourceStore_Converting",
-      "RepresentationConvertingStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Backend" }
+      "@type": "RepresentationConvertingStore",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" }
     }
   ]
 }

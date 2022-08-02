@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Generates ResourceStores that correspond to new pods.",
@@ -16,6 +16,7 @@
           }
         ]
       },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "configStorage": { "@id": "urn:solid-server:default:PodConfigurationStorage" }
     }
   ]

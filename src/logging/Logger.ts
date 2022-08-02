@@ -1,4 +1,13 @@
+import cluster from 'cluster';
+import process from 'process';
 import type { LogLevel } from './LogLevel';
+
+export interface LogMetadata {
+  /** Is the current process the Primary process */
+  isPrimary: boolean;
+  /** The process id of the current process */
+  pid: number;
+}
 
 /**
  * Logs messages on a specific level.
@@ -13,7 +22,7 @@ export interface SimpleLogger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  log: (level: LogLevel, message: string) => SimpleLogger;
+  log: (level: LogLevel, message: string, meta?: LogMetadata) => SimpleLogger;
 }
 
 /**
@@ -29,7 +38,7 @@ export interface Logger extends SimpleLogger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  log: (level: LogLevel, message: string) => Logger;
+  log: (level: LogLevel, message: string, meta?: LogMetadata) => Logger;
 
   /**
    * Log a message at the 'error' level.
@@ -79,30 +88,35 @@ export interface Logger extends SimpleLogger {
  * leaving only the implementation of {@link SimpleLogger}.
  */
 export abstract class BaseLogger implements Logger {
-  public abstract log(level: LogLevel, message: string): Logger;
+  public abstract log(level: LogLevel, message: string, meta?: LogMetadata): Logger;
+
+  private readonly getMeta = (): LogMetadata => ({
+    pid: process.pid,
+    isPrimary: cluster.isMaster,
+  });
 
   public error(message: string): Logger {
-    return this.log('error', message);
+    return this.log('error', message, this.getMeta());
   }
 
   public warn(message: string): Logger {
-    return this.log('warn', message);
+    return this.log('warn', message, this.getMeta());
   }
 
   public info(message: string): Logger {
-    return this.log('info', message);
+    return this.log('info', message, this.getMeta());
   }
 
   public verbose(message: string): Logger {
-    return this.log('verbose', message);
+    return this.log('verbose', message, this.getMeta());
   }
 
   public debug(message: string): Logger {
-    return this.log('debug', message);
+    return this.log('debug', message, this.getMeta());
   }
 
   public silly(message: string): Logger {
-    return this.log('silly', message);
+    return this.log('silly', message, this.getMeta());
   }
 }
 
@@ -118,8 +132,8 @@ export class WrappingLogger extends BaseLogger {
     this.logger = logger;
   }
 
-  public log(level: LogLevel, message: string): this {
-    this.logger.log(level, message);
+  public log(level: LogLevel, message: string, meta?: LogMetadata): this {
+    this.logger.log(level, message, meta);
     return this;
   }
 }

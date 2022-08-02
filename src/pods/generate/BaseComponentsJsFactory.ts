@@ -17,6 +17,7 @@ export class BaseComponentsJsFactory implements ComponentsJsFactory {
       mainModulePath: joinFilePath(__dirname, relativeModulePath),
       logLevel: logLevel as LogLevel,
       dumpErrorState: false,
+      typeChecking: false,
     };
   }
 

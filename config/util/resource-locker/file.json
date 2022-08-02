@@ -1,0 +1,47 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Allows multiple simultaneous read operations. Locks are stored on filesystem. Locks expire after inactivity. This locker is threadsafe.",
+      "@id": "urn:solid-server:default:ResourceLocker",
+      "@type": "WrappedExpiringReadWriteLocker",
+      "locker": {
+        "@type": "GreedyReadWriteLocker",
+        "locker": {
+          "@id": "urn:solid-server:default:FileSystemResourceLocker",
+          "@type": "FileSystemResourceLocker",
+          "args_rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" }
+        },
+        "storage": {
+          "@id": "urn:solid-server:default:LockStorage"
+        },
+        "suffixes_count": "count",
+        "suffixes_read": "read",
+        "suffixes_write": "write"
+      },
+      "expiration": 3000
+    },
+    {
+      "@id": "urn:solid-server:default:CleanupInitializer",
+      "@type": "SequenceHandler",
+      "handlers": [
+        {
+          "comment": "Makes sure the FileSystemResourceLocker starts with a clean slate when the application is started.",
+          "@type": "InitializableHandler",
+          "initializable": { "@id": "urn:solid-server:default:FileSystemResourceLocker" }
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:CleanupFinalizer",
+      "@type": "SequenceHandler",
+      "handlers": [
+        {
+          "comment": "Makes sure the lock folder is removed when the application stops.",
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:FileSystemResourceLocker" }
+        }
+      ]
+    }
+  ]
+}

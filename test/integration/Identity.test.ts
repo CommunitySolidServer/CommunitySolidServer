@@ -84,11 +84,14 @@ describe('A Solid server with IDP', (): void => {
          acl:default <./>;
          acl:mode acl:Read, acl:Write, acl:Control.
 `;
-    await fetch(`${container}.acl`, {
+    const res = await fetch(`${container}.acl`, {
       method: 'PUT',
       headers: { 'content-type': 'text/turtle' },
       body: aclTurtle,
     });
+    if (res.status !== 201) {
+      throw new Error('Something went wrong initializing the test ACL');
+    }
   });
 
   afterAll(async(): Promise<void> => {

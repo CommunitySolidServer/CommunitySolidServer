@@ -1,10 +1,12 @@
 import type { Readable } from 'stream';
+import type { NamedNode } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';
 import { StreamParser, StreamWriter } from 'n3';
 import type { Quad } from 'rdf-js';
 import type { Guarded } from './GuardedStream';
 import { guardedStreamFrom, pipeSafely } from './StreamUtil';
+import { toNamedTerm } from './TermUtil';
 
 /**
  * Helper function for serializing an array of quads, with as result a Readable object.
@@ -41,4 +43,24 @@ export function uniqueQuads(quads: Quad[]): Quad[] {
     }
     return result;
   }, []);
+}
+
+/**
+ * Represents a triple pattern to be used as a filter.
+ */
+export class FilterPattern {
+  public readonly subject: NamedNode | null;
+  public readonly predicate: NamedNode | null;
+  public readonly object: NamedNode | null;
+
+  /**
+   * @param subject - Optionally filter based on a specific subject.
+   * @param predicate - Optionally filter based on a predicate.
+   * @param object - Optionally filter based on a specific object.
+   */
+  public constructor(subject?: string, predicate?: string, object?: string) {
+    this.subject = typeof subject !== 'undefined' ? toNamedTerm(subject) : null;
+    this.predicate = typeof predicate !== 'undefined' ? toNamedTerm(predicate) : null;
+    this.object = typeof object !== 'undefined' ? toNamedTerm(object) : null;
+  }
 }

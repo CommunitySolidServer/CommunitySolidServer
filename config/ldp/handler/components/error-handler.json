@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Wraps around the main error handler as a fallback in case something goes wrong.",
@@ -17,6 +17,7 @@
             "comment": "Converts an Error object into a representation for an HTTP response.",
             "@type": "ConvertingErrorHandler",
             "converter": { "@id": "urn:solid-server:default:UiEnabledConverter" },
+            "preferenceParser": { "@id": "urn:solid-server:default:PreferenceParser" },
             "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
           }
         ]

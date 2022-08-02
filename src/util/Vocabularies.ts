@@ -71,6 +71,12 @@ export const ACL = createUriAndTermNamespace('http://www.w3.org/ns/auth/acl#',
   'Control',
 );
 
+export const AS = createUriAndTermNamespace('https://www.w3.org/ns/activitystreams#',
+  'Create',
+  'Delete',
+  'Update',
+);
+
 export const AUTH = createUriAndTermNamespace('urn:solid:auth:',
   'userMode',
   'publicMode',
@@ -144,6 +150,10 @@ export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms
   'InsertDeletePatch',
 );
 
+export const SOLID_AS = createUriAndTermNamespace('http://www.w3.org/ns/solid/activitystreams#',
+  'Activity',
+);
+
 export const SOLID_ERROR = createUriAndTermNamespace('urn:npm:solid:community-server:error:',
   'disallowedMethod',
   'errorResponse',
@@ -179,6 +189,7 @@ export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#'
 );
 
 // Alias for commonly used types
+export const CONTENT_LENGTH = HH['content-length'];
 export const CONTENT_LENGTH_TERM = HH.terms['content-length'];
 export const CONTENT_TYPE = MA.format;
 export const CONTENT_TYPE_TERM = MA.terms.format;

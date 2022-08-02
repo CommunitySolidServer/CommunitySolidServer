@@ -8,7 +8,7 @@ const guardedTimeout = Symbol('guardedTimeout');
 
 // Private fields for guarded streams
 class Guard {
-  private [guardedErrors]: Error[];
+  private [guardedErrors]: Error[] = [];
   private [guardedTimeout]?: NodeJS.Timeout;
 }
 

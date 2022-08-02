@@ -1,9 +1,8 @@
 import type { Readable } from 'stream';
-import { newEngine } from '@comunica/actor-init-sparql';
-import type { ActorInitSparql } from '@comunica/actor-init-sparql';
-import type { IQueryResultBindings } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
+import { QueryEngine } from '@comunica/query-sparql';
+import arrayifyStream from 'arrayify-stream';
 import { Store } from 'n3';
-import type { Quad, Term } from 'rdf-js';
+import type { Bindings, Quad, Term } from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import { Generator, Wildcard } from 'sparqljs';
 import type { SparqlGenerator } from 'sparqljs';
@@ -30,12 +29,12 @@ import { RepresentationPatcher } from './RepresentationPatcher';
 export class N3Patcher extends RepresentationPatcher {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly engine: ActorInitSparql;
+  private readonly engine: QueryEngine;
   private readonly generator: SparqlGenerator;
 
   public constructor() {
     super();
-    this.engine = newEngine();
+    this.engine = new QueryEngine();
     this.generator = new Generator();
   }
 
@@ -125,9 +124,8 @@ export class N3Patcher extends RepresentationPatcher {
         }],
       });
       this.logger.debug(`Finding bindings using SPARQL query ${sparql}`);
-      const query = await this.engine.query(sparql,
-        { sources: [ source ], baseIRI: identifier.path }) as IQueryResultBindings;
-      const bindings = await query.bindings();
+      const bindingsStream = await this.engine.queryBindings(sparql, { sources: [ source ], baseIRI: identifier.path });
+      const bindings: Bindings[] = await arrayifyStream(bindingsStream);
 
       // Solid, §5.3.1: "If no such mapping exists, or if multiple mappings exist,
       // the server MUST respond with a 409 status code."
@@ -143,11 +141,10 @@ export class N3Patcher extends RepresentationPatcher {
       }
 
       // Apply bindings to deletes/inserts
-      // Note that Comunica binding keys start with a `?` while Variable terms omit that in their value
       deletes = deletes.map((quad): Quad => mapTerms<Quad>(quad, (term): Term =>
-        term.termType === 'Variable' ? bindings[0].get(`?${term.value}`) : term));
+        term.termType === 'Variable' ? bindings[0].get(term)! : term));
       inserts = inserts.map((quad): Quad => mapTerms<Quad>(quad, (term): Term =>
-        term.termType === 'Variable' ? bindings[0].get(`?${term.value}`) : term));
+        term.termType === 'Variable' ? bindings[0].get(term)! : term));
     }
 
     return {

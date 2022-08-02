@@ -1,11 +1,8 @@
 # Build stage
-FROM node:lts AS build
+FROM node:lts-alpine AS build
 
 ## Set current working directory
 WORKDIR /community-server
-
-## Copy the package.json for audit
-COPY package*.json ./
 
 ## Copy the dockerfile's context's community server files
 COPY . .
@@ -15,12 +12,11 @@ RUN npm ci --unsafe-perm && npm run build
 
 
 
-
 # Runtime stage
 FROM node:lts-alpine
 
 ## Add contact informations for questions about the container
-LABEL maintainer="Solid Community Server Docker Image Maintainer <matthieubosquet@gmail.com>"
+LABEL maintainer="Solid Community Server Docker Image Maintainer <thomas.dupont@ugent.be>"
 
 ## Container config & data dir for volume sharing
 ## Defaults to filestorage with /data directory (passed through CMD below)

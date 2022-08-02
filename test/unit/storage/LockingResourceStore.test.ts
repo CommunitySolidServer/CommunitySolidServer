@@ -1,4 +1,6 @@
 import { EventEmitter } from 'events';
+import type { Readable } from 'stream';
+import type { Guarded } from '../../../src';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { Patch } from '../../../src/http/representation/Patch';
 import type { Representation } from '../../../src/http/representation/Representation';
@@ -33,7 +35,7 @@ describe('A LockingResourceStore', (): void => {
 
     const readable = guardedStreamFrom([ 1, 2, 3 ]);
     const { destroy } = readable;
-    readable.destroy = jest.fn((error): void => destroy.call(readable, error));
+    readable.destroy = jest.fn((error): Guarded<Readable> => destroy.call(readable, error));
     source = {
       getRepresentation: jest.fn((): any => addOrder('getRepresentation', { data: readable } as Representation)),
       addResource: jest.fn((): any => addOrder('addResource')),

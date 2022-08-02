@@ -1,6 +1,87 @@
 # Community Solid Server release notes
 
-## V4.0.1
+## v5.0.0
+### New features
+- Support for Node v12 was dropped.
+- Components.js was upgraded to v5. If you have created an external component
+  you should also upgrade to prevent warnings and conflicts.
+- A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
+- The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
+- When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
+- The user can choose to "Log in with a different account" on the consent page
+
+### Data migration
+The following actions are required if you are upgrading from a v4 server and want to retain your data.
+
+...
+
+### Configuration changes
+You might need to make changes to your v4 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- The prefix of all imports was changed from `files-scs` to `css`.
+- All default configurations with a file-based backend now use a file-based locker instead of a memory-based one,
+  making them threadsafe.
+- 2 new options have been added for the `/http/server-factory/` imports: `https-websockets.json` and `https-no-websockets.json`,
+  which allow starting the server with HTTPS by adding 2 new CLI parameters `httpsKey` and `httpsCert`.
+
+The following changes are relevant for v4 custom configs that replaced certain features.
+- `/app/variables/*` was changed to support the new `YargsCliExtractor` format and `SettingsResolver` rename.
+- `/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
+- The content-length parser has been moved from the default configuration to the quota configurations.
+   - `/ldp/metadata-parser/default.json`
+   - `/storage/backend/*-quota-file.json`
+   - `/storage/backend/quota/quota-file.json`
+- The structure of the init configs has changed significantly to support worker threads.
+   - `/app/init/*`
+- RegexPathRouting has changed from a map datastructure to an array datastructure, allowing for fallthrough regex parsing. The change is reflected in the following default configs:
+   - `/storage/backend/regex.json`
+   - `/sparql-file-storage.json`
+- The `IdentityProviderFactory` inputs have been extended.
+  - `/identity/handler/provider-factory/identity.json`
+- LDP components have slightly changed so the preference parser is in a separate config file.
+  - `/ldp/handler/*`
+- Restructured the init configs.
+  - `/app/init/base/init.json`
+  - `/app/main/default.json`
+- Added lock cleanup on server start (and updated existing finalization).
+  - `/util/resource-locker/file.json`
+  - `/util/resource-locker/redis.json`
+- Updated finalizers.
+  - `/app/identity/handler/account-store/default.json` 
+  - `/identity/ownership/token.json`
+  - `/ldp/authorization/readers/access-checkers/agent-group.json`
+  - `/ldp/handler/*`
+- `IntermediateModesExtractor` has been added to the `ModesExtractors`
+  - `/ldp/modes/default.json`
+- The `PermissionReader` structure has changed to be more consistent.
+  - `/ldp/authorization/*`
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- `YargsCliExtractor` was changed to now take as input an array of parameter objects.
+- `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
+- `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
+- Both `TemplateEngine` implementations now take a `baseUrl` parameter as input.
+- The `IdentityProviderFactory` and `ConvertingErrorHandler` now additionally take a `PreferenceParser` as input.
+- Error handlers now take the incoming HttpRequest as input instead of just the preferences.
+- Extended the initialization/finalization system:
+  * Introduced `Initializable` interface and `InitializableHandler` wrapper class.
+  * Introduced `Finalizer` abstract class and `FinalizableHandler` wrapper class.
+  * Changed type for `finalizer` attribute in `App` from `Finalizable` to `Finalizer` and updated the calling code in `App.stop()`.
+  * Removed the now obsolete `ParallelFinalizer` util class.
+- Added a lock cleanup on initialize for lock implementations `RedisLocker` and `FileSystemResourceLocker`.
+- `ResourceStore` functions that change a resource now return metadata for every changed resource.
+- All permission related interfaces have changed to support permissions over multiple identifiers.
+- `IdentifierStrategy` has a new `contains` method.
+- `SettingsResolver` was renamed to `ShorthandResolver`, together with all related classes and parameters.
+
+A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
+
+## v4.0.1
 Freezes the `oidc-provider` dependency to prevent a potential issue with the solid authn client
 as described in https://github.com/inrupt/solid-client-authn-js/issues/2103.
 

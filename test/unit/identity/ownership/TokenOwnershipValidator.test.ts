@@ -33,8 +33,7 @@ describe('A TokenOwnershipValidator', (): void => {
   function mockDereference(qq?: Quad): any {
     rdfDereferenceMock.dereference.mockImplementation((uri: string): any => ({
       uri,
-      quads: Readable.from(qq ? [ qq ] : []),
-      exists: true,
+      data: Readable.from(qq ? [ qq ] : []),
     }));
   }
 

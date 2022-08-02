@@ -1,4 +1,5 @@
-import type { Finalizable } from './final/Finalizable';
+import type { ClusterManager } from './cluster/ClusterManager';
+import type { Finalizer } from './final/Finalizer';
 import type { Initializer } from './Initializer';
 
 /**
@@ -6,11 +7,13 @@ import type { Initializer } from './Initializer';
  */
 export class App {
   private readonly initializer: Initializer;
-  private readonly finalizer: Finalizable;
+  private readonly finalizer: Finalizer;
+  public readonly clusterManager: ClusterManager;
 
-  public constructor(initializer: Initializer, finalizer: Finalizable) {
+  public constructor(initializer: Initializer, finalizer: Finalizer, clusterManager: ClusterManager) {
     this.initializer = initializer;
     this.finalizer = finalizer;
+    this.clusterManager = clusterManager;
   }
 
   /**
@@ -24,6 +27,6 @@ export class App {
    * Stops the application and handles cleanup.
    */
   public async stop(): Promise<void> {
-    await this.finalizer.finalize();
+    await this.finalizer.handleSafe();
   }
 }

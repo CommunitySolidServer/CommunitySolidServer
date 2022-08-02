@@ -10,7 +10,7 @@ describe('A HandlebarsTemplateEngine', (): void => {
   let templateEngine: HandlebarsTemplateEngine;
 
   beforeEach((): void => {
-    templateEngine = new HandlebarsTemplateEngine(template);
+    templateEngine = new HandlebarsTemplateEngine('http://localhost:3000/', template);
   });
 
   it('uses the default template when no template was passed.', async(): Promise<void> => {
