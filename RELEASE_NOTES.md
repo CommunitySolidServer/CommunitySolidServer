@@ -8,6 +8,7 @@
 - A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
 - When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
+- The user can choose to "Log in with a different account" on the consent page
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.

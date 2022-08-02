@@ -14,13 +14,15 @@
     </ol>
   </fieldset>
 
-  <p class="actions"><button autofocus type="submit" name="submit">Consent</button></p>
+  <p class="actions">
+    <button autofocus type="submit" name="submit">Consent</button>
+    <button onclick="logOut(event)">Log in with a different account</button>
+  </p>
 </form>
 
-<button onclick="logOut()">Log out</button>
-
 <script>
-  async function logOut() {
+  async function logOut(e) {
+    e.preventDefault();
     const res = await fetch('', {
       method: 'POST',
       headers: { accept: 'application/json', 'content-type': 'application/json' },
