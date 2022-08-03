@@ -21,7 +21,8 @@
             "@type": "HandlebarsTemplateEngine",
             "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
           },
-          "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
+          "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
+          "store": { "@id": "urn:solid-server:default:ResourceStore"}
         },
         "args_storageKey": "rootInitialized",
         "args_storage": { "@id": "urn:solid-server:default:SetupStorage" }

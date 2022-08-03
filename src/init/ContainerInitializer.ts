@@ -3,7 +3,6 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourcesGenerator } from '../pods/generate/ResourcesGenerator';
 import type { KeyValueStorage } from '../storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../storage/ResourceStore';
-import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { ensureTrailingSlash, joinUrl } from '../util/PathUtil';
 import { Initializer } from './Initializer';
@@ -66,12 +65,7 @@ export class ContainerInitializer extends Initializer {
         await this.store.setRepresentation(resourceId, representation);
         count += 1;
       } catch (error: unknown) {
-        if (!(resourceId.path === this.containerId.path && ConflictHttpError.isInstance(error))) {
-          // During the initialisation of the Solid server, it is possible that the root container was already created
-          // (e.g. due to locking resources). Since calling setRepresentation` on an existing container throws an error,
-          // a warning message would have appeared during startup. This check prevents this warning message.
-          this.logger.warn(`Failed to create resource ${resourceId.path}: ${createErrorMessage(error)}`);
-        }
+        this.logger.warn(`Failed to create resource ${resourceId.path}: ${createErrorMessage(error)}`);
       }
     }
     this.logger.info(`Initialized container ${this.containerId.path} with ${count} resources.`);

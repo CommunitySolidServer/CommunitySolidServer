@@ -10,10 +10,11 @@ import type {
   FileIdentifierMapperFactory,
   ResourceLink,
 } from '../../storage/mapping/FileIdentifierMapper';
+import type { ResourceSet } from '../../storage/ResourceSet';
+import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { joinFilePath, isContainerIdentifier, resolveAssetPath } from '../../util/PathUtil';
-import { serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata } from '../../util/ResourceUtil';
 import { guardedStreamFrom, readableToString } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
@@ -24,6 +25,36 @@ interface TemplateResourceLink extends ResourceLink {
   isTemplate: boolean;
 }
 
+/**
+ * Input arguments required for {@link TemplatedResourcesGenerator}
+ */
+export interface TemplatedResourcesGeneratorArgs {
+  /**
+   * Folder where the templates are located.
+   */
+  templateFolder: string;
+  /**
+   * Factory used to generate mapper relative to the base identifier.
+   */
+  factory: FileIdentifierMapperFactory;
+  /**
+   * Template engine for generating the resources.
+   */
+  templateEngine: TemplateEngine;
+  /**
+   * The extension of files that need to be interpreted as templates.
+   * Will be removed to generate the identifier.
+   */
+  templateExtension?: string;
+  /**
+   * The metadataStrategy
+   */
+  metadataStrategy: AuxiliaryStrategy;
+  /**
+   * The default ResourceStore
+   */
+  store: ResourceSet;
+}
 /**
  * Generates resources by making use of a template engine.
  * The template folder structure will be kept.
@@ -39,24 +70,19 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private readonly templateEngine: TemplateEngine;
   private readonly templateExtension: string;
   private readonly metadataStrategy: AuxiliaryStrategy;
-
+  private readonly store: ResourceSet;
   /**
    * A mapper is needed to convert the template file paths to identifiers relative to the given base identifier.
    *
-   * @param templateFolder - Folder where the templates are located.
-   * @param factory - Factory used to generate mapper relative to the base identifier.
-   * @param templateEngine - Template engine for generating the resources.
-   * @param templateExtension - The extension of files that need to be interpreted as templates.
-   *                            Will be removed to generate the identifier.
-   * @param metadataStrategy - The metadataStrategy
+   * @param args - TemplatedResourcesGeneratorArgs
    */
-  public constructor(templateFolder: string, factory: FileIdentifierMapperFactory, templateEngine: TemplateEngine,
-    metadataStrategy: AuxiliaryStrategy, templateExtension = '.hbs') {
-    this.templateFolder = resolveAssetPath(templateFolder);
-    this.factory = factory;
-    this.templateEngine = templateEngine;
-    this.templateExtension = templateExtension;
-    this.metadataStrategy = metadataStrategy;
+  public constructor(args: TemplatedResourcesGeneratorArgs) {
+    this.templateFolder = resolveAssetPath(args.templateFolder);
+    this.factory = args.factory;
+    this.templateEngine = args.templateEngine;
+    this.templateExtension = args.templateExtension ?? '.hbs';
+    this.metadataStrategy = args.metadataStrategy;
+    this.store = args.store;
   }
 
   public async* generate(location: ResourceIdentifier, options: Dict<string>): AsyncIterable<Resource> {
@@ -140,24 +166,23 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
       data = await this.processFile(link, options);
       metadata.contentType = link.contentType;
     }
+    // Do not yield a container resource if it already exists
+    if (!(isContainerIdentifier(link.identifier) && await this.store.hasResource(link.identifier))) {
+      yield {
+        identifier: link.identifier,
+        representation: new BasicRepresentation(data ?? [], metadata),
+      };
+    }
 
-    yield {
-      identifier: link.identifier,
-      representation: new BasicRepresentation(data ?? [], metadata),
-    };
-    // Add metadata from meta file if there is one
+    // Add metadata from .meta file if there is one
     if (metaLink) {
-      // Niet gebaseerd op metadata quads, maar gebruik "addResourceMetadata" function
-      // die moet wel beginnen met de container Identifier en daarna aangepast worden door de meta identifier
-      // de meta identifier moet gebaseerd zijn op de suffix -> niewe constructor
       const rawMetadata = await this.generateMetadata(metaLink, options);
       const metaIdentifier = this.metadataStrategy.getAuxiliaryIdentifier(link.identifier);
       const descriptionMeta = new RepresentationMetadata(metaIdentifier);
-      descriptionMeta.contentType = metaLink.contentType;
       addResourceMetadata(rawMetadata, isContainerIdentifier(link.identifier));
       yield {
         identifier: metaIdentifier,
-        representation: new BasicRepresentation(serializeQuads(rawMetadata.quads()), descriptionMeta),
+        representation: new BasicRepresentation(rawMetadata.quads(), descriptionMeta, INTERNAL_QUADS),
       };
     }
   }
