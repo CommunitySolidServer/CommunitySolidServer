@@ -73,17 +73,20 @@ nav:
   - Welcome:
     - README.md
   - Usage:
-    - Example request: example-requests.md
-    - Metadata: metadata.md
-    - Identity provider: identity-provider.md
-    - Client credentials: client-credentials.md
-    - Seeding pods: seeding-pods.md
+    - Example request: usage/example-requests.md
+    - Metadata: usage/metadata.md
+    - Identity provider: usage/identity-provider.md
+    - Client credentials: usage/client-credentials.md
+    - Seeding pods: usage/seeding-pods.md
   - Architecture:
-    - Architecture: architecture.md
-    - Dependency injection: dependency-injection.md
+    - Architecture: architecture/architecture.md
+    - Dependency injection: architecture/dependency-injection.md
+    - Features:
+        - Authorization: architecture/features/authorization.md
+        - Resource Store: architecture/features/resource-store.md
   - Contributing:
-    - Pull requests: making-changes.md
-    - Releases: release.md
+    - Pull requests: contributing/making-changes.md
+    - Releases: contributing/release.md
   - API: ./docs/" target="_blank
 
 # To write documentation locally, execute the next line and browse to http://localhost:8000

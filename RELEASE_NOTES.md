@@ -4,7 +4,7 @@
 ### New features
 - Metadata of resources can now be edited by PATCHing its description resource.
   This has an impact on which requests are allowed.
-  See the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/5.0/metadata.md) for more information.
+  See the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/5.0/usage/metadata/) for more information.
 - Components.js was upgraded to v5. If you have created an external component
   you should also upgrade to prevent warnings and conflicts.
 - The server can now run multithreaded with multiple workers. This is done with the `--workers` or `-w` flag.

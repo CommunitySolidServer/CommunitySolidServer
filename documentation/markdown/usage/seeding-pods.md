@@ -18,7 +18,7 @@ For example:
 ```
 
 You may optionally specify other parameters 
-as described in the [Identity Provider documentation](./identity-provider.md#json-api).
+as described in the [Identity Provider documentation](identity-provider.md#json-api).
 
 For example, to set up a pod without registering the generated WebID with the Identity Provider:
 ```json

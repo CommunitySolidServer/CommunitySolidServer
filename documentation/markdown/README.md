@@ -29,21 +29,21 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 
 ## Using the server
 
- * [Basic example HTTP requests](example-requests.md)
- * [Editing the metadata of a resource](metadata.md)
- * [How to use the Identity Provider](identity-provider.md)
- * [How to automate authentication](client-credentials.md)
- * [How to automatically seed pods on startup](seeding-pods.md)
+ * [Basic example HTTP requests](usage/example-requests.md)
+ * [Editing the metadata of a resource](usage/metadata.md)
+ * [How to use the Identity Provider](usage/identity-provider.md)
+ * [How to automate authentication](usage/client-credentials.md)
+ * [How to automatically seed pods on startup](usage/seeding-pods.md)
 
 ## What the internals look like
 
- * [How the server uses dependency injection](dependency-injection.md)
- * [What the architecture looks like](architecture.md)
+ * [How the server uses dependency injection](architecture/dependency-injection.md)
+ * [What the architecture looks like](architecture/architecture.md)
  
 ## Making changes
 
- * [How to make changes to the repository](making-changes.md)
+ * [How to make changes to the repository](contributing/making-changes.md)
 
 For core developers with push access only: 
 
- * [How to release a new version](release.md)
+ * [How to release a new version](contributing/release.md)
