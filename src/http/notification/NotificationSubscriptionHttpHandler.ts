@@ -25,8 +25,9 @@ import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
  */
 export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
   protected readonly logger = getLoggerFor(this);
-
+  private readonly ignoreFolders: RegExp[];
   private readonly subscriptionHandlers: Map<string, SubscriptionHandler<Subscription>> = new Map();
+  private readonly base: string;
 
   public constructor(
     private readonly credentialsExtractor: CredentialsExtractor,
@@ -34,8 +35,12 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
     private readonly notificationStorage: KeyValueStorage<string, Topic>,
     private readonly source: EventEmitter,
     subscriptionHandlers: SubscriptionHandler<Subscription>[],
+    base: string,
+    ignoreFolders?: string[],
   ) {
     super();
+    this.base = base;
+    this.ignoreFolders = ignoreFolders ? ignoreFolders.map((folder: string): RegExp => new RegExp(folder, 'u')) : [];
     for (const handler of subscriptionHandlers) {
       this.subscriptionHandlers.set(handler.getType(), handler);
     }
@@ -114,12 +119,15 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
     resource: ResourceIdentifier,
     activity: string,
   ): Promise<void> {
-    const topic = await this.notificationStorage.get(resource.path);
-    if (topic?.subscriptions) {
-      for (const [ , subscription ] of Object.entries(topic.subscriptions)) {
-        const subscriptionHandler = this.subscriptionHandlers.get(subscription.type);
-        if (subscriptionHandler) {
-          await subscriptionHandler.onChange(resource, activity, subscription);
+    if (!this.ignoreFolders.some((folder: RegExp): boolean =>
+      folder.test(resource.path.slice(this.base.length)))) {
+      const topic = await this.notificationStorage.get(resource.path);
+      if (topic?.subscriptions) {
+        for (const [ , subscription ] of Object.entries(topic.subscriptions)) {
+          const subscriptionHandler = this.subscriptionHandlers.get(subscription.type);
+          if (subscriptionHandler) {
+            await subscriptionHandler.onChange(resource, activity, subscription);
+          }
         }
       }
     }
