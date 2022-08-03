@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": [
@@ -18,8 +18,10 @@
         "relativePath": "/idp/keys/",
         "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
       },
+      "args_showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_jwksKeyGenerator": { "@id": "urn:solid-server:default:JwksKeyGenerator" },
       "config": {
         "claims": {
           "openid": [ "azp" ],
@@ -54,6 +56,12 @@
           "Session": 1209600
         }
       }
+    },
+    {
+      "comment": "Generates JWKS",
+      "@id": "urn:solid-server:default:JwksKeyGenerator",
+      "@type": "BasicJwksKeyGenerator",
+      "storage": { "@id": "urn:solid-server:default:KeyValueStorage" }
     }
   ]
 }

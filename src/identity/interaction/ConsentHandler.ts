@@ -56,13 +56,22 @@ export class ConsentHandler extends BaseInteractionHandler {
         .map((key): [ string, unknown ] => [ key, metadata[key] ]),
     );
     jsonLd['@context'] = 'https://www.w3.org/ns/solid/oidc-context.jsonld';
-    const json = { client: jsonLd };
+    const json = { webId: oidcInteraction.session?.accountId, client: jsonLd };
 
     return new BasicRepresentation(JSON.stringify(json), operation.target, APPLICATION_JSON);
   }
 
   protected async handlePost({ operation, oidcInteraction }: InteractionHandlerInput): Promise<never> {
-    const { remember } = await readJsonStream(operation.body.data);
+    const { remember, logOut } = await readJsonStream(operation.body.data);
+
+    if (logOut) {
+      const provider = await this.providerFactory.getProvider();
+      const session = (await provider.Session.find(oidcInteraction!.session!.cookie))!;
+      delete session.accountId;
+      await session.save(session.exp - Math.floor(Date.now() / 1000));
+
+      throw new FoundHttpError(oidcInteraction!.returnTo);
+    }
 
     const grant = await this.getGrant(oidcInteraction!);
     this.updateGrant(grant, oidcInteraction!.prompt.details, remember);

@@ -2,6 +2,7 @@ import 'jest-rdf';
 import type { BlankNode } from 'n3';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
+import { ContentType } from '../../../../src';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { CONTENT_TYPE_TERM, SOLID_META, RDFS } from '../../../../src/util/Vocabularies';
 const { defaultGraph, literal, namedNode, quad } = DataFactory;
@@ -320,13 +321,13 @@ describe('A RepresentationMetadata', (): void => {
     it('has a shorthand for Content-Type as object.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
-      metadata.contentTypeObject = {
-        value: 'text/plain',
-        parameters: {
+      metadata.contentTypeObject = new ContentType(
+        'text/plain',
+        {
           charset: 'utf-8',
           test: 'value1',
         },
-      };
+      );
       expect(metadata.contentTypeObject).toEqual({
         value: 'text/plain',
         parameters: {

@@ -1,0 +1,33 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the notification gateway endpoint.",
+      "@id": "urn:solid-server:default:NotificationGatewayHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "POST" ],
+      "args_allowedPathNames": [ "^/gateway"],
+      "args_handler": { "@id": "urn:solid-server:default:NotificationGatewayParsingHandler" }
+    },
+    {
+      "comment": "Handles notification gateway input parsing.",
+      "@id": "urn:solid-server:default:NotificationGatewayParsingHandler",
+      "@type": "ParsingHttpHandler",
+      "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
+      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_operationHandler": { "@id": "urn:solid-server:default:NotificationGatewayHttpHandler" }
+    },
+    {
+      "comment": "Handles notification handler behaviour.",
+      "@id": "urn:solid-server:default:NotificationGatewayHttpHandler",
+      "@type": "NotificationGatewayHttpHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "subscriptionPath": "subscription",
+      "subscriptionHandler": { "@id": "urn:solid-server:default:NotificationSubscriptionHttpHandler"}
+    }
+  ]
+}

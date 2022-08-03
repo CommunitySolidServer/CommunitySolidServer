@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "comment": "Variables used throughout the other configs. Can be set using the CLI.",
   "@graph": [
     {
@@ -40,6 +40,11 @@
     {
       "comment": "Path to the JSON file used to seed pods.",
       "@id": "urn:solid-server:default:variable:seededPodConfigJson",
+      "@type": "Variable"
+    },
+    {
+      "comment": "Run the server in multithreaded mode with the set amount of workers.",
+      "@id": "urn:solid-server:default:variable:workers",
       "@type": "Variable"
     }
   ]

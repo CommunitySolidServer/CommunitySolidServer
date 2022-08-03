@@ -6,7 +6,7 @@ import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
-import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
@@ -19,6 +19,8 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { PreconditionFailedHttpError } from '../util/errors/PreconditionFailedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
+import { concat } from '../util/IterableUtil';
+import { IdentifierMap } from '../util/map/IdentifierMap';
 import {
   ensureTrailingSlash,
   isContainerIdentifier,
@@ -39,10 +41,12 @@ import {
   SOLID_META,
   PREFERRED_PREFIX_TERM,
   CONTENT_TYPE_TERM,
+  SOLID_AS,
+  AS,
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
-import type { ResourceStore } from './ResourceStore';
+import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 /**
  * ResourceStore which uses a DataAccessor for backend access.
@@ -138,7 +142,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions):
-  Promise<ResourceIdentifier> {
+  Promise<ChangeMap> {
     this.validateIdentifier(container);
 
     const parentMetadata = await this.getSafeNormalizedMetadata(container);
@@ -174,13 +178,11 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Write the data. New containers should never be made for a POST request.
-    await this.writeData(newID, representation, isContainer, false, false);
-
-    return newID;
+    return this.writeData(newID, representation, isContainer, false, false);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     this.validateIdentifier(identifier);
 
     // Check if the resource already exists
@@ -216,7 +218,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<never> {
     if (conditions) {
       let metadata: RepresentationMetadata | undefined;
       try {
@@ -233,7 +235,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ResourceIdentifier[]> {
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ChangeMap> {
     this.validateIdentifier(identifier);
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
@@ -266,22 +268,25 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.4: "When a contained resource is deleted,
     // the server MUST also delete the associated auxiliary resources"
     // https://solid.github.io/specification/protocol#deleting-resources
-    const deleted = [ identifier ];
+    const changes: ChangeMap = new IdentifierMap();
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
-      deleted.push(...await this.safelyDeleteAuxiliaryResources(auxiliaries));
+      for (const deletedId of await this.safelyDeleteAuxiliaryResources(auxiliaries)) {
+        this.addActivityMetadata(changes, deletedId, AS.terms.Delete);
+      }
     }
 
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const container = this.identifierStrategy.getParentContainer(identifier);
-      deleted.push(container);
+      this.addActivityMetadata(changes, container, AS.terms.Update);
 
       // Update modified date of parent
       await this.updateContainerModifiedDate(container);
     }
 
     await this.accessor.deleteResource(identifier);
-    return deleted;
+    this.addActivityMetadata(changes, identifier, AS.terms.Delete);
+    return changes;
   }
 
   /**
@@ -359,7 +364,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @returns Identifiers of resources that were possibly modified.
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers: boolean, exists: boolean): Promise<ResourceIdentifier[]> {
+    createContainers: boolean, exists: boolean): Promise<ChangeMap> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
@@ -382,18 +387,21 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
-    const modified = [];
+    let changes: ChangeMap = new IdentifierMap();
     if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
-      const container = this.identifierStrategy.getParentContainer(identifier);
-      if (!createContainers) {
-        modified.push(container);
-      } else {
-        const created = await this.createRecursiveContainers(container);
-        modified.push(...created.length === 0 ? [ container ] : created);
+      const parent = this.identifierStrategy.getParentContainer(identifier);
+
+      if (createContainers) {
+        changes = await this.createRecursiveContainers(parent);
+      }
+
+      // No changes means the parent container exists and will be updated
+      if (changes.size === 0) {
+        this.addActivityMetadata(changes, parent, AS.terms.Update);
       }
 
       // Parent container is also modified
-      await this.updateContainerModifiedDate(container);
+      await this.updateContainerModifiedDate(parent);
     }
 
     // Remove all generated metadata to prevent it from being stored permanently
@@ -403,7 +411,8 @@ export class DataAccessorBasedStore implements ResourceStore {
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
 
-    return [ ...modified, identifier ];
+    this.addActivityMetadata(changes, identifier, exists ? AS.terms.Update : AS.terms.Create);
+    return changes;
   }
 
   /**
@@ -597,11 +606,11 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
    * @param container - Identifier of the container which will need to exist.
    */
-  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<ResourceIdentifier[]> {
+  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<ChangeMap> {
     // Verify whether the container already exists
     try {
       const metadata = await this.getNormalizedMetadata(container);
-      // See #480
+      // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/480
       // Solid, §3.1: "If two URIs differ only in the trailing slash, and the server has associated a resource with
       // one of them, then the other URI MUST NOT correspond to another resource. Instead, the server MAY respond to
       // requests for the latter URI with a 301 redirect to the former."
@@ -609,7 +618,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (!isContainerPath(metadata.identifier.value)) {
         throw new ForbiddenHttpError(`Creating container ${container.path} conflicts with an existing resource.`);
       }
-      return [];
+      return new IdentifierMap();
     } catch (error: unknown) {
       if (!NotFoundHttpError.isInstance(error)) {
         throw error;
@@ -617,10 +626,21 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Create the container, starting with its parent
-    const ancestors = this.identifierStrategy.isRootContainer(container) ?
-      [] :
+    const ancestors: ChangeMap = this.identifierStrategy.isRootContainer(container) ?
+      new IdentifierMap() :
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
-    await this.writeData(container, new BasicRepresentation([], container), true, false, false);
-    return [ ...ancestors, container ];
+    const changes = await this.writeData(container, new BasicRepresentation([], container), true, false, false);
+
+    return new IdentifierMap(concat([ changes, ancestors ]));
+  }
+
+  /**
+   * Generates activity metadata for a resource and adds it to the {@link ChangeMap}
+   * @param map - ChangeMap to update.
+   * @param id - Identifier of the resource being changed.
+   * @param activity - Which activity is taking place.
+   */
+  private addActivityMetadata(map: ChangeMap, id: ResourceIdentifier, activity: NamedNode): void {
+    map.set(id, new RepresentationMetadata(id, { [SOLID_AS.Activity]: activity }));
   }
 }

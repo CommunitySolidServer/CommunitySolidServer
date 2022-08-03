@@ -1,8 +1,9 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/backend/quota/pod-quota-file.json",
-    "files-scs:config/storage/backend/quota/quota-file.json"
+    "css:config/ldp/metadata-parser/parsers/content-length.json",
+    "css:config/storage/backend/quota/pod-quota-file.json",
+    "css:config/storage/backend/quota/quota-file.json"
   ],
   "@graph": [
     {
@@ -12,6 +13,14 @@
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
       "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" }
+    },
+    {
+      "comment": "Add content-length parser to the MetadataParser.", 
+      "@id": "urn:solid-server:default:MetadataParser",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:ContentLengthParser" }
+      ]
     }
   ]
 }

@@ -106,9 +106,18 @@ export interface AcceptDatetime extends AcceptHeader { }
  * Contents of a HTTP Content-Type Header.
  * Optional parameters Record is included.
  */
-export interface ContentType {
-  value: string;
-  parameters: Record<string, string>;
+export class ContentType {
+  public constructor(public value: string, public parameters: Record<string, string> = {}) {}
+
+  /**
+   * Serialize this ContentType object to a ContentType header appropriate value string.
+   * @returns The value string, including parameters, if present.
+   */
+  public toHeaderValueString(): string {
+    return Object.entries(this.parameters)
+      .sort((entry1, entry2): number => entry1[0].localeCompare(entry2[0]))
+      .reduce((acc, entry): string => `${acc}; ${entry[0]}=${entry[1]}`, this.value);
+  }
 }
 
 export interface LinkEntryParameters extends Record<string, string> {
@@ -463,7 +472,7 @@ export function parseContentType(input: string): ContentType {
       prev.parameters[cur.name] = cur.value;
       return prev;
     },
-    { value, parameters: {}},
+    new ContentType(value),
   );
 }
 

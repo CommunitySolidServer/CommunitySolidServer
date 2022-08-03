@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.0-alpha.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.0...v5.0.0-alpha.0) (2022-05-05)
+
+### Added
+
+* feat: add a process-/thread-safe file-based ResourceLocker ([fa78bc6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fa78bc68567d836927731eaa9a7d7f752dadae49))
+* feat: file-based backend fallback for unknown media types ([ff80079](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ff80079000a0f308f31b83cfc52e90421f20dadc))
+
+### Changed
+
+* fix: Fix typing issues with latest Components.js generator ([0e32d9a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0e32d9ad9b3e8558c32bf7263e33af157b88a6a1))
+* fix([1de1f7c](deps): Update to Comunica v2 (<https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1de1f7c12a8ae3f89fd91e9cb33af0405af7d995>))
+* refactor: Replace RedirectAllHttpHandler usage with RedirectingHttpHandler ([d2bc995](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d2bc995272ed596b2bd6acd0d4cab50fcb7859f0))
+
+### Fixed
+
+* fix: Update prefixes in all configs ([ce27bec](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ce27bec207652f0bd37beb23301f864464751438))
+* fix: Always define @type in configs ([cfdd122](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cfdd1221f05f2b51abc770e64407bb8392224383))
+* fix: Change YargsCliExtractor structure to avoid Components.js issues ([6f4e70d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6f4e70dbb928a9cb64e83a71954ea607a0bdb1a0))
+
 ## [4.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.0...v4.0.1) (2022-05-10)
 
 ### Changed
@@ -252,7 +271,7 @@ All notable changes to this project will be documented in this file.
 * feat: Create ErrorHandler to convert errors to Representations ([e1f9587](https://github.com/solid/community-server/commit/e1f95877dac6a8f77d2c7a687bf478440ee5cb17))
 * feat: Add showStackTrace CLI variable ([b604dd8](https://github.com/solid/community-server/commit/b604dd8331e1c7682dd6080c696981855e277df6))
 * feat: Create WWW-Authenticate metadata writer ([e3c5b39](https://github.com/solid/community-server/commit/e3c5b3975266e5eee3939f9d1e8f5e0537417782))
-* Expose constant Allow header ([a6371b0](https://github.com/solid/community-server/commit/a6371b073597ae922c3374d952dfdf2f920017ac))
+* Expose constant Allow header ([a6371b0]([a6371b0](https://github.com/solid/community-server/commit/a6371b073597ae922c3374d952dfdf2f920017ac))
 * feat: Add ErrorToHtmlConverter using templates ([9c0fa77](https://github.com/solid/community-server/commit/9c0fa775276b8ba3383d25a155a2507309e0a1de))
 * fix: Support BGPs with variables in SPARQL UPDATE queries ([f299b36](https://github.com/solid/community-server/commit/f299b36e2429245bf82be85ca0cccf733d658619))
 
@@ -372,7 +391,7 @@ All notable changes to this project will be documented in this file.
 * feat: Export UnsecureConstantCredentialsExtractor. ([5429014](https://github.com/solid/community-server/commit/542901488fb043d47575206f87d0106f656e0974))
 * feat: Add IfNeededConverter and PassthroughConverter. ([6763500](https://github.com/solid/community-server/commit/676350046631b75b136ad01ccca0ce6a64104526))
 * feat: Support composite PATCH updates ([36761e8](https://github.com/solid/community-server/commit/36761e81249c9d7e787083de08135f1f22b5c23d))
-* Add optional path and url suffixes to FixedContentTypeMapper ([4ac0167](https://github.com/solid/community-server/commit/4ac0167c8d2b25a5bc5169617f04f2f9f3eece88))
+* Add optional path and url suffixes to FixedContentTypeMapper ([4ac0167]([4ac0167](https://github.com/solid/community-server/commit/4ac0167c8d2b25a5bc5169617f04f2f9f3eece88))
 * feat: Implement UnsupportedAsyncHandler. ([dd9d873](https://github.com/solid/community-server/commit/dd9d8731226d22e24643ee8565f4369480bae260))
 * feat: Add ConstantConverter. ([5416d66](https://github.com/solid/community-server/commit/5416d66a31f4388c99352a3def81a4d06b085e78))
 * feat: Set Vary header. ([693d48b](https://github.com/solid/community-server/commit/693d48b9eb965c4a479e137eea157eb1943b40a9))

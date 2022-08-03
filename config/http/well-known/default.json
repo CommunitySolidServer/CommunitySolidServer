@@ -1,0 +1,23 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Selects the /.well-known/solid route.",
+      "@id": "urn:solid-server:default:WellKnownHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "GET", "OPTIONS", "HEAD" ],
+      "args_allowedPathNames": [ "^/\\.well-known/solid" ],
+      "args_handler": {
+        "@type": "WellKnownHandler",
+        "wellKnownBuilder": {
+          "@type": "AggregateWellKnownBuilder",
+          "wellKnownBuilders": [
+            { "@id": "urn:solid-server:default:NotificationWellKnownBuilder" }
+          ]
+        }
+      }
+    }
+  ]
+} 

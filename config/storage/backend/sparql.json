@@ -1,7 +1,7 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/backend/data-accessors/sparql-endpoint.json"
+    "css:config/storage/backend/data-accessors/sparql-endpoint.json"
   ],
   "@graph": [
     {
@@ -15,8 +15,9 @@
     {
       "comment": "This makes it so all incoming data is converted to quad objects.",
       "@id": "urn:solid-server:default:ResourceStore_Converting",
-      "RepresentationConvertingStore:_options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
-      "RepresentationConvertingStore:_options_inType": "internal/quads"
+      "@type": "RepresentationConvertingStore",
+      "options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+      "options_inType": "internal/quads"
     }
   ]
 }

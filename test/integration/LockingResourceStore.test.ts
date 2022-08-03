@@ -11,8 +11,8 @@ import { InternalServerError } from '../../src/util/errors/InternalServerError';
 import { SingleRootIdentifierStrategy } from '../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { EqualReadWriteLocker } from '../../src/util/locking/EqualReadWriteLocker';
 import type { ExpiringReadWriteLocker } from '../../src/util/locking/ExpiringReadWriteLocker';
+import { MemoryResourceLocker } from '../../src/util/locking/MemoryResourceLocker';
 import type { ReadWriteLocker } from '../../src/util/locking/ReadWriteLocker';
-import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThreadedResourceLocker';
 import { WrappedExpiringReadWriteLocker } from '../../src/util/locking/WrappedExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { PIM, RDF } from '../../src/util/Vocabularies';
@@ -48,7 +48,7 @@ describe('A LockingResourceStore', (): void => {
     metadata.add(RDF.terms.type, PIM.terms.Storage);
     await source.setRepresentation({ path: base }, new BasicRepresentation([], metadata));
 
-    locker = new EqualReadWriteLocker(new SingleThreadedResourceLocker());
+    locker = new EqualReadWriteLocker(new MemoryResourceLocker());
     expiringLocker = new WrappedExpiringReadWriteLocker(locker, 1000);
 
     store = new LockingResourceStore(source, expiringLocker, strategy);

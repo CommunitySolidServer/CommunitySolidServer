@@ -6,16 +6,17 @@ import { PreferenceSupport } from '../../../../src/storage/routing/PreferenceSup
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 
 describe('A PreferenceSupport', (): void => {
-  const type = 'internal/quads';
-  const preferences: RepresentationPreferences = { type: { [type]: 1 }};
+  let preferences: RepresentationPreferences;
   let converter: RepresentationConverter;
   let support: PreferenceSupport;
+  const type = 'internal/quads';
   const identifier: ResourceIdentifier = 'identifier' as any;
   const representation: Representation = 'representation' as any;
 
   beforeEach(async(): Promise<void> => {
+    preferences = { type: { [type]: 1 }};
     converter = { canHandle: jest.fn() } as any;
-    support = new PreferenceSupport(type, converter);
+    support = new PreferenceSupport(preferences, converter);
   });
 
   it('returns true if the converter supports the input.', async(): Promise<void> => {

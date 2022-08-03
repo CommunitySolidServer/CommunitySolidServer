@@ -23,4 +23,14 @@ export interface IdentifierStrategy {
    * This does not check if this identifier actually exists.
    */
   isRootContainer: (identifier: ResourceIdentifier) => boolean;
+
+  /**
+   * Checks if the given container would contain the given identifier.
+   * This does not check that either of these identifiers actually exist.
+   * This is similar to calling {@link getParentContainer} on an identifier
+   * and comparing the result.
+   *
+   * If `transitive` is `false` this only checks if `container` is the direct parent container of `identifier`.
+   */
+  contains: (container: ResourceIdentifier, identifier: ResourceIdentifier, transitive: boolean) => boolean;
 }

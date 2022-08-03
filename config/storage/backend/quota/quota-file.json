@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "comment": "DataAccessor configuration using a QuotaStrategy to enforce quota on the server.",
   "@graph": [
     {
@@ -28,10 +28,22 @@
 
     {
       "comment": "Simple wrapper for another DataAccessor but adds validation",
-      "@id": "urn:solid-server:default:FileDataAccessor",
+      "@id": "urn:solid-server:default:ValidatingFileDataAccessor",
       "@type": "ValidatingDataAccessor",
       "accessor": { "@id": "urn:solid-server:default:AtomicFileDataAccessor" },
       "validator": { "@id": "urn:solid-server:default:QuotaValidator" }
+    },
+    {
+      "comment": "Removes content-length metadata",
+      "@id": "urn:solid-server:default:FileDataAccessor",
+      "@type": "FilterMetadataDataAccessor",
+      "accessor": { "@id": "urn:solid-server:default:ValidatingFileDataAccessor" },
+      "filters": [
+        {
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/2011/http-headers#content-length"
+        }
+      ]
     }
   ]
 }

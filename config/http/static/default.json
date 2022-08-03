@@ -1,11 +1,12 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Servers static files on fixed URLs.",
       "@id": "urn:solid-server:default:StaticAssetHandler",
       "@type": "StaticAssetHandler",
       "options_expires": 86400,
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "assets": [
         {
           "StaticAssetHandler:_assets_key": "/favicon.ico",

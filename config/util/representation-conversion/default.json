@@ -1,13 +1,13 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/util/representation-conversion/converters/content-type-replacer.json",
-    "files-scs:config/util/representation-conversion/converters/dynamic-json-template.json",
-    "files-scs:config/util/representation-conversion/converters/errors.json",
-    "files-scs:config/util/representation-conversion/converters/form-to-json.json",
-    "files-scs:config/util/representation-conversion/converters/markdown.json",
-    "files-scs:config/util/representation-conversion/converters/quad-to-rdf.json",
-    "files-scs:config/util/representation-conversion/converters/rdf-to-quad.json"
+    "css:config/util/representation-conversion/converters/content-type-replacer.json",
+    "css:config/util/representation-conversion/converters/dynamic-json-template.json",
+    "css:config/util/representation-conversion/converters/errors.json",
+    "css:config/util/representation-conversion/converters/form-to-json.json",
+    "css:config/util/representation-conversion/converters/markdown.json",
+    "css:config/util/representation-conversion/converters/quad-to-rdf.json",
+    "css:config/util/representation-conversion/converters/rdf-to-quad.json"
   ],
   "@graph": [
     {

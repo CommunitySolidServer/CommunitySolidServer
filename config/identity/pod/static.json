@@ -1,7 +1,7 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/pod/resource-generators/templated.json"
+    "css:config/identity/pod/resource-generators/templated.json"
   ],
   "@graph": [
     {

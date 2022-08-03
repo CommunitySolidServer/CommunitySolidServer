@@ -1,15 +1,15 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/handler/interaction/routes/consent.json",
-    "files-scs:config/identity/handler/interaction/routes/credentials.json",
-    "files-scs:config/identity/handler/interaction/routes/forgot-password.json",
-    "files-scs:config/identity/handler/interaction/routes/index.json",
-    "files-scs:config/identity/handler/interaction/routes/login.json",
-    "files-scs:config/identity/handler/interaction/routes/prompt.json",
-    "files-scs:config/identity/handler/interaction/routes/reset-password.json",
-    "files-scs:config/identity/handler/interaction/views/controls.json",
-    "files-scs:config/identity/handler/interaction/views/html.json"
+    "css:config/identity/handler/interaction/routes/consent.json",
+    "css:config/identity/handler/interaction/routes/credentials.json",
+    "css:config/identity/handler/interaction/routes/forgot-password.json",
+    "css:config/identity/handler/interaction/routes/index.json",
+    "css:config/identity/handler/interaction/routes/login.json",
+    "css:config/identity/handler/interaction/routes/prompt.json",
+    "css:config/identity/handler/interaction/routes/reset-password.json",
+    "css:config/identity/handler/interaction/views/controls.json",
+    "css:config/identity/handler/interaction/views/html.json"
   ],
   "@graph": [
     {
@@ -23,7 +23,8 @@
         {
           "comment": "Adds controls and API version to JSON responses.",
           "@id": "urn:solid-server:auth:password:ControlHandler",
-          "ControlHandler:_source" : { "@id": "urn:solid-server:auth:password:LocationInteractionHandler" }
+          "@type": "ControlHandler",
+          "source" : { "@id": "urn:solid-server:auth:password:LocationInteractionHandler" }
         }
       ]
     },
@@ -31,20 +32,13 @@
       "comment": "Converts 3xx redirects to 200 JSON responses for consumption by browser scripts.",
       "@id": "urn:solid-server:auth:password:LocationInteractionHandler",
       "@type": "LocationInteractionHandler",
-      "LocationInteractionHandler:_source" : { "@id": "urn:solid-server:auth:password:InteractionRouteHandler" }
+      "source" : { "@id": "urn:solid-server:auth:password:InteractionRouteHandler" }
     },
     {
       "comment": "Handles every interaction based on their route.",
       "@id": "urn:solid-server:auth:password:InteractionRouteHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        {
-          "comment": [
-            "This handler is required to prevent Components.js issues with arrays.",
-            "This might be fixed in the next Components.js release after which this can be removed."
-          ],
-          "@type": "UnsupportedAsyncHandler"
-        },
         { "@id": "urn:solid-server:auth:password:IndexRouteHandler" },
         { "@id": "urn:solid-server:auth:password:PromptRouteHandler" },
         { "@id": "urn:solid-server:auth:password:LoginRouteHandler" },

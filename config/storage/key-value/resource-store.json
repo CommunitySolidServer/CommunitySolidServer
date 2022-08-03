@@ -1,7 +1,7 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/key-value/storages/storages.json"
+    "css:config/storage/key-value/storages/storages.json"
   ],
   "@graph": [
     {
@@ -21,9 +21,18 @@
       "container": "/.internal/"
     },
     {
+      "comment": "Storage used for notification management.",
+      "@id": "urn:solid-server:default:NotificationStorage",
+      "@type": "JsonResourceStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/notification/"
+    },
+    {
       "comment": "Block external access to the storage containers to avoid exposing internal data.",
       "@id": "urn:solid-server:default:PathBasedReader",
-      "PathBasedReader:_paths": [
+      "@type": "PathBasedReader",
+      "paths": [
         {
           "PathBasedReader:_paths_key": "^/.internal(/.*)?$",
           "PathBasedReader:_paths_value": {
@@ -36,7 +45,8 @@
     {
       "comment": "Marks the /.internal/ storage container as an auxiliary resource, thereby hiding it from container representations.",
       "@id": "urn:solid-server:default:AuxiliaryStrategy",
-      "RoutingAuxiliaryStrategy:_sources": [
+      "@type": "RoutingAuxiliaryStrategy",
+      "sources": [
         {
           "@type": "ComposedAuxiliaryStrategy",
           "identifierStrategy": {

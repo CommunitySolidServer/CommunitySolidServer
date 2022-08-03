@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Renders Markdown snippets into the main page template.",
@@ -7,7 +7,8 @@
       "@type": "MarkdownToHtmlConverter",
       "templateEngine": {
         "@type": "EjsTemplateEngine",
-        "template": "@css:templates/main.html.ejs"
+        "template": "@css:templates/main.html.ejs",
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
       }
     },
     {
@@ -16,7 +17,8 @@
       "@type": "ContainerToTemplateConverter",
       "templateEngine": {
         "@type": "HandlebarsTemplateEngine",
-        "template": "@css:templates/container.md.hbs"
+        "template": "@css:templates/container.md.hbs",
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
       },
       "contentType": "text/markdown",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }

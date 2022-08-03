@@ -1,56 +1,63 @@
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
-import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import { IdentifierMap, IdentifierSetMultiMap } from '../util/map/IdentifierMap';
+import type { MapEntry } from '../util/map/MapUtil';
+import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { PermissionSet } from './permissions/Permissions';
+import type { AccessMap, AccessMode, PermissionMap } from './permissions/Permissions';
 
 /**
- * A PermissionReader for auxiliary resources such as acl or shape resources.
- * By default, the access permissions of an auxiliary resource depend on those of its subject resource.
- * This authorizer calls the source authorizer with the identifier of the subject resource.
+ * Determines the permissions of auxiliary resources by finding those of the corresponding subject resources.
  */
 export class AuxiliaryReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly resourceReader: PermissionReader;
+  private readonly reader: PermissionReader;
   private readonly auxiliaryStrategy: AuxiliaryStrategy;
 
-  public constructor(resourceReader: PermissionReader, auxiliaryStrategy: AuxiliaryStrategy) {
+  public constructor(reader: PermissionReader, auxiliaryStrategy: AuxiliaryStrategy) {
     super();
-    this.resourceReader = resourceReader;
+    this.reader = reader;
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
-  public async canHandle(auxiliaryAuth: PermissionReaderInput): Promise<void> {
-    const resourceAuth = this.getRequiredAuthorization(auxiliaryAuth);
-    return this.resourceReader.canHandle(resourceAuth);
-  }
+  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<PermissionMap> {
+    // Finds all the dependent auxiliary identifiers
+    const auxiliaries = this.findAuxiliaries(requestedModes);
 
-  public async handle(auxiliaryAuth: PermissionReaderInput): Promise<PermissionSet> {
-    const resourceAuth = this.getRequiredAuthorization(auxiliaryAuth);
-    this.logger.debug(`Checking auth request for ${auxiliaryAuth.identifier.path} on ${resourceAuth.identifier.path}`);
-    return this.resourceReader.handle(resourceAuth);
-  }
+    // Replaces the dependent auxiliary identifies with the corresponding subject identifiers
+    const updatedMap = modify(new IdentifierSetMultiMap(requestedModes),
+      { add: auxiliaries.values(), remove: auxiliaries.keys() });
+    const result = await this.reader.handleSafe({ requestedModes: updatedMap, credentials });
 
-  public async handleSafe(auxiliaryAuth: PermissionReaderInput): Promise<PermissionSet> {
-    const resourceAuth = this.getRequiredAuthorization(auxiliaryAuth);
-    this.logger.debug(`Checking auth request for ${auxiliaryAuth.identifier.path} to ${resourceAuth.identifier.path}`);
-    return this.resourceReader.handleSafe(resourceAuth);
-  }
-
-  private getRequiredAuthorization(auxiliaryAuth: PermissionReaderInput): PermissionReaderInput {
-    if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(auxiliaryAuth.identifier)) {
-      throw new NotImplementedHttpError('AuxiliaryAuthorizer only supports auxiliary resources.');
+    // Extracts the auxiliary permissions based on the subject permissions
+    for (const [ identifier, [ subject ]] of auxiliaries) {
+      this.logger.debug(`Mapping ${subject.path} permissions to ${identifier.path}`);
+      result.set(identifier, result.get(subject) ?? {});
     }
+    return result;
+  }
 
-    if (this.auxiliaryStrategy.usesOwnAuthorization(auxiliaryAuth.identifier)) {
-      throw new NotImplementedHttpError('Auxiliary resource uses its own permissions.');
+  /**
+   * Maps auxiliary resources that do not have their own authorization checks to their subject resource.
+   */
+  private findAuxiliaries(requestedModes: AccessMap): IdentifierMap<MapEntry<AccessMap>> {
+    const auxiliaries = new IdentifierMap<[ResourceIdentifier, ReadonlySet<AccessMode>]>();
+    for (const [ identifier, modes ] of requestedModes.entrySets()) {
+      if (this.isDependentAuxiliary(identifier)) {
+        auxiliaries.set(identifier, [ this.auxiliaryStrategy.getSubjectIdentifier(identifier), modes ]);
+      }
     }
+    return auxiliaries;
+  }
 
-    return {
-      ...auxiliaryAuth,
-      identifier: this.auxiliaryStrategy.getSubjectIdentifier(auxiliaryAuth.identifier),
-    };
+  /**
+   * Checks if the identifier is an auxiliary resource that uses subject permissions.
+   */
+  private isDependentAuxiliary(identifier: ResourceIdentifier): boolean {
+    return this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) &&
+      !this.auxiliaryStrategy.usesOwnAuthorization(identifier);
   }
 }

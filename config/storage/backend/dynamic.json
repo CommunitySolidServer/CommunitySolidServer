@@ -1,7 +1,7 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/backend/data-accessors/file.json"
+    "css:config/storage/backend/data-accessors/file.json"
   ],
   "@graph": [
     {
@@ -13,7 +13,8 @@
     {
       "comment": "Which store to use for requests that do not match any pod, e.g. for storage.",
       "@id": "urn:solid-server:default:RouterRule",
-      "BaseUrlRouterRule:_baseStore": {
+      "@type": "BaseUrlRouterRule",
+      "baseStore": {
         "@id": "urn:solid-server:default:ResourceStore_DataAccessor",
         "@type": "DataAccessorBasedStore",
         "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
