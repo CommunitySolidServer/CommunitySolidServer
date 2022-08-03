@@ -12,7 +12,8 @@
       "@type": "ConfigPodManager",
       "podGenerator": { "@id": "urn:solid-server:default:PodGenerator" },
       "routingStorage": { "@id": "urn:solid-server:default:PodRoutingStorage" },
-      "resourcesGenerator": { "@id": "urn:solid-server:default:ResourcesGenerator" }
+      "resourcesGenerator": { "@id": "urn:solid-server:default:ResourcesGenerator" },
+      "store": { "@id": "urn:solid-server:default:ResourceStore" }
     },
 
     {

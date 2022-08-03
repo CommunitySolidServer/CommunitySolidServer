@@ -15,6 +15,7 @@ describe('A ConfigPodManager', (): void => {
   let generatorData: Resource[];
   let resourcesGenerator: ResourcesGenerator;
   let manager: ConfigPodManager;
+  let initStore: ResourceStore;
 
   beforeEach(async(): Promise<void> => {
     settings = {
@@ -46,7 +47,10 @@ describe('A ConfigPodManager', (): void => {
       set: async(key: ResourceIdentifier, value: ResourceStore): Promise<any> => map.set(key, value),
     } as any;
 
-    manager = new ConfigPodManager(podGenerator, resourcesGenerator, routingStorage);
+    initStore = {
+      setRepresentation: jest.fn(),
+    } as any;
+    manager = new ConfigPodManager(podGenerator, resourcesGenerator, routingStorage, initStore);
   });
 
   it('creates a pod and returns the newly generated identifier.', async(): Promise<void> => {
@@ -56,9 +60,9 @@ describe('A ConfigPodManager', (): void => {
     expect(podGenerator.generate).toHaveBeenLastCalledWith(identifier, settings);
     expect(resourcesGenerator.generate).toHaveBeenCalledTimes(1);
     expect(resourcesGenerator.generate).toHaveBeenLastCalledWith(identifier, settings);
-    expect(store.setRepresentation).toHaveBeenCalledTimes(2);
-    expect(store.setRepresentation).toHaveBeenCalledWith({ path: '/path/' }, '/');
-    expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: '/path/foo' }, '/foo');
+    expect(initStore.setRepresentation).toHaveBeenCalledTimes(2);
+    expect(initStore.setRepresentation).toHaveBeenCalledWith({ path: '/path/' }, '/');
+    expect(initStore.setRepresentation).toHaveBeenLastCalledWith({ path: '/path/foo' }, '/foo');
     await expect(routingStorage.get(identifier.path)).resolves.toBe(store);
   });
 });

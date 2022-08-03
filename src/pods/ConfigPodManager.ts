@@ -24,17 +24,20 @@ export class ConfigPodManager implements PodManager {
   private readonly podGenerator: PodGenerator;
   private readonly routingStorage: KeyValueStorage<string, ResourceStore>;
   private readonly resourcesGenerator: ResourcesGenerator;
+  private readonly store: ResourceStore;
 
   /**
    * @param podGenerator - Generator for the pod stores.
    * @param resourcesGenerator - Generator for the pod resources.
    * @param routingStorage - Where to store the generated pods so they can be routed to.
+   * @param store - The default ResourceStore
    */
   public constructor(podGenerator: PodGenerator, resourcesGenerator: ResourcesGenerator,
-    routingStorage: KeyValueStorage<string, ResourceStore>) {
+    routingStorage: KeyValueStorage<string, ResourceStore>, store: ResourceStore) {
     this.podGenerator = podGenerator;
     this.routingStorage = routingStorage;
     this.resourcesGenerator = resourcesGenerator;
+    this.store = store;
   }
 
   public async createPod(identifier: ResourceIdentifier, settings: PodSettings): Promise<void> {
@@ -43,9 +46,9 @@ export class ConfigPodManager implements PodManager {
     // Will error in case there already is a store for the given identifier
     const store = await this.podGenerator.generate(identifier, settings);
 
-    const count = await addGeneratedResources(identifier, settings, this.resourcesGenerator, store);
-    this.logger.info(`Added ${count} resources to ${identifier.path}`);
-
     await this.routingStorage.set(identifier.path, store);
+    const count = await addGeneratedResources(identifier, settings, this.resourcesGenerator, this.store);
+
+    this.logger.info(`Added ${count} resources to ${identifier.path}`);
   }
 }
