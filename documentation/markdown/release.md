@@ -8,7 +8,7 @@ Steps to follow:
 * Verify if there are issues when upgrading an existing installation to the new version.
   * Can the data still be accessed?
   * Does authentication still work?
-  * Is there an issue upgrading the recipes at <https://github.com/CommunitySolidServer/recipes>
+  * Is there an issue upgrading any of the dependent repositories (see below for links)?
   * None of the above has to be blocking per se, but should be noted in the release notes if relevant.
 * Verify that the RELEASE_NOTES.md are correct.
 * `npm run release -- -r major` or `npx standard-version -r major`
@@ -25,9 +25,12 @@ Steps to follow:
 * Merge `versions/x.0.0` into `main` and push.
 * Do a GitHub release.
 * `npm publish`
+  * Check if there is a `next` tag that needs to be replaced.
 * Rename the `versions/x.0.0` branch to the next version.
 * Update `.github/workflows/schedule.yml` and `.github/dependabot.yml` to point at the new branch.
-* Potentially upgrade the recipes at <https://github.com/CommunitySolidServer/recipes>
+* Potentially upgrade dependent repositories:
+  * Recipes at <https://github.com/CommunitySolidServer/recipes/>
+  * Tutorials at <https://github.com/CommunitySolidServer/tutorials/>
 
 Changes when doing a pre-release of a major version:
 
