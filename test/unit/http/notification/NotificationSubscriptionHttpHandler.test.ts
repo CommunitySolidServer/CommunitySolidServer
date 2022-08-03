@@ -48,6 +48,7 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
       notificationStorage,
       source,
       [ mockSubscriptionHandler ],
+      'http://example.com/',
     );
   });
 
@@ -184,6 +185,26 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
       const resource = { path: 'http://example.com/folder/file' };
 
       source.emit(AS.Delete, resource);
+      // Wait a couple milliseconds because we can't await the promise
+      await new Promise<void>((resolve): number => setTimeout(resolve, 10));
+
+      expect(mockSubscriptionHandler.onChange).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not call a handler if the resource is excluded.', async(): Promise<void> => {
+      handler = new NotificationSubscriptionHttpHandler(
+        mockCredentialsExtractor,
+        mockPermissionReader,
+        notificationStorage,
+        source,
+        [ mockSubscriptionHandler ],
+        'http://example.com/',
+        [ '^\\.internal.*' ],
+      );
+
+      const resource = { path: 'http://example.com/.internal/file' };
+
+      source.emit(AS.Update, resource);
       // Wait a couple milliseconds because we can't await the promise
       await new Promise<void>((resolve): number => setTimeout(resolve, 10));
 
