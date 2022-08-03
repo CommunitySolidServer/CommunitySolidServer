@@ -48,6 +48,14 @@ export * from './http/auxiliary/RoutingAuxiliaryStrategy';
 export * from './http/auxiliary/SuffixAuxiliaryIdentifierStrategy';
 export * from './http/auxiliary/Validator';
 
+// HTTP/client
+export * from './http/client/AuthHttpClient';
+export * from './http/client/BaseHttpClient';
+export * from './http/client/HttpClient';
+
+// HTTP/identity
+export * from './http/identity/PodJwksHttpHandler';
+
 // HTTP/Input/Body
 export * from './http/input/body/BodyParser';
 export * from './http/input/body/N3PatchBodyParser';
@@ -91,6 +99,11 @@ export * from './http/ldp/PatchOperationHandler';
 export * from './http/ldp/PostOperationHandler';
 export * from './http/ldp/PutOperationHandler';
 
+// HTTP/notification
+export * from './http/notification/NotificationGatewayHttpHandler';
+export * from './http/notification/NotificationSubscriptionHttpHandler';
+export * from './http/notification/WebHookSubscription2021UnsubscribeHttpHandler';
+
 // HTTP/Output/Error
 export * from './http/output/error/ConvertingErrorHandler';
 export * from './http/output/error/ErrorHandler';
@@ -127,12 +140,19 @@ export * from './http/representation/RepresentationPreferences';
 export * from './http/representation/ResourceIdentifier';
 export * from './http/representation/SparqlUpdatePatch';
 
+// HTTP/well-known
+export * from './http/well-known/AggregateWellKnownBuilder';
+export * from './http/well-known/WellKnownBuilder';
+export * from './http/well-known/WellKnownHandler';
+
 // HTTP
 export * from './http/Operation';
 export * from './http/UnsecureWebSocketsProtocol';
 
 // Identity/Configuration
+export * from './identity/configuration/BasicJwksKeyGenerator';
 export * from './identity/configuration/IdentityProviderFactory';
+export * from './identity/configuration/JwksKeyGenerator';
 export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Credentials
@@ -245,6 +265,18 @@ export * from './logging/VoidLogger';
 export * from './logging/VoidLoggerFactory';
 export * from './logging/WinstonLogger';
 export * from './logging/WinstonLoggerFactory';
+
+// Notification/webhook-subscription-2021
+export * from './notification/webhook-subscription-2021/JwksEndpointWellKnownBuilder';
+export * from './notification/webhook-subscription-2021/WebHookSubscription2021Handler';
+
+// Notification
+export * from './notification/BaseSubscriptionHandler';
+export * from './notification/NotificationContextWellKnownBuilder';
+export * from './notification/NotificationEndpointWellKnownBuilder';
+export * from './notification/Subscription';
+export * from './notification/SubscriptionHandler';
+export * from './notification/Topic';
 
 // Pods/Generate/Variables
 export * from './pods/generate/variables/BaseUrlHandler';

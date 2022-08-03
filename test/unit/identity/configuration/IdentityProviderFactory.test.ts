@@ -4,6 +4,7 @@ import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandle
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
+import type { JwksKeyGenerator } from '../../../../src/identity/configuration/JwksKeyGenerator';
 import type {
   ClientCredentials,
 } from '../../../../src/identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
@@ -47,6 +48,7 @@ describe('An IdentityProviderFactory', (): void => {
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let factory: IdentityProviderFactory;
+  let jwksKeyGenerator: jest.Mocked<JwksKeyGenerator>;
 
   beforeEach(async(): Promise<void> => {
     baseConfig = { claims: { webid: [ 'webid', 'client_webid' ]}};
@@ -85,6 +87,10 @@ describe('An IdentityProviderFactory', (): void => {
 
     responseWriter = { handleSafe: jest.fn() } as any;
 
+    jwksKeyGenerator = {
+      getPrivateJwks: jest.fn(async(key: string, alg: string): Promise<any> => ({ keys: [{ alg }]})),
+    } as any;
+
     factory = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
@@ -95,6 +101,7 @@ describe('An IdentityProviderFactory', (): void => {
       showStackTrace: true,
       errorHandler,
       responseWriter,
+      jwksKeyGenerator,
     });
   });
 
@@ -179,6 +186,7 @@ describe('An IdentityProviderFactory', (): void => {
       showStackTrace: true,
       errorHandler,
       responseWriter,
+      jwksKeyGenerator,
     });
     const { config } = await factory.getProvider() as unknown as { issuer: string; config: Configuration };
     expect(config.cookies?.long?.signed).toBe(true);
@@ -203,13 +211,13 @@ describe('An IdentityProviderFactory', (): void => {
       showStackTrace: true,
       errorHandler,
       responseWriter,
+      jwksKeyGenerator,
     });
     const result2 = await factory2.getProvider() as unknown as { issuer: string; config: Configuration };
     expect(result1.config.cookies).toEqual(result2.config.cookies);
     expect(result1.config.jwks).toEqual(result2.config.jwks);
-    expect(storage.get).toHaveBeenCalledTimes(4);
-    expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith('jwks', result1.config.jwks);
+    expect(storage.get).toHaveBeenCalledTimes(2);
+    expect(storage.set).toHaveBeenCalledTimes(1);
     expect(storage.set).toHaveBeenCalledWith('cookie-secret', result1.config.cookies?.keys);
   });
 

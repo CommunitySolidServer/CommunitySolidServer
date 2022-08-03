@@ -508,13 +508,13 @@ describe('AppRunner', (): void => {
         { variables: defaultVariables });
       expect(app.start).toHaveBeenCalledTimes(1);
       expect(app.start).toHaveBeenLastCalledWith();
-
       // Reset env
       if (OLD_STATE) {
         env.CSS_LOGGING_LEVEL = OLD_STATE;
       } else {
         delete env.CSS_LOGGING_LEVEL;
       }
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
     });
 
     it('throws an error if the server could not start.', async(): Promise<void> => {

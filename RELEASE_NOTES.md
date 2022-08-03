@@ -9,6 +9,7 @@
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
 - When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
 - The user can choose to "Log in with a different account" on the consent page
+- Added possibility to register and unregister notification webhooks.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
@@ -31,6 +32,10 @@ The following changes pertain to the imports in the default configs:
 The following changes are relevant for v4 custom configs that replaced certain features.
 - `/app/variables/*` was changed to support the new `YargsCliExtractor` format and `SettingsResolver` rename.
 - `/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
+
+The following changes are relevant for v4 custom configs that replaced certain features.
+- `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
+- `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
 - The content-length parser has been moved from the default configuration to the quota configurations.
    - `/ldp/metadata-parser/default.json`
    - `/storage/backend/*-quota-file.json`

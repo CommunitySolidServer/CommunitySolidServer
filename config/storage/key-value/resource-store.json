@@ -21,6 +21,14 @@
       "container": "/.internal/"
     },
     {
+      "comment": "Storage used for notification management.",
+      "@id": "urn:solid-server:default:NotificationStorage",
+      "@type": "JsonResourceStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/notification/"
+    },
+    {
       "comment": "Block external access to the storage containers to avoid exposing internal data.",
       "@id": "urn:solid-server:default:PathBasedReader",
       "@type": "PathBasedReader",

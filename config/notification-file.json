@@ -1,0 +1,41 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/app/main/default.json",
+    "css:config/app/init/default.json",
+    "css:config/app/setup/required.json",
+    "css:config/app/variables/default.json",
+    "css:config/http/handler/notification.json",
+    "css:config/http/middleware/websockets.json",
+    "css:config/http/server-factory/websockets.json",
+    "css:config/http/static/default.json",
+    "css:config/identity/access/public.json",
+    "css:config/identity/email/default.json",
+    "css:config/identity/handler/default.json",
+    "css:config/identity/ownership/token.json",
+    "css:config/identity/pod/static.json",
+    "css:config/identity/registration/enabled.json",
+    "css:config/ldp/authentication/debug-test-agent.json",
+    "css:config/ldp/authorization/allow-all.json",
+    "css:config/ldp/handler/default.json",
+    "css:config/ldp/metadata-parser/default.json",
+    "css:config/ldp/metadata-writer/default.json",
+    "css:config/ldp/modes/default.json",
+    "css:config/notification/default.json",
+    "css:config/storage/backend/file.json",
+    "css:config/storage/key-value/resource-store.json",
+    "css:config/storage/middleware/default.json",
+    "css:config/util/auxiliary/acl.json",
+    "css:config/util/identifiers/suffix.json",
+    "css:config/util/index/default.json",
+    "css:config/util/logging/winston.json",
+    "css:config/util/representation-conversion/default.json",
+    "css:config/util/resource-locker/file.json",
+    "css:config/util/variables/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": "A single-pod server that stores its resources on disk and uses notification."
+    }
+  ]
+}
