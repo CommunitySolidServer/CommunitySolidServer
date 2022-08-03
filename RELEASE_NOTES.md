@@ -8,6 +8,7 @@
 - A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
 - When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
+- The user can choose to "Log in with a different account" on the consent page
 - Metadata of resources can now be edited by PATCHing its description resource. See the [documentation](./documentation/metadata-editing.md) for more information.
 
 ### Data migration
@@ -25,10 +26,12 @@ The following changes pertain to the imports in the default configs:
 - The prefix of all imports was changed from `files-scs` to `css`.
 - All default configurations with a file-based backend now use a file-based locker instead of a memory-based one,
   making them threadsafe.
+- 2 new options have been added for the `/http/server-factory/` imports: `https-websockets.json` and `https-no-websockets.json`,
+  which allow starting the server with HTTPS by adding 2 new CLI parameters `httpsKey` and `httpsCert`.
 
 The following changes are relevant for v4 custom configs that replaced certain features.
-- `config/app/variables/*` was changed to support the new `YargsCliExtractor` format and `SettingsResolver` rename.
-- `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
+- `/app/variables/*` was changed to support the new `YargsCliExtractor` format and `SettingsResolver` rename.
+- `/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
 - The content-length parser has been moved from the default configuration to the quota configurations.
    - `/ldp/metadata-parser/default.json`
    - `/storage/backend/*-quota-file.json`

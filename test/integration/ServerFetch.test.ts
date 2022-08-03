@@ -1,8 +1,10 @@
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
+import { AppRunner } from '../../src/init/AppRunner';
+import { resolveModulePath } from '../../src/util/PathUtil';
 import { LDP } from '../../src/util/Vocabularies';
 import { getPort } from '../util/Util';
-import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
+import { getDefaultVariables } from './Config';
 
 const port = getPort('ServerFetch');
 const baseUrl = `http://localhost:${port}/`;
@@ -12,12 +14,16 @@ describe('A Solid server', (): void => {
   let app: App;
 
   beforeAll(async(): Promise<void> => {
-    const instances = await instantiateFromConfig(
-      'urn:solid-server:test:Instances',
-      getTestConfigPath('server-memory.json'),
+    // Using AppRunner here so it is also tested in an integration test
+    app = await new AppRunner().create(
+      {
+        mainModulePath: resolveModulePath(''),
+        logLevel: 'error',
+        typeChecking: false,
+      },
+      resolveModulePath('config/default.json'),
       getDefaultVariables(port, baseUrl),
-    ) as Record<string, any>;
-    ({ app } = instances);
+    );
     await app.start();
   });
 

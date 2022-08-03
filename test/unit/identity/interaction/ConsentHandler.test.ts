@@ -59,7 +59,10 @@ describe('A ConsentHandler', (): void => {
 
   beforeEach(async(): Promise<void> => {
     oidcInteraction = {
-      session: { accountId },
+      session: {
+        accountId,
+        save: jest.fn(),
+      },
       // eslint-disable-next-line @typescript-eslint/naming-convention
       params: { client_id: clientId },
       prompt: { details: {}},
@@ -75,6 +78,9 @@ describe('A ConsentHandler', (): void => {
       Grant: grantFn,
       Client: {
         find: (id: string): any => (id ? { metadata: jest.fn().mockReturnValue(clientMetadata) } : undefined),
+      },
+      Session: {
+        find: (): Interaction['session'] => oidcInteraction.session,
       },
       /* eslint-enable @typescript-eslint/naming-convention */
     } as any;
@@ -106,6 +112,7 @@ describe('A ConsentHandler', (): void => {
         ...clientMetadata,
         '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
       },
+      webId: accountId,
     });
   });
 
@@ -117,6 +124,7 @@ describe('A ConsentHandler', (): void => {
       client: {
         '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
       },
+      webId: accountId,
     });
   });
 
@@ -169,5 +177,12 @@ describe('A ConsentHandler', (): void => {
     await expect(handler.handle({ operation, oidcInteraction })).rejects.toThrow(FoundHttpError);
     expect(grantFn.mock.results).toHaveLength(1);
     expect(grantFn.mock.results[0].value.rejectedScopes).toEqual([ 'offline_access' ]);
+  });
+
+  it('deletes the accountId when logout is provided.', async(): Promise<void> => {
+    const operation = createPostJsonOperation({ logOut: true });
+    await expect(handler.handle({ operation, oidcInteraction })).rejects.toThrow(FoundHttpError);
+    expect((oidcInteraction!.session! as any).save).toHaveBeenCalledTimes(1);
+    expect(oidcInteraction!.session!.accountId).toBeUndefined();
   });
 });
