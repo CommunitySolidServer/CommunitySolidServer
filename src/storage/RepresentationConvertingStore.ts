@@ -45,6 +45,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
 
   public async addResource(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ChangeMap> {
+    // In case of containers, no content-type is required and the representation is not used.
     if (representation.metadata.contentType) {
       // We can potentially run into problems here if we convert a turtle document where the base IRI is required,
       // since we don't know the resource IRI yet at this point.
