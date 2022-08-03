@@ -218,11 +218,9 @@ export class DataAccessorBasedStore implements ResourceStore {
       namedNode(this.metadataStrategy.getAuxiliaryIdentifier(identifier).path),
     )) {
       // Preserve all the quads from the old metadata apart from the ContentType
+      oldMetadata.contentType = undefined;
       const quads = oldMetadata.quads();
-      const { contentType } = representation.metadata;
-
       representation.metadata.addQuads(quads);
-      representation.metadata.contentType = contentType;
     }
 
     // Might want to redirect in the future.
@@ -432,9 +430,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     metadata.addQuads(quads);
 
     // Remove the response metadata as this must not be stored
-    // Also remove the content type of the metadata as the servers controls how this is stored internally
     this.removeResponseMetadata(metadata);
-    metadata.removeAll(CONTENT_TYPE_TERM);
     await this.accessor.writeMetadata(subjectIdentifier, metadata);
 
     this.addActivityMetadata(changes, subjectIdentifier, AS.terms.Update);

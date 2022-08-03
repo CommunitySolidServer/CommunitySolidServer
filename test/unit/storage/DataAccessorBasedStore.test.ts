@@ -651,6 +651,37 @@ describe('A DataAccessorBasedStore', (): void => {
       );
     });
 
+    it('preserves the old metadata of a resource even when the content-types have changed.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const representationWithMetadata: Representation = {
+        binary: true,
+        data: guardedStreamFrom([ '<a> <b> <c>' ]),
+        metadata: new RepresentationMetadata(
+          { [CONTENT_TYPE]: 'text/turtle',
+            [RDF.type]: namedNode(LDP.Resource),
+            [RDF.type]: namedNode('http://example.org/Type') },
+        ),
+        isEmpty: false,
+      };
+      await store.setRepresentation(resourceID, representationWithMetadata);
+      expect(accessor.data[resourceID.path].metadata.contentType).toBe('text/turtle');
+
+      const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
+      representation.metadata.add(
+        SOLID_META.terms.preserve, namedNode(metaResourceID.path), SOLID_META.terms.ResponseMetadata,
+      );
+      representation.metadata.contentType = 'text/plain; charset=UTF-8';
+      await store.setRepresentation(resourceID, representation);
+      const { metadata } = accessor.data[resourceID.path];
+      expect(metadata.quads(null, RDF.terms.type)).toHaveLength(2);
+      expect(metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic(
+        [ quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
+          quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')) ],
+      );
+      expect(metadata.contentType).toBe('text/plain');
+      expect(metadata.contentTypeObject?.parameters).toEqual({ charset: 'UTF-8' });
+    });
+
     it('errors when trying to set a container representation when it already exists.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       accessor.data[resourceID.path] = representation;
