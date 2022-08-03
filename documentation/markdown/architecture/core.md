@@ -1,15 +1,7 @@
-# Architecture overview
+# Core building blocks
 
-The initial architecture document the project was started from can be found [here](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf).
-Many things have been added since the original inception of the project,
-but the core ideas within that document are still valid.
-
-As can be seen from the architecture, an important idea is the modularity of all components.
-No actual implementations are defined there, only their interfaces.
-Making all the components independent of each other in such a way provides us with an enormous flexibility:
-they can all be replaced by a different implementation, without impacting anything else.
-This is how we can provide many different configurations for the server,
-and why it is impossible to provide ready solutions for all possible combinations.
+There are several core building blocks used in many places of the server.
+These are described here.
 
 ## Handlers
 A very important building block that gets reused in many places is the `AsyncHandler`.
@@ -48,26 +40,3 @@ Internally this means we are mostly handling data as `Readable` objects.
 We actually use `Guarded<Readable>` which is an internal format we created to help us with error handling.
 Such streams can be created using utility functions such as `guardStream` and `guardedStreamFrom`.
 Similarly, we have a `pipeSafely` to pipe streams in such a way that also helps with errors.
-
-## Example request
-In this section we will give a high level overview of all the components
-a request passes through when it enters the server.
-This is specifically an LDP request, e.g. a POST request to create a new resource.
-
-1. The correct `HttpHandler` gets found, responsible for LDP requests.
-2. The HTTP request gets parsed into a manageable format, both body and metadata such as headers.
-3. The identification credentials of the request, if any, are extracted and parsed to authenticate the calling agent.
-4. The request gets authorized or rejected, based on the credentials from step 3
-   and the authorization rules of the target resource.
-5. Based on the HTTP method, the corresponding method from the `ResourceStore` gets called,
-   which in the case of a POST request will return the location of the newly created error.
-6. The returned data and metadata get converted to an HTTP response and sent back in the `ResponseWriter`.
-
-In case any of the steps above error, an error will be thrown.
-The `ErrorHandler` will convert the error to an HTTP response to be returned.
-
-Below are sections that go deeper into the specific steps.
-Not all steps are covered yet and will be added in the future.
-
-* [How authentication and authorization work](features/authorization.md)
-* [What the `ResourceStore` looks like](features/resource-store.md)

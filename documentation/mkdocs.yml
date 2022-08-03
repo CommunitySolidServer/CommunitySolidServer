@@ -54,7 +54,12 @@ markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
   - pymdownx.smartsymbols
-
+  - pymdownx.superfences:
+      custom_fences:
+        # need to fork the theme to make changes https://github.com/squidfunk/mkdocs-material/issues/3665#issuecomment-1060019924
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 extra:
   version:
@@ -79,11 +84,18 @@ nav:
     - Client credentials: usage/client-credentials.md
     - Seeding pods: usage/seeding-pods.md
   - Architecture:
-    - Architecture: architecture/architecture.md
+    - Overview: architecture/overview.md
     - Dependency injection: architecture/dependency-injection.md
+    - Core: architecture/core.md
     - Features:
-        - Authorization: architecture/features/authorization.md
-        - Resource Store: architecture/features/resource-store.md
+        - Command line arguments: architecture/features/cli.md
+        - Server initialization: architecture/features/initialization.md
+        - HTTP requests: architecture/features/http-handler.md
+        - Solid protocol:
+            - Overview: architecture/features/protocol/overview.md
+            - Parsing: architecture/features/protocol/parsing.md
+            - Authorization: architecture/features/protocol/authorization.md
+            - Resource Store: architecture/features/protocol/resource-store.md
   - Contributing:
     - Pull requests: contributing/making-changes.md
     - Releases: contributing/release.md
@@ -91,3 +103,4 @@ nav:
 
 # To write documentation locally, execute the next line and browse to http://localhost:8000
 # docker run --rm -it -p 8000:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material
+# Alternatively, install `mkdocs` and `mkdocs-material` using `pip`, browse to the documentation folder and run `mkdocs serve`

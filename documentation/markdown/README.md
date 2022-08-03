@@ -38,7 +38,7 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 ## What the internals look like
 
  * [How the server uses dependency injection](architecture/dependency-injection.md)
- * [What the architecture looks like](architecture/architecture.md)
+ * [What the architecture looks like](architecture/overview.md)
  
 ## Making changes
 
