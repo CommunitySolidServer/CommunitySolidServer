@@ -8,7 +8,8 @@ const guardedTimeout = Symbol('guardedTimeout');
 
 // Private fields for guarded streams
 class Guard {
-  private [guardedErrors]: Error[];
+  // Workaround for the fact that we don't initialize this variable as expected
+  declare private [guardedErrors]: Error[];
   private [guardedTimeout]?: NodeJS.Timeout;
 }
 
@@ -20,7 +21,7 @@ class Guard {
 export type Guarded<T extends NodeJS.EventEmitter = NodeJS.EventEmitter> = T & Guard;
 
 /**
- * Determines whether the stream is guarded from emitting errors.
+ * Determines whether the stream is guarded against emitting errors.
  */
 export function isGuarded<T extends NodeJS.EventEmitter>(stream: T): stream is Guarded<T> {
   return typeof (stream as any)[guardedErrors] === 'object';

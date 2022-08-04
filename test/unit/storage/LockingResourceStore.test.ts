@@ -33,7 +33,7 @@ describe('A LockingResourceStore', (): void => {
 
     const readable = guardedStreamFrom([ 1, 2, 3 ]);
     const { destroy } = readable;
-    readable.destroy = jest.fn((error): void => destroy.call(readable, error));
+    readable.destroy = jest.fn((error): any => destroy.call(readable, error));
     source = {
       getRepresentation: jest.fn((): any => addOrder('getRepresentation', { data: readable } as Representation)),
       addResource: jest.fn((): any => addOrder('addResource')),

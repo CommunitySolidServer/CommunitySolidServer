@@ -489,7 +489,7 @@ describe('AppRunner', (): void => {
       // Check logLevel to be set to debug instead of default `info`
       expect(ComponentsManager.build).toHaveBeenCalledWith({
         dumpErrorState: true,
-        logLevel: 'info',
+        logLevel: 'debug',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
       });
@@ -502,7 +502,6 @@ describe('AppRunner', (): void => {
       expect(cliExtractor.handleSafe).toHaveBeenCalledWith([ 'node', 'script' ]);
       expect(shorthandResolver.handleSafe).toHaveBeenCalledTimes(1);
       expect(shorthandResolver.handleSafe).toHaveBeenCalledWith(defaultParameters);
-      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
       expect(manager.instantiate).toHaveBeenNthCalledWith(2,
         'urn:solid-server:default:App',
         { variables: defaultVariables });

@@ -81,6 +81,8 @@ docker run --rm -v ~/Solid:/data -p 3000:3000 -it solidproject/community-server:
 docker run --rm -p 3000:3000 -it solidproject/community-server -c config/default.json
 # Or use your own configuration mapped to the right directory
 docker run --rm -v ~/solid-config:/config -p 3000:3000 -it solidproject/community-server -c /config/my-config.json
+# Or use environment variables to configure your css instance
+docker run --rm -v ~/Solid:/data -p 3000:3000 -it -e CSS_CONFIG=config/file-no-setup.json -e CSS_LOGGING_LEVEL=debug solidproject/community-server
 ```
 
 ### 🗃️ Helm Chart
@@ -128,6 +130,15 @@ The Community Solid Server can be started in multithreaded mode with any config.
 npm start -- -c config/file.json -w -1
 ```
 
+### 🖥️ Environment variables
+Parameters can also be passed through environment variables. 
+
+They are prefixed with `CSS_` and converted from `camelCase` to `CAMEL_CASE`
+
+> eg. `--showStackTrace` => `CSS_SHOW_STACK_TRACE`
+
+**Note: command-line arguments will always override environment variables!**
+
 ### 🧶 Custom configurations
 More substantial changes to server behavior can be achieved
 by writing new configuration files in JSON-LD.
@@ -144,12 +155,12 @@ Recipes for configuring the server can be found at [CommunitySolidServer/recipes
 The server allows writing and plugging in custom modules
 without altering its base source code.
 
-The [📗 API documentation](https://communitysolidserver.github.io/CommunitySolidServer/docs/) and
+The [📗 API documentation](https://communitysolidserver.github.io/CommunitySolidServer/latest/docs) and
 the [📐 architectural diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
 can help you find your way.
 
 If you want to help out with server development,
-have a look at the [📓 user documentation](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/documentation/) and
+have a look at the [📓 user documentation](https://communitysolidserver.github.io/CommunitySolidServer/) and
 [🛠️ good first issues](https://github.com/CommunitySolidServer/CommunitySolidServer/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
 

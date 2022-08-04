@@ -62,8 +62,15 @@ curl -X DELETE http://localhost:3000/myfile.txt
 
 ### `PATCH`: Modifying resources
 
-Currently, only patches over RDF resources are supported using [SPARQL Update](https://www.w3.org/TR/sparql11-update/)
-queries without `WHERE` clause.
+Modify a resource using [N3 Patch](https://solidproject.org/TR/protocol#n3-patch):
+
+```shell
+curl -X PATCH -H "Content-Type: text/n3" \
+  --data-raw "@prefix solid: <http://www.w3.org/ns/solid/terms#>. _:rename a solid:InsertDeletePatch; solid:inserts { <ex:s2> <ex:p2> <ex:o2>. }." \
+  http://localhost:3000/myfile.ttl
+```
+
+Modify a resource using [SPARQL Update](https://www.w3.org/TR/sparql11-update/):
 
 ```shell
 curl -X PATCH -H "Content-Type: application/sparql-update" \

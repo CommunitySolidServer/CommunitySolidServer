@@ -36,7 +36,8 @@ export class BasicResponseWriter extends ResponseWriter {
     if (input.result.data) {
       const pipe = pipeSafely(input.result.data, input.response);
       pipe.on('error', (error): void => {
-        this.logger.error(`Writing to HttpResponse failed with message ${error.message}`);
+        this.logger.error(`Aborting streaming response because of server error; headers already sent.`);
+        this.logger.error(`Response error: ${error.message}`);
       });
     } else {
       // If there is input data the response will end once the input stream ends

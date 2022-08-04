@@ -1,6 +1,31 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [4.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.1...v4.1.0) (2022-08-04)
+
+### Features
+
+* add test phase for docker images ([0159557](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/01595577a8b9aabf618ece4c261f95fc2082023f))
+* args as env vars ([a461586](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a46158692178d30975f3a91a9ce2bbdbc4f5882f))
+* build versioned documentation site from CI pipeline ([027c803](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/027c803b33ff2309d09c1cc908b971c8ae785a43))
+
+### Fixes
+
+* Accept client WebIDs with a context array ([d290848](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d2908480960b9708460ad71c010ea11e86497968))
+* Enable ACL in default quota config ([26b42f0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/26b42f0b175293e266bd404a1dbe206d21154690))
+* Improve HTTP stream error messages ([93a141d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/93a141dd6160c0f55839dfec1312b9f085569bcd))
+* prevent JsonResourceStorage from generating too long filenames ([13dbcb6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/13dbcb662b84ce926fcae832a16da47305e370f4))
+* rdf convertors should not read or write plain JSON ([9ecb769](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9ecb769e092cfb4cb08b514477f320956a4b302c))
+* Rewrite request with a root path to OIDC Provider ([0a84230](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0a84230307d72e1afa30386ff9dda160a9ca98d4))
+* Use encrypted field to check for TLS. ([82f9070](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/82f90709a656b0d996118d2e869b6b4a2c8a2e5d))
+
+### Chores
+
+* Update dependencies ([15e756e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/15e756efc1fa6c732b9872ea75249606ae9144a6))
+
+### Documentation
+
+* update docs links to new documentation site ([d0f9d1e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d0f9d1e24da7d89240efdbc11df7a5096841a398))
 
 ## [5.0.0-alpha.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.0...v5.0.0-alpha.0) (2022-05-05)
 
