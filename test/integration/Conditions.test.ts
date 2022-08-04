@@ -91,7 +91,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     expect(response.status).toBe(412);
 
     // PUT
-    await patchResource(documentUrl, query);
+    await patchResource(documentUrl, query, 'sparql');
 
     // PUT with header now succeeds
     const query2 = 'INSERT {<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>} WHERE {}';

@@ -7,7 +7,6 @@ import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAcce
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
-import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
@@ -17,8 +16,7 @@ import { guardedStreamFrom, readableToString } from '../../../../src/util/Stream
 import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
-
-const { namedNode } = DataFactory;
+const { namedNode, quad } = DataFactory;
 
 jest.mock('fs');
 jest.mock('fs-extra');
@@ -252,11 +250,11 @@ describe('A FileDataAccessor', (): void => {
     it('adds stored metadata when requesting metadata.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': '<http://this> <http://is> <http://metadata>.' };
       metadata = await accessor.getMetadata({ path: `${base}resource` });
-      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'http://this')).toBe(true);
+      expect(metadata.quads().some((qd): boolean => qd.subject.value === 'http://this')).toBe(true);
 
       cache.data = { container: { '.meta': '<http://this> <http://is> <http://metadata>.' }};
       metadata = await accessor.getMetadata({ path: `${base}container/` });
-      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'http://this')).toBe(true);
+      expect(metadata.quads().some((qd): boolean => qd.subject.value === 'http://this')).toBe(true);
     });
 
     it('throws an error if there is a problem with the internal metadata.', async(): Promise<void> => {
@@ -269,12 +267,6 @@ describe('A FileDataAccessor', (): void => {
     it('throws a 404 if the identifier does not start with the base.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: 'badpath' }, data, metadata))
         .rejects.toThrow(NotFoundHttpError);
-    });
-
-    it('throws an error when writing to a metadata path.', async(): Promise<void> => {
-      const result = accessor.writeDocument({ path: `${base}resource.meta` }, data, metadata);
-      await expect(result).rejects.toThrow(ConflictHttpError);
-      await expect(result).rejects.toThrow('Not allowed to create files with the metadata extension.');
     });
 
     it('writes the data to the corresponding file.', async(): Promise<void> => {
@@ -422,6 +414,22 @@ describe('A FileDataAccessor', (): void => {
       metadata = new RepresentationMetadata({ path: `${base}` }, { likes: 'apples' });
       await expect(accessor.writeContainer({ path: `${base}` }, metadata)).resolves.toBeUndefined();
       expect(cache.data).toEqual({ '.meta': expect.stringMatching(`<${base}> <likes> "apples".`) });
+    });
+  });
+
+  describe('writing metadata', (): void => {
+    it('writes metadata to the metadata resource.', async(): Promise<void> => {
+      const resourceIdentifier = { path: `${base}resource` };
+      const inputMetadata = new RepresentationMetadata(resourceIdentifier, { [RDF.type]: LDP.terms.Resource });
+      await accessor.writeDocument(resourceIdentifier, data, inputMetadata);
+
+      const extraMetadata = new RepresentationMetadata(resourceIdentifier);
+      extraMetadata.addQuad(namedNode('a'), namedNode('b'), namedNode('c'));
+      await expect(accessor.writeMetadata(resourceIdentifier, extraMetadata)).resolves.toBeUndefined();
+
+      const outputMetadata = await accessor.getMetadata(resourceIdentifier);
+      expect(outputMetadata.quads(`${base}a`))
+        .toStrictEqual([ quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}c`)) ]);
     });
   });
 

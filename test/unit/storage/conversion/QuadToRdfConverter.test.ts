@@ -8,7 +8,8 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
-import { DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
+import { DC, PREFERRED_PREFIX_TERM, SOLID_META } from '../../../../src/util/Vocabularies';
+import quad = DataFactory.quad;
 const { namedNode, triple } = DataFactory;
 
 describe('A QuadToRdfConverter', (): void => {
@@ -126,6 +127,27 @@ test:s dc:modified test:o.
     ]
   }
 ]
+`,
+    );
+  });
+
+  it('converts quads in the ResponseMetadata graph to the default graph.', async(): Promise<void> => {
+    const representation = new BasicRepresentation([ quad(
+      namedNode('http://test.com/s'),
+      namedNode('http://test.com/p'),
+      namedNode('http://test.com/o'),
+      SOLID_META.terms.ResponseMetadata,
+    ) ],
+    metadata);
+    const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
+    const result = await converter.handle({ identifier, representation, preferences });
+    expect(result).toMatchObject({
+      binary: true,
+      metadata: expect.any(RepresentationMetadata),
+    });
+    expect(result.metadata.contentType).toBe('text/turtle');
+    await expect(readableToString(result.data)).resolves.toBe(
+      `<http://test.com/s> <http://test.com/p> <http://test.com/o>.
 `,
     );
   });

@@ -9,6 +9,7 @@
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
 - When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
 - The user can choose to "Log in with a different account" on the consent page
+- Metadata of resources can now be edited by PATCHing its description resource. See the [documentation](./documentation/metadata-editing.md) for more information.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
@@ -59,6 +60,16 @@ The following changes are relevant for v4 custom configs that replaced certain f
   - `/ldp/modes/default.json`
 - The `PermissionReader` structure has changed to be more consistent.
   - `/ldp/authorization/*`
+- The `PutOperationHandler` constructor now has an extra argument: `metadataStrategy`, resulting in a change in `/ldp/handler/components/operation-handler.json`
+- `.acl` and `.meta` are now generated for every non-auxiliary by `AuxiliaryLinkMetadataWriter` through an update in `/util/auxiliary/strategies/acl.json` and the creation of `/ldp/metadata-writer/writers/link-rel-metadata.json` 
+  - As a result the key-value for `acl` resources was removed from `/ldp/metadata-writer/writers/link-rel.json`
+- The `DataAccessorBasedStore` constructor now has two new arguments: `metadataStrategy`. As a result following configuration files are changed:
+  - `/sparql-file-storage.json`
+  - `/storage/backend/*`
+- `/storage/middleware/stores/patching.json` has changed significantly to allow description resources to be patched.
+- The metadata auxiliary strategy was added to the default list of auxiliary strategies.
+  - `/util/auxiliary/*`
+- Parsing link headers is updated in `/ldp/metadata-parser/parsers/link.json` as it now uses a `LinkRelObject` as a value
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
@@ -78,6 +89,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - All permission related interfaces have changed to support permissions over multiple identifiers.
 - `IdentifierStrategy` has a new `contains` method.
 - `SettingsResolver` was renamed to `ShorthandResolver`, together with all related classes and parameters.
+- `DataAccessor` interface is changed. There is now a new method called `writeMetadata`.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
 

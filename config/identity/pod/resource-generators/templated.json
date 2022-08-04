@@ -12,7 +12,9 @@
       "templateEngine": {
         "@type": "HandlebarsTemplateEngine",
         "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
-      }
+      },
+      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
+      "store": { "@id": "urn:solid-server:default:ResourceStore"}
     }
   ]
 }

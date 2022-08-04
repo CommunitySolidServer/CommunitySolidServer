@@ -23,6 +23,7 @@ describe('ValidatingDataAccessor', (): void => {
       writeContainer: jest.fn(),
       deleteResource: jest.fn(),
       getMetadata: jest.fn(),
+      writeMetadata: jest.fn(),
     };
     childAccessor.getChildren = jest.fn();
     passthrough = new PassthroughDataAccessor(childAccessor);
@@ -54,6 +55,13 @@ describe('ValidatingDataAccessor', (): void => {
       await passthrough.getMetadata(mockIdentifier);
       expect(childAccessor.getMetadata).toHaveBeenCalledTimes(1);
       expect(childAccessor.getMetadata).toHaveBeenCalledWith(mockIdentifier);
+    });
+  });
+  describe('writeMetadata()', (): void => {
+    it('should call the accessors writeMetadata() function.', async(): Promise<void> => {
+      await passthrough.writeMetadata(mockIdentifier, mockMetadata);
+      expect(childAccessor.writeMetadata).toHaveBeenCalledTimes(1);
+      expect(childAccessor.writeMetadata).toHaveBeenCalledWith(mockIdentifier, mockMetadata);
     });
   });
   describe('getChildren()', (): void => {

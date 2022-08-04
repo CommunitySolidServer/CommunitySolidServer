@@ -1,6 +1,5 @@
 import { BaseFileIdentifierMapper } from '../../../../src/storage/mapping/BaseFileIdentifierMapper';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
-import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../../../../src/util/PathUtil';
 
@@ -66,10 +65,13 @@ describe('An BaseFileIdentifierMapper', (): void => {
       });
     });
 
-    it('errors on metadata identifiers.', async(): Promise<void> => {
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test.meta` }, true)).rejects.toThrow(ConflictHttpError);
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test.meta` }, true))
-        .rejects.toThrow('Not allowed to create files with the metadata extension.');
+    it('returns the corresponding file path for metadata identifiers.', async(): Promise<void> => {
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test.meta` }, false, 'text/turtle')).resolves.toEqual({
+        identifier: { path: `${base}test.meta` },
+        filePath: `${rootFilepath}test.meta`,
+        contentType: 'text/turtle',
+        isMetadata: true,
+      });
     });
 
     it('generates correct metadata file paths.', async(): Promise<void> => {

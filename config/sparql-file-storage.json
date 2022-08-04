@@ -72,7 +72,8 @@
       "@type": "DataAccessorBasedStore",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" }
+      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
     },
     {
       "@id": "urn:solid-server:default:SparqlResourceStore",
@@ -83,7 +84,8 @@
         "@type": "DataAccessorBasedStore",
         "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
         "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-        "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" }
+        "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
+        "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
       }
     }
   ]

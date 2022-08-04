@@ -12,13 +12,8 @@
           "@type": "WaterfallHandler",
           "handlers": [
             {
-              "comment": "Makes sure PATCH operations on containers target the metadata.",
-              "@type": "ContainerPatcher",
-              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" }
-            },
-            {
               "@type": "ConvertingPatcher",
-              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
+              "patcher": { "@id": "urn:solid-server:default:RdfPatcher" },
               "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
               "intermediateType": "internal/quads",
               "defaultType": "text/turtle"
@@ -30,6 +25,60 @@
           ]
         }
       }
+    },
+    {
+      "comment": "Converts the input stream into an RDF/JS Dataset.",
+      "@id": "urn:solid-server:default:RdfPatcher",
+      "@type": "RdfPatcher",
+      "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDFStore" }
+    },
+    {
+      "@id": "urn:solid-server:default:PatchHandler_RDFStore",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:PatchHandler_ImmutableMetadata"},
+        { "@id": "urn:solid-server:default:PatchHandler_RDF" }
+      ]
+    },
+    {
+      "comment": "Patches metadata resources. Prevents specific triple patterns from being updated.",
+      "@id": "urn:solid-server:default:PatchHandler_ImmutableMetadata",
+      "@type": "ImmutableMetadataPatcher",
+      "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
+      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
+      "immutablePatterns": [
+        {
+          "comment": "The root storage of a Pod is managed by the server.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+          "object": "http://www.w3.org/ns/pim/space#Storage"
+        },
+        {
+          "comment": "Resource containment is managed by LDP.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/ns/ldp#contains"
+        },
+        {
+          "comment": "The size of the resource is managed by the server.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/ns/posix/stat#size"
+        },
+        {
+          "comment": "The last modified timestamp of a resource is managed by the server.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/ns/posix/stat#mtime"
+        },
+        {
+          "comment": "The last modified datetime of a resource is managed by the server.",
+          "@type": "FilterPattern",
+          "predicate": "http://purl.org/dc/terms/modified"
+        },
+        {
+          "comment": "The content type of a resource is managed by the server.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/ns/ma-ont#format"
+        }
+      ]
     },
     {
       "comment": "Dedicated handlers that apply specific types of patch documents",

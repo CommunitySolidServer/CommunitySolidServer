@@ -30,6 +30,7 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 ## Using the server
 
  * [Basic example HTTP requests](example-requests.md)
+ * [Editing the metadata of resources](metadata-editing.md)
  * [How to use the Identity Provider](identity-provider.md)
  * [How to automate authentication](client-credentials.md)
  * [How to automatically seed pods on startup](seeding-pods.md)

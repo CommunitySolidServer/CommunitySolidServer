@@ -19,7 +19,6 @@
         "@id": "urn:solid-server:template:variable:baseUrl"
       }
     },
-
     {
       "@id": "urn:solid-server:template:ResourceStore",
       "@type": "DataAccessorBasedStore",
@@ -31,9 +30,11 @@
       },
       "auxiliaryStrategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
+      },
+      "metadataStrategy": {
+        "@id": "urn:solid-server:default:MetadataStrategy"
       }
     },
-
     {
       "@id": "urn:solid-server:template:variable:baseUrl",
       "@type": "Variable"

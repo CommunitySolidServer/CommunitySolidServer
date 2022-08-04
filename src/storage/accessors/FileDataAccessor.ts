@@ -88,7 +88,7 @@ export class FileDataAccessor implements DataAccessor {
     // Check if we already have a corresponding file with a different extension
     await this.verifyExistingExtension(link);
 
-    const wroteMetadata = await this.writeMetadata(link, metadata);
+    const wroteMetadata = await this.writeMetadataFile(link, metadata);
 
     try {
       await this.writeDataFile(link.filePath, data);
@@ -109,7 +109,12 @@ export class FileDataAccessor implements DataAccessor {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false);
     await ensureDir(link.filePath);
 
-    await this.writeMetadata(link, metadata);
+    await this.writeMetadataFile(link, metadata);
+  }
+
+  public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
+    const metadataLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
+    await this.writeMetadataFile(metadataLink, metadata);
   }
 
   /**
@@ -188,7 +193,7 @@ export class FileDataAccessor implements DataAccessor {
    *
    * @returns True if data was written to a file.
    */
-  protected async writeMetadata(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
+  protected async writeMetadataFile(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
     // These are stored by file system conventions
     metadata.remove(RDF.terms.type, LDP.terms.Resource);
     metadata.remove(RDF.terms.type, LDP.terms.Container);

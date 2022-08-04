@@ -65,7 +65,7 @@ describe('A RdfToQuadConverter', (): void => {
   });
 
   it('emits on prefixes when converting turtle to quads.', async(): Promise<void> => {
-    const id: ResourceIdentifier = { path: 'http://example.com/' };
+    const id: ResourceIdentifier = { path: 'http://example.com/resource' };
     const metadata = new RepresentationMetadata('text/turtle');
     const representation = new BasicRepresentation(`
       @prefix foaf: <http://xmlns.com/foaf/0.1/> .
