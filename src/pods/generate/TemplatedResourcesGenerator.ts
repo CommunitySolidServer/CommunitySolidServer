@@ -71,6 +71,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private readonly templateExtension: string;
   private readonly metadataStrategy: AuxiliaryStrategy;
   private readonly store: ResourceSet;
+
   /**
    * A mapper is needed to convert the template file paths to identifiers relative to the given base identifier.
    *
@@ -167,7 +168,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
       metadata.contentType = link.contentType;
     }
     // Do not yield a container resource if it already exists
-    if (!(isContainerIdentifier(link.identifier) && await this.store.hasResource(link.identifier))) {
+    if (!isContainerIdentifier(link.identifier) || !await this.store.hasResource(link.identifier)) {
       yield {
         identifier: link.identifier,
         representation: new BasicRepresentation(data ?? [], metadata),

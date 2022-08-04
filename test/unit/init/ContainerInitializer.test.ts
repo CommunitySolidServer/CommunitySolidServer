@@ -4,7 +4,6 @@ import { getLoggerFor } from '../../../src/logging/LogUtil';
 import type { Resource, ResourcesGenerator } from '../../../src/pods/generate/ResourcesGenerator';
 import type { KeyValueStorage } from '../../../src/storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
-import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 
 jest.mock('../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { warn: jest.fn(), debug: jest.fn(), info: jest.fn() } as any;
@@ -70,15 +69,5 @@ describe('A ContainerInitializer', (): void => {
     expect(store.setRepresentation).toHaveBeenCalledTimes(2);
     expect(logger.warn).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenLastCalledWith('Failed to create resource /.acl: bad input');
-  });
-
-  it('does not log warnings when container resource creation fails.', async(): Promise<void> => {
-    store.setRepresentation.mockRejectedValueOnce(new ConflictHttpError('bad input'));
-    generatorData = [
-      { identifier: { path: 'http://test.com/foo/' }, representation: '/container/' as any },
-    ];
-    await expect(initializer.handle()).resolves.toBeUndefined();
-    expect(generator.generate).toHaveBeenCalledTimes(1);
-    expect(store.setRepresentation).toHaveBeenCalledTimes(1);
   });
 });

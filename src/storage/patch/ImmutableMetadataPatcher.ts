@@ -47,7 +47,6 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
 
     const immutablePatternMap = new Map<FilterPattern, Quad[]>();
     const baseSubject = namedNode(this.metadataStrategy.getSubjectIdentifier(input.identifier).path);
-
     for (const immutablePattern of this.immutablePatterns) {
       const { predicate, object } = immutablePattern;
       const subject = immutablePattern.subject ?? baseSubject;

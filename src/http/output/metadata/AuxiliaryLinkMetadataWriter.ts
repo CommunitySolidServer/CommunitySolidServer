@@ -19,7 +19,7 @@ export class AuxiliaryLinkMetadataWriter extends MetadataWriter {
 
   /**
    * @param auxiliaryStrategy - The strategy used to check if an identifier is any kind of auxiliary identifier.
-   * @param specificStrategy - The strategy used to create pme specific kind of auxiliary identifier.
+   * @param specificStrategy - The strategy used to create a specific kind of auxiliary identifier.
    * @param relationType - The value used to create the "rel" value of the Link header.
    */
   public constructor(auxiliaryStrategy: AuxiliaryStrategy, specificStrategy: AuxiliaryStrategy, relationType: string) {
@@ -31,7 +31,7 @@ export class AuxiliaryLinkMetadataWriter extends MetadataWriter {
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
     const identifier = { path: input.metadata.identifier.value };
-    // The check for blank nodes is executed in order to not have blank nodes in Link headers when an error occurred.
+    // The metadata identifier will be a blank node in case an error was thrown.
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) && !Util.isBlankNode(input.metadata.identifier)) {
       const auxiliaryIdentifier = this.specificStrategy.getAuxiliaryIdentifier(identifier);
       addHeader(input.response, 'Link', `<${auxiliaryIdentifier.path}>; rel="${this.relationType}"`);
