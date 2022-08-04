@@ -1,6 +1,72 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [4.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.1...v4.1.0) (2022-08-04)
+
+
+### Features
+
+* add test phase for docker images ([0159557](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/01595577a8b9aabf618ece4c261f95fc2082023f))
+* args as env vars ([a461586](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a46158692178d30975f3a91a9ce2bbdbc4f5882f))
+* build versioned documentation site form CI pipeline ([027c803](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/027c803b33ff2309d09c1cc908b971c8ae785a43))
+
+
+### Performance
+
+* small improvement to dockerfile building and switching maintainer ([dacd6d0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/dacd6d00067de7f0dc1cb2ea65a8ab686004c433))
+
+
+### Testing
+
+* add test for env variable startup of apprunner ([31cdb20](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/31cdb20bcebb8176eab69fc7c54f5f3dcbfa0b03))
+
+
+### Fixes
+
+* Accept client WebIDs with a context array ([d290848](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d2908480960b9708460ad71c010ea11e86497968))
+* Enable ACL in default quota config ([26b42f0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/26b42f0b175293e266bd404a1dbe206d21154690))
+* Improve HTTP stream error messages ([93a141d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/93a141dd6160c0f55839dfec1312b9f085569bcd))
+* Make capitalization in RELEASE_NOTES consistent ([bc088f4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/bc088f494dfe9254c80e7ca875c3e1ffa94eb1d4))
+* prevent JsonResourceStorage from generating too long filenames ([13dbcb6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/13dbcb662b84ce926fcae832a16da47305e370f4))
+* rdf convertors should not read or write plain JSON ([9ecb769](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9ecb769e092cfb4cb08b514477f320956a4b302c))
+* Rewrite request with a root path to OIDC Provider ([0a84230](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0a84230307d72e1afa30386ff9dda160a9ca98d4))
+* Update MashLib URL in pod README ([16cff45](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/16cff451100e74fb3e66893503a796dfdab5b673))
+* Use encrypted field to check for TLS. ([82f9070](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/82f90709a656b0d996118d2e869b6b4a2c8a2e5d))
+
+
+### Refactors
+
+* Fix indentation ([d7d1480](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d7d1480e8e44f9687059907d429a0024bca7824f))
+
+
+### Chores
+
+* Add Code of Conduct ([54d7eef](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/54d7eefecbb7cf204373b82365275d6009105397))
+* Add email to senderName for email sender ([3dc8b49](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3dc8b497bb62a4cadf1188fff391f2cd1f83406e))
+* Clarify error messages. ([ba40374](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ba40374c662b79138092e5148710c0fc13e0fd93))
+* **deps:** bump actions/setup-python from 2 to 4 ([df2926a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/df2926a52ff7ca45a4a2b19871f293b791360c05))
+* **deps:** bump got from 11.8.3 to 11.8.5 ([8ace470](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/8ace4705c4a2a2e448383cfd8fa83a5afb56ec5f))
+* **deps:** bump semver-regex from 3.1.3 to 3.1.4 ([3d42f56](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3d42f569fec153a375af7acd77b632b57865c1b8))
+* Fix CTH script ([e7ba2d4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e7ba2d49f80a52e47ac052c5c82ac7ecb4ebc53e))
+* Print error details when fetchDataset fails ([74c2a9d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/74c2a9d9093114bc187bb8d457501ee70f11b39e))
+* Update contributors ([cf77137](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cf77137038dd95255d328111aa1730d6dac5f168))
+* Update dependencies ([15e756e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/15e756efc1fa6c732b9872ea75249606ae9144a6))
+* Update devdependencies ([deea184](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/deea184975185aabc54e64ca3544266ba50db147))
+* Use conventional changelog and automate config version bumps ([7c6eae0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7c6eae0ee6e9da9f3364b2758b74aed7af7e5306))
+
+
+### Documentation
+
+* Add N3 Patch to example requests ([085d0ac](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/085d0accad8e3cf64aa6d9db0597cd5aa8783a1b))
+* Fix link to Identity Provider section ([1350ec1](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1350ec113a9b97b37ff872dc77b2714d171f6005))
+* Link to tutorials in release docs ([8848695](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/8848695383e6468ca311246d86350a0ffe9850c1))
+* update docs links to new documentation site ([d0f9d1e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d0f9d1e24da7d89240efdbc11df7a5096841a398))
+* Update pre-release commit message in documentation ([953c2a1](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/953c2a1bd3f29a94605db6f194ddb19bd42c7629))
+* Update readme with config as env var update ([d6ff3b3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d6ff3b39d27b7f4a31f19b6761faf13a40f006c7))
+* Update release commit message in release documentation ([682bbe8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/682bbe88d0cffe25bd941988ddd42c0aa62d49c6))
+* Update RELEASE_NOTES.md ([6d8b562](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6d8b562a411c867b67cae5feddd83e61be47f47d))
+* Update tutorial URL ([c6b8def](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c6b8def8c198b342cdd4af0b1d890f077c8d5ec4))
+* updating seeding pods to reference new URLs ([bc68695](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/bc6869579a9725b45bb2860048f2dab2c59695f7))
 
 ## [4.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.0...v4.0.1) (2022-05-10)
 
