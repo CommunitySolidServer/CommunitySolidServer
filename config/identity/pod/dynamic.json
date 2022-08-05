@@ -45,9 +45,9 @@
     {
       "comment": "This is where the pod configurations will be stored.",
       "@id": "urn:solid-server:default:PodConfigurationStorage",
-      "@type": "JsonFileStorage",
-      "filePath": { "@id": "urn:solid-server:default:variable:podConfigJson" },
-      "locker": { "@id": "urn:solid-server:default:ResourceLocker" }
+      "@type": "EncodingPathStorage",
+      "relativePath": "/dynamic-pods/configs/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
     },
 
     {

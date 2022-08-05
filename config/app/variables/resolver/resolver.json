@@ -52,14 +52,6 @@
           }
         },
         {
-          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:podConfigJson",
-          "CombinedShorthandResolver:_resolvers_value": {
-            "@type": "AssetPathExtractor",
-            "key": "podConfigJson",
-            "defaultPath": "./pod-config.json"
-          }
-        },
-        {
           "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:seededPodConfigJson",
           "CombinedShorthandResolver:_resolvers_value": {
             "@type": "AssetPathExtractor",

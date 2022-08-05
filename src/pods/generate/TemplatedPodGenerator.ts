@@ -4,14 +4,14 @@ import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
-import { joinFilePath } from '../../util/PathUtil';
+import { joinFilePath, modulePathPlaceholder, resolveAssetPath } from '../../util/PathUtil';
 import type { PodSettings } from '../settings/PodSettings';
 import type { ComponentsJsFactory } from './ComponentsJsFactory';
 import type { PodGenerator } from './PodGenerator';
 import type { VariableHandler } from './variables/VariableHandler';
 import { isValidVariable, TEMPLATE, TEMPLATE_VARIABLE } from './variables/Variables';
 
-const DEFAULT_CONFIG_PATH = joinFilePath(__dirname, '../../../templates/config/');
+const DEFAULT_CONFIG_PATH = resolveAssetPath(`${modulePathPlaceholder}/templates/config/`);
 
 /**
  * Creates a new ResourceStore when creating a pod based on a Components.js configuration.

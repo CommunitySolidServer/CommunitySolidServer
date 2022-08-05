@@ -87,15 +87,6 @@
         },
         {
           "@type": "YargsParameter",
-          "name": "podConfigJson",
-          "options": {
-            "requiresArg": true,
-            "type": "string",
-            "describe": "Path to the file that keeps track of dynamic Pod configurations."
-          }
-        },
-        {
-          "@type": "YargsParameter",
           "name": "seededPodConfigJson",
           "options": {
             "requiresArg": true,
