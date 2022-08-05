@@ -1,14 +1,19 @@
 import { readdir } from 'fs-extra';
-import { InternalServerError, FileSystemResourceLocker } from '../../../../src';
+import { InternalServerError, FileSystemResourceLocker, joinFilePath } from '../../../../src';
+import { getTestFolder, removeFolder } from '../../../integration/Config';
 
-const lockFolder = './.internal/locks/';
+// Due to the nature of using a file locking library, this is a unit test that writes to disk.
+// In the future ( = if someone has time) we might want to split this up into a unit test with a `proper-lockfile` mock,
+// and an integration test that tests the behaviour of the library.
+const rootFilePath = getTestFolder('FileSystemResourceLocker');
+const lockFolder = joinFilePath(rootFilePath, '.internal/locks/');
 
 describe('A FileSystemResourceLocker', (): void => {
   let locker: FileSystemResourceLocker;
   const identifier = { path: 'http://test.com/foo' };
 
   beforeEach(async(): Promise<void> => {
-    locker = new FileSystemResourceLocker({ attemptSettings: { retryCount: 19, retryDelay: 100 }});
+    locker = new FileSystemResourceLocker({ rootFilePath, attemptSettings: { retryCount: 19, retryDelay: 100 }});
     await locker.initialize();
   });
 
@@ -23,6 +28,7 @@ describe('A FileSystemResourceLocker', (): void => {
 
   afterAll(async(): Promise<void> => {
     await locker.finalize();
+    await removeFolder(rootFilePath);
   });
 
   it('can lock and unlock a resource.', async(): Promise<void> => {
@@ -31,7 +37,7 @@ describe('A FileSystemResourceLocker', (): void => {
   });
 
   it('can lock and unlock a resource with a locker with indefinite retry.', async(): Promise<void> => {
-    const locker2 = new FileSystemResourceLocker({ attemptSettings: { retryCount: -1 }});
+    const locker2 = new FileSystemResourceLocker({ rootFilePath, attemptSettings: { retryCount: -1 }});
     await expect(locker2.acquire(identifier)).resolves.toBeUndefined();
     await expect(locker2.release(identifier)).resolves.toBeUndefined();
     await locker2.finalize();
@@ -116,14 +122,11 @@ describe('A FileSystemResourceLocker', (): void => {
     await expect(readdir(lockFolder)).resolves.toHaveLength(0);
   });
 
-  it('stops proper-lock from throwing errors onCompromise after finalize was called.',
-    async(): Promise<void> => {
-      expect((): void => (locker as any).customOnCompromised(new Error('test'))).toThrow();
-      await locker.finalize();
-      expect((locker as any).customOnCompromised(new Error('test'))).toBeUndefined();
-    });
-
-  it('can create a locker with default AttemptSettings.', async(): Promise<void> => {
-    expect((): FileSystemResourceLocker => new FileSystemResourceLocker()).not.toThrow();
+  it('stops proper-lock from throwing errors after finalize was called.', async(): Promise<void> => {
+    // Tests should never access private fields so we need to change this after splitting the test as mentioned above.
+    // Once we have a mock we can check which parameters `unlock` was called with and extract the function from there.
+    expect((): void => (locker as any).customOnCompromised(new Error('test'))).toThrow();
+    await locker.finalize();
+    expect((locker as any).customOnCompromised(new Error('test'))).toBeUndefined();
   });
 });
