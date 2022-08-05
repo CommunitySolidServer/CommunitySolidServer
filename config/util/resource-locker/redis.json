@@ -9,7 +9,7 @@
         "@id": "urn:solid-server:default:RedisLocker",
         "@type": "RedisLocker"
       },
-      "expiration": 3000
+      "expiration": 6000
     },
     {
       "@id": "urn:solid-server:default:CleanupInitializer",
