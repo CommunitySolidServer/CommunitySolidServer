@@ -42,33 +42,13 @@
       "@id": "urn:solid-server:default:DefaultUiConverter",
       "@type": "ConstantConverter",
       "contentType": "text/html",
-      "filePath": "./node_modules/mashlib/dist/databrowser.html",
+      "filePath": "./templates/penny-redirect/penny-redirect.html",
       "options_container": true,
       "options_document": true,
       "options_minQuality": 1,
       "options_disabledMediaRanges": [
         "image/*",
         "application/pdf"
-      ]
-    },
-
-    {
-      "comment": "Serve Mashlib static files.",
-      "@id": "urn:solid-server:default:StaticAssetHandler",
-      "@type": "StaticAssetHandler",
-      "assets": [
-        {
-          "StaticAssetHandler:_assets_key": "/mash.css",
-          "StaticAssetHandler:_assets_value": "./node_modules/mashlib/dist/mash.css"
-        },
-        {
-          "StaticAssetHandler:_assets_key": "/mashlib.min.js",
-          "StaticAssetHandler:_assets_value": "./node_modules/mashlib/dist/mashlib.min.js"
-        },
-        {
-          "StaticAssetHandler:_assets_key": "/mashlib.min.js.map",
-          "StaticAssetHandler:_assets_value": "./node_modules/mashlib/dist/mashlib.min.js.map"
-        }
       ]
     }
   ]
