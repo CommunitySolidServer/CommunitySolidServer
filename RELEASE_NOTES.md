@@ -29,6 +29,8 @@ The following changes pertain to the imports in the default configs:
   making them threadsafe.
 - 2 new options have been added for the `/http/server-factory/` imports: `https-websockets.json` and `https-no-websockets.json`,
   which allow starting the server with HTTPS by adding 2 new CLI parameters `httpsKey` and `httpsCert`.
+  - `/https-file-cli.json` was greatly simplified because of this change.
+- `/sparql-file-storage.json` had several changes, simplifying how regexes can be used.
 
 The following changes are relevant for v4 custom configs that replaced certain features.
 - CLI parsing had several changes.
@@ -41,7 +43,6 @@ The following changes are relevant for v4 custom configs that replaced certain f
    - `/storage/backend/quota/*`
 - Regex routing was updated to use ordered entries.
    - `/storage/backend/regex.json`
-   - `/sparql-file-storage.json`
 - The `IdentityProviderFactory` inputs have been extended.
   - `/identity/handler/provider-factory/identity.json`
 - Restructured the init configs.
@@ -62,7 +63,6 @@ The following changes are relevant for v4 custom configs that replaced certain f
 - Several components now take a `metadataStrategy` parameter to support the new metadata feature.
   - `/ldp/handler/components/operation-handler.json`
   - `/storage/backend/*`
-  - `/sparql-file-storage.json`
 - Generation of auxiliary link headers was updated. 
   - `/ldp/metadata-writer/writers/link-rel.json`
 - PATCHing related components were completely refactored.
