@@ -18,7 +18,6 @@ export async function getResource(url: string,
   expect(response.headers.get('link')).toContain(`<${LDP.Resource}>; rel="type"`);
   expect(response.headers.get('link')).toContain(`<${url}.acl>; rel="acl"`);
   expect(response.headers.get('accept-patch')).toBe('text/n3, application/sparql-update');
-  expect(response.headers.get('ms-author-via')).toBe('SPARQL');
 
   if (isContainer) {
     expect(response.headers.get('link')).toContain(`<${LDP.Container}>; rel="type"`);

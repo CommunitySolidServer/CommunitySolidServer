@@ -65,6 +65,8 @@ The following changes are relevant for v4 custom configs that replaced certain f
   - `/storage/backend/*`
 - Generation of auxiliary link headers was updated. 
   - `/ldp/metadata-writer/writers/link-rel.json`
+- The `ConstantMetadataWriter` that adds the `MS-Author-Via` header was removed
+  - `/ldp/metadata-writer/default.json`
 - PATCHing related components were completely refactored.
   - `/storage/middleware/stores/patching.json`
 - The metadata auxiliary strategy was added to the default list of auxiliary strategies.
