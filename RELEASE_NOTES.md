@@ -9,7 +9,9 @@
 - The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
 - When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
 - The user can choose to "Log in with a different account" on the consent page
-- Metadata of resources can now be edited by PATCHing its description resource. See the [documentation](./documentation/metadata-editing.md) for more information.
+- Metadata of resources can now be edited by PATCHing its description resource. 
+  This has an impact on which requests are allowed.
+  See the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/4.0/s/metadata.md) for more information.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.

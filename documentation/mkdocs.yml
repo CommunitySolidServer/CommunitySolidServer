@@ -9,7 +9,7 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       toggle:
-        icon: material/weather-night 
+        icon: material/weather-night
         name: Switch to dark mode
       primary: deep purple
       accent: deep orange
@@ -52,12 +52,12 @@ markdown_extensions:
   - pymdownx.tilde
   - pymdownx.details
   - pymdownx.highlight
-  - pymdownx.superfences 
+  - pymdownx.superfences
   - pymdownx.smartsymbols
 
 
 extra:
-  version: 
+  version:
     provider: mike
   social:
     - icon: fontawesome/brands/github
@@ -70,20 +70,21 @@ extra:
       link: https://gitter.im/CommunitySolidServer/community
 
 nav:
-  - Welcome: 
+  - Welcome:
     - README.md
-  - Usage:    
-    - 'Example request': example-requests.md
-    - 'Identity provider': identity-provider.md
-    - 'Client credentials': client-credentials.md
-    - 'Seeding Pods': seeding-pods.md
+  - Usage:
+    - Example request: example-requests.md
+    - Metadata: metadata.md
+    - Identity provider: identity-provider.md
+    - Client credentials: client-credentials.md
+    - Seeding pods: seeding-pods.md
   - Architecture:
     - Architecture: architecture.md
     - Dependency injection: dependency-injection.md
-  - Contributing: 
+  - Contributing:
     - Pull requests: making-changes.md
     - Releases: release.md
   - API: ./docs/" target="_blank
 
-# To write documentation locally, execute the next line and browse to http://localhost:8000 
+# To write documentation locally, execute the next line and browse to http://localhost:8000
 # docker run --rm -it -p 8000:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material

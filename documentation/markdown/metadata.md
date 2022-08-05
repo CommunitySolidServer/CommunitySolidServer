@@ -16,12 +16,12 @@ Clients should always follow this link rather than guessing its URL,
 because the Solid Protocol does not mandate a specific description resource URL.
 The default CSS configurations use as a convention that `http://example.org/resource`
 has `http://example.org/resource.meta` as its description resource.
-This pattern can be changed in the [metadata configuration file](../config/util/auxiliary/strategies/meta.json).
 
 ## How to edit the metadata of a resource
 
 Editing the metadata of a resource is performed by editing the description resource directly.
-This can only be done using `PATCH` requests (see [example workflow](#workflow)).
+This can only be done using `PATCH` requests 
+(see [example workflow](#example-of-a-workflow-for-editing-a-description-resource)).
 
 `PUT` requests on description resources are not allowed,
 because they would replace the entire resource state,
@@ -59,7 +59,7 @@ Container metadata can only be added and modified by performing a `PATCH` on the
 similarly to documents.
 This is done to clearly differentiate between a container's representation and its metadata.
 
-## Example of a workflow for editing a description resource {#workflow}
+## Example of a workflow for editing a description resource
 
 In this example, we add an inbox description to `http://localhost:3000/foo/`.
 This allows discovery of the `ldp:inbox` as described in the [Linked Data Notifications specification](https://www.w3.org/TR/ldn/).
