@@ -133,10 +133,25 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
     });
 
     it('should save the new subscription correctly in the storage.', async(): Promise<void> => {
-      await expect(notificationStorage.has(mockBody.topic)).resolves.toBe(false);
+      const mockStorageLocation = encodeURIComponent(mockBody.topic);
+
+      await expect(notificationStorage.has(mockStorageLocation)).resolves.toBe(false);
       await expect(handler.handle(mockInput)).resolves.toBeDefined();
-      await expect(notificationStorage.has(mockBody.topic)).resolves.toBe(true);
-      await expect(notificationStorage.get(mockBody.topic)).resolves.toMatchObject({
+      await expect(notificationStorage.has(mockStorageLocation)).resolves.toBe(true);
+      await expect(notificationStorage.get(mockStorageLocation)).resolves.toMatchObject({
+        subscriptions: { [mockWebId]: { type: mockType }},
+      });
+    });
+
+    it('should save the new subscription correctly in the storage (folder).', async(): Promise<void> => {
+      mockBody.topic = 'http://example.com/folder/';
+      mockInput.request.read = jest.fn().mockReturnValue(JSON.stringify(mockBody));
+      const mockStorageLocation = encodeURIComponent(mockBody.topic);
+
+      await expect(notificationStorage.has(mockStorageLocation)).resolves.toBe(false);
+      await expect(handler.handle(mockInput)).resolves.toBeDefined();
+      await expect(notificationStorage.has(mockStorageLocation)).resolves.toBe(true);
+      await expect(notificationStorage.get(mockStorageLocation)).resolves.toMatchObject({
         subscriptions: { [mockWebId]: { type: mockType }},
       });
     });
@@ -156,7 +171,21 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
 
     it('should call the appropriate subscriptionHandler\'s onChange function.', async(): Promise<void> => {
       const resource = { path: 'http://example.com/folder/file' };
-      await notificationStorage.set(resource.path, {
+      await notificationStorage.set(encodeURIComponent(resource.path), {
+        subscriptions: { [mockWebId]: { type: mockType }},
+      });
+
+      source.emit(AS.Create, resource);
+      // Wait a couple milliseconds because we can't await the promise
+      await new Promise<void>((resolve): number => setTimeout(resolve, 10));
+
+      expect(mockSubscriptionHandler.onChange).toHaveBeenCalledTimes(1);
+      expect(mockSubscriptionHandler.onChange).toHaveBeenCalledWith(resource, AS.Create, { type: mockType });
+    });
+
+    it('should call the appropriate subscriptionHandler\'s onChange function (folder).', async(): Promise<void> => {
+      const resource = { path: 'http://example.com/folder/' };
+      await notificationStorage.set(encodeURIComponent(resource.path), {
         subscriptions: { [mockWebId]: { type: mockType }},
       });
 

@@ -49,6 +49,7 @@ describe('A WebHookSubscription2021UnsubscribeHttpHandler', (): void => {
     let mockInput: OperationHttpHandlerInput;
     const mockTarget = 'http://example.com/folder/file';
     const mockSubscriptionId = generateSubscriptionId(mockTarget);
+    const mockStorageLocation = encodeURIComponent(mockTarget);
 
     beforeEach(async(): Promise<void> => {
       mockInput = {
@@ -57,7 +58,7 @@ describe('A WebHookSubscription2021UnsubscribeHttpHandler', (): void => {
         } as unknown as HttpRequest,
       } as unknown as OperationHttpHandlerInput;
 
-      await notificationStorage.set(mockTarget, {
+      await notificationStorage.set(mockStorageLocation, {
         subscriptions: {
           [mockWebid]: {
             type: 'WebHookSubscription2021',
@@ -87,15 +88,17 @@ describe('A WebHookSubscription2021UnsubscribeHttpHandler', (): void => {
     });
 
     it('should throw when the subscription does not exist.', async(): Promise<void> => {
-      await notificationStorage.delete(mockTarget);
+      await notificationStorage.delete(mockStorageLocation);
+      const before = await notificationStorage.get(mockStorageLocation);
+      expect(before?.subscriptions[mockWebid]).toBeUndefined();
       await expect(handler.handle(mockInput)).rejects.toThrow(BadRequestHttpError);
     });
 
     it('should delete the subscription from the store when completed.', async(): Promise<void> => {
-      const before = await notificationStorage.get(mockTarget);
+      const before = await notificationStorage.get(mockStorageLocation);
       expect(before?.subscriptions[mockWebid]).toBeDefined();
       await expect(handler.handle(mockInput)).resolves.toBeDefined();
-      const after = await notificationStorage.get(mockTarget);
+      const after = await notificationStorage.get(mockStorageLocation);
       expect(after?.subscriptions[mockWebid]).toBeUndefined();
     });
 
