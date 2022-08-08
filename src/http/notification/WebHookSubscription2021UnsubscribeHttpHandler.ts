@@ -55,7 +55,7 @@ export class WebHookSubscription2021UnsubscribeHttpHandler extends OperationHttp
     const subscriptionTarget = decodeURIComponent(match[1]);
 
     // Get topic from the store
-    const topic = await this.notificationStorage.get(subscriptionTarget);
+    const topic = await this.notificationStorage.get(encodeURIComponent(subscriptionTarget));
     const subscription = topic?.subscriptions?.[webid] as WebHookSubscription2021;
     if (!topic || !subscription) {
       throw new BadRequestHttpError('Subscription does not exist');
@@ -67,7 +67,7 @@ export class WebHookSubscription2021UnsubscribeHttpHandler extends OperationHttp
         newSubs[key] = value;
       }
     }
-    await this.notificationStorage.set(subscriptionTarget, { subscriptions: newSubs });
+    await this.notificationStorage.set(encodeURIComponent(subscriptionTarget), { subscriptions: newSubs });
 
     return new OkResponseDescription(
       new RepresentationMetadata('application/ld+json'),

@@ -96,13 +96,13 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
       throw new BadRequestHttpError('Agent not allowed to read resource.');
     }
 
-    const existingTopic = await this.notificationStorage.get(topicURI);
+    const existingTopic = await this.notificationStorage.get(encodeURIComponent(topicURI));
     const topic: Topic = existingTopic ?? { subscriptions: {}};
 
     // Create and save the new subscription
     const subscription: Subscription = subscriptionHandler.subscribe(subscriptionRequest);
     topic.subscriptions[credentials.agent.webId] = subscription;
-    await this.notificationStorage.set(topicURI, topic);
+    await this.notificationStorage.set(encodeURIComponent(topicURI), topic);
 
     this.logger.verbose(
       `Registered subscription[${subscriptionType}] at topic[${topicURI}] for agent[${credentials.agent.webId}]`,
@@ -121,7 +121,7 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
   ): Promise<void> {
     if (!this.ignoreFolders.some((folder: RegExp): boolean =>
       folder.test(resource.path.slice(this.base.length)))) {
-      const topic = await this.notificationStorage.get(resource.path);
+      const topic = await this.notificationStorage.get(encodeURIComponent(resource.path));
       if (topic?.subscriptions) {
         for (const [ , subscription ] of Object.entries(topic.subscriptions)) {
           const subscriptionHandler = this.subscriptionHandlers.get(subscription.type);
