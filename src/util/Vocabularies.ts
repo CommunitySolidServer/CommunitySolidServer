@@ -175,6 +175,8 @@ export const SOLID_META = createUriAndTermNamespace('urn:npm:solid:community-ser
   'value',
 );
 
+export const SOLID_NOTIFICATION = createUriAndTermNamespace('https://www.w3.org/ns/solid/notification/v1');
+
 export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',
   'preferredNamespacePrefix',
 );

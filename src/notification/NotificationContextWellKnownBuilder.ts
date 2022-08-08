@@ -1,10 +1,11 @@
-import type { WellKnownBuilder } from '../http/well-known/WellKnownBuilder';
+import type { WellKnownBuilder, WellKnownSegment } from '../http/well-known/WellKnownBuilder';
+import { SOLID_NOTIFICATION } from '../util/Vocabularies';
 
 export class NotificationContextWellKnownBuilder implements WellKnownBuilder {
-  public async getWellKnownSegment(): Promise<Record<string, any>> {
+  public async getWellKnownSegment(): Promise<WellKnownSegment> {
     return {
       '@context': [
-        'https://www.w3.org/ns/solid/notification/v1',
+        SOLID_NOTIFICATION.namespace,
       ],
     };
   }

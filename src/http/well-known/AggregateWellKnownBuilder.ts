@@ -1,16 +1,16 @@
-import type { WellKnownBuilder } from './WellKnownBuilder';
+import type { WellKnownBuilder, WellKnownSegment } from './WellKnownBuilder';
 
 export class AggregateWellKnownBuilder implements WellKnownBuilder {
   public constructor(
     private readonly wellKnownBuilders: WellKnownBuilder[],
   ) {}
 
-  public async getWellKnownSegment(): Promise<Record<string, any>> {
+  public async getWellKnownSegment(): Promise<WellKnownSegment> {
     // Retrieve segment from every builder
     const segments = await Promise.all(this.wellKnownBuilders.map(
-      async(builder): Promise<Record<string, any>> => builder.getWellKnownSegment(),
+      async(builder): Promise<WellKnownSegment> => builder.getWellKnownSegment(),
     ));
     // Combine and return all segments
-    return segments.reduce((acc, segment): Record<string, any> => ({ ...acc, ...segment }), {});
+    return segments.reduce((acc, segment): WellKnownSegment => ({ ...acc, ...segment }), {});
   }
 }

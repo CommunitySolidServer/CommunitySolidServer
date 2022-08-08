@@ -1,4 +1,4 @@
-import type { WellKnownBuilder } from '../../http/well-known/WellKnownBuilder';
+import type { WellKnownBuilder, WellKnownSegment } from '../../http/well-known/WellKnownBuilder';
 import { joinUrl, trimTrailingSlashes } from '../../util/PathUtil';
 
 export class JwksEndpointWellKnownBuilder implements WellKnownBuilder {
@@ -11,7 +11,7 @@ export class JwksEndpointWellKnownBuilder implements WellKnownBuilder {
     this.jwksEndpoint = trimTrailingSlashes(joinUrl(baseUrl, jwksEndpointPath));
   }
 
-  public async getWellKnownSegment(): Promise<Record<string, any>> {
+  public async getWellKnownSegment(): Promise<WellKnownSegment> {
     return {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       jwks_endpoint: this.jwksEndpoint,

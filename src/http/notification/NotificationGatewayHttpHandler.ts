@@ -11,6 +11,7 @@ import { OkResponseDescription } from '../output/response/OkResponseDescription'
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import type { NotificationSubscriptionHttpHandler } from './NotificationSubscriptionHttpHandler';
+import { SOLID_NOTIFICATION } from '../../util/Vocabularies';
 
 /**
  * Handles the negotiation of notification channels
@@ -50,7 +51,7 @@ export class NotificationGatewayHttpHandler extends OperationHttpHandler {
       throw new NotImplementedHttpError(`This gateway only supports [ ${this.supportedTypes} ] notifications`);
     }
     const responseJson = {
-      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
+      '@context': [ SOLID_NOTIFICATION.namespace ],
       notificationChannel: matches.map((match): Record<string, any> => ({
         type: match,
         endpoint: this.subscriptionEndpoint,

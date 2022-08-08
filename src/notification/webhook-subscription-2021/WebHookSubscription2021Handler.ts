@@ -6,9 +6,9 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { Guarded } from '../../util/GuardedStream';
 import { guardStream } from '../../util/GuardedStream';
 import { joinUrl, trimTrailingSlashes } from '../../util/PathUtil';
-import { AS } from '../../util/Vocabularies';
+import { AS, SOLID_NOTIFICATION } from '../../util/Vocabularies';
 import { BaseSubscriptionHandler } from '../BaseSubscriptionHandler';
-import type { Subscription } from '../Subscription';
+import { generateSubscriptionId, Subscription } from '../Subscription';
 
 export interface WebHookSubscription2021 extends Subscription {
   id: string;
@@ -30,13 +30,9 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebH
     const subscription: WebHookSubscription2021 = {
       type: this.getType(),
       target: request.target,
-      id: this.generateId(request.topic),
+      id: generateSubscriptionId(request.topic),
     };
     return subscription;
-  }
-
-  private generateId(topic: string): string {
-    return encodeURIComponent(`${topic}~~~${v4()}`);
   }
 
   private getUnsubscribeEndpoint(subscriptionId: string): string {
@@ -47,7 +43,7 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebH
     return guardStream(
       Readable.from(
         JSON.stringify({
-          '@context': 'https://www.w3.org/ns/solid/notification/v1',
+          '@context': SOLID_NOTIFICATION.namespace,
           type: this.getType(),
           target: subscription.target,
           // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -84,7 +80,7 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebH
     const payload = {
       '@context': [
         'https://www.w3.org/ns/activitystreams',
-        'https://www.w3.org/ns/solid/notification/v1',
+        SOLID_NOTIFICATION.namespace,
       ],
       id: `urn:uuid:${v4()}`,
       type: [ subscription.type ],

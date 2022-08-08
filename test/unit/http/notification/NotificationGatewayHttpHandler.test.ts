@@ -6,6 +6,7 @@ import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import type { OperationHttpHandlerInput } from '../../../../src/server/OperationHttpHandler';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { SOLID_NOTIFICATION } from '../../../../src/util/Vocabularies';
 
 describe('A NotificationGatewayHttpHandler', (): void => {
   let gateway: NotificationGatewayHttpHandler;
@@ -78,7 +79,7 @@ describe('A NotificationGatewayHttpHandler', (): void => {
       expect(awaitedResponse.statusCode).toBe(200);
       expect(awaitedResponse.metadata?.contentType).toBe('application/ld+json');
       expect(JSON.parse(awaitedResponse.data?.read())).toMatchObject({
-        '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
+        '@context': [ SOLID_NOTIFICATION.namespace ],
         notificationChannel: [
           { type: 'foo', endpoint: 'http://example.com/subscribe', features: []},
           { type: 'bar', endpoint: 'http://example.com/subscribe', features: []},

@@ -3,6 +3,7 @@ import type { CredentialsExtractor } from '../../../../src/authentication/Creden
 import {
   WebHookSubscription2021UnsubscribeHttpHandler,
 } from '../../../../src/http/notification/WebHookSubscription2021UnsubscribeHttpHandler';
+import { generateSubscriptionId } from '../../../../src/notification/Subscription';
 import type { Topic } from '../../../../src/notification/Topic';
 import type {
   WebHookSubscription2021,
@@ -48,7 +49,7 @@ describe('A WebHookSubscription2021UnsubscribeHttpHandler', (): void => {
   describe('handle()', (): void => {
     let mockInput: OperationHttpHandlerInput;
     const mockTarget = 'http://example.com/folder/file';
-    const mockSubscriptionId = `${encodeURIComponent(mockTarget)}~~~${v4()}`;
+    const mockSubscriptionId = generateSubscriptionId(mockTarget);
 
     beforeEach(async(): Promise<void> => {
       mockInput = {

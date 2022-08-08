@@ -1,9 +1,10 @@
 import { NotificationContextWellKnownBuilder } from '../../../src/notification/NotificationContextWellKnownBuilder';
+import { SOLID_NOTIFICATION } from '../../../src/util/Vocabularies';
 
 describe('A NotificationContextWellKnownBuilder', (): void => {
   const expected = {
     '@context': [
-      'https://www.w3.org/ns/solid/notification/v1',
+      SOLID_NOTIFICATION.namespace,
     ],
   };
 

@@ -1,10 +1,12 @@
 import { v4 } from 'uuid';
-import type { ResourceIdentifier } from '../../../../src';
 import type { HttpClient } from '../../../../src/http/client/HttpClient';
+import { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
+import { generateSubscriptionId } from '../../../../src/notification/Subscription';
 import type { WebHookSubscription2021 }
   from '../../../../src/notification/webhook-subscription-2021/WebHookSubscription2021Handler';
 import { WebHookSubscription2021Handler }
   from '../../../../src/notification/webhook-subscription-2021/WebHookSubscription2021Handler';
+import { SOLID_NOTIFICATION } from '../../../../src/util/Vocabularies';
 
 describe('A WebHookSubscription2021Handler', (): void => {
   let httpClient: HttpClient;
@@ -18,7 +20,7 @@ describe('A WebHookSubscription2021Handler', (): void => {
     };
     handler = new WebHookSubscription2021Handler(httpClient, 'unsubscribe', 'http://example.com');
     mockSubscription = {
-      id: `${encodeURIComponent('http://example.com/folder/file')}~~~${v4()}`,
+      id: generateSubscriptionId('http://example.com/folder/file'),
       type: handler.getType(),
       target: 'http://target.example.com/webhook',
     };
@@ -51,7 +53,7 @@ describe('A WebHookSubscription2021Handler', (): void => {
     it('should return the expected Readable.', (): void => {
       const readable = handler.getResponseData(mockSubscription);
       expect(JSON.parse(readable.read())).toMatchObject({
-        '@context': 'https://www.w3.org/ns/solid/notification/v1',
+        '@context': SOLID_NOTIFICATION.namespace,
         type: handler.getType(),
         target: mockSubscription.target,
         // eslint-disable-next-line @typescript-eslint/naming-convention
