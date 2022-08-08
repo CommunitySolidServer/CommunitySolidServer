@@ -6,12 +6,12 @@ import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import { joinUrl, trimTrailingSlashes } from '../../util/PathUtil';
+import { SOLID_NOTIFICATION } from '../../util/Vocabularies';
 import type { OperationHandlerInput } from '../ldp/OperationHandler';
 import { OkResponseDescription } from '../output/response/OkResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import type { NotificationSubscriptionHttpHandler } from './NotificationSubscriptionHttpHandler';
-import { SOLID_NOTIFICATION } from '../../util/Vocabularies';
 
 /**
  * Handles the negotiation of notification channels

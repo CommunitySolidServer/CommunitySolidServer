@@ -1,6 +1,5 @@
-import { v4 } from 'uuid';
 import type { HttpClient } from '../../../../src/http/client/HttpClient';
-import { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { generateSubscriptionId } from '../../../../src/notification/Subscription';
 import type { WebHookSubscription2021 }
   from '../../../../src/notification/webhook-subscription-2021/WebHookSubscription2021Handler';

@@ -8,7 +8,8 @@ import { guardStream } from '../../util/GuardedStream';
 import { joinUrl, trimTrailingSlashes } from '../../util/PathUtil';
 import { AS, SOLID_NOTIFICATION } from '../../util/Vocabularies';
 import { BaseSubscriptionHandler } from '../BaseSubscriptionHandler';
-import { generateSubscriptionId, Subscription } from '../Subscription';
+import type { Subscription } from '../Subscription';
+import { generateSubscriptionId } from '../Subscription';
 
 export interface WebHookSubscription2021 extends Subscription {
   id: string;

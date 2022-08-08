@@ -1,4 +1,3 @@
-
 export type WellKnownSegment = Record<string, any>;
 
 /**

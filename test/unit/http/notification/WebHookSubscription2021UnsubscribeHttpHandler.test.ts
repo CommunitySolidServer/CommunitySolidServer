@@ -1,4 +1,3 @@
-import { v4 } from 'uuid';
 import type { CredentialsExtractor } from '../../../../src/authentication/CredentialsExtractor';
 import {
   WebHookSubscription2021UnsubscribeHttpHandler,
