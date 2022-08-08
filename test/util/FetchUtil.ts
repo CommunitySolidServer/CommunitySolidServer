@@ -18,7 +18,6 @@ export async function getResource(url: string,
   expect(response.headers.get('link')).toContain(`<${LDP.Resource}>; rel="type"`);
   expect(response.headers.get('link')).toContain(`<${url}.acl>; rel="acl"`);
   expect(response.headers.get('accept-patch')).toBe('text/n3, application/sparql-update');
-  expect(response.headers.get('ms-author-via')).toBe('SPARQL');
 
   if (isContainer) {
     expect(response.headers.get('link')).toContain(`<${LDP.Container}>; rel="type"`);
@@ -87,11 +86,13 @@ export async function postResource(container: string, options: CreateOptions): P
 /**
  * This is specifically for PATCH requests which are expected to succeed.
  */
-export async function patchResource(url: string, query: string, exists?: boolean): Promise<Response> {
+export async function patchResource(url: string, query: string, type: 'sparql' | 'n3', exists?: boolean):
+Promise<Response> {
+  const contentTypes = { sparql: 'application/sparql-update', n3: 'text/n3' };
   const response = await fetch(url, {
     method: 'PATCH',
     headers: {
-      'content-type': 'application/sparql-update',
+      'content-type': contentTypes[type],
     },
     body: query,
   });

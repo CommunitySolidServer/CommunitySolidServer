@@ -85,6 +85,11 @@ export class InMemoryDataAccessor implements DataAccessor, SingleThreaded {
     }
   }
 
+  public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
+    const entry = this.getEntry(identifier);
+    entry.metadata = metadata;
+  }
+
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
     const parent = this.getParentEntry(identifier);
     if (!parent.entries[identifier.path]) {

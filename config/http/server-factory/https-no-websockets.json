@@ -1,0 +1,21 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Creates a server that supports HTTPS requests.",
+      "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "BaseHttpServerFactory",
+      "handler": { "@id": "urn:solid-server:default:HttpHandler" },
+      "options_showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
+      "options_https": true,
+      "options_key": {
+        "@id": "urn:solid-server:custom:variable:httpsKey",
+        "@type": "Variable"
+      },
+      "options_cert": {
+        "@id": "urn:solid-server:custom:variable:httpsCert",
+        "@type": "Variable"
+      }
+    }
+  ]
+}

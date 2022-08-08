@@ -135,4 +135,13 @@ export class IdentityTestState {
     const info = await this.session.handleIncomingRedirect(mockUrl);
     expect(info?.isLoggedIn).toBe(true);
   }
+
+  public async logout(url: string): Promise<string> {
+    let res = await this.fetchIdp(url, 'POST', stringify({ logOut: true }), APPLICATION_X_WWW_FORM_URLENCODED);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    res = await this.fetchIdp(json.location);
+    expect(res.status).toBe(303);
+    return res.headers.get('location')!;
+  }
 }

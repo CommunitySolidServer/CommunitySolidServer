@@ -19,7 +19,7 @@
         "suffixes_read": "read",
         "suffixes_write": "write"
       },
-      "expiration": 3000
+      "expiration": 6000
     },
     {
       "@id": "urn:solid-server:default:CleanupInitializer",

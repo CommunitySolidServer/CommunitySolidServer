@@ -173,6 +173,8 @@ export const SOLID_META = createUriAndTermNamespace('urn:npm:solid:community-ser
   // This is used to store Content-Type Parameters
   'contentTypeParameter',
   'value',
+  // This is used to indicate whether metadata should be preserved or not during a PUT operation
+  'preserve',
 );
 
 export const SOLID_NOTIFICATION = createUriAndTermNamespace('https://www.w3.org/ns/solid/notification/v1');

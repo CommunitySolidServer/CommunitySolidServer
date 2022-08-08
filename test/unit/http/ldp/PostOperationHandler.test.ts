@@ -9,7 +9,7 @@ import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpE
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { IdentifierMap } from '../../../../src/util/map/IdentifierMap';
-import { AS, SOLID_AS, SOLID_HTTP } from '../../../../src/util/Vocabularies';
+import { AS, LDP, RDF, SOLID_AS, SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A PostOperationHandler', (): void => {
   let operation: Operation;
@@ -39,6 +39,17 @@ describe('A PostOperationHandler', (): void => {
   it('errors if there is no content-type.', async(): Promise<void> => {
     operation.body.metadata.contentType = undefined;
     await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
+  });
+
+  it('creates a new container when there is no content-type.', async(): Promise<void> => {
+    operation.body.metadata.contentType = undefined;
+    operation.body.metadata.add(RDF.terms.type, LDP.terms.BasicContainer);
+    const result = await handler.handle({ operation });
+    expect(result.statusCode).toBe(201);
+    expect(result.metadata).toBeInstanceOf(RepresentationMetadata);
+    expect(result.data).toBeUndefined();
+    expect(store.addResource).toHaveBeenCalledTimes(1);
+    expect(store.addResource).toHaveBeenLastCalledWith(operation.target, body, conditions);
   });
 
   it('adds the given representation to the store and returns the correct response.', async(): Promise<void> => {

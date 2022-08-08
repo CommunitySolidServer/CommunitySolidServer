@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { hash, compare } from 'bcrypt';
+import { hash, compare } from 'bcryptjs';
 import { v4 } from 'uuid';
 import type { ExpiringStorage } from '../../../../storage/keyvalue/ExpiringStorage';
 import type { KeyValueStorage } from '../../../../storage/keyvalue/KeyValueStorage';

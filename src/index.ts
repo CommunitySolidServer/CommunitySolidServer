@@ -112,6 +112,7 @@ export * from './http/output/error/SafeErrorHandler';
 
 // HTTP/Output/Metadata
 export * from './http/output/metadata/AllowAcceptHeaderWriter';
+export * from './http/output/metadata/AuxiliaryLinkMetadataWriter';
 export * from './http/output/metadata/ConstantMetadataWriter';
 export * from './http/output/metadata/ContentTypeMetadataWriter';
 export * from './http/output/metadata/LinkRelMetadataWriter';
@@ -234,11 +235,11 @@ export * from './init/cli/YargsCliExtractor';
 export * from './init/variables/extractors/KeyExtractor';
 export * from './init/variables/extractors/AssetPathExtractor';
 export * from './init/variables/extractors/BaseUrlExtractor';
-export * from './init/variables/extractors/SettingsExtractor';
+export * from './init/variables/extractors/ShorthandExtractor';
 
 // Init/Variables
-export * from './init/variables/CombinedSettingsResolver';
-export * from './init/variables/SettingsResolver';
+export * from './init/variables/CombinedShorthandResolver';
+export * from './init/variables/ShorthandResolver';
 
 // Init
 export * from './init/App';
@@ -374,10 +375,12 @@ export * from './storage/mapping/FixedContentTypeMapper';
 export * from './storage/mapping/SubdomainExtensionBasedMapper';
 
 // Storage/Patch
-export * from './storage/patch/ContainerPatcher';
 export * from './storage/patch/ConvertingPatcher';
+export * from './storage/patch/ImmutableMetadataPatcher';
 export * from './storage/patch/N3Patcher';
 export * from './storage/patch/PatchHandler';
+export * from './storage/patch/RdfPatcher';
+export * from './storage/patch/RdfStorePatcher';
 export * from './storage/patch/RepresentationPatcher';
 export * from './storage/patch/RepresentationPatchHandler';
 export * from './storage/patch/SparqlUpdatePatcher';

@@ -1,5 +1,6 @@
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
+import type { Representation } from '../../../../src/http/representation/Representation';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type {
   RepresentationConverter,
@@ -18,9 +19,9 @@ describe('A ConvertingPatcher', (): void => {
   const patch: Patch = new BasicRepresentation([], 'type/patch');
   const representation = new BasicRepresentation([], 'application/trig');
   const patchResult = new BasicRepresentation([], 'internal/quads');
-  let args: RepresentationPatcherInput;
+  let args: RepresentationPatcherInput<Representation>;
   let converter: jest.Mocked<RepresentationConverter>;
-  let patcher: jest.Mocked<RepresentationPatcher>;
+  let patcher: jest.Mocked<RepresentationPatcher<Representation>>;
   let convertingPatcher: ConvertingPatcher;
 
   beforeEach(async(): Promise<void> => {

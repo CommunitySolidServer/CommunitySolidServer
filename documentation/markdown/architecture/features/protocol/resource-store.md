@@ -1,6 +1,4 @@
 # Resource store
-Once an LDP request passes authorization, it will be passed to the `ResourceStore`.
-
 The interface of a `ResourceStore` is mostly a 1-to-1 mapping of the HTTP methods:
 
  * GET: `getRepresentation`

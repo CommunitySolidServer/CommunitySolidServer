@@ -1,3 +1,4 @@
+import type { Representation } from '../../../../src';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -6,6 +7,7 @@ import type { RepresentationPatcher } from '../../../../src/storage/patch/Repres
 import { RepresentationPatchHandler } from '../../../../src/storage/patch/RepresentationPatchHandler';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 
 describe('A RepresentationPatchHandler', (): void => {
@@ -15,7 +17,7 @@ describe('A RepresentationPatchHandler', (): void => {
   const patchResult = new BasicRepresentation('', 'application/trig');
   let input: PatchHandlerInput;
   let source: jest.Mocked<ResourceStore>;
-  let patcher: jest.Mocked<RepresentationPatcher>;
+  let patcher: jest.Mocked<RepresentationPatcher<Representation>>;
   let handler: RepresentationPatchHandler;
 
   beforeEach(async(): Promise<void> => {
@@ -66,5 +68,10 @@ describe('A RepresentationPatchHandler', (): void => {
     source.getRepresentation.mockRejectedValueOnce(error);
 
     await expect(handler.handle(input)).rejects.toThrow(error);
+  });
+
+  it('errors if the target is a container.', async(): Promise<void> => {
+    identifier.path = 'http://test.com/';
+    await expect(handler.handle(input)).rejects.toThrow(ConflictHttpError);
   });
 });

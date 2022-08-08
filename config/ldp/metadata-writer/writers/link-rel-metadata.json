@@ -1,0 +1,13 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Creates the Link header for the description resources.",
+      "@id": "urn:solid-server:default:MetadataWriter_LinkRelMetadata",
+      "@type": "AuxiliaryLinkMetadataWriter",
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "specificStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
+      "relationType" : "describedby"
+    }
+  ]
+}

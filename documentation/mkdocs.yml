@@ -9,7 +9,7 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       toggle:
-        icon: material/weather-night 
+        icon: material/weather-night
         name: Switch to dark mode
       primary: deep purple
       accent: deep orange
@@ -52,12 +52,17 @@ markdown_extensions:
   - pymdownx.tilde
   - pymdownx.details
   - pymdownx.highlight
-  - pymdownx.superfences 
+  - pymdownx.superfences
   - pymdownx.smartsymbols
-
+  - pymdownx.superfences:
+      custom_fences:
+        # need to fork the theme to make changes https://github.com/squidfunk/mkdocs-material/issues/3665#issuecomment-1060019924
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 extra:
-  version: 
+  version:
     provider: mike
   social:
     - icon: fontawesome/brands/github
@@ -70,20 +75,32 @@ extra:
       link: https://gitter.im/CommunitySolidServer/community
 
 nav:
-  - Welcome: 
+  - Welcome:
     - README.md
-  - Usage:    
-    - 'Example request': example-requests.md
-    - 'Identity provider': identity-provider.md
-    - 'Client credentials': client-credentials.md
-    - 'Seeding Pods': seeding-pods.md
+  - Usage:
+    - Example request: usage/example-requests.md
+    - Metadata: usage/metadata.md
+    - Identity provider: usage/identity-provider.md
+    - Client credentials: usage/client-credentials.md
+    - Seeding pods: usage/seeding-pods.md
   - Architecture:
-    - Architecture: architecture.md
-    - Dependency injection: dependency-injection.md
-  - Contributing: 
-    - Pull requests: making-changes.md
-    - Releases: release.md
+    - Overview: architecture/overview.md
+    - Dependency injection: architecture/dependency-injection.md
+    - Core: architecture/core.md
+    - Features:
+        - Command line arguments: architecture/features/cli.md
+        - Server initialization: architecture/features/initialization.md
+        - HTTP requests: architecture/features/http-handler.md
+        - Solid protocol:
+            - Overview: architecture/features/protocol/overview.md
+            - Parsing: architecture/features/protocol/parsing.md
+            - Authorization: architecture/features/protocol/authorization.md
+            - Resource Store: architecture/features/protocol/resource-store.md
+  - Contributing:
+    - Pull requests: contributing/making-changes.md
+    - Releases: contributing/release.md
   - API: ./docs/" target="_blank
 
-# To write documentation locally, execute the next line and browse to http://localhost:8000 
+# To write documentation locally, execute the next line and browse to http://localhost:8000
 # docker run --rm -it -p 8000:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material
+# Alternatively, install `mkdocs` and `mkdocs-material` using `pip`, browse to the documentation folder and run `mkdocs serve`

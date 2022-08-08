@@ -18,7 +18,7 @@ it is always possible we miss something,
 so please report it if you find incorrect information or links that no longer work.
 
 An introductory tutorial that gives a quick overview of the Solid and CSS basics can be found
-[here](https://github.com/KNowledgeOnWebScale/solid-linked-data-workshops-hands-on-exercises/blob/main/css-tutorial.md).
+[here](https://github.com/CommunitySolidServer/tutorials/blob/main/getting-started.md).
 This is a good way to get started with the server and its setup.
 
 If you want to know what is new in the latest version,
@@ -29,20 +29,21 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 
 ## Using the server
 
- * [Basic example HTTP requests](example-requests.md)
- * [How to use the Identity Provider](identity-provider.md)
- * [How to automate authentication](client-credentials.md)
- * [How to automatically seed pods on startup](seeding-pods.md)
+ * [Basic example HTTP requests](usage/example-requests.md)
+ * [Editing the metadata of a resource](usage/metadata.md)
+ * [How to use the Identity Provider](usage/identity-provider.md)
+ * [How to automate authentication](usage/client-credentials.md)
+ * [How to automatically seed pods on startup](usage/seeding-pods.md)
 
 ## What the internals look like
 
- * [How the server uses dependency injection](dependency-injection.md)
- * [What the architecture looks like](architecture.md)
+ * [How the server uses dependency injection](architecture/dependency-injection.md)
+ * [What the architecture looks like](architecture/overview.md)
  
 ## Making changes
 
- * [How to make changes to the repository](making-changes.md)
+ * [How to make changes to the repository](contributing/making-changes.md)
 
 For core developers with push access only: 
 
- * [How to release a new version](release.md)
+ * [How to release a new version](contributing/release.md)

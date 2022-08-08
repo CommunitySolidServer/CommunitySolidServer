@@ -21,6 +21,7 @@
   "Readonly",
   "RegExp",
   "Settings",
+  "Shorthand",
   "Subscription",
   "Template",
   "TemplateEngine",

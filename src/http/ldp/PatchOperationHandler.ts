@@ -37,6 +37,7 @@ export class PatchOperationHandler extends OperationHandler {
       this.logger.warn('PATCH requests require the Content-Type header to be set');
       throw new BadRequestHttpError('PATCH requests require the Content-Type header to be set');
     }
+
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
     // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/632
     // RFC7231, §4.3.4: If the target resource does not have a current representation and the

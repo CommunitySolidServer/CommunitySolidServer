@@ -7,7 +7,7 @@
     "css:config/app/variables/default.json",
     "css:config/http/handler/default.json",
     "css:config/http/middleware/websockets.json",
-
+    "css:config/http/server-factory/https-websockets.json",
     "css:config/http/static/default.json",
     "css:config/identity/access/public.json",
     "css:config/identity/email/default.json",
@@ -34,84 +34,7 @@
   ],
   "@graph": [
     {
-      "comment": [
-        "Adds CLI options --httpsKey and --httpsCert and uses those to start an HTTPS server.",
-        "The http/server-factory import above has been omitted since that feature is set below."
-      ]
-    },
-    {
-      "@id": "urn:solid-server-app-setup:default:CliExtractor",
-      "@type": "YargsCliExtractor",
-      "parameters": [
-        {
-          "@type": "YargsParameter",
-          "name": "httpsKey",
-          "options": {
-            "demandOption": true,
-            "requiresArg": true,
-            "type": "string",
-            "describe": "File path to the HTTPS key."
-          }
-        },
-        {
-          "@type": "YargsParameter",
-          "name": "httpsCert",
-          "options": {
-            "demandOption": true,
-            "requiresArg": true,
-            "type": "string",
-            "describe": "File path to the HTTPS certificate."
-          }
-        }
-      ]
-    },
-    {
-      "comment": "Adds resolvers to assign the CLI values to the Components.js variables.",
-      "@id": "urn:solid-server-app-setup:default:SettingsResolver",
-      "@type": "CombinedSettingsResolver",
-      "resolvers": [
-        {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:custom:variable:httpsKey",
-          "CombinedSettingsResolver:_resolvers_value": {
-            "@type": "KeyExtractor",
-            "key": "httpsKey"
-          }
-        },
-        {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:custom:variable:httpsCert",
-          "CombinedSettingsResolver:_resolvers_value": {
-            "@type": "KeyExtractor",
-            "key": "httpsCert"
-          }
-        }
-      ]
-    },
-    {
-      "comment": [
-        "Creates an HTTPS server with the settings provided via the command line.",
-        "Replaces the example import from config/http/server-factory.https-example.json."
-      ],
-      "@id": "urn:solid-server:default:ServerFactory",
-      "@type": "WebSocketServerFactory",
-      "baseServerFactory": {
-        "@id": "urn:solid-server:default:HttpServerFactory",
-        "@type": "BaseHttpServerFactory",
-        "handler": { "@id": "urn:solid-server:default:HttpHandler" },
-        "options_showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
-        "options_https": true,
-        "options_key": {
-          "@id": "urn:solid-server:custom:variable:httpsKey",
-          "@type": "Variable"
-        },
-        "options_cert": {
-          "@id": "urn:solid-server:custom:variable:httpsCert",
-          "@type": "Variable"
-        }
-      },
-      "webSocketHandler": {
-        "@type": "UnsecureWebSocketsProtocol",
-        "source": { "@id": "urn:solid-server:default:ResourceStore" }
-      }
+      "comment": "Adds CLI options --httpsKey and --httpsCert and uses those to start an HTTPS server."
     }
   ]
 }

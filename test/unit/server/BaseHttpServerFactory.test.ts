@@ -90,6 +90,15 @@ describe('A BaseHttpServerFactory', (): void => {
       const res = await request(server).get('/').expect(500);
       expect(res.text).toContain('Unknown error: apple.');
     });
+
+    it('can handle errors on the HttpResponse.', async(): Promise<void> => {
+      // This just makes sure the logging line is covered.
+      // Actually destroying the request to trigger an error causes issues for supertest
+      handler.handleSafe.mockImplementationOnce(async(input): Promise<void> => {
+        input.request.emit('error', new Error('bad request'));
+      });
+      await request(server).get('/').expect(404);
+    });
   });
 
   describe('with showStackTrace enabled', (): void => {

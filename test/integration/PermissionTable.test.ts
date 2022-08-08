@@ -6,6 +6,7 @@ import { BasicRepresentation } from '../../src/http/representation/BasicRepresen
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { TEXT_TURTLE } from '../../src/util/ContentTypes';
+import { ConflictHttpError } from '../../src/util/errors/ConflictHttpError';
 import { ensureTrailingSlash, joinUrl } from '../../src/util/PathUtil';
 import { AclHelper } from '../util/AclHelper';
 import { getPort } from '../util/Util';
@@ -72,7 +73,8 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
 
   [ 'PUT',     'C/',  [],                     undefined,              '',     N3,  401, 401 ],
   [ 'PUT',     'C/',  [ AM.read ],            undefined,              '',     N3,  401, 401 ],
-  [ 'PUT',     'C/',  [ AM.write ],           undefined,              '',     N3,  205, 201 ],
+  // We return a 409 when targeting an existing container as we only allow changes targeting the metadata directly
+  [ 'PUT',     'C/',  [ AM.write ],           undefined,              '',     '',  409, 201 ],
 
   [ 'PUT',     'C/R', [],                     undefined,              '',     TXT, 401, 401 ],
   [ 'PUT',     'C/R', [],                     [ AM.read ],            '',     TXT, 401, 401 ],
@@ -191,7 +193,13 @@ describe.each(stores)('A request on a server with %s', (name, { storeConfig, tea
       const parent = targetingContainer && method !== 'POST' ? root : container;
 
       // Create C/ and set up permissions
-      await store.setRepresentation({ path: parent }, new BasicRepresentation([], TEXT_TURTLE));
+      try {
+        await store.setRepresentation({ path: parent }, new BasicRepresentation([], TEXT_TURTLE));
+      } catch (error: unknown) {
+        if (!ConflictHttpError.isInstance(error)) {
+          throw error;
+        }
+      }
 
       await aclHelper.setSimpleAcl(parent, [
         // In case we are targeting C/ we assume everything is allowed by the parent
@@ -213,7 +221,13 @@ describe.each(stores)('A request on a server with %s', (name, { storeConfig, tea
     });
 
     it('target exists.', async(): Promise<void> => {
-      await store.setRepresentation({ path: targetUrl }, new BasicRepresentation(DEFAULT_BODY, TEXT_TURTLE));
+      try {
+        await store.setRepresentation({ path: targetUrl }, new BasicRepresentation(DEFAULT_BODY, TEXT_TURTLE));
+      } catch (error: unknown) {
+        if (!ConflictHttpError.isInstance(error)) {
+          throw error;
+        }
+      }
       const response = await fetch(targetUrl, init);
       expect(response.status).toBe(existsCode);
     });

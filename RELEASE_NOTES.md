@@ -2,17 +2,20 @@
 
 ## v5.0.0
 ### New features
-- Support for Node v12 was dropped.
+- Metadata of resources can now be edited by PATCHing its description resource.
+  This has an impact on which requests are allowed.
+  See the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/5.0/usage/metadata/) for more information.
 - Components.js was upgraded to v5. If you have created an external component
   you should also upgrade to prevent warnings and conflicts.
-- A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
-- The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
-- Added possibility to register and unregister notification webhooks.
+- The server can now run multithreaded with multiple workers. This is done with the `--workers` or `-w` flag.
+- File-based configurations now use a file-based locking system for true threadsafe locking.
+- The user can choose to "Log in with a different account" on the consent page.
+- Regex-based configurations now have ordered entries and use the first match found.
+- When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
+- Support for Node v12 was dropped.
 
 ### Data migration
-The following actions are required if you are upgrading from a v4 server and want to retain your data.
-
-...
+No actions are required to migrate data.
 
 ### Configuration changes
 You might need to make changes to your v4 configuration if you use a custom config.
@@ -24,27 +27,28 @@ The following changes pertain to the imports in the default configs:
 - The prefix of all imports was changed from `files-scs` to `css`.
 - All default configurations with a file-based backend now use a file-based locker instead of a memory-based one,
   making them threadsafe.
+- 2 new options have been added for the `/http/server-factory/` imports: `https-websockets.json` and `https-no-websockets.json`,
+  which allow starting the server with HTTPS by adding 2 new CLI parameters `httpsKey` and `httpsCert`.
+  - `/https-file-cli.json` was greatly simplified because of this change.
+- `/sparql-file-storage.json` had several changes, simplifying how regexes can be used.
 
 The following changes are relevant for v4 custom configs that replaced certain features.
-- `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
-- `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
+- CLI parsing had several changes.
+  - `/app/variables/*`
+- The `SingleThreadedResourceLocker` was renamed.
+  - `/util/resource-locker/memory.json`
 - The content-length parser has been moved from the default configuration to the quota configurations.
    - `/ldp/metadata-parser/default.json`
    - `/storage/backend/*-quota-file.json`
-   - `/storage/backend/quota/quota-file.json`
-- The structure of the init configs has changed significantly to support worker threads.
-   - `/app/init/*`
-- RegexPathRouting has changed from a map datastructure to an array datastructure, allowing for fallthrough regex parsing. The change is reflected in the following default configs:
+   - `/storage/backend/quota/*`
+- Regex routing was updated to use ordered entries.
    - `/storage/backend/regex.json`
-   - `/sparql-file-storage.json`
 - The `IdentityProviderFactory` inputs have been extended.
   - `/identity/handler/provider-factory/identity.json`
-- LDP components have slightly changed so the preference parser is in a separate config file.
-  - `/ldp/handler/*`
 - Restructured the init configs.
-  - `/app/init/base/init.json`
+  - `/app/init/*`
   - `/app/main/default.json`
-- Added lock cleanup on server start (and updated existing finalization).
+- Added lock cleanup on server start.
   - `/util/resource-locker/file.json`
   - `/util/resource-locker/redis.json`
 - Updated finalizers.
@@ -56,15 +60,31 @@ The following changes are relevant for v4 custom configs that replaced certain f
   - `/ldp/modes/default.json`
 - The `PermissionReader` structure has changed to be more consistent.
   - `/ldp/authorization/*`
+- Several components now take a `metadataStrategy` parameter to support the new metadata feature.
+  - `/ldp/handler/components/operation-handler.json`
+  - `/storage/backend/*`
+- Generation of auxiliary link headers was updated. 
+  - `/ldp/metadata-writer/writers/link-rel.json`
+- The `ConstantMetadataWriter` that adds the `MS-Author-Via` header was removed
+  - `/ldp/metadata-writer/default.json`
+- PATCHing related components were completely refactored.
+  - `/storage/middleware/stores/patching.json`
+- The metadata auxiliary strategy was added to the default list of auxiliary strategies.
+  - `/util/auxiliary/*`
+- Parsing link headers became more flexible.
+  - `/ldp/metadata-parser/parsers/link.json`
 
 ### Interface changes
+A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe.
+When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
+
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - `YargsCliExtractor` was changed to now take as input an array of parameter objects.
 - `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
 - `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
 - Both `TemplateEngine` implementations now take a `baseUrl` parameter as input.
 - The `IdentityProviderFactory` and `ConvertingErrorHandler` now additionally take a `PreferenceParser` as input.
-- Error handlers now take the incoming HttpRequest as input instead of just the preferences.
+- Error handlers now take the incoming `HttpRequest` as input instead of just the preferences.
 - Extended the initialization/finalization system:
   * Introduced `Initializable` interface and `InitializableHandler` wrapper class.
   * Introduced `Finalizer` abstract class and `FinalizableHandler` wrapper class.
@@ -74,8 +94,13 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `ResourceStore` functions that change a resource now return metadata for every changed resource.
 - All permission related interfaces have changed to support permissions over multiple identifiers.
 - `IdentifierStrategy` has a new `contains` method.
+- `SettingsResolver` was renamed to `ShorthandResolver`, together with all related classes and parameters.
+- The `DataAccessor` interface is changed. There is now a new method called `writeMetadata`.
+- Many patching related classes were changed.
 
-A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
+## v4.1.0
+### New features
+- Environment variables can be used instead of CLI arguments if preferred.
 
 ## v4.0.1
 Freezes the `oidc-provider` dependency to prevent a potential issue with the solid authn client
@@ -84,9 +109,9 @@ as described in https://github.com/inrupt/solid-client-authn-js/issues/2103.
 ## v4.0.0
 ### New features
 - The server can be started with a new parameter to automatically generate accounts and pods, 
-  for more info see [here](documentation/seeding-pods.md).
+  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/seeding-pods/).
 - It is now possible to automate authentication requests using Client Credentials,
-  for more info see [here](documentation/client-credentials.md).
+  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/client-credentials/).
 - A new `RedirectingHttpHandler` class has been added which can be used to redirect certain URLs.
 - A new default configuration `config/https-file-cli.json` 
   that can set the HTTPS parameters through the CLI has been added.

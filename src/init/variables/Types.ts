@@ -8,7 +8,7 @@ export type CliArgv = string[];
 /**
  * A key/value mapping of parsed command line arguments.
  */
-export type Settings = Record<string, unknown>;
+export type Shorthand = Record<string, unknown>;
 
 /**
  * A key/value mapping of Components.js variables.

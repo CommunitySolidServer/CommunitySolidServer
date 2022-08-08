@@ -35,10 +35,10 @@ const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay:
  * Argument interface of the FileSystemResourceLocker constructor.
  */
 interface FileSystemResourceLockerArgs {
-  /** The rootPath of the filesystem _[default is the current dir `./`]_ */
-  rootFilePath?: string;
+  /** The root filepath of where the server is allowed to write files */
+  rootFilePath: string;
   /**
-   * The path to the directory where locks will be stored (appended to rootFilePath)
+   * The path to the directory where locks will be stored (relative to rootFilePath)
    * _[default is `/.internal/locks`]_
    */
   lockDirectory?: string;
@@ -56,11 +56,12 @@ function isCodedError(err: unknown): err is { code: string } & Error {
  *
  * This **proper-lockfile** library has its own retry mechanism for the operations, since a lock/unlock call will
  * either resolve successfully or reject immediately with the causing error. The retry function of the library
- * however will be ignored and replaced by our own LockUtils' {@link retryFunctionUntil} function.
+ * however will be ignored and replaced by our own LockUtils' {@link retryFunction} function.
  */
 export class FileSystemResourceLocker implements ResourceLocker, Initializable, Finalizable {
   protected readonly logger = getLoggerFor(this);
   private readonly attemptSettings: Required<AttemptSettings>;
+  private readonly lockOptions: LockOptions;
   /** Folder that stores the locks */
   private readonly lockFolder: string;
   private finalized = false;
@@ -69,17 +70,18 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
    * Create a new FileSystemResourceLocker
    * @param args - Configures the locker using the specified FileSystemResourceLockerArgs instance.
    */
-  public constructor(args: FileSystemResourceLockerArgs = {}) {
+  public constructor(args: FileSystemResourceLockerArgs) {
     const { rootFilePath, lockDirectory, attemptSettings } = args;
-    defaultLockOptions.onCompromised = this.customOnCompromised.bind(this);
+    // Need to create lock options for this instance due to the custom `onCompromised`
+    this.lockOptions = { ...defaultLockOptions, onCompromised: this.customOnCompromised.bind(this) };
     this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
-    this.lockFolder = joinFilePath(rootFilePath ?? './', lockDirectory ?? '/.internal/locks');
+    this.lockFolder = joinFilePath(rootFilePath, lockDirectory ?? '/.internal/locks');
   }
 
   /**
    * Wrapper function for all (un)lock operations. Any errors coming from the `fn()` will be swallowed.
    * Only `ENOTACQUIRED` errors wills be thrown (trying to release lock that didn't exist).
-   * This wrapper returns undefined because {@link retryFunction} expects that when a retry needs to happne.s
+   * This wrapper returns undefined because {@link retryFunction} expects that when a retry needs to happen.
    * @param fn - The function reference to swallow errors from.
    * @returns Boolean or undefined.
    */
@@ -101,7 +103,7 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
     const { path } = identifier;
     this.logger.debug(`Acquiring lock for ${path}`);
     try {
-      const opt = this.generateOptions(identifier, defaultLockOptions);
+      const opt = this.generateOptions(identifier, this.lockOptions);
       await retryFunction(
         this.swallowErrors(lock.bind(null, path, opt)),
         this.attemptSettings,

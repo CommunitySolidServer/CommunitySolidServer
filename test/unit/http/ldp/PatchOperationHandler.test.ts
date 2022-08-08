@@ -14,6 +14,7 @@ describe('A PatchOperationHandler', (): void => {
   const conditions = new BasicConditions({});
   let store: jest.Mocked<ResourceStore>;
   let handler: PatchOperationHandler;
+
   beforeEach(async(): Promise<void> => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'PATCH', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
@@ -54,5 +55,13 @@ describe('A PatchOperationHandler', (): void => {
     expect(result.statusCode).toBe(205);
     expect(result.metadata).toBeUndefined();
     expect(result.data).toBeUndefined();
+  });
+
+  it('returns the correct response if the resource is metadata.', async(): Promise<void> => {
+    // For every resource a corresponding meta resource does always exist, thus statusCode is always 205
+    store.hasResource.mockResolvedValueOnce(true);
+    operation.target.path = 'http://test.com/foo.meta';
+    const result = await handler.handle({ operation });
+    expect(result.statusCode).toBe(205);
   });
 });

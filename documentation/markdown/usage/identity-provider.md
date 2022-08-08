@@ -14,6 +14,7 @@ The links here assume the server is hosted at `http://localhost:3000/`.
 To register an account, you can go to `http://localhost:3000/idp/register/` if this feature is enabled,
 which it is on all configurations we provide.
 Currently our registration page ties 3 features together on the same page:
+
  * Creating an account on the server.
  * Creating or linking a WebID to your account.
  * Creating a pod on the server.
