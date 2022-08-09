@@ -21,7 +21,7 @@ The following changes are relevant for v5 custom configs that replaced certain f
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
-- ...
+- `AgentGroupAccessChecker` no longer accepts any input parameters.
 
 ## v5.0.0
 
@@ -81,19 +81,19 @@ The following changes are relevant for v4 custom configs that replaced certain f
     - `/util/resource-locker/file.json`
     - `/util/resource-locker/redis.json`
 - Updated finalizers.
-    - `/app/identity/handler/account-store/default.json`
-    - `/identity/ownership/token.json`
-    - `/ldp/authorization/readers/access-checkers/agent-group.json`
-    - `/ldp/handler/*`
+  - `/app/identity/handler/account-store/default.json`
+  - `/identity/ownership/token.json`
+  - `/ldp/authorization/readers/access-checkers/agent-group.json`
+  - `/ldp/handler/*`
 - `IntermediateModesExtractor` has been added to the `ModesExtractors`
     - `/ldp/modes/default.json`
 - The `PermissionReader` structure has changed to be more consistent.
     - `/ldp/authorization/*`
 - Several components now take a `metadataStrategy` parameter to support the new metadata feature.
-    - `/ldp/handler/components/operation-handler.json`
-    - `/storage/backend/*`
+  - `/ldp/handler/components/operation-handler.json`
+  - `/storage/backend/*`
 - Generation of auxiliary link headers was updated.
-    - `/ldp/metadata-writer/writers/link-rel.json`
+  - `/ldp/metadata-writer/writers/link-rel.json`
 - The `ConstantMetadataWriter` that adds the `MS-Author-Via` header was removed
     - `/ldp/metadata-writer/default.json`
 - PATCHing related components were completely refactored.
@@ -143,9 +143,8 @@ as described in <https://github.com/inrupt/solid-client-authn-js/issues/2103>.
 ## v4.0.0
 
 ### New features
-
 - The server can be started with a new parameter to automatically generate accounts and pods,
-  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.x/seeding-pods/).
+  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/seeding-pods/).
 - It is now possible to automate authentication requests using Client Credentials,
   for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.x/client-credentials/).
 - A new `RedirectingHttpHandler` class has been added which can be used to redirect certain URLs.
@@ -225,7 +224,7 @@ The `@context` needs to be updated to
 The following changes pertain to the imports in the default configs:
 
 - A new configuration option needs to be imported:
-    - `/app/variables/default.json` contains everything related to parsing CLI arguments
+  - `/app/variables/default.json` contains everything related to parsing CLI arguments
     and assigning values to variables.
 
 The following changes are relevant for v2 custom configs that replaced certain features.
@@ -244,7 +243,6 @@ The following changes are relevant for v2 custom configs that replaced certain f
 ### Interface changes
 
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
-
 - `TypedRepresentationConverter` function signatures changed
   and base functionality moved to `BaseTypedRepresentationConverter`.
 - Many changes to several components related to the IDP. This includes the HTML templates.
@@ -278,36 +276,35 @@ You might need to make changes to your v1 configuration if you use a custom conf
 The following changes pertain to the imports in the default configs:
 
 - There are 2 new configuration options that for which a valid option needs to be imported:
-    - `/app/setup` determines how and if setup should be enabled.
-    - `/identity/access` determines if IDP access (e.g., registration) should be restricted
+  - `/app/setup` determines how and if setup should be enabled.
+  - `/identity/access` determines if IDP access (e.g., registration) should be restricted
 - The `/app/init/default.json` configuration no longer initializes the root container.
   This behaviour has been moved to the other options for `/app/init`.
 - `/ldp/permissions` changed to `/ldp/modes` and only has a default option now.
 
 The following changes are relevant for v1 custom configs that replaced certain features.
 The path indicates which JSON-LD files were impacted by the change.
-
 - `IdentityProviderHttpHandler` and `InteractionRoute` arguments have changed substantially.
-    - `/identity/handler/default.json`
-    - `/identity/handler/interaction/*`
-    - `/identity/registration/*`.
+  - `/identity/handler/default.json`
+  - `/identity/handler/interaction/*`
+  - `/identity/registration/*`.
 - All internal storage is now stored in the `/.internal/` container.
-    - `/storage/key-value/resource-store.json`.
+  - `/storage/key-value/resource-store.json`.
 - Patching related classes have changed.
-    - `/storage/middleware/stores/patching.json`.
+  - `/storage/middleware/stores/patching.json`.
 - `BasicRequestParser` now needs a `conditionsParser` argument.
-    - `/ldp/handler/components/request-parser.json`.
+  - `/ldp/handler/components/request-parser.json`.
 - `LinkTypeParser` has been renamed to `LinkRelParser` and now takes mappings as input.
-    - `/ldp/metadata-parser/*`
+  - `/ldp/metadata-parser/*`
 - `ComposedAuxiliaryStrategy` `isRootRequired` has been renamed to `requiredInRoot`.
-    - `/util/auxiliary/strategies/acl.json`.
+  - `/util/auxiliary/strategies/acl.json`.
 - Many changes to authentication and authorization structure.
-    - Config `/ldp/authentication/*` and `/ldp/authorization/*`.
+  - Config `/ldp/authentication/*` and `/ldp/authorization/*`.
 - All `HttpHandler`s have been changed.
-    - `/app/setup/handlers/setup.json`
-    - `/http/handler/default.json`
-    - `/identity/handler/default.json`
-    - `/ldp/handler/default.json`.
+  - `/app/setup/handlers/setup.json`
+  - `/http/handler/default.json`
+  - `/identity/handler/default.json`
+  - `/ldp/handler/default.json`.
 
 ## v1.1.0
 
