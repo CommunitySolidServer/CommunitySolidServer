@@ -1,6 +1,5 @@
 import type { Store, Term } from 'n3';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { fetchDataset } from '../../util/FetchUtil';
 import { promiseSome } from '../../util/PromiseUtil';
 import { readableToQuads } from '../../util/StreamUtil';
@@ -11,20 +10,10 @@ import { AccessChecker } from './AccessChecker';
 /**
  * Checks if the given WebID belongs to a group that has access.
  * Implements the behaviour of groups from the WAC specification.
- *
- * Fetched results will be stored in an ExpiringStorage.
- *
- * Requires a storage that can store JS objects.
- * `expiration` parameter is how long entries in the cache should be stored in seconds, defaults to 3600.
  */
 export class AgentGroupAccessChecker extends AccessChecker {
-  private readonly cache: ExpiringStorage<string, Promise<Store>>;
-  private readonly expiration: number;
-
-  public constructor(cache: ExpiringStorage<string, Promise<Store>>, expiration = 3600) {
+  public constructor() {
     super();
-    this.cache = cache;
-    this.expiration = expiration * 1000;
   }
 
   public async handle({ acl, rule, credential }: AccessCheckerArgs): Promise<boolean> {
@@ -49,24 +38,18 @@ export class AgentGroupAccessChecker extends AccessChecker {
     const groupDocument: ResourceIdentifier = { path: /^[^#]*/u.exec(group.value)![0] };
 
     // Fetch the required vCard group file
-    const quads = await this.fetchCachedQuads(groupDocument.path);
+    const quads = await this.fetchQuads(groupDocument.path);
     return quads.countQuads(group, VCARD.terms.hasMember, webId, null) !== 0;
   }
 
   /**
    * Fetches quads from the given URL.
-   * Will cache the values for later re-use.
    */
-  private async fetchCachedQuads(url: string): Promise<Store> {
-    let result = await this.cache.get(url);
-    if (!result) {
-      const prom = (async(): Promise<Store> => {
-        const representation = await fetchDataset(url);
-        return readableToQuads(representation.data);
-      })();
-      await this.cache.set(url, prom, this.expiration);
-      result = await prom;
-    }
-    return result;
+  private async fetchQuads(url: string): Promise<Store> {
+    const prom = (async(): Promise<Store> => {
+      const representation = await fetchDataset(url);
+      return readableToQuads(representation.data);
+    })();
+    return await prom;
   }
 }
