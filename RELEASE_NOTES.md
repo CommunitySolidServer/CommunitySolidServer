@@ -1,5 +1,28 @@
 # Community Solid Server release notes
 
+## v6.0.0
+### New features
+- ...
+
+### Data migration
+No actions are required to migrate data.
+
+### Configuration changes
+You might need to make changes to your v5 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- ...
+
+The following changes are relevant for v5 custom configs that replaced certain features.
+- ...
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- ...
+
 ## v5.0.0
 ### New features
 - Metadata of resources can now be edited by PATCHing its description resource.
