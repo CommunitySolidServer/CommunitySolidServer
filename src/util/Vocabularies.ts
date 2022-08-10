@@ -117,6 +117,29 @@ export const ACL = createVocabulary('http://www.w3.org/ns/auth/acl#',
   'Control',
 );
 
+export const ACP = createVocabulary('http://www.w3.org/ns/solid/acp#',
+  // Access Control Resource
+  'resource',
+  'accessControl',
+  'memberAccessControl',
+
+  // Access Control,
+  'apply',
+
+  // Policy
+  'allow',
+  'deny',
+  'allOf',
+  'anyOf',
+  'noneOf',
+
+  // Matcher
+  'agent',
+  'client',
+  'issuer',
+  'vc',
+);
+
 export const AS = createVocabulary('https://www.w3.org/ns/activitystreams#',
   'Create',
   'Delete',
