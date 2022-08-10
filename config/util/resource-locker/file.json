@@ -19,14 +19,28 @@
         "suffixes_read": "read",
         "suffixes_write": "write"
       },
-      "expiration": 3000
+      "expiration": 6000
     },
     {
-      "comment": "Makes sure the lock folder is cleared and delete when the application needs to stop.",
-      "@id": "urn:solid-server:default:Finalizer",
-      "@type": "ParallelFinalizer",
-      "finalizers": [
-        { "@id": "urn:solid-server:default:FileSystemResourceLocker" }
+      "@id": "urn:solid-server:default:CleanupInitializer",
+      "@type": "SequenceHandler",
+      "handlers": [
+        {
+          "comment": "Makes sure the FileSystemResourceLocker starts with a clean slate when the application is started.",
+          "@type": "InitializableHandler",
+          "initializable": { "@id": "urn:solid-server:default:FileSystemResourceLocker" }
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:CleanupFinalizer",
+      "@type": "SequenceHandler",
+      "handlers": [
+        {
+          "comment": "Makes sure the lock folder is removed when the application stops.",
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:FileSystemResourceLocker" }
+        }
       ]
     }
   ]

@@ -4,7 +4,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import type { Conditions } from './Conditions';
 import { PassthroughStore } from './PassthroughStore';
-import type { ResourceStore } from './ResourceStore';
+import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 /**
  * Store that only allow read operations on the underlying source.
@@ -16,22 +16,22 @@ export class ReadOnlyStore<T extends ResourceStore = ResourceStore> extends Pass
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
+    conditions?: Conditions): Promise<ChangeMap> {
     throw new ForbiddenHttpError();
   }
 
   public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     throw new ForbiddenHttpError();
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     throw new ForbiddenHttpError();
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     throw new ForbiddenHttpError();
   }
 }

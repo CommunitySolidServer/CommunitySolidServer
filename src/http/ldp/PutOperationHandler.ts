@@ -1,7 +1,7 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
-import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { isContainerPath } from '../../util/PathUtil';
 import type { AuxiliaryStrategy } from '../auxiliary/AuxiliaryStrategy';
@@ -51,21 +51,14 @@ export class PutOperationHandler extends OperationHandler {
     // We already reject the request here instead of `setRepresentation` so PATCH requests
     // can still use that function to update data.
     if (this.metadataStrategy.isAuxiliaryIdentifier(operation.target)) {
-      throw new ConflictHttpError('Not allowed to create or edit metadata resources using PUT.');
-    }
-
-    const exists = await this.store.hasResource(operation.target);
-
-    // We do not allow PUT on an already existing Container
-    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1023371546
-    // We check here instead of in `setRepresentation`
-    // so we can still add specific metadata triples such as `pim:storage` internally.
-    if (exists && targetIsContainer) {
-      throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
+      throw new MethodNotAllowedHttpError(
+        [ 'PUT' ], 'Not allowed to create or edit metadata resources using PUT; use PATCH instead.',
+      );
     }
 
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
     // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/632
+    const exists = await this.store.hasResource(operation.target);
     await this.store.setRepresentation(operation.target, operation.body, operation.conditions);
     if (exists) {
       return new ResetResponseDescription();

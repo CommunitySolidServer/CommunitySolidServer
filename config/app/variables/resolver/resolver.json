@@ -3,74 +3,74 @@
   "@graph": [
     {
       "comment": "Converts an input key/value object into an object mapping values to Components.js variables",
-      "@id": "urn:solid-server-app-setup:default:SettingsResolver",
-      "@type": "CombinedSettingsResolver",
+      "@id": "urn:solid-server-app-setup:default:ShorthandResolver",
+      "@type": "CombinedShorthandResolver",
       "resolvers": [
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:baseUrl",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:baseUrl",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "BaseUrlExtractor"
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:loggingLevel",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:loggingLevel",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
             "key": "loggingLevel",
             "defaultValue": "info"
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:port",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:port",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
             "key": "port",
             "defaultValue": 3000
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:rootFilePath",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:rootFilePath",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "AssetPathExtractor",
             "key": "rootFilePath",
             "defaultPath": "./"
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:sparqlEndpoint",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:sparqlEndpoint",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
             "key": "sparqlEndpoint"
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:showStackTrace",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:showStackTrace",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
             "key": "showStackTrace",
             "defaultValue": false
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:podConfigJson",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:podConfigJson",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "AssetPathExtractor",
             "key": "podConfigJson",
             "defaultPath": "./pod-config.json"
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:seededPodConfigJson",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:seededPodConfigJson",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "AssetPathExtractor",
             "key": "seededPodConfigJson"
           }
         },
         {
-          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:workers",
-          "CombinedSettingsResolver:_resolvers_value": {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:workers",
+          "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
-            "key": "workers", 
+            "key": "workers",
             "defaultValue": 1
           }
         }

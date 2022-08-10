@@ -16,7 +16,7 @@ import { LDP } from '../util/Vocabularies';
 import type { Conditions } from './Conditions';
 import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import { PassthroughStore } from './PassthroughStore';
-import type { ResourceStore } from './ResourceStore';
+import type { ResourceStore, ChangeMap } from './ResourceStore';
 import type { ShapeValidator } from './validators/ShapeValidator';
 import namedNode = DataFactory.namedNode;
 
@@ -41,7 +41,7 @@ export class ShapeValidationStore extends PassthroughStore {
   }
 
   public async addResource(identifier: ResourceIdentifier, representation: Representation, conditions?: Conditions):
-  Promise<ResourceIdentifier> {
+  Promise<ChangeMap> {
     const parentRepresentation = await this.source.getRepresentation(identifier, {});
 
     await this.validator.handleSafe({ parentRepresentation, representation });
@@ -50,7 +50,7 @@ export class ShapeValidationStore extends PassthroughStore {
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ChangeMap> {
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier) &&
         isContainerIdentifier(this.metadataStrategy.getSubjectIdentifier(identifier))) {
       const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);

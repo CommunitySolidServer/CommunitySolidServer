@@ -9,7 +9,7 @@ export interface ResourceIdentifier {
 }
 
 /**
- * Determines whether the object is a `ResourceIdentifier`.
+ * Determines whether the object is a {@link ResourceIdentifier}.
  */
 export function isResourceIdentifier(object: any): object is ResourceIdentifier {
   return object && (typeof object.path === 'string');

@@ -64,7 +64,11 @@ export class BaseHttpServerFactory implements HttpServerFactory {
       async(request: IncomingMessage, response: ServerResponse): Promise<void> => {
         try {
           this.logger.info(`Received ${request.method} request for ${request.url}`);
-          await this.handler.handleSafe({ request: guardStream(request), response });
+          const guardedRequest = guardStream(request);
+          guardedRequest.on('error', (error): void => {
+            this.logger.error(`Request error: ${error.message}`);
+          });
+          await this.handler.handleSafe({ request: guardedRequest, response });
         } catch (error: unknown) {
           let errMsg: string;
           if (!isError(error)) {

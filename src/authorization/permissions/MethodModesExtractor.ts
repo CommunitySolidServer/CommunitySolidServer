@@ -1,8 +1,10 @@
 import type { Operation } from '../../http/Operation';
 import type { ResourceSet } from '../../storage/ResourceSet';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 import { isContainerIdentifier } from '../../util/PathUtil';
 import { ModesExtractor } from './ModesExtractor';
+import type { AccessMap } from './Permissions';
 import { AccessMode } from './Permissions';
 
 const READ_METHODS = new Set([ 'OPTIONS', 'GET', 'HEAD' ]);
@@ -31,33 +33,33 @@ export class MethodModesExtractor extends ModesExtractor {
     }
   }
 
-  public async handle({ method, target }: Operation): Promise<Set<AccessMode>> {
-    const modes = new Set<AccessMode>();
+  public async handle({ method, target }: Operation): Promise<AccessMap> {
+    const requiredModes: AccessMap = new IdentifierSetMultiMap();
     // Reading requires Read permissions on the resource
     if (READ_METHODS.has(method)) {
-      modes.add(AccessMode.read);
+      requiredModes.add(target, AccessMode.read);
     }
     // Setting a resource's representation requires Write permissions
     if (method === 'PUT') {
-      modes.add(AccessMode.write);
+      requiredModes.add(target, AccessMode.write);
       // …and, if the resource does not exist yet, Create permissions are required as well
       if (!await this.resourceSet.hasResource(target)) {
-        modes.add(AccessMode.create);
+        requiredModes.add(target, AccessMode.create);
       }
     }
     // Creating a new resource in a container requires Append access to that container
     if (method === 'POST') {
-      modes.add(AccessMode.append);
+      requiredModes.add(target, AccessMode.append);
     }
     // Deleting a resource requires Delete access
     if (method === 'DELETE') {
-      modes.add(AccessMode.delete);
+      requiredModes.add(target, AccessMode.delete);
       // …and, if the target is a container, Read permissions are required as well
       // as this exposes if a container is empty or not
       if (isContainerIdentifier(target)) {
-        modes.add(AccessMode.read);
+        requiredModes.add(target, AccessMode.read);
       }
     }
-    return modes;
+    return requiredModes;
   }
 }

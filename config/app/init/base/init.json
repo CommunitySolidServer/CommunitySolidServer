@@ -30,6 +30,7 @@
         "@id": "urn:solid-server:default:PrimarySequenceInitializer",
         "@type":"SequenceHandler",
         "handlers": [
+          { "@id": "urn:solid-server:default:CleanupInitializer"},
           { "@id": "urn:solid-server:default:BaseUrlVerifier" },
           { "@id": "urn:solid-server:default:PrimaryParallelInitializer" },
           { "@id": "urn:solid-server:default:SeededPodInitializer" },
@@ -53,6 +54,13 @@
           { "@id": "urn:solid-server:default:ServerInitializer" }
         ]
       }
+    },
+    {
+      "comment": "Initializers that need to cleanup or do anything else before something writes to the backend should be added here.",
+      "@id": "urn:solid-server:default:CleanupInitializer",
+      "@type":"SequenceHandler",
+      "handlers": [
+      ]
     }
   ]
 }

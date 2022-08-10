@@ -48,7 +48,10 @@ describe('A Solid server with IDP', (): void => {
   const card = joinUrl(baseUrl, 'profile/card');
   const webId = `${card}#me`;
   const webId2 = `${card}#someoneElse`;
+  let webId3: string;
   const email = 'test@test.com';
+  const email2 = 'bob@test.email';
+  const email3 = 'alice@test.email';
   const password = 'password!';
   const password2 = 'password2!';
   let sendMail: jest.Mock;
@@ -84,11 +87,14 @@ describe('A Solid server with IDP', (): void => {
          acl:default <./>;
          acl:mode acl:Read, acl:Write, acl:Control.
 `;
-    await fetch(`${container}.acl`, {
+    const res = await fetch(`${container}.acl`, {
       method: 'PUT',
       headers: { 'content-type': 'text/turtle' },
       body: aclTurtle,
     });
+    if (res.status !== 201) {
+      throw new Error('Something went wrong initializing the test ACL');
+    }
   });
 
   afterAll(async(): Promise<void> => {
@@ -438,7 +444,7 @@ describe('A Solid server with IDP', (): void => {
     beforeAll(async(): Promise<void> => {
       // We will need this twice
       formBody = stringify({
-        email: 'bob@test.email',
+        email: email2,
         webId: webId2,
         password,
         confirmPassword: password,
@@ -468,7 +474,7 @@ describe('A Solid server with IDP', (): void => {
       const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
       await expect(res.json()).resolves.toEqual(expect.objectContaining({
-        email: 'bob@test.email',
+        email: email2,
         webId: webId2,
         podBaseUrl: `${baseUrl}${podName}/`,
       }));
@@ -477,12 +483,10 @@ describe('A Solid server with IDP', (): void => {
 
   describe('creating a new WebID', (): void => {
     const podName = 'alice';
-    const newMail = 'alice@test.email';
-    let newWebId: string;
     let state: IdentityTestState;
 
     const formBody = stringify({
-      email: newMail, password, confirmPassword: password, podName, createWebId: 'ok', register: 'ok', createPod: 'ok',
+      email: email3, password, confirmPassword: password, podName, createWebId: 'ok', register: 'ok', createPod: 'ok',
     });
 
     afterAll(async(): Promise<void> => {
@@ -495,11 +499,11 @@ describe('A Solid server with IDP', (): void => {
       const json = await res.json();
       expect(json).toEqual(expect.objectContaining({
         webId: expect.any(String),
-        email: newMail,
+        email: email3,
         oidcIssuer: baseUrl,
         podBaseUrl: `${baseUrl}${podName}/`,
       }));
-      newWebId = json.webId;
+      webId3 = json.webId;
     });
 
     it('initializes the session and logs in.', async(): Promise<void> => {
@@ -507,9 +511,9 @@ describe('A Solid server with IDP', (): void => {
       let url = await state.startSession();
       const res = await state.fetchIdp(url);
       expect(res.status).toBe(200);
-      url = await state.login(url, newMail, password);
+      url = await state.login(url, email3, password);
       await state.consent(url);
-      expect(state.session.info?.webId).toBe(newWebId);
+      expect(state.session.info?.webId).toBe(webId3);
     });
 
     it('can only write to the new profile when using the logged in session.', async(): Promise<void> => {
@@ -519,10 +523,10 @@ describe('A Solid server with IDP', (): void => {
         body: `INSERT DATA { <> <http://www.w3.org/2000/01/rdf-schema#label> "A cool WebID." }`,
       };
 
-      let res = await fetch(newWebId, patchOptions);
+      let res = await fetch(webId3, patchOptions);
       expect(res.status).toBe(401);
 
-      res = await state.session.fetch(newWebId, patchOptions);
+      res = await state.session.fetch(webId3, patchOptions);
       expect(res.status).toBe(205);
     });
 
@@ -561,6 +565,48 @@ describe('A Solid server with IDP', (): void => {
       // Access is possible again
       res = await state.session.fetch(podBaseUrl);
       expect(res.status).toBe(200);
+    });
+  });
+
+  describe('having multiple accounts', (): void => {
+    let state: IdentityTestState;
+    let url: string;
+
+    beforeAll(async(): Promise<void> => {
+      state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
+    });
+
+    afterAll(async(): Promise<void> => {
+      await state.session.logout();
+    });
+
+    it('initializes the session and logs in with the first account.', async(): Promise<void> => {
+      url = await state.startSession();
+      const res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
+      url = await state.login(url, email, password2);
+      await state.consent(url);
+      expect(state.session.info?.webId).toBe(webId);
+    });
+
+    it('can log out on the consent page.', async(): Promise<void> => {
+      await state.session.logout();
+
+      url = await state.startSession();
+
+      const res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
+
+      // Will receive confirm screen here instead of login screen
+      url = await state.logout(url);
+    });
+
+    it('can log in with a different account.', async(): Promise<void> => {
+      const res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
+      url = await state.login(url, email3, password);
+      await state.consent(url);
+      expect(state.session.info?.webId).toBe(webId3);
     });
   });
 

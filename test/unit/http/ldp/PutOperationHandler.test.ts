@@ -5,7 +5,7 @@ import type { Representation } from '../../../../src/http/representation/Represe
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
-import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
@@ -37,6 +37,7 @@ describe('A PutOperationHandler', (): void => {
 
   it('creates a new container when there is no content-type.', async(): Promise<void> => {
     operation.target.path = 'http://test.com/foo/';
+    operation.body.metadata.contentType = undefined;
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(201);
   });
@@ -67,12 +68,6 @@ describe('A PutOperationHandler', (): void => {
 
   it('errors if the target is a metadata resource.', async(): Promise<void> => {
     operation.target.path = 'http://test.com/foo.meta';
-    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
-  });
-
-  it('errors if the target is a container that already exists.', async(): Promise<void> => {
-    store.hasResource.mockResolvedValueOnce(true);
-    operation.target.path = 'http://test.com/';
-    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
+    await expect(handler.handle({ operation })).rejects.toThrow(MethodNotAllowedHttpError);
   });
 });

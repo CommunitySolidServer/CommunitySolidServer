@@ -7,18 +7,36 @@
       "@type": "App",
       "initializer": { "@id": "urn:solid-server:default:Initializer" },
       "finalizer": {
-        "comment": "This is going to contain the list of finalizers that need to be called. These should be added in the configs where such classes are configured.",
-        "@id": "urn:solid-server:default:Finalizer",
-        "@type": "ParallelFinalizer",
-        "finalizers": [
-          { "@id": "urn:solid-server:default:ServerInitializer" }
+        "comment": "Is executed when the server is stopped.",
+        "@type": "SequenceHandler",
+        "handlers": [
+          { "@id": "urn:solid-server:default:Finalizer" },
+          { "@id": "urn:solid-server:default:CleanupFinalizer" }
         ]
       },
-      "clusterManager": { 
+      "clusterManager": {
         "@id": "urn:solid-server:default:ClusterManager",
         "@type": "ClusterManager",
         "workers": { "@id": "urn:solid-server:default:variable:workers" }
        }
+    },
+    {
+      "comment": "This is going to contain the list of finalizers that need to be called. These should be added in the configs where such classes are configured.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:ServerInitializer" }
+        }
+      ]
+    },
+    {
+      "comment": "Finalizers that need to cleanup once no more data will be written to the backend should be added here.",
+      "@id": "urn:solid-server:default:CleanupFinalizer",
+      "@type":"SequenceHandler",
+      "handlers": [
+      ]
     }
   ]
 }

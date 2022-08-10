@@ -7,17 +7,27 @@
   ],
   "@graph": [
     {
+      "comment": "Adds parent container checks needed for create/delete permissions.",
+      "@id": "urn:solid-server:default:WrappedWebAclReader",
+      "@type": "ParentContainerReader",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "reader": { "@id": "urn:solid-server:default:WebAclAuxiliaryReader" }
+    },
+    {
+      "comment": "Reinterprets Control permissions as Read/Write on the ACL document.",
+      "@id": "urn:solid-server:default:WebAclAuxiliaryReader",
+      "@type": "WebAclAuxiliaryReader",
+      "aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
+      "reader": { "@id": "urn:solid-server:default:WebAclReader" }
+    },
+    {
+      "comment": "Reads out permissions from an ACL document for subject resources.",
       "@id": "urn:solid-server:default:WebAclReader",
       "@type": "WebAclReader",
-      "aclStrategy": {
-        "@id": "urn:solid-server:default:AclStrategy"
-      },
-      "aclStore": {
-        "@id": "urn:solid-server:default:ResourceStore"
-      },
-      "identifierStrategy": {
-        "@id": "urn:solid-server:default:IdentifierStrategy"
-      },
+      "aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
+      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
+      "aclStore": { "@id": "urn:solid-server:default:ResourceStore" },
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "accessChecker": {
         "@type": "BooleanHandler",
         "handlers": [

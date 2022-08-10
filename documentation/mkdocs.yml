@@ -1,0 +1,106 @@
+docs_dir: markdown
+
+theme:
+  name: 'material'
+  custom_dir: overrides
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+      primary: deep purple
+      accent: deep orange
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+      primary: deep purple
+      accent: deep orange
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.top
+    - navigation.indexes
+
+site_name: 'Community Solid Server'
+site_url: https://communitysolidserver.github.io/CommunitySolidServer
+
+repo_url: https://github.com/CommunitySolidServer/CommunitySolidServer
+repo_name: CommunitySolidServer
+edit_uri: ""
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - def_list
+  - footnotes
+  - meta
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.tilde
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        # need to fork the theme to make changes https://github.com/squidfunk/mkdocs-material/issues/3665#issuecomment-1060019924
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/CommunitySolidServer/CommunitySolidServer
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/solidproject/community-server
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/package/@solid/community-server
+    - icon: fontawesome/brands/gitter
+      link: https://gitter.im/CommunitySolidServer/community
+
+nav:
+  - Welcome:
+    - README.md
+  - Usage:
+    - Example request: usage/example-requests.md
+    - Metadata: usage/metadata.md
+    - Identity provider: usage/identity-provider.md
+    - Client credentials: usage/client-credentials.md
+    - Seeding pods: usage/seeding-pods.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Dependency injection: architecture/dependency-injection.md
+    - Core: architecture/core.md
+    - Features:
+        - Command line arguments: architecture/features/cli.md
+        - Server initialization: architecture/features/initialization.md
+        - HTTP requests: architecture/features/http-handler.md
+        - Solid protocol:
+            - Overview: architecture/features/protocol/overview.md
+            - Parsing: architecture/features/protocol/parsing.md
+            - Authorization: architecture/features/protocol/authorization.md
+            - Resource Store: architecture/features/protocol/resource-store.md
+  - Contributing:
+    - Pull requests: contributing/making-changes.md
+    - Releases: contributing/release.md
+  - API: ./docs/" target="_blank
+
+# To write documentation locally, execute the next line and browse to http://localhost:8000
+# docker run --rm -it -p 8000:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material
+# Alternatively, install `mkdocs` and `mkdocs-material` using `pip`, browse to the documentation folder and run `mkdocs serve`

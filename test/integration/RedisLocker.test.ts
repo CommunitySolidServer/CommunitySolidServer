@@ -10,7 +10,7 @@ import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from '.
 /**
  * Test the general functionality of the server using a RedisLocker with Read-Write strategy.
  */
-describeIf('docker', 'A server with a RedisLocker', (): void => {
+describeIf('docker')('A server with a RedisLocker', (): void => {
   const port = getPort('RedisLocker');
   const baseUrl = `http://localhost:${port}/`;
   let app: App;

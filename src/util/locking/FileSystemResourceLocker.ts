@@ -1,9 +1,10 @@
 import { createHash } from 'crypto';
-import { ensureDirSync, pathExists, readdir, rmdir } from 'fs-extra';
+import { ensureDir, remove } from 'fs-extra';
 import type { LockOptions, UnlockOptions } from 'proper-lockfile';
 import { lock, unlock } from 'proper-lockfile';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Finalizable } from '../../init/final/Finalizable';
+import type { Initializable } from '../../init/Initializable';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { createErrorMessage } from '../errors/ErrorUtil';
 import { InternalServerError } from '../errors/InternalServerError';
@@ -34,9 +35,12 @@ const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay:
  * Argument interface of the FileSystemResourceLocker constructor.
  */
 interface FileSystemResourceLockerArgs {
-  /** The rootPath of the filesystem */
-  rootFilePath?: string;
-  /** The path to the directory where locks will be stored (appended to rootFilePath) */
+  /** The root filepath of where the server is allowed to write files */
+  rootFilePath: string;
+  /**
+   * The path to the directory where locks will be stored (relative to rootFilePath)
+   * _[default is `/.internal/locks`]_
+   */
   lockDirectory?: string;
   /** Custom settings concerning retrying locks */
   attemptSettings?: AttemptSettings;
@@ -52,32 +56,32 @@ function isCodedError(err: unknown): err is { code: string } & Error {
  *
  * This **proper-lockfile** library has its own retry mechanism for the operations, since a lock/unlock call will
  * either resolve successfully or reject immediately with the causing error. The retry function of the library
- * however will be ignored and replaced by our own LockUtils' {@link retryFunctionUntil} function.
+ * however will be ignored and replaced by our own LockUtils' {@link retryFunction} function.
  */
-export class FileSystemResourceLocker implements ResourceLocker, Finalizable {
+export class FileSystemResourceLocker implements ResourceLocker, Initializable, Finalizable {
   protected readonly logger = getLoggerFor(this);
   private readonly attemptSettings: Required<AttemptSettings>;
+  private readonly lockOptions: LockOptions;
   /** Folder that stores the locks */
   private readonly lockFolder: string;
+  private finalized = false;
 
   /**
    * Create a new FileSystemResourceLocker
-   * @param rootFilePath - The rootPath of the filesystem _[default is the current dir `./`]_
-   * @param lockDirectory - The path to the directory where locks will be stored (appended to rootFilePath)
-                            _[default is `/.internal/locks`]_
-   * @param attemptSettings - Custom settings concerning retrying locks
+   * @param args - Configures the locker using the specified FileSystemResourceLockerArgs instance.
    */
-  public constructor(args: FileSystemResourceLockerArgs = {}) {
+  public constructor(args: FileSystemResourceLockerArgs) {
     const { rootFilePath, lockDirectory, attemptSettings } = args;
+    // Need to create lock options for this instance due to the custom `onCompromised`
+    this.lockOptions = { ...defaultLockOptions, onCompromised: this.customOnCompromised.bind(this) };
     this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
-    this.lockFolder = joinFilePath(rootFilePath ?? './', lockDirectory ?? '/.internal/locks');
-    ensureDirSync(this.lockFolder);
+    this.lockFolder = joinFilePath(rootFilePath, lockDirectory ?? '/.internal/locks');
   }
 
   /**
    * Wrapper function for all (un)lock operations. Any errors coming from the `fn()` will be swallowed.
    * Only `ENOTACQUIRED` errors wills be thrown (trying to release lock that didn't exist).
-   * This wrapper returns undefined because {@link retryFunction} expects that when a retry needs to happne.s
+   * This wrapper returns undefined because {@link retryFunction} expects that when a retry needs to happen.
    * @param fn - The function reference to swallow errors from.
    * @returns Boolean or undefined.
    */
@@ -99,7 +103,7 @@ export class FileSystemResourceLocker implements ResourceLocker, Finalizable {
     const { path } = identifier;
     this.logger.debug(`Acquiring lock for ${path}`);
     try {
-      const opt = this.generateOptions(identifier, defaultLockOptions);
+      const opt = this.generateOptions(identifier, this.lockOptions);
       await retryFunction(
         this.swallowErrors(lock.bind(null, path, opt)),
         this.attemptSettings,
@@ -149,13 +153,36 @@ export class FileSystemResourceLocker implements ResourceLocker, Finalizable {
     };
   }
 
+  /**
+   * Initializer method to be executed on server start. This makes sure that no pre-existing (dangling) locks
+   * remain on disk, so that request will not be blocked because a lock was acquired in the previous server instance.
+   *
+   * NOTE: this also removes locks created by the GreedyReadWriteLocker.
+   * (See issue: https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1358)
+   */
+  public async initialize(): Promise<void> {
+    // Remove all existing (dangling) locks so new requests are not blocked (by removing the lock folder).
+    await remove(this.lockFolder);
+    // Put the folder back since `proper-lockfile` depends on its existence.
+    return ensureDir(this.lockFolder);
+  }
+
   public async finalize(): Promise<void> {
-    // Delete lingering locks in the lockFolder.
-    if (await pathExists(this.lockFolder)) {
-      for (const dir of await readdir(this.lockFolder)) {
-        await rmdir(joinFilePath(this.lockFolder, dir));
-      }
-      await rmdir(this.lockFolder);
+    // Register that finalize was called by setting a state variable.
+    this.finalized = true;
+    // NOTE: in contrast with initialize(), the lock folder is not cleared here, as the proper-lock library
+    // manages these files and will attempt to clear existing files when the process is shutdown gracefully.
+  }
+
+  /**
+   * This function is used to override the proper-lock onCompromised function.
+   * Once the locker was finalized, it will log the provided error instead of throwing it
+   * This allows for a clean shutdown procedure.
+   */
+  private customOnCompromised(err: any): void {
+    if (!this.finalized) {
+      throw err;
     }
+    this.logger.warn(`onCompromised was called with error: ${err.message}`);
   }
 }

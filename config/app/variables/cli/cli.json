@@ -115,7 +115,10 @@
         }
       ],
       "options": {
-        "usage": "node ./bin/server.js [args]"
+        "usage": "node ./bin/server.js [args]",
+        "envVarPrefix": "CSS",
+        "loadFromEnv": true,
+        "strictMode": true
       }
     }
   ]

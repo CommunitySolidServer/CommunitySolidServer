@@ -1,6 +1,7 @@
 import type { Dirent, Stats } from 'fs';
 import { PassThrough, Readable } from 'stream';
 import type { SystemError } from '../../src/util/errors/SystemError';
+import Describe = jest.Describe;
 
 const portNames = [
   // Integration
@@ -19,6 +20,7 @@ const portNames = [
   'PodCreation',
   'PodQuota',
   'RedisLocker',
+  'ResourceLockCleanup',
   'RestrictedIdentity',
   'SeedingPods',
   'ServerFetch',
@@ -40,11 +42,10 @@ export function getPort(name: typeof portNames[number]): number {
   return 6000 + idx;
 }
 
-export function describeIf(envFlag: string, name: string, fn: () => void): void {
+export function describeIf(envFlag: string): Describe {
   const flag = `TEST_${envFlag.toUpperCase()}`;
   const enabled = !/^(|0|false)$/iu.test(process.env[flag] ?? '');
-  // eslint-disable-next-line jest/valid-describe-callback, jest/valid-title, jest/no-disabled-tests
-  return enabled ? describe(name, fn) : describe.skip(name, fn);
+  return enabled ? describe : describe.skip;
 }
 
 /**
@@ -56,6 +57,18 @@ export function describeIf(envFlag: string, name: string, fn: () => void): void 
  */
 export async function flushPromises(): Promise<void> {
   return new Promise(jest.requireActual('timers').setImmediate);
+}
+
+/**
+ * Compares the contents of the given two maps.
+ */
+export function compareMaps<TKey, TVal>(map1: Map<TKey, TVal>, map2: Map<TKey, TVal>): void {
+  expect(new Set(map1.keys())).toEqual(new Set(map2.keys()));
+  // Looping like this also allows us to compare SetMultiMaps
+  for (const key of map1.keys()) {
+    // Adding key for better error output
+    expect({ key, value: map1.get(key) }).toEqual({ key, value: map2.get(key) });
+  }
 }
 
 /**

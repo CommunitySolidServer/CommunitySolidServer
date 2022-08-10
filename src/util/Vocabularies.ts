@@ -71,6 +71,12 @@ export const ACL = createUriAndTermNamespace('http://www.w3.org/ns/auth/acl#',
   'Control',
 );
 
+export const AS = createUriAndTermNamespace('https://www.w3.org/ns/activitystreams#',
+  'Create',
+  'Delete',
+  'Update',
+);
+
 export const AUTH = createUriAndTermNamespace('urn:solid:auth:',
   'userMode',
   'publicMode',
@@ -149,6 +155,10 @@ export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms
   'InsertDeletePatch',
 );
 
+export const SOLID_AS = createUriAndTermNamespace('http://www.w3.org/ns/solid/activitystreams#',
+  'Activity',
+);
+
 export const SOLID_ERROR = createUriAndTermNamespace('urn:npm:solid:community-server:error:',
   'disallowedMethod',
   'errorResponse',
@@ -168,6 +178,8 @@ export const SOLID_META = createUriAndTermNamespace('urn:npm:solid:community-ser
   // This is used to store Content-Type Parameters
   'contentTypeParameter',
   'value',
+  // This is used to indicate whether metadata should be preserved or not during a PUT operation
+  'preserve',
 );
 
 export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',

@@ -1,5 +1,6 @@
 import { createReadStream } from 'fs';
 import fetch from 'cross-fetch';
+import type { Quad } from 'n3';
 import { DataFactory, Parser, Store } from 'n3';
 import { joinFilePath, PIM, RDF } from '../../src/';
 import type { App } from '../../src/';
@@ -18,7 +19,8 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig, removeFolder,
+  instantiateFromConfig,
+  removeFolder,
 } from './Config';
 const { literal, namedNode, quad } = DataFactory;
 
@@ -188,6 +190,30 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
+  it('can create a container without content-type.', async(): Promise<void> => {
+    // Create container
+    const containerUrl = `${baseUrl}testcontainer0/`;
+    const slug = 'testcontainer1/';
+    const putResponse = await fetch(containerUrl, {
+      method: 'PUT',
+    });
+    const postResponse = await fetch(baseUrl, {
+      method: 'Post',
+      headers: {
+        slug,
+        link: `<http://www.w3.org/ns/ldp#Container>; rel="type"`,
+      },
+    });
+
+    expect(putResponse.status).toBe(201);
+    expect(putResponse.headers.get('location')).toBe(containerUrl);
+    expect(postResponse.status).toBe(201);
+    expect(postResponse.headers.get('location')).toBe(baseUrl + slug);
+
+    // DELETE
+    expect(await deleteResource(containerUrl)).toBeUndefined();
+    expect(await deleteResource(baseUrl + slug)).toBeUndefined();
+  });
   it('cannot remove a container when the container contains a document.', async(): Promise<void> => {
     // Create container
     const containerUrl = `${baseUrl}testfolder1/`;
@@ -474,6 +500,72 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(response.status).toBe(415);
   });
 
+  it('maintains prefixes after PATCH operations.', async(): Promise<void> => {
+    // POST
+    const body = [ '@prefix test: <http://test.com/>.',
+      'test:s1 test:p1 test:o1.',
+      'test:s2 test:p2 test:o2.' ].join('\n');
+    let response = await postResource(baseUrl, { contentType: 'text/turtle', body });
+    const documentUrl = response.headers.get('location')!;
+
+    // PATCH
+    const query = [ 'PREFIX test: <http://test.com/>',
+      'DELETE { test:s1 test:p1 test:o1 }',
+      'INSERT { test:s3 test:p3 test:o3. test:s4 test:p4 test:o4 }',
+      'WHERE {}',
+    ].join('\n');
+    await patchResource(documentUrl, query, 'sparql', true);
+
+    // GET
+    response = await getResource(documentUrl);
+    const parser = new Parser();
+    const quads: Quad[] = [];
+    let prefixes: any = {};
+    const text = await response.clone().text();
+    const promise = new Promise<void>((resolve, reject): void => {
+      parser.parse(text, (error, aQuad, prefixHash): any => {
+        if (aQuad) {
+          quads.push(aQuad);
+        }
+        if (!aQuad) {
+          prefixes = prefixHash;
+          resolve();
+        }
+        if (error) {
+          reject(error);
+        }
+      });
+    });
+
+    await promise;
+
+    const expected = [
+      quad(
+        namedNode('http://test.com/s2'),
+        namedNode('http://test.com/p2'),
+        namedNode('http://test.com/o2'),
+      ),
+      quad(
+        namedNode('http://test.com/s3'),
+        namedNode('http://test.com/p3'),
+        namedNode('http://test.com/o3'),
+      ),
+      quad(
+        namedNode('http://test.com/s4'),
+        namedNode('http://test.com/p4'),
+        namedNode('http://test.com/o4'),
+      ),
+    ];
+    await expectQuads(response, expected, true);
+    expect(prefixes).toEqual({
+      test: 'http://test.com/',
+    });
+    expect(quads).toHaveLength(3);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
+
   it('can not delete metadata resources directly.', async(): Promise<void> => {
     const documentUrl = `${baseUrl}document.txt`;
 
@@ -506,7 +598,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       headers: { 'content-type': 'text/turtle' },
       body: '<a> <b> <c>.',
     });
-    expect(putResponse.status).toBe(409);
+    expect(putResponse.status).toBe(405);
 
     // PATCH
     const patchResponse = await fetch(documentMetaURL, {
@@ -541,20 +633,29 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   });
 
   it('can not update metadata triples that are deemed immutable.', async(): Promise<void> => {
-    const metaUrl = baseUrl + metaSuffix;
+    const containerUrl = `${baseUrl}immutable/`;
+    const metaUrl = containerUrl + metaSuffix;
+
+    // PUT
+    await putResource(containerUrl, { contentType: 'text/turtle' });
+
+    // PATCH
     const pimResponse = await fetch(metaUrl, {
       method: 'PATCH',
       headers: { 'content-type': 'application/sparql-update' },
-      body: `INSERT DATA {<a> <${RDF.type}> <${PIM.Storage}>.}`,
+      body: `INSERT DATA {<${containerUrl}> <${RDF.type}> <${PIM.Storage}>.}`,
     });
     expect(pimResponse.status).toBe(409);
 
     const ldpResponse = await fetch(metaUrl, {
       method: 'PATCH',
       headers: { 'content-type': 'application/sparql-update' },
-      body: `INSERT DATA {<a> <${LDP.contains}> <b>.}`,
+      body: `INSERT DATA {<${containerUrl}> <${LDP.contains}> <b>.}`,
     });
     expect(ldpResponse.status).toBe(409);
+
+    // DELETE
+    expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
   it('can not create metadata resource of a metadata resource.', async(): Promise<void> => {
@@ -578,6 +679,53 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expectQuads(response, [ quad(namedNode(baseUrl), namedNode(RDF.type), namedNode(PIM.Storage)) ]);
   });
 
+  it('preserves metadata when link header is present.', async(): Promise<void> => {
+    const resourceUrl = `${baseUrl}preserved`;
+    const metaUrl = resourceUrl + metaSuffix;
+    // PUT
+    await putResource(resourceUrl, { contentType: 'text/turtle', body: '<a> <b> <c>.' });
+
+    // PATCH
+    await patchResource(metaUrl, `INSERT DATA {<${baseUrl}a> <${baseUrl}b> <${baseUrl}c>.}`, 'sparql', true);
+
+    // PUT
+    const preserveResource = await fetch(resourceUrl, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/turtle',
+        link: `<${metaUrl}>;rel="preserve"`,
+      },
+      body: '<a> <b> <d>.',
+    });
+    expect(preserveResource.status).toBe(205);
+
+    const metadataResponse = await fetch(metaUrl);
+    const metadata = await metadataResponse.text();
+    expect(metadata).toContain(`<${baseUrl}a> <${baseUrl}b> <${baseUrl}c>.`);
+
+    // DELETE
+    await deleteResource(resourceUrl);
+  });
+
+  it('clears metadata by default.', async(): Promise<void> => {
+    const resourceUrl = `${baseUrl}notPreserved`;
+    const metaUrl = resourceUrl + metaSuffix;
+    // PUT
+    await putResource(resourceUrl, { contentType: 'text/turtle', body: '<a> <b> <c>.' });
+
+    // PATCH
+    await patchResource(metaUrl, `INSERT DATA {<a> <b> <c>.}`, 'sparql', true);
+
+    // PUT
+    await putResource(resourceUrl, { contentType: 'text/turtle', body: '<a> <b> <d>.', exists: true });
+
+    const metadataResponse = await fetch(metaUrl);
+    const metadata = await metadataResponse.text();
+    expect(metadata).not.toContain(`<${baseUrl}a> <${baseUrl}b> <${baseUrl}c>.`);
+
+    // DELETE
+    await deleteResource(resourceUrl);
+  });
   const shape = `<http://example.org/exampleshape> a <http://www.w3.org/ns/shacl#NodeShape>.
 <http://example.org/exampleshape> <http://www.w3.org/ns/shacl#targetClass> <http://example.org/c>.
 <http://example.org/exampleshape> <http://www.w3.org/ns/shacl#property> <http://example.org/property>.

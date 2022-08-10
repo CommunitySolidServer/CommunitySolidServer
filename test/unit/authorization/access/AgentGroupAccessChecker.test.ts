@@ -3,7 +3,6 @@ import type { AccessCheckerArgs } from '../../../../src/authorization/access/Acc
 import { AgentGroupAccessChecker } from '../../../../src/authorization/access/AgentGroupAccessChecker';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
-import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import * as fetchUtil from '../../../../src/util/FetchUtil';
 import { ACL, VCARD } from '../../../../src/util/Vocabularies';
@@ -17,7 +16,6 @@ describe('An AgentGroupAccessChecker', (): void => {
   acl.addQuad(namedNode('noMatch'), ACL.terms.agentGroup, namedNode('badGroup'));
   let fetchMock: jest.SpyInstance;
   let representation: Representation;
-  let cache: ExpiringStorage<string, Promise<Store>>;
   let checker: AgentGroupAccessChecker;
 
   beforeEach(async(): Promise<void> => {
@@ -27,9 +25,7 @@ describe('An AgentGroupAccessChecker', (): void => {
     fetchMock.mockResolvedValue(representation);
     fetchMock.mockClear();
 
-    cache = new Map() as any;
-
-    checker = new AgentGroupAccessChecker(cache);
+    checker = new AgentGroupAccessChecker();
   });
 
   it('can handle all requests.', async(): Promise<void> => {
@@ -49,12 +45,5 @@ describe('An AgentGroupAccessChecker', (): void => {
   it('returns false if there are no WebID credentials.', async(): Promise<void> => {
     const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credential: {}};
     await expect(checker.handle(input)).resolves.toBe(false);
-  });
-
-  it('caches fetched results.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credential: { webId }};
-    await expect(checker.handle(input)).resolves.toBe(true);
-    await expect(checker.handle(input)).resolves.toBe(true);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

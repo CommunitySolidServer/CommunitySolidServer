@@ -9,9 +9,11 @@ import { createErrorMessage, isError } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import { resolveModulePath, resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
+import type { CliExtractor } from './cli/CliExtractor';
 import type { CliResolver } from './CliResolver';
 import { listSingleThreadedComponents } from './cluster/SingleThreaded';
-import type { CliArgv, VariableBindings } from './variables/Types';
+import type { ShorthandResolver } from './variables/ShorthandResolver';
+import type { CliArgv, Shorthand, VariableBindings } from './variables/Types';
 
 const DEFAULT_CONFIG = resolveModulePath('config/default.json');
 
@@ -24,6 +26,8 @@ const CORE_CLI_PARAMETERS = {
   mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
 } as const;
 
+const ENV_VAR_PREFIX = 'CSS';
+
 /**
  * A class that can be used to instantiate and start a server based on a Component.js configuration.
  */
@@ -33,41 +37,62 @@ export class AppRunner {
   /**
    * Starts the server with a given config.
    * This method can be used to start the server from within another JavaScript application.
+   *
    * Keys of the `variableBindings` object should be Components.js variables.
    * E.g.: `{ 'urn:solid-server:default:variable:rootFilePath': '.data' }`.
    *
+   * `shorthand` are CLI argument names and their corresponding values.
+   * E.g.: `{ rootFilePath: '.data' }`.
+   * Abbreviated parameter names can not be used, so `{ f: '.data' }` would not work.
+   *
+   * The values in `variableBindings` take priority over those in `shorthand`.
+   *
    * @param loaderProperties - Components.js loader properties.
    * @param configFile - Path to the server config file.
-   * @param variableBindings - Parameters to pass into the VariableResolver.
+   * @param variableBindings - Bindings of Components.js variables.
+   * @param shorthand - Shorthand values that need to be resolved.
    */
   public async run(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string,
-    variableBindings: VariableBindings,
+    variableBindings?: VariableBindings,
+    shorthand?: Shorthand,
   ): Promise<void> {
-    const app = await this.create(loaderProperties, configFile, variableBindings);
+    const app = await this.create(loaderProperties, configFile, variableBindings, shorthand);
     await app.start();
   }
 
   /**
    * Returns an App object, created with the given config, that can start and stop the Solid server.
+   *
    * Keys of the `variableBindings` object should be Components.js variables.
    * E.g.: `{ 'urn:solid-server:default:variable:rootFilePath': '.data' }`.
+   *
+   * `shorthand` are CLI argument names and their corresponding values.
+   * E.g.: `{ rootFilePath: '.data' }`.
+   * Abbreviated parameter names can not be used, so `{ f: '.data' }` would not work.
+   *
+   * The values in `variableBindings` take priority over those in `shorthand`.
    *
    * @param loaderProperties - Components.js loader properties.
    * @param configFile - Path to the server config file.
    * @param variableBindings - Bindings of Components.js variables.
+   * @param shorthand - Shorthand values that need to be resolved.
    */
   public async create(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string,
-    variableBindings: VariableBindings,
+    variableBindings?: VariableBindings,
+    shorthand?: Shorthand,
   ): Promise<App> {
-    // Create a resolver to translate (non-core) CLI parameters into values for variables
-    const componentsManager = await this.createComponentsManager<App>(loaderProperties, configFile);
+    const componentsManager = await this.createComponentsManager<any>(loaderProperties, configFile);
 
-    // Create the application using the translated variable values
-    return await this.createApp(componentsManager, variableBindings);
+    const cliResolver = await this.createCliResolver(componentsManager);
+    const parsedVariables = await this.resolveShorthand(cliResolver.shorthandResolver, { ...shorthand });
+
+    // Create the application using the translated variable values.
+    // `variableBindings` override those resolved from the `shorthand` input.
+    return this.createApp(componentsManager, { ...parsedVariables, ...variableBindings });
   }
 
   /**
@@ -114,7 +139,9 @@ export class AppRunner {
       .usage('node ./bin/server.js [args]')
       .options(CORE_CLI_PARAMETERS)
       // We disable help here as it would only show the core parameters
-      .help(false);
+      .help(false)
+      // We also read from environment variables
+      .env(ENV_VAR_PREFIX);
 
     const params = await yargv.parse();
 
@@ -138,7 +165,7 @@ export class AppRunner {
     }
 
     // Build the CLI components and use them to generate values for the Components.js variables
-    const variables = await this.resolveVariables(componentsManager, argv);
+    const variables = await this.cliToVariables(componentsManager, argv);
 
     // Build and start the actual server application using the generated variable values
     return await this.createApp(componentsManager, variables);
@@ -157,20 +184,50 @@ export class AppRunner {
   }
 
   /**
-   * Handles the first Components.js instantiation,
-   * where CLI settings and variable mappings are created.
+   * Handles the first Components.js instantiation.
+   * Uses it to extract the CLI shorthand values and use those to create variable bindings.
    */
-  private async resolveVariables(componentsManager: ComponentsManager<CliResolver>, argv: string[]):
+  private async cliToVariables(componentsManager: ComponentsManager<CliResolver>, argv: CliArgv):
   Promise<VariableBindings> {
+    const cliResolver = await this.createCliResolver(componentsManager);
+    const shorthand = await this.extractShorthand(cliResolver.cliExtractor, argv);
+    return await this.resolveShorthand(cliResolver.shorthandResolver, shorthand);
+  }
+
+  /**
+   * Instantiates the {@link CliResolver}.
+   */
+  private async createCliResolver(componentsManager: ComponentsManager<CliResolver>): Promise<CliResolver> {
     try {
       // Create a CliResolver, which combines a CliExtractor and a VariableResolver
-      const resolver = await componentsManager.instantiate(DEFAULT_CLI_RESOLVER, {});
-      // Convert CLI args to CLI bindings
-      const cliValues = await resolver.cliExtractor.handleSafe(argv);
-      // Convert CLI bindings into variable bindings
-      return await resolver.settingsResolver.handleSafe(cliValues);
+      return await componentsManager.instantiate(DEFAULT_CLI_RESOLVER, {});
     } catch (error: unknown) {
-      this.resolveError(`Could not load the config variables`, error);
+      this.resolveError(`Could not create the CLI resolver`, error);
+    }
+  }
+
+  /**
+   * Uses the {@link CliExtractor} to convert the CLI args to a {@link Shorthand} object.
+   */
+  private async extractShorthand(cliExtractor: CliExtractor, argv: CliArgv): Promise<Shorthand> {
+    try {
+      // Convert CLI args to CLI bindings
+      return await cliExtractor.handleSafe(argv);
+    } catch (error: unknown) {
+      this.resolveError(`Could not parse the CLI parameters`, error);
+    }
+  }
+
+  /**
+   * Uses the {@link ShorthandResolver} to convert {@link Shorthand} to {@link VariableBindings} .
+   */
+  private async resolveShorthand(shorthandResolver: ShorthandResolver, shorthand: Shorthand):
+  Promise<VariableBindings> {
+    try {
+      // Convert CLI bindings into variable bindings
+      return await shorthandResolver.handleSafe(shorthand);
+    } catch (error: unknown) {
+      this.resolveError(`Could not resolve the shorthand values`, error);
     }
   }
 

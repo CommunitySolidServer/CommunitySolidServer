@@ -17,7 +17,6 @@ describe('A MethodFilterHandler', (): void => {
     operation = {
       method: 'PATCH',
       preferences: {},
-      permissionSet: {},
       target: { path: 'http://example.com/foo' },
       body: new BasicRepresentation(),
     };

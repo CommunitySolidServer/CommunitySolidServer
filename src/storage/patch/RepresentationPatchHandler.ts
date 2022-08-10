@@ -1,10 +1,10 @@
 import type { Representation } from '../../http/representation/Representation';
-import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isContainerIdentifier } from '../../util/PathUtil';
+import type { ChangeMap } from '../ResourceStore';
 import type { PatchHandlerInput } from './PatchHandler';
 import { PatchHandler } from './PatchHandler';
 import type { RepresentationPatcher } from './RepresentationPatcher';
@@ -19,18 +19,18 @@ import type { RepresentationPatcher } from './RepresentationPatcher';
 export class RepresentationPatchHandler extends PatchHandler {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly patcher: RepresentationPatcher;
+  private readonly patcher: RepresentationPatcher<Representation>;
 
-  public constructor(patcher: RepresentationPatcher) {
+  public constructor(patcher: RepresentationPatcher<Representation>) {
     super();
     this.patcher = patcher;
   }
 
-  public async handle({ source, patch, identifier }: PatchHandlerInput): Promise<ResourceIdentifier[]> {
+  public async handle({ source, patch, identifier }: PatchHandlerInput): Promise<ChangeMap> {
     // Get the representation from the store
     let representation: Representation | undefined;
     try {
-      // Explicit preferences to prevent internal types from being converted
+      // Internal types are converted unless specified otherwise like we do here
       representation = await source.getRepresentation(identifier, { type: { '*/*': 1, [INTERNAL_ALL]: 1 }});
     } catch (error: unknown) {
       // Solid, §5.1: "When a successful PUT or PATCH request creates a resource,
@@ -45,10 +45,10 @@ export class RepresentationPatchHandler extends PatchHandler {
     // Patch it
     const patched = await this.patcher.handleSafe({ patch, identifier, representation });
 
-    // Not allowed performing PATCH on a container
-    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-988664970
+    // Solid, §5.3: "Servers MUST NOT allow HTTP PUT or PATCH on a container to update its containment triples;
+    // if the server receives such a request, it MUST respond with a 409 status code."
     if (isContainerIdentifier(identifier)) {
-      throw new ConflictHttpError('Not allowed to execute PATCH request on containers.');
+      throw new ConflictHttpError('Not allowed to execute PATCH requests on containers.');
     }
 
     // Write it back to the store

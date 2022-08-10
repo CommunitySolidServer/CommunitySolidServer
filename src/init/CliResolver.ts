@@ -1,16 +1,16 @@
 import type { CliExtractor } from './cli/CliExtractor';
-import type { SettingsResolver } from './variables/SettingsResolver';
+import type { ShorthandResolver } from './variables/ShorthandResolver';
 
 /**
- * A class that combines a {@link CliExtractor} and a {@link SettingsResolver}.
+ * A class that combines a {@link CliExtractor} and a {@link ShorthandResolver}.
  * Mainly exists so both such classes can be generated in a single Components.js instance.
  */
 export class CliResolver {
   public readonly cliExtractor: CliExtractor;
-  public readonly settingsResolver: SettingsResolver;
+  public readonly shorthandResolver: ShorthandResolver;
 
-  public constructor(cliExtractor: CliExtractor, settingsResolver: SettingsResolver) {
+  public constructor(cliExtractor: CliExtractor, shorthandResolver: ShorthandResolver) {
     this.cliExtractor = cliExtractor;
-    this.settingsResolver = settingsResolver;
+    this.shorthandResolver = shorthandResolver;
   }
 }

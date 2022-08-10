@@ -3,7 +3,6 @@ import { BasicRepresentation } from '../../src/http/representation/BasicRepresen
 import type { Representation } from '../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../src/http/representation/RepresentationMetadata';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
-import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
 import { DataAccessorBasedStore } from '../../src/storage/DataAccessorBasedStore';
 import { LockingResourceStore } from '../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
@@ -35,7 +34,6 @@ describe('A LockingResourceStore', (): void => {
     // Not relevant for these tests
     const strategy = new RoutingAuxiliaryStrategy([]);
     const metadataStrategy = new SimpleSuffixStrategy('.meta');
-    const converter = new RdfToQuadConverter();
 
     const base = 'http://test.com/';
     path = `${base}path`;
@@ -45,7 +43,6 @@ describe('A LockingResourceStore', (): void => {
       idStrategy,
       strategy,
       metadataStrategy,
-      converter,
     );
 
     // Initialize store

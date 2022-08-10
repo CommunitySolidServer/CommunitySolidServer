@@ -9,15 +9,27 @@
         "@id": "urn:solid-server:default:RedisLocker",
         "@type": "RedisLocker"
       },
-      "expiration": 3000
+      "expiration": 6000
     },
     {
-      "comment": "Makes sure the redis connection is closed when the application needs to stop. Also deletes still-existing locks and counters.",
-      "@id": "urn:solid-server:default:Finalizer",
-      "@type": "ParallelFinalizer",
-      "finalizers": [
+      "@id": "urn:solid-server:default:CleanupInitializer",
+      "@type": "SequenceHandler",
+      "handlers": [
         {
-          "@id": "urn:solid-server:default:RedisLocker"
+          "comment": "Makes sure the RedisLocker starts with a clean slate when the application is started.",
+          "@type": "InitializableHandler",
+          "initializable": { "@id": "urn:solid-server:default:RedisLocker" }
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:CleanupFinalizer",
+      "@type": "SequenceHandler",
+      "handlers": [
+        {
+          "comment": "Makes sure the redis connection is closed when the application needs to stop. Also deletes still-existing locks and counters.",
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:RedisLocker" }
         }
       ]
     }

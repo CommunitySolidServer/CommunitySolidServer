@@ -2,8 +2,7 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import type { ContentType } from '../../util/HeaderUtil';
-import { parseContentType } from '../../util/HeaderUtil';
+import { ContentType, parseContentType } from '../../util/HeaderUtil';
 import { toNamedTerm, toObjectTerm, isTerm, toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
@@ -369,18 +368,16 @@ export class RepresentationMetadata {
       return;
     }
     const params = this.getAll(SOLID_META.terms.contentTypeParameter);
-    return {
-      value,
-      parameters: Object.fromEntries(params.map((param): [string, string] => {
-        const labels = this.store.getObjects(param, RDFS.terms.label, null);
-        const values = this.store.getObjects(param, SOLID_META.terms.value, null);
-        if (labels.length !== 1 || values.length !== 1) {
-          this.logger.error(`Detected invalid content-type metadata for ${this.id.value}`);
-          return [ 'invalid', '' ];
-        }
-        return [ labels[0].value, values[0].value ];
-      })),
-    };
+    const parameters = Object.fromEntries(params.map((param): [string, string] => {
+      const labels = this.store.getObjects(param, RDFS.terms.label, null);
+      const values = this.store.getObjects(param, SOLID_META.terms.value, null);
+      if (labels.length !== 1 || values.length !== 1) {
+        this.logger.error(`Detected invalid content-type metadata for ${this.id.value}`);
+        return [ 'invalid', '' ];
+      }
+      return [ labels[0].value, values[0].value ];
+    }));
+    return new ContentType(value, parameters);
   }
 
   private removeContentType(): void {
