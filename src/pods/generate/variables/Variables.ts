@@ -1,11 +1,11 @@
-import { createUriAndTermNamespace } from '../../../util/Vocabularies';
+import { createVocabulary } from '../../../util/Vocabularies';
 
-export const TEMPLATE = createUriAndTermNamespace('urn:solid-server:template:',
+export const TEMPLATE = createVocabulary('urn:solid-server:template:',
   'ResourceStore');
 
 // Variables used for configuration templates
 // This is not an exclusive list
-export const TEMPLATE_VARIABLE = createUriAndTermNamespace(`${TEMPLATE.namespace}variable:`,
+export const TEMPLATE_VARIABLE = createVocabulary(`${TEMPLATE.namespace}variable:`,
   'baseUrl',
   'rootFilePath',
   'sparqlEndpoint',
