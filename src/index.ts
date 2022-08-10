@@ -24,6 +24,8 @@ export * from './authorization/permissions/Permissions';
 export * from './authorization/permissions/SparqlUpdateModesExtractor';
 
 // Authorization
+export * from './authorization/AcpReader';
+export * from './authorization/AcpUtil';
 export * from './authorization/AllStaticReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';

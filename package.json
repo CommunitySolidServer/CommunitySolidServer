@@ -102,6 +102,7 @@
     "@comunica/context-entries": "^2.2.0",
     "@comunica/query-sparql": "^2.2.1",
     "@rdfjs/types": "^1.1.0",
+    "@solid/access-control-policy": "^0.1.2",
     "@solid/access-token-verifier": "^2.0.3",
     "@types/async-lock": "^1.1.5",
     "@types/bcryptjs": "^2.4.2",
