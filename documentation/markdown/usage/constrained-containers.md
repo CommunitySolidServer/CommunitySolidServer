@@ -24,6 +24,7 @@ It is now visible due to its link header
 * no containers can be created in this constrained container as this does not conform to the shape.
 
 ## Example of a workflow on how to constrain a container
+
 We have CSS container http://localhost:3000/container/ that we want to constrain with http://localhost:3000/shape.
 
 Send request to the container
