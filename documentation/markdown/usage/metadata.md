@@ -105,16 +105,14 @@ With as result for the body
 
 <http://localhost:3000/foo/> a ldp:Container, ldp:BasicContainer, ldp:Resource;
     dc:modified "2022-06-09T08:17:07.000Z"^^xsd:dateTime;
-    ldp:inbox <http://localhost:3000/inbox/>;
-    <http://www.w3.org/ns/auth/acl#accessControl> <http://localhost:3000/foo/.acl>;
-    dc:description <http://localhost:3000/foo/.meta>.
+    ldp:inbox <http://localhost:3000/inbox/>;.
 ```
 
 This can also be verified by sending a GET request to the subject resource itself.
 The inbox location can also be found in the Link headers.
 
 ```shell
-curl -v 'http://localhost:3000/foo/.meta'
+curl -v 'http://localhost:3000/foo/'
 ```
 
 ```shell
