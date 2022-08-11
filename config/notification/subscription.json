@@ -33,7 +33,15 @@
       ],
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "ignoreFolders": [ "^\\.internal.*" ],
-      "source": { "@id": "urn:solid-server:default:ResourceStore"}
+      "source": { "@id": "urn:solid-server:default:ResourceStore"},
+      "locker": {
+        "@type": "GreedyReadWriteLocker",
+        "locker": { "@id": "urn:solid-server:default:FileSystemResourceLocker" },
+        "storage": { "@id": "urn:solid-server:default:LockStorage" },
+        "suffixes_count": "notification_count",
+        "suffixes_read": "notification_read",
+        "suffixes_write": "notification_write"
+      }
     },
     {
       "comment": "Handles WebHookSubscription2021 subscriptions",

@@ -4,6 +4,7 @@ import type { PermissionReader } from '../../../../src/authorization/PermissionR
 import {
   NotificationSubscriptionHttpHandler,
 } from '../../../../src/http/notification/NotificationSubscriptionHttpHandler';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { Subscription } from '../../../../src/notification/Subscription';
 import type { SubscriptionHandler } from '../../../../src/notification/SubscriptionHandler';
 import type { Topic } from '../../../../src/notification/Topic';
@@ -12,6 +13,7 @@ import type { OperationHttpHandlerInput } from '../../../../src/server/Operation
 import { MemoryMapStorage } from '../../../../src/storage/keyvalue/MemoryMapStorage';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import { AS } from '../../../../src/util/Vocabularies';
 
 describe('A NotificationSubscriptionHttpHandler', (): void => {
@@ -20,6 +22,7 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
   let mockPermissionReader: PermissionReader;
   let notificationStorage: MemoryMapStorage<Topic>;
   let source: EventEmitter;
+  let mockLocker: ReadWriteLocker;
   let mockSubscriptionHandler: SubscriptionHandler<Subscription>;
   const mockWebId = 'http://example.com/webid';
   const mockType = 'WebHook';
@@ -35,6 +38,12 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
     } as unknown as PermissionReader;
     notificationStorage = new MemoryMapStorage<Topic>();
     source = new EventEmitter();
+    mockLocker = {
+      withReadLock:
+        jest.fn(async(id: ResourceIdentifier, whileLocked: () => any): Promise<any> => await whileLocked()),
+      withWriteLock:
+        jest.fn(async(id: ResourceIdentifier, whileLocked: () => any): Promise<any> => await whileLocked()),
+    };
     mockSubscriptionHandler = {
       getType: jest.fn().mockReturnValue(mockType),
       onChange: jest.fn(),
@@ -47,6 +56,7 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
       mockPermissionReader,
       notificationStorage,
       source,
+      mockLocker,
       [ mockSubscriptionHandler ],
       'http://example.com/',
     );
@@ -226,6 +236,7 @@ describe('A NotificationSubscriptionHttpHandler', (): void => {
         mockPermissionReader,
         notificationStorage,
         source,
+        mockLocker,
         [ mockSubscriptionHandler ],
         'http://example.com/',
         [ '^\\.internal.*' ],

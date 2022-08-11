@@ -16,6 +16,7 @@ import type { OperationHttpHandlerInput } from '../../server/OperationHttpHandle
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
 import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 import { AS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
@@ -34,6 +35,7 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
     private readonly permissionReader: PermissionReader,
     private readonly notificationStorage: KeyValueStorage<string, Topic>,
     private readonly source: EventEmitter,
+    private readonly locker: ReadWriteLocker,
     subscriptionHandlers: SubscriptionHandler<Subscription>[],
     base: string,
     ignoreFolders?: string[],
@@ -96,13 +98,18 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
       throw new BadRequestHttpError('Agent not allowed to read resource.');
     }
 
-    const existingTopic = await this.notificationStorage.get(encodeURIComponent(topicURI));
-    const topic: Topic = existingTopic ?? { subscriptions: {}};
-
-    // Create and save the new subscription
+    const encodedTopicUri = encodeURIComponent(topicURI);
+    // Create the subscription object
     const subscription: Subscription = subscriptionHandler.subscribe(subscriptionRequest);
-    topic.subscriptions[credentials.agent.webId] = subscription;
-    await this.notificationStorage.set(encodeURIComponent(topicURI), topic);
+
+    // These operations (.get() and .set()) are done with a WriteLock to prevent race conditions
+    await this.locker.withWriteLock({ path: encodedTopicUri }, async(): Promise<void> => {
+      const existingTopic = await this.notificationStorage.get(encodedTopicUri);
+      const topic: Topic = existingTopic ?? { subscriptions: {}};
+      // Save the new subscription
+      topic.subscriptions[credentials.agent!.webId!] = subscription;
+      await this.notificationStorage.set(encodedTopicUri, topic);
+    });
 
     this.logger.verbose(
       `Registered subscription[${subscriptionType}] at topic[${topicURI}] for agent[${credentials.agent.webId}]`,
