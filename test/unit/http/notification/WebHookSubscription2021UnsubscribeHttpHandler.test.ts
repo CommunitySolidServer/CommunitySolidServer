@@ -2,6 +2,7 @@ import type { CredentialsExtractor } from '../../../../src/authentication/Creden
 import {
   WebHookSubscription2021UnsubscribeHttpHandler,
 } from '../../../../src/http/notification/WebHookSubscription2021UnsubscribeHttpHandler';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { generateSubscriptionId } from '../../../../src/notification/Subscription';
 import type { Topic } from '../../../../src/notification/Topic';
 import type {
@@ -12,11 +13,13 @@ import type { OperationHttpHandlerInput } from '../../../../src/server/Operation
 import { MemoryMapStorage } from '../../../../src/storage/keyvalue/MemoryMapStorage';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 
 describe('A WebHookSubscription2021UnsubscribeHttpHandler', (): void => {
   let handler: WebHookSubscription2021UnsubscribeHttpHandler;
   let mockCredentialsExtractor: CredentialsExtractor;
   let notificationStorage: MemoryMapStorage<Topic>;
+  let mockLocker: ReadWriteLocker;
   const mockWebid = 'http://example.com/webid';
 
   beforeEach((): void => {
@@ -24,11 +27,18 @@ describe('A WebHookSubscription2021UnsubscribeHttpHandler', (): void => {
       handleSafe: jest.fn().mockResolvedValue({ agent: { webId: mockWebid }}),
     } as unknown as CredentialsExtractor;
     notificationStorage = new MemoryMapStorage<Topic>();
+    mockLocker = {
+      withReadLock:
+        jest.fn(async(id: ResourceIdentifier, whileLocked: () => any): Promise<any> => await whileLocked()),
+      withWriteLock:
+        jest.fn(async(id: ResourceIdentifier, whileLocked: () => any): Promise<any> => await whileLocked()),
+    };
 
     handler = new WebHookSubscription2021UnsubscribeHttpHandler(
       'http://example.com',
       mockCredentialsExtractor,
       notificationStorage,
+      mockLocker,
     );
   });
 

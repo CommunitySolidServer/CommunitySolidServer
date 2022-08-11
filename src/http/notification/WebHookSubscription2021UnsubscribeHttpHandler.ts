@@ -10,6 +10,7 @@ import { OperationHttpHandler } from '../../server/OperationHttpHandler';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
 import type { OperationHandlerInput } from '../ldp/OperationHandler';
 import { OkResponseDescription } from '../output/response/OkResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
@@ -20,6 +21,7 @@ export class WebHookSubscription2021UnsubscribeHttpHandler extends OperationHttp
     private readonly baseUrl: string,
     private readonly credentialsExtractor: CredentialsExtractor,
     private readonly notificationStorage: KeyValueStorage<string, Topic>,
+    private readonly locker: ReadWriteLocker,
   ) {
     super();
   }
@@ -54,20 +56,24 @@ export class WebHookSubscription2021UnsubscribeHttpHandler extends OperationHttp
     }
     const subscriptionTarget = decodeURIComponent(match[1]);
 
-    // Get topic from the store
-    const topic = await this.notificationStorage.get(encodeURIComponent(subscriptionTarget));
-    const subscription = topic?.subscriptions?.[webid] as WebHookSubscription2021;
-    if (!topic || !subscription) {
-      throw new BadRequestHttpError('Subscription does not exist');
-    }
-
-    const newSubs: Record<string, Subscription> = {};
-    for (const [ key, value ] of Object.entries(topic.subscriptions)) {
-      if (key !== webid && (value as any)?.id !== subscription.id) {
-        newSubs[key] = value;
+    const encodedTarget = encodeURIComponent(subscriptionTarget);
+    // These operations (.get() and .set()) are done with a WriteLock to prevent race conditions
+    await this.locker.withWriteLock({ path: encodedTarget }, async(): Promise<void> => {
+      // Get topic from the store
+      const topic = await this.notificationStorage.get(encodedTarget);
+      const subscription = topic?.subscriptions?.[webid] as WebHookSubscription2021;
+      if (!topic || !subscription) {
+        throw new BadRequestHttpError('Subscription does not exist');
       }
-    }
-    await this.notificationStorage.set(encodeURIComponent(subscriptionTarget), { subscriptions: newSubs });
+
+      const newSubs: Record<string, Subscription> = {};
+      for (const [ key, value ] of Object.entries(topic.subscriptions)) {
+        if (key !== webid && (value as unknown as WebHookSubscription2021).id !== subscription.id) {
+          newSubs[key] = value;
+        }
+      }
+      await this.notificationStorage.set(encodedTarget, { subscriptions: newSubs });
+    });
 
     return new OkResponseDescription(
       new RepresentationMetadata('application/ld+json'),

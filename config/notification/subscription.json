@@ -34,14 +34,7 @@
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "ignoreFolders": [ "^\\.internal.*" ],
       "source": { "@id": "urn:solid-server:default:ResourceStore"},
-      "locker": {
-        "@type": "GreedyReadWriteLocker",
-        "locker": { "@id": "urn:solid-server:default:FileSystemResourceLocker" },
-        "storage": { "@id": "urn:solid-server:default:LockStorage" },
-        "suffixes_count": "notification_count",
-        "suffixes_read": "notification_read",
-        "suffixes_write": "notification_write"
-      }
+      "locker": { "@id": "urn:solid-server:default:NotificationReadWriteLocker" }
     },
     {
       "comment": "Handles WebHookSubscription2021 subscriptions",
@@ -84,7 +77,17 @@
       "@type": "WebHookSubscription2021UnsubscribeHttpHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
-      "notificationStorage": { "@id": "urn:solid-server:default:NotificationStorage"}
+      "notificationStorage": { "@id": "urn:solid-server:default:NotificationStorage"},
+      "locker": { "@id": "urn:solid-server:default:NotificationReadWriteLocker" }
+    },
+    {
+      "@id": "urn:solid-server:default:NotificationReadWriteLocker",
+      "@type": "GreedyReadWriteLocker",
+      "locker": { "@id": "urn:solid-server:default:FileSystemResourceLocker" },
+      "storage": { "@id": "urn:solid-server:default:LockStorage" },
+      "suffixes_count": "notification_count",
+      "suffixes_read": "notification_read",
+      "suffixes_write": "notification_write"
     }
   ]
 }
