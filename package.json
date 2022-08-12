@@ -79,6 +79,9 @@
       "postbump": "ts-node ./scripts/upgradeConfig.ts",
       "postchangelog": "ts-node ./scripts/formatChangelog.ts"
     },
+    "writerOpts": {
+      "commitsSort": false
+    },
     "skip": {
       "tag": true
     }
@@ -182,7 +185,7 @@
     "nodemon": "^2.0.19",
     "set-cookie-parser": "^2.5.1",
     "simple-git": "^3.12.0",
-    "commit-and-tag-version": "^10.0.1",
+    "commit-and-tag-version": "^10.1.0",
     "supertest": "^6.2.4",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.1",
