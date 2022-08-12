@@ -4,7 +4,7 @@
 ### New features
 - Metadata of resources can now be edited by PATCHing its description resource.
   This has an impact on which requests are allowed.
-  See the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/5.0/usage/metadata/) for more information.
+  See the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/5.x/usage/metadata/) for more information.
 - Components.js was upgraded to v5. If you have created an external component
   you should also upgrade to prevent warnings and conflicts.
 - The server can now run multithreaded with multiple workers. This is done with the `--workers` or `-w` flag.
@@ -109,9 +109,9 @@ as described in https://github.com/inrupt/solid-client-authn-js/issues/2103.
 ## v4.0.0
 ### New features
 - The server can be started with a new parameter to automatically generate accounts and pods, 
-  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/seeding-pods/).
+  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.x/seeding-pods/).
 - It is now possible to automate authentication requests using Client Credentials,
-  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/client-credentials/).
+  for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.x/client-credentials/).
 - A new `RedirectingHttpHandler` class has been added which can be used to redirect certain URLs.
 - A new default configuration `config/https-file-cli.json` 
   that can set the HTTPS parameters through the CLI has been added.
