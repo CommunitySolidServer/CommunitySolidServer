@@ -1,7 +1,6 @@
 #!/usr/bin/env ts-node
 /* eslint-disable no-console */
 import * as readline from 'readline';
-import type { PushResult } from 'simple-git';
 import simpleGit from 'simple-git';
 import version from '../package.json';
 
@@ -18,12 +17,17 @@ import version from '../package.json';
  * Amends the previous commit, creates the annotated release tag
  * and then pushes commit and tag.
  */
-async function commitAndTag(): Promise<PushResult> {
+async function commitAndTag(): Promise<void> {
   await simpleGit().commit([], 'CHANGELOG.md', { '--amend': null, '--no-edit': null, '--no-verify': null });
-  await simpleGit().addAnnotatedTag(`testing-${version.version}`, `Release Version ${version.version}`);
-  return await simpleGit().push({ '--follow-tags': null });
+  await simpleGit().addAnnotatedTag(`v${version.version}`, `Release Version ${version.version}`);
+  await simpleGit().push({ '--follow-tags': null });
 }
 
+/**
+ * Prompts the user for input
+ * @param query - A string to prompt the user
+ * @returns Promise with the input of the user
+ */
 async function waitForUserInput(query: string): Promise<string> {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -35,9 +39,14 @@ async function waitForUserInput(query: string): Promise<string> {
   }));
 }
 
+/**
+ * Halts the script, waiting for user input before
+ * committing the changelog changes, adding an
+ * annotated tag and pushing the changes to origin.
+ */
 async function finalizeRelease(): Promise<void> {
   await waitForUserInput('Manually edit CHANGELOG.md, press any key to finalize...');
-  await commitAndTag();
+  return commitAndTag();
 }
 
 /**
@@ -48,4 +57,6 @@ function endProcess(error: Error): never {
   process.exit(1);
 }
 
-finalizeRelease().catch(endProcess);
+finalizeRelease()
+  .then((): void => console.info(`Changes and tag v${version.version} pushed to origin.`))
+  .catch(endProcess);
