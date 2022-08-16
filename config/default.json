@@ -34,7 +34,7 @@
   ],
   "@graph": [
     {
-      "comment": "A Solid server that stores its resources in memory."
+      "comment": "A Solid server that stores its resources in memory and uses WAC for authorization."
     }
   ]
 }

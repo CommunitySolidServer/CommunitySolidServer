@@ -21,23 +21,23 @@ export class OwnerPermissionReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
 
   private readonly accountStore: AccountStore;
-  private readonly aclStrategy: AuxiliaryIdentifierStrategy;
+  private readonly authStrategy: AuxiliaryIdentifierStrategy;
   private readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(accountStore: AccountStore, aclStrategy: AuxiliaryIdentifierStrategy,
+  public constructor(accountStore: AccountStore, authStrategy: AuxiliaryIdentifierStrategy,
     identifierStrategy: IdentifierStrategy) {
     super();
     this.accountStore = accountStore;
-    this.aclStrategy = aclStrategy;
+    this.authStrategy = authStrategy;
     this.identifierStrategy = identifierStrategy;
   }
 
   public async handle(input: PermissionReaderInput): Promise<PermissionMap> {
     const result: PermissionMap = new IdentifierMap();
     const requestedResources = input.requestedModes.distinctKeys();
-    const acls = [ ...filter(requestedResources, (id): boolean => this.aclStrategy.isAuxiliaryIdentifier(id)) ];
-    if (acls.length === 0) {
-      this.logger.debug(`No ACL resources found that need an ownership check.`);
+    const auths = [ ...filter(requestedResources, (id): boolean => this.authStrategy.isAuxiliaryIdentifier(id)) ];
+    if (auths.length === 0) {
+      this.logger.debug(`No authorization resources found that need an ownership check.`);
       return result;
     }
 
@@ -49,10 +49,10 @@ export class OwnerPermissionReader extends PermissionReader {
       return result;
     }
 
-    for (const acl of acls) {
-      if (this.identifierStrategy.contains(podBaseUrl, acl, true)) {
-        this.logger.debug(`Granting Control permissions to owner on ${acl.path}`);
-        result.set(acl, { [CredentialGroup.agent]: {
+    for (const auth of auths) {
+      if (this.identifierStrategy.contains(podBaseUrl, auth, true)) {
+        this.logger.debug(`Granting Control permissions to owner on ${auth.path}`);
+        result.set(auth, { [CredentialGroup.agent]: {
           read: true,
           write: true,
           append: true,
