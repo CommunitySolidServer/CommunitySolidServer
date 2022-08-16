@@ -35,7 +35,7 @@ export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
 export * from './authorization/UnionPermissionReader';
-export * from './authorization/WebAclAuxiliaryReader';
+export * from './authorization/AuthAuxiliaryReader';
 export * from './authorization/WebAclReader';
 
 // HTTP/Auxiliary

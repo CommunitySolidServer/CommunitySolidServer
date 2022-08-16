@@ -1,0 +1,18 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/util/auxiliary/strategies/acr.json",
+    "css:config/util/auxiliary/strategies/meta.json"
+  ],
+  "@graph": [
+    {
+      "comment": "This will contain references to all the auxiliary strategies (such as the acr one) if they are needed.",
+      "@id": "urn:solid-server:default:AuxiliaryStrategy",
+      "@type": "RoutingAuxiliaryStrategy",
+      "sources": [
+        { "@id": "urn:solid-server:default:AcrStrategy" },
+        { "@id": "urn:solid-server:default:MetadataStrategy" }
+      ]
+    }
+  ]
+}

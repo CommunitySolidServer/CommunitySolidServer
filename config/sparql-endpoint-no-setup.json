@@ -35,8 +35,9 @@
   "@graph": [
     {
       "comment": [
-        "A single-pod server that stores its resources in a SPARQL endpoint.",
-        "This server only supports RDF data. For this reason it can not use its resource store for internal key/value storage."
+        "A single-pod server that stores its resources in a SPARQL endpoint and uses WAC for authorization.",
+        "This server only supports RDF data. For this reason it can not use its resource store for internal key/value storage.",
+        "No setup is required and the root container is initialized to allow full access for everyone so make sure to change this."
       ]
     }
   ]

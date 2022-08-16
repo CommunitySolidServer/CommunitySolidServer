@@ -1,7 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "css:config/ldp/authorization/readers/acl.json",
+    "css:config/ldp/authorization/readers/acp.json",
     "css:config/ldp/authorization/readers/ownership.json"
   ],
   "@graph": [
@@ -22,23 +22,23 @@
           {
             "@id": "urn:solid-server:default:OwnerPermissionReader",
             "@type": "OwnerPermissionReader",
-            "authStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
+            "authStrategy": { "@id": "urn:solid-server:default:AcrStrategy" }
           },
           {
             "comment": "Uses Web Access Control for authorization.",
-            "@id": "urn:solid-server:default:WrappedWebAclReader"
+            "@id": "urn:solid-server:default:WrappedAcpReader"
           }
         ]
       }
     },
     {
-      "comment": "In case of WebACL authorization the ACL resources determine authorization.",
+      "comment": "In case of ACP authorization the ACR resources determine authorization.",
       "@id": "urn:solid-server:default:AuthResourceHttpHandler",
       "@type": "RouterHandler",
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
       "args_allowedMethods": [ "*" ],
-      "args_allowedPathNames": [ "^/.*\\.acl$" ],
+      "args_allowedPathNames": [ "^/.*\\.acr$" ],
       "args_handler": { "@id": "urn:solid-server:default:LdpHandler" }
     }
   ]

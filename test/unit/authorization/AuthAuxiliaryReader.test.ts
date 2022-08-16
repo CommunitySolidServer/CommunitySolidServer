@@ -1,16 +1,16 @@
 import type { CredentialSet } from '../../../src/authentication/Credentials';
+import { AuthAuxiliaryReader } from '../../../src/authorization/AuthAuxiliaryReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import { AclMode } from '../../../src/authorization/permissions/AclPermission';
 import type { AccessMap, PermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
-import { WebAclAuxiliaryReader } from '../../../src/authorization/WebAclAuxiliaryReader';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 import { joinUrl } from '../../../src/util/PathUtil';
 import { compareMaps } from '../../util/Util';
 
-describe('A WebAclAuxiliaryReader', (): void => {
+describe('An AuthAuxiliaryReader', (): void => {
   const baseUrl = 'http://example.com/';
   const subject1 = { path: joinUrl(baseUrl, 'foo/') };
   const acl1 = { path: joinUrl(subject1.path, '.acl') };
@@ -21,7 +21,7 @@ describe('A WebAclAuxiliaryReader', (): void => {
   let sourceResult: PermissionMap;
   let aclStrategy: jest.Mocked<AuxiliaryStrategy>;
   let source: jest.Mocked<PermissionReader>;
-  let reader: WebAclAuxiliaryReader;
+  let reader: AuthAuxiliaryReader;
 
   beforeEach(async(): Promise<void> => {
     requestedModes = new IdentifierSetMultiMap();
@@ -34,7 +34,7 @@ describe('A WebAclAuxiliaryReader', (): void => {
     } as any;
 
     source = { handleSafe: jest.fn().mockResolvedValue(sourceResult) } as any;
-    reader = new WebAclAuxiliaryReader(source, aclStrategy);
+    reader = new AuthAuxiliaryReader(source, aclStrategy);
   });
 
   it('requires control permissions on the subject resource to do everything.', async(): Promise<void> => {
