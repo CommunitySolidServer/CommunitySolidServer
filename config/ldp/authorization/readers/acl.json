@@ -16,8 +16,8 @@
     {
       "comment": "Reinterprets Control permissions as Read/Write on the ACL document.",
       "@id": "urn:solid-server:default:WebAclAuxiliaryReader",
-      "@type": "WebAclAuxiliaryReader",
-      "aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
+      "@type": "AuthAuxiliaryReader",
+      "authStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
       "reader": { "@id": "urn:solid-server:default:WebAclReader" }
     },
     {

@@ -34,7 +34,10 @@
   ],
   "@graph": [
     {
-      "comment": "A multi-pod server that allows for the creation of dynamic pods through pod provisioning."
+      "comment": [
+        "A Solid server that allows for the creation of dynamic pods through pod provisioning.",
+        "Dynamic pods each have their own Components.js configuration."
+      ]
     }
   ]
 }
