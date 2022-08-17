@@ -23,6 +23,16 @@ jobs:
       - checkout
       - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
       - run: helmfile --file .deploy/helmfile.yaml apply
+  helmfile-diff:
+    docker:
+      - image: itme/helmfile:0.1
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASSWORD
+    steps:
+      - checkout
+      - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
+      - run: helmfile --file .deploy/helmfile.yaml diff
 
 workflows:
   deploy:
@@ -50,3 +60,16 @@ workflows:
           filters:
             branches:
               only: main
+  diff:
+    jobs:
+      - helmfile-diff:
+          requires:
+            - docker/publish
+          context:
+            - kube-primary
+            - docker-org-itme
+            - docker-user-ian
+            - mysilio-me-smtp
+          filters:
+            branches:
+              ignore: main
