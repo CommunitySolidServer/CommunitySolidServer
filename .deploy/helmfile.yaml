@@ -10,7 +10,6 @@ releases:
       - ./values/image-pull-secrets.yaml.gotmpl
   - name: production-css
     namespace: mysilio-me
-    installed: false
     chart: css/community-solid-server
     values:
       - ./values/production.yaml.gotmpl
