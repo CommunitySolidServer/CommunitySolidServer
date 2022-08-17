@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import * as readline from 'readline';
 import simpleGit from 'simple-git';
-import version from '../package.json';
+import { version } from '../package.json';
 
 /**
  * Script: upgradeConfigs.ts
@@ -19,7 +19,7 @@ import version from '../package.json';
  */
 async function commitAndTag(): Promise<void> {
   await simpleGit().commit([], 'CHANGELOG.md', { '--amend': null, '--no-edit': null, '--no-verify': null });
-  await simpleGit().addAnnotatedTag(`v${version.version}`, `Release Version ${version.version}`);
+  await simpleGit().addAnnotatedTag(`v${version}`, `Release Version ${version}`);
   await simpleGit().push({ '--follow-tags': null });
 }
 
@@ -58,5 +58,5 @@ function endProcess(error: Error): never {
 }
 
 finalizeRelease()
-  .then((): void => console.info(`Changes and tag v${version.version} pushed to origin.`))
+  .then((): void => console.info(`Changes and tag v${version} pushed to origin.`))
   .catch(endProcess);
