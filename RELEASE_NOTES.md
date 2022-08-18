@@ -2,7 +2,8 @@
 
 ## v6.0.0
 ### New features
-- ...
+- Containers can now be made constrained by a SHACL shape.
+  See the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/5.0/usage/constrained-containers/) for more information.
 
 ### Data migration
 No actions are required to migrate data.

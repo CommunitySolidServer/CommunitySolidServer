@@ -34,13 +34,6 @@
             "value": "urn:npm:solid:community-server:meta:preserve",
             "ephemeral": true
           }
-        },
-        {
-          "LinkRelParser:_linkRelMap_key": "http://www.w3.org/ns/ldp#constrainedBy",
-          "LinkRelParser:_linkRelMap_value": {
-            "@type": "LinkRelObject",
-            "value": "http://www.w3.org/ns/ldp#constrainedBy"
-          }
         }
       ]
     }
