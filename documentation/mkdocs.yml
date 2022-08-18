@@ -102,5 +102,4 @@ nav:
   - API: ./docs/" target="_blank
 
 # To write documentation locally, execute the next line and browse to http://localhost:8000
-# docker run --rm -it -p 8000:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material
-# Alternatively, install `mkdocs` and `mkdocs-material` using `pip`, browse to the documentation folder and run `mkdocs serve`
+# npm run mkdocs
