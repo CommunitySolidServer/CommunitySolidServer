@@ -76,7 +76,7 @@ export class RepresentationMetadata {
   public constructor(metadata?: RepresentationMetadata, contentType?: string);
 
   /**
-   * @param contentType - The content type of the representation..
+   * @param contentType - The content type of the representation.
    */
   public constructor(contentType?: string);
 
