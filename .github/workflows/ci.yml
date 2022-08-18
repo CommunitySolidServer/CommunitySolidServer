@@ -160,7 +160,7 @@ jobs:
     steps:
       -
         name: Install jq
-        run: apt-get update && apt-get install -y jq
+        run: sudo apt-get update && sudo apt-get install -y jq
       - 
         name: Checkout
         uses: actions/checkout@v3
@@ -338,7 +338,7 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material 
       - run: pip install mike
-      - run: apt-get update && apt-get install -y jq
+      - run: sudo apt-get update && sudo apt-get install -y jq
       - run: git config user.name ci-bot
       - run: git config user.email ci-bot@example.com
       - name: Extract major version from package.json
