@@ -23,6 +23,7 @@ The following changes are relevant for v5 custom configs that replaced certain f
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - `AgentGroupAccessChecker` no longer accepts any input parameters.
+- The functions in `Vocabularies.ts` were renamed, the typings have been made more precise and several utility types were added.
 
 ## v5.0.0
 ### New features
