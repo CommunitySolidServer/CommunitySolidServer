@@ -342,9 +342,10 @@ jobs:
       - run: git config user.name ci-bot
       - run: git config user.email ci-bot@example.com
       - name: Extract major version from package.json
-        run: VERSION=$(git show origin/main:package.json | jq -r .version | grep -Po '^(\d+)').x
+        run: |
+          echo "VERSION=$(git show origin/main:package.json | jq -r .version | grep -Po '^(\d+)').x" >> $GITHUB_ENV
       - run: git fetch origin gh-pages --depth=1
-      - run: cd documentation && mike deploy --push $VERSION
+      - run: cd documentation && mike deploy --push -u ${{ env.VERSION }} latest
 
   publish-docs:
     # When a new version is tagged, upload the generated typedocs to the appropriate mkdocs <major.x> folder.
