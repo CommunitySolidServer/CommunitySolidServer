@@ -1,0 +1,39 @@
+# Root ACR for the agent account
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix acp: <http://www.w3.org/ns/solid/acp#>.
+
+# The owner has full access to every resource in their pod.
+# Other agents have no access rights,
+# unless specifically authorized in other ACRs.
+<#root>
+    a acp:AccessControlResource;
+    # Set the access to the root storage folder itself
+    acp:resource <./>;
+    # The homepage is readable by the public
+    acp:accessControl <#fullOwnerAccess>, <#publicReadAccess>;
+    # All resources will inherit this authorization
+    acp:memberAccessControl <#fullOwnerAccess>.
+
+# The public only has read access
+<#publicReadAccess>
+    a acp:AccessControl;
+    acp:apply [
+        a acp:Policy;
+        acp:allow acl:Read;
+        acp:anyOf [
+            a acp:Matcher;
+            acp:agent acp:PublicAgent
+        ]
+    ].
+
+# The owner has all of the access modes allowed
+<#fullOwnerAccess>
+    a acp:AccessControl;
+    acp:apply [
+        a acp:Policy;
+        acp:allow acl:Read, acl:Write, acl:Control;
+        acp:anyOf [
+            a acp:Matcher;
+            acp:agent <{{webId}}>
+        ]
+    ].

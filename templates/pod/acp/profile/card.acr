@@ -1,0 +1,22 @@
+# ACR for the WebID profile document
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix acp: <http://www.w3.org/ns/solid/acp#>.
+
+# The WebID profile is readable by the public.
+# This is required for discovery and verification,
+# e.g. when checking identity providers.
+<#card>
+    a acp:AccessControlResource;
+    acp:resource <./card>;
+    acp:accessControl <#publicReadAccess>.
+
+<#publicReadAccess>
+    a acp:AccessControl;
+    acp:apply [
+        a acp:Policy;
+        acp:allow acl:Read;
+        acp:anyOf [
+            a acp:Matcher;
+            acp:agent acp:PublicAgent
+        ]
+    ].

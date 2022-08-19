@@ -32,6 +32,12 @@
       }
     },
     {
+      "comment": "The templates for ACP authorization documents are in the acp subfolder.",
+      "@id": "urn:solid-server:default:TemplatedResourcesGenerator",
+      "@type": "SubfolderResourcesGenerator",
+      "subfolders": [ "acp" ]
+    },
+    {
       "comment": "In case of ACP authorization the ACR resources determine authorization.",
       "@id": "urn:solid-server:default:AuthResourceHttpHandler",
       "@type": "RouterHandler",

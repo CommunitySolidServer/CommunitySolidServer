@@ -1,18 +1,20 @@
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
-import { TemplatedResourcesGenerator } from '../../../../src/pods/generate/TemplatedResourcesGenerator';
+import { BaseResourcesGenerator } from '../../../../src/pods/generate/BaseResourcesGenerator';
 import type {
   FileIdentifierMapper,
   FileIdentifierMapperFactory,
   ResourceLink,
 } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { ensureTrailingSlash, trimTrailingSlashes } from '../../../../src/util/PathUtil';
+import { asyncToArray } from '../../../../src/util/IterableUtil';
+import { ensureTrailingSlash, joinFilePath, trimTrailingSlashes } from '../../../../src/util/PathUtil';
 import { readableToQuads, readableToString } from '../../../../src/util/StreamUtil';
 import { HandlebarsTemplateEngine } from '../../../../src/util/templates/HandlebarsTemplateEngine';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
+jest.mock('fs-extra');
 
 class DummyFactory implements FileIdentifierMapperFactory {
   public async create(base: string, rootFilePath: string): Promise<FileIdentifierMapper> {
@@ -36,20 +38,12 @@ class DummyFactory implements FileIdentifierMapperFactory {
   }
 }
 
-async function genToArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
-  const arr: T[] = [];
-  for await (const result of iterable) {
-    arr.push(result);
-  }
-  return arr;
-}
-
-describe('A TemplatedResourcesGenerator', (): void => {
+describe('A BaseResourcesGenerator', (): void => {
   const rootFilePath = '/templates/pod';
   // Using handlebars engine since it's smaller than any possible dummy
   const metadataStrategy = new SimpleSuffixStrategy('.meta');
   let store: jest.Mocked<ResourceStore>;
-  let generator: TemplatedResourcesGenerator;
+  let generator: BaseResourcesGenerator;
   let cache: { data: any };
   const template = '<{{webId}}> a <http://xmlns.com/foaf/0.1/Person>.';
   const location = { path: 'http://test.com/alice/' };
@@ -61,8 +55,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
       hasResource: jest.fn(),
     } as any;
 
-    generator = new TemplatedResourcesGenerator({
-      templateFolder: rootFilePath,
+    generator = new BaseResourcesGenerator({
       factory: new DummyFactory(),
       templateEngine: new HandlebarsTemplateEngine('http://test.com/'),
       metadataStrategy,
@@ -72,7 +65,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
 
   it('fills in a template with the given options.', async(): Promise<void> => {
     cache.data = { 'template.hbs': template };
-    const result = await genToArray(generator.generate(location, { webId }));
+    const result = await asyncToArray(generator.generate(rootFilePath, location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     const id = { path: `${location.path}template` };
     expect(identifiers).toEqual([ location, id ]);
@@ -86,7 +79,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
 
   it('creates the necessary containers.', async(): Promise<void> => {
     cache.data = { container: { container: { 'template.hbs': template }}};
-    const result = await genToArray(generator.generate(location, { webId }));
+    const result = await asyncToArray(generator.generate(rootFilePath, location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     const id = { path: `${location.path}container/container/template` };
     expect(identifiers).toEqual([
@@ -103,7 +96,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
 
   it('copies the file stream directly if no template extension is found.', async(): Promise<void> => {
     cache.data = { noTemplate: template };
-    const result = await genToArray(generator.generate(location, { webId }));
+    const result = await asyncToArray(generator.generate(rootFilePath, location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     const id = { path: `${location.path}noTemplate` };
     expect(identifiers).toEqual([ location, id ]);
@@ -119,7 +112,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
     cache.data = { '.meta': meta, container: { 'template.meta': meta, template }};
 
     // Not using options since our dummy template generator generates invalid turtle
-    const result = await genToArray(generator.generate(location, { webId }));
+    const result = await asyncToArray(generator.generate(rootFilePath, location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     expect(identifiers).toEqual([
       location,
@@ -158,7 +151,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
     cache.data = { '.meta': meta };
     store.hasResource = jest.fn().mockResolvedValue(true);
 
-    const result = await genToArray(generator.generate(location, { webId }));
+    const result = await asyncToArray(generator.generate(rootFilePath, location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     expect(identifiers).toEqual([
       { path: `${location.path}.meta` },
@@ -168,5 +161,21 @@ describe('A TemplatedResourcesGenerator', (): void => {
     const expQuads = quads.getQuads(`${location.path}`, 'pre:has', null, null);
     expect(expQuads).toHaveLength(1);
     expect(expQuads[0].object.value).toBe('metadata');
+  });
+
+  it('returns no results if the target folder does not exist.', async(): Promise<void> => {
+    const result = await asyncToArray(generator.generate(joinFilePath(rootFilePath, 'nope'), location, { webId }));
+    expect(result).toHaveLength(0);
+  });
+
+  it('makes sure the results are sorted.', async(): Promise<void> => {
+    cache.data = { 'template2.hbs': template, 'template1.hbs': template };
+    const result = await asyncToArray(generator.generate(rootFilePath, location, { webId }));
+    const identifiers = result.map((res): ResourceIdentifier => res.identifier);
+    expect(identifiers).toEqual([
+      location,
+      { path: `${location.path}template1` },
+      { path: `${location.path}template2` },
+    ]);
   });
 });

@@ -2,16 +2,31 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Generates resources based on the templates stored in the template folder.",
-      "@id": "urn:solid-server:default:ResourcesGenerator",
-      "@type": "TemplatedResourcesGenerator",
+      "comment": "Generates pods based on the templates in the corresponding folder.",
+      "@id": "urn:solid-server:default:PodResourcesGenerator",
+      "@type": "StaticFolderGenerator",
       "templateFolder": "@css:templates/pod",
-      "factory": {
-        "@type": "ExtensionBasedMapperFactory"
-      },
-      "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
-      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
-      "store": { "@id": "urn:solid-server:default:ResourceStore"}
+      "resourcesGenerator": { "@id": "urn:solid-server:default:TemplatedResourcesGenerator" }
+    },
+    {
+      "comment": [
+        "Generates resources in the base subfolder of the provided folder.",
+        "Authorization configurations should add their corresponding subfolder containing the relevant authorization files."
+      ],
+      "@id": "urn:solid-server:default:TemplatedResourcesGenerator",
+      "@type": "SubfolderResourcesGenerator",
+      "subfolders": [ "base" ],
+      "resourcesGenerator": {
+        "@type": "BaseResourcesGenerator",
+        "factory": {
+          "@type": "ExtensionBasedMapperFactory"
+        },
+        "templateEngine": {
+          "@id": "urn:solid-server:default:TemplateEngine"
+        },
+        "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
+        "store": { "@id": "urn:solid-server:default:ResourceStore"}
+      }
     }
   ]
 }
