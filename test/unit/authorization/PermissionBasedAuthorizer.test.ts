@@ -1,4 +1,3 @@
-import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { AuthorizerInput } from '../../../src/authorization/Authorizer';
 import { PermissionBasedAuthorizer } from '../../../src/authorization/PermissionBasedAuthorizer';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
@@ -36,8 +35,8 @@ describe('A PermissionBasedAuthorizer', (): void => {
       [[ identifier, AccessMode.read ], [ identifier, AccessMode.write ]],
     );
     input.availablePermissions = new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: { read: true, write: false },
-      [CredentialGroup.agent]: { write: true },
+      public: { read: true, write: false },
+      agent: { write: true },
     }]]);
     await expect(authorizer.handle(input)).resolves.toBeUndefined();
   });
@@ -47,7 +46,7 @@ describe('A PermissionBasedAuthorizer', (): void => {
       [[ identifier, AccessMode.read ], [ identifier, AccessMode.write ]],
     );
     input.availablePermissions = new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: { read: true, write: false },
+      public: { read: true, write: false },
     }]]);
     await expect(authorizer.handle(input)).rejects.toThrow(UnauthorizedHttpError);
   });
@@ -58,7 +57,7 @@ describe('A PermissionBasedAuthorizer', (): void => {
       [[ identifier, AccessMode.read ], [ identifier, AccessMode.write ]],
     );
     input.availablePermissions = new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: { read: true, write: false },
+      public: { read: true, write: false },
     }]]);
     await expect(authorizer.handle(input)).rejects.toThrow(ForbiddenHttpError);
   });
@@ -71,7 +70,7 @@ describe('A PermissionBasedAuthorizer', (): void => {
     resourceSet.hasResource.mockResolvedValueOnce(false);
     input.requestedModes = new IdentifierSetMultiMap<AccessMode>([[ identifier, AccessMode.delete ]]);
     input.availablePermissions = new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: { read: true },
+      public: { read: true },
     }]]);
     await expect(authorizer.handle(input)).rejects.toThrow(NotFoundHttpError);
   });
@@ -86,12 +85,12 @@ describe('A PermissionBasedAuthorizer', (): void => {
     ]);
     input.availablePermissions = new IdentifierMap([
       [ identifier, {
-        [CredentialGroup.public]: { read: true, write: false },
-        [CredentialGroup.agent]: { write: true },
+        public: { read: true, write: false },
+        agent: { write: true },
       }],
       [ identifier2, {
-        [CredentialGroup.public]: { read: false },
-        [CredentialGroup.agent]: { write: true },
+        public: { read: false },
+        agent: { write: true },
       }],
     ]);
     await expect(authorizer.handle(input)).rejects.toThrow(UnauthorizedHttpError);
@@ -107,8 +106,8 @@ describe('A PermissionBasedAuthorizer', (): void => {
     ]);
     input.availablePermissions = new IdentifierMap([
       [ identifier, {
-        [CredentialGroup.public]: { read: true, write: false },
-        [CredentialGroup.agent]: { write: true },
+        public: { read: true, write: false },
+        agent: { write: true },
       }],
     ]);
     await expect(authorizer.handle(input)).rejects.toThrow(UnauthorizedHttpError);

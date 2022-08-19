@@ -1,4 +1,3 @@
-import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { PathBasedReader } from '../../../src/authorization/PathBasedReader';
 import type { PermissionReader, PermissionReaderInput } from '../../../src/authorization/PermissionReader';
 import type { PermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
@@ -11,7 +10,7 @@ import { compareMaps } from '../../util/Util';
 
 describe('A PathBasedReader', (): void => {
   const baseUrl = 'http://test.com/foo/';
-  const permissionSet: PermissionSet = { [CredentialGroup.agent]: { read: true }};
+  const permissionSet: PermissionSet = { agent: { read: true }};
   let readers: jest.Mocked<PermissionReader>[];
   let reader: PathBasedReader;
 

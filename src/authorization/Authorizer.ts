@@ -1,4 +1,4 @@
-import type { CredentialSet } from '../authentication/Credentials';
+import type { Credentials } from '../authentication/Credentials';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
 import type { AccessMap, PermissionMap } from './permissions/Permissions';
 
@@ -6,7 +6,7 @@ export interface AuthorizerInput {
   /**
    * Credentials of the entity that wants to use the resource.
    */
-  credentials: CredentialSet;
+  credentials: Credentials;
   /**
    * Requested access modes per resource.
    */

@@ -16,9 +16,9 @@ export class AgentGroupAccessChecker extends AccessChecker {
     super();
   }
 
-  public async handle({ acl, rule, credential }: AccessCheckerArgs): Promise<boolean> {
-    if (typeof credential.webId === 'string') {
-      const { webId } = credential;
+  public async handle({ acl, rule, credentials }: AccessCheckerArgs): Promise<boolean> {
+    if (typeof credentials.agent?.webId === 'string') {
+      const { webId } = credentials.agent;
       const groups = acl.getObjects(rule, ACL.terms.agentGroup, null);
 
       return await promiseSome(groups.map(async(group: Term): Promise<boolean> =>

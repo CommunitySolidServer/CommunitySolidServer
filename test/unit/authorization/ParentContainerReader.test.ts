@@ -1,4 +1,4 @@
-import type { CredentialSet } from '../../../src/authentication/Credentials';
+import type { Credentials } from '../../../src/authentication/Credentials';
 import { ParentContainerReader } from '../../../src/authorization/ParentContainerReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import type { AccessMap, PermissionMap } from '../../../src/authorization/permissions/Permissions';
@@ -16,7 +16,7 @@ describe('A ParentContainerReader', (): void => {
   const target2 = { path: joinUrl(parent2.path, 'bar') };
   const parent3 = { path: joinUrl(baseUrl, 'baz/') };
   const target3 = { path: joinUrl(parent3.path, 'baz') };
-  const credentials: CredentialSet = { public: {}};
+  const credentials: Credentials = {};
   let requestedModes: AccessMap;
   let sourceResult: PermissionMap;
   const identifierStrategy = new SingleRootIdentifierStrategy(baseUrl);

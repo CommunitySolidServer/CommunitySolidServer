@@ -1,12 +1,17 @@
-import { createSolidTokenVerifier } from '@solid/access-token-verifier';
-import { CredentialGroup } from '../../../src/authentication/Credentials';
+import type { SolidTokenVerifierFunction } from '@solid/access-token-verifier';
+import type { SolidAccessTokenPayload } from '@solid/access-token-verifier/dist/type/SolidAccessTokenPayload';
 import { DPoPWebIdExtractor } from '../../../src/authentication/DPoPWebIdExtractor';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
-const solidTokenVerifier = createSolidTokenVerifier() as jest.MockedFunction<any>;
+let clientId: string | undefined;
+const solidTokenVerifier = jest.fn(async(): Promise<SolidAccessTokenPayload> =>
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  ({ aud: 'solid', exp: 1234, iat: 1234, iss: 'example.com/idp', webid: 'http://alice.example/card#me', client_id: clientId }));
+jest.mock('@solid/access-token-verifier', (): any =>
+  ({ createSolidTokenVerifier: (): SolidTokenVerifierFunction => solidTokenVerifier }));
 
 describe('A DPoPWebIdExtractor', (): void => {
   const targetExtractor = new StaticAsyncHandler(true, { path: 'http://example.org/foo/bar' });
@@ -84,9 +89,17 @@ describe('A DPoPWebIdExtractor', (): void => {
       expect(solidTokenVerifier).toHaveBeenCalledWith('DPoP token-1234', { header: 'token-5678', method: 'GET', url: 'http://example.org/foo/bar' });
     });
 
-    it('returns the extracted WebID.', async(): Promise<void> => {
+    it('returns the extracted credentials.', async(): Promise<void> => {
       const result = webIdExtractor.handleSafe(request);
-      await expect(result).resolves.toEqual({ [CredentialGroup.agent]: { webId: 'http://alice.example/card#me' }});
+      await expect(result).resolves.toEqual({ agent: { webId: 'http://alice.example/card#me' }, issuer: { url: 'example.com/idp' }});
+    });
+
+    it('also returns the clientID if defined.', async(): Promise<void> => {
+      clientId = 'http://client.example.com/#me';
+      const result = webIdExtractor.handleSafe(request);
+      await expect(result).resolves.toEqual(
+        { agent: { webId: 'http://alice.example/card#me' }, issuer: { url: 'example.com/idp' }, client: { clientId }},
+      );
     });
   });
 
@@ -116,7 +129,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     } as any as HttpRequest;
 
     beforeEach((): void => {
-      solidTokenVerifier.mockImplementationOnce((): void => {
+      solidTokenVerifier.mockImplementationOnce((): never => {
         throw new Error('invalid');
       });
     });

@@ -1,5 +1,4 @@
-import type { CredentialSet } from '../../../src/authentication/Credentials';
-import { CredentialGroup } from '../../../src/authentication/Credentials';
+import type { Credentials } from '../../../src/authentication/Credentials';
 import { OwnerPermissionReader } from '../../../src/authorization/OwnerPermissionReader';
 import { AclMode } from '../../../src/authorization/permissions/AclPermission';
 import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
@@ -16,7 +15,7 @@ import { compareMaps } from '../../util/Util';
 describe('An OwnerPermissionReader', (): void => {
   const owner = 'http://example.com/alice/profile/card#me';
   const podBaseUrl = 'http://example.com/alice/';
-  let credentials: CredentialSet;
+  let credentials: Credentials;
   let identifier: ResourceIdentifier;
   let requestedModes: AccessMap;
   let settings: AccountSettings;
@@ -26,7 +25,7 @@ describe('An OwnerPermissionReader', (): void => {
   let reader: OwnerPermissionReader;
 
   beforeEach(async(): Promise<void> => {
-    credentials = { [CredentialGroup.agent]: { webId: owner }};
+    credentials = { agent: { webId: owner }};
 
     identifier = { path: `${podBaseUrl}.acl` };
 
@@ -82,7 +81,7 @@ describe('An OwnerPermissionReader', (): void => {
   it('returns full permissions if the owner is accessing an ACL resource in their pod.', async(): Promise<void> => {
     compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap([[
       identifier,
-      { [CredentialGroup.agent]: {
+      { agent: {
         read: true,
         write: true,
         append: true,

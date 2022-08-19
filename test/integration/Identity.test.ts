@@ -19,9 +19,6 @@ import { IdentityTestState } from './IdentityTestState';
 const port = getPort('Identity');
 const baseUrl = `http://localhost:${port}/`;
 
-// Undo the global access token verifier mock
-jest.unmock('@solid/access-token-verifier');
-
 // Don't send actual e-mails
 jest.mock('nodemailer');
 

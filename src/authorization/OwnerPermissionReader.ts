@@ -1,5 +1,4 @@
-import type { CredentialSet } from '../authentication/Credentials';
-import { CredentialGroup } from '../authentication/Credentials';
+import type { Credentials } from '../authentication/Credentials';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { AccountSettings, AccountStore } from '../identity/interaction/email-password/storage/AccountStore';
@@ -52,7 +51,7 @@ export class OwnerPermissionReader extends PermissionReader {
     for (const auth of auths) {
       if (this.identifierStrategy.contains(podBaseUrl, auth, true)) {
         this.logger.debug(`Granting Control permissions to owner on ${auth.path}`);
-        result.set(auth, { [CredentialGroup.agent]: {
+        result.set(auth, { agent: {
           read: true,
           write: true,
           append: true,
@@ -69,7 +68,7 @@ export class OwnerPermissionReader extends PermissionReader {
    * Find the base URL of the pod the given credentials own.
    * Will throw an error if none can be found.
    */
-  private async findPodBaseUrl(credentials: CredentialSet): Promise<ResourceIdentifier> {
+  private async findPodBaseUrl(credentials: Credentials): Promise<ResourceIdentifier> {
     if (!credentials.agent?.webId) {
       throw new NotImplementedHttpError('Only authenticated agents could be owners');
     }

@@ -1,5 +1,4 @@
 import 'jest-rdf';
-import { CredentialGroup } from '../../../../../src/authentication/Credentials';
 import type { AclPermission } from '../../../../../src/authorization/permissions/AclPermission';
 import { WebAclMetadataCollector } from '../../../../../src/http/ldp/metadata/WebAclMetadataCollector';
 import type { Operation } from '../../../../../src/http/Operation';
@@ -45,7 +44,7 @@ describe('A WebAclMetadataCollector', (): void => {
 
   it('adds no metadata if the method is wrong.', async(): Promise<void> => {
     operation.availablePermissions = new IdentifierMap(
-      [[ target, { [CredentialGroup.public]: { read: true, write: false }}]],
+      [[ target, { public: { read: true, write: false }}]],
     );
     operation.method = 'DELETE';
     await expect(writer.handle({ metadata, operation })).resolves.toBeUndefined();
@@ -54,8 +53,8 @@ describe('A WebAclMetadataCollector', (): void => {
 
   it('adds corresponding metadata for all permissions present.', async(): Promise<void> => {
     operation.availablePermissions = new IdentifierMap([[ target, {
-      [CredentialGroup.agent]: { read: true, write: true, control: false } as AclPermission,
-      [CredentialGroup.public]: { read: true, write: false },
+      agent: { read: true, write: true, control: false } as AclPermission,
+      public: { read: true, write: false },
     }]]);
     await expect(writer.handle({ metadata, operation })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(3);
@@ -65,8 +64,8 @@ describe('A WebAclMetadataCollector', (): void => {
 
   it('ignores unknown modes.', async(): Promise<void> => {
     operation.availablePermissions = new IdentifierMap([[ target, {
-      [CredentialGroup.agent]: { read: true, create: true },
-      [CredentialGroup.public]: { read: true },
+      agent: { read: true, create: true },
+      public: { read: true },
     }]]);
     await expect(writer.handle({ metadata, operation })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(2);

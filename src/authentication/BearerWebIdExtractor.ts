@@ -5,8 +5,7 @@ import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { matchesAuthorizationScheme } from '../util/HeaderUtil';
-import { CredentialGroup } from './Credentials';
-import type { CredentialSet } from './Credentials';
+import type { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 
 export class BearerWebIdExtractor extends CredentialsExtractor {
@@ -25,13 +24,18 @@ export class BearerWebIdExtractor extends CredentialsExtractor {
     }
   }
 
-  public async handle(request: HttpRequest): Promise<CredentialSet> {
+  public async handle(request: HttpRequest): Promise<Credentials> {
     const { headers: { authorization }} = request;
 
     try {
-      const { webid: webId } = await this.verify(authorization!);
-      this.logger.info(`Verified WebID via Bearer access token: ${webId}`);
-      return { [CredentialGroup.agent]: { webId }};
+      const { webid: webId, client_id: clientId, iss: issuer } = await this.verify(authorization!);
+      this.logger.info(`Verified credentials via Bearer access token. WebID: ${webId
+      }, client ID: ${clientId}, issuer: ${issuer}`);
+      const credentials: Credentials = { agent: { webId }, issuer: { url: issuer }};
+      if (clientId) {
+        credentials.client = { clientId };
+      }
+      return credentials;
     } catch (error: unknown) {
       const message = `Error verifying WebID via Bearer access token: ${(error as Error).message}`;
       this.logger.warn(message);
