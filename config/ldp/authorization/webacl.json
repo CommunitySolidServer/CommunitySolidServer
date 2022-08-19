@@ -1,6 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
+    "css:config/ldp/authorization/acl/wac-allow.json",
     "css:config/ldp/authorization/readers/acl.json",
     "css:config/ldp/authorization/readers/ownership.json"
   ],
@@ -36,6 +37,22 @@
       "@id": "urn:solid-server:default:TemplatedResourcesGenerator",
       "@type": "SubfolderResourcesGenerator",
       "subfolders": [ "wac" ]
+    },
+    {
+      "comment": "Collects the metadata necessary for the WAC-Allow header.",
+      "@id": "urn:solid-server:default:OperationMetadataCollector",
+      "@type": "SequenceHandler",
+      "handlers": [
+        { "@type": "WebAclMetadataCollector" }
+      ]
+    },
+    {
+      "comment": "WAC-Allow header indicates available permissions.",
+      "@id": "urn:solid-server:default:MetadataWriter",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:MetadataWriter_WacAllow" }
+      ]
     },
     {
       "comment": "In case of WebACL authorization the ACL resources determine authorization.",

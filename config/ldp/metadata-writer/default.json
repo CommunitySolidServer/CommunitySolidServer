@@ -7,7 +7,6 @@
     "css:config/ldp/metadata-writer/writers/link-rel-metadata.json",
     "css:config/ldp/metadata-writer/writers/mapped.json",
     "css:config/ldp/metadata-writer/writers/modified.json",
-    "css:config/ldp/metadata-writer/writers/wac-allow.json",
     "css:config/ldp/metadata-writer/writers/www-auth.json"
   ],
   "@graph": [
@@ -22,7 +21,6 @@
         { "@id": "urn:solid-server:default:MetadataWriter_LinkRelMetadata" },
         { "@id": "urn:solid-server:default:MetadataWriter_Mapped" },
         { "@id": "urn:solid-server:default:MetadataWriter_Modified" },
-        { "@id": "urn:solid-server:default:MetadataWriter_WacAllow" },
         { "@id": "urn:solid-server:default:MetadataWriter_WwwAuth" }
       ]
     }
