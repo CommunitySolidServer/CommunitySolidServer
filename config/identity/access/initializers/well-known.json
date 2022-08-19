@@ -14,12 +14,9 @@
         "args_path": "/.well-known/",
         "args_store": { "@id": "urn:solid-server:default:ResourceStore" },
         "args_generator": {
-          "@type": "TemplatedResourcesGenerator",
+          "@type": "StaticFolderGenerator",
           "templateFolder": "@css:templates/root/empty",
-          "factory": { "@type": "ExtensionBasedMapperFactory" },
-          "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
-          "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
-          "store": { "@id": "urn:solid-server:default:ResourceStore"}
+          "resourcesGenerator": { "@id": "urn:solid-server:default:TemplatedResourcesGenerator" }
         },
         "args_storageKey": "wellKnownContainerInitialized",
         "args_storage": { "@id": "urn:solid-server:default:SetupStorage" }

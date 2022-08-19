@@ -1,4 +1,4 @@
-import { concat, filter, find, map, reduce } from '../../../src/util/IterableUtil';
+import { asyncToArray, concat, filter, find, map, reduce, sortedAsyncMerge } from '../../../src/util/IterableUtil';
 
 describe('IterableUtil', (): void => {
   describe('#map', (): void => {
@@ -48,6 +48,34 @@ describe('IterableUtil', (): void => {
     it('throws an error if the iterable is empty and there is no initial value.', async(): Promise<void> => {
       const input: number[] = [];
       expect((): number => reduce(input, (acc, cur): number => acc + cur)).toThrow(TypeError);
+    });
+  });
+
+  describe('#sortedAsyncMerge', (): void => {
+    it('sorts the iterables.', async(): Promise<void> => {
+      // eslint-disable-next-line unicorn/consistent-function-scoping
+      async function* left(): AsyncIterator<number> {
+        yield* [ 1, 3, 5, 7, 9 ];
+      }
+      // eslint-disable-next-line unicorn/consistent-function-scoping
+      async function* right(): AsyncIterator<number> {
+        yield* [ 0, 2, 3, 4 ];
+      }
+      await expect(asyncToArray(sortedAsyncMerge([ left(), right() ]))).resolves
+        .toEqual([ 0, 1, 2, 3, 3, 4, 5, 7, 9 ]);
+    });
+
+    it('accepts a custom comparator.', async(): Promise<void> => {
+      // eslint-disable-next-line unicorn/consistent-function-scoping
+      async function* left(): AsyncIterator<string> {
+        yield* [ 'apple', 'citrus', 'date' ];
+      }
+      // eslint-disable-next-line unicorn/consistent-function-scoping
+      async function* right(): AsyncIterator<string> {
+        yield* [ 'banana', 'donut' ];
+      }
+      await expect(asyncToArray(sortedAsyncMerge([ left(), right() ]))).resolves
+        .toEqual([ 'apple', 'banana', 'citrus', 'date', 'donut' ]);
     });
   });
 });

@@ -15,5 +15,6 @@ export const INTERNAL_ERROR = 'internal/error';
 
 export const DEFAULT_CUSTOM_TYPES = {
   acl: TEXT_TURTLE,
+  acr: TEXT_TURTLE,
   meta: TEXT_TURTLE,
 };

@@ -32,6 +32,12 @@
       }
     },
     {
+      "comment": "The templates for WAC authorization documents are in the wac subfolder.",
+      "@id": "urn:solid-server:default:TemplatedResourcesGenerator",
+      "@type": "SubfolderResourcesGenerator",
+      "subfolders": [ "wac" ]
+    },
+    {
       "comment": "In case of WebACL authorization the ACL resources determine authorization.",
       "@id": "urn:solid-server:default:AuthResourceHttpHandler",
       "@type": "RouterHandler",

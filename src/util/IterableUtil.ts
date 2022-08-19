@@ -113,3 +113,93 @@ export function reduce<TIn, TOut>(iterable: Iterable<TIn>,
   }
   return previousValue;
 }
+
+/**
+ * Helper function for {@link sortedAsyncMerge}.
+ *
+ * Returns the next result of an AsyncIterator, or undefined if the iterator is finished.
+ */
+async function nextAsyncEntry<T>(iterator: AsyncIterator<T>): Promise<T | undefined> {
+  const result = await iterator.next();
+  if (result.done) {
+    return;
+  }
+  return result.value;
+}
+
+/**
+ * Helper function for {@link sortedAsyncMerge}.
+ *
+ * Compares the next results of all `iterators` and returns the first one,
+ * determined by the provided `comparator`.
+ *
+ * `results` should contain the first result of all these iterators.
+ * This array will also be updated, replacing the result of the iterator whose result was chosen by the next one.
+ */
+async function findNextSorted<T>(iterators: AsyncIterator<T>[], results: (T | undefined)[],
+  comparator: (left: T, right: T) => number): Promise<T | undefined> {
+  let best: { idx: number; value: T } | undefined;
+  // For every iterator: see if their next result is the best one so far
+  for (let i = 0; i < iterators.length; ++i) {
+    const value = results[i];
+    if (typeof value !== 'undefined') {
+      let compare = 1;
+      if (best) {
+        compare = comparator(best.value, value);
+      }
+
+      if (compare > 0) {
+        best = { idx: i, value };
+      }
+    }
+  }
+
+  if (best) {
+    // Advance the iterator that returned the new result
+    results[best.idx] = await nextAsyncEntry(iterators[best.idx]);
+  }
+
+  // Will return undefined if `best` was never initialized above
+  return best?.value;
+}
+
+/**
+ * Merges the results of several sorted iterators.
+ * In case the results of the individual iterators are not sorted the outcome results will also not be sorted.
+ *
+ * @param iterators - The iterators whose results need to be merged.
+ * @param comparator - The comparator to use to compare the results.
+ */
+export async function* sortedAsyncMerge<T>(iterators: AsyncIterator<T>[], comparator?: (left: T, right: T) => number):
+AsyncIterable<T> {
+  if (!comparator) {
+    // eslint-disable-next-line @typescript-eslint/no-extra-parens
+    comparator = (left, right): number => left < right ? -1 : (left > right ? 1 : 0);
+  }
+
+  // Initialize the array to the first result of every iterator
+  const results: (T | undefined)[] = [];
+  for (const iterator of iterators) {
+    results.push(await nextAsyncEntry(iterator));
+  }
+
+  // Keep returning results as long as we find them
+  while (true) {
+    const next = await findNextSorted(iterators, results, comparator);
+    if (typeof next === 'undefined') {
+      return;
+    }
+    yield next;
+  }
+}
+
+/**
+ * Converts an `AsyncIterator` to an array.
+ */
+export async function asyncToArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
+  const arr: T[] = [];
+  for await (const result of iterable) {
+    arr.push(result);
+  }
+  return arr;
+}

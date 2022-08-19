@@ -9,7 +9,7 @@
       "@id": "urn:solid-server:default:PodManager",
       "@type": "GeneratedPodManager",
       "store": { "@id": "urn:solid-server:default:ResourceStore" },
-      "resourcesGenerator": { "@id": "urn:solid-server:default:ResourcesGenerator" }
+      "resourcesGenerator": { "@id": "urn:solid-server:default:PodResourcesGenerator" }
     }
   ]
 }
