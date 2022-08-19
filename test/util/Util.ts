@@ -272,6 +272,14 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete folder[name];
     },
+    async pathExists(path: string): Promise<boolean> {
+      try {
+        const { folder, name } = getFolder(path);
+        return Boolean(folder[name]);
+      } catch {
+        return false;
+      }
+    },
     createReadStream(path: string): any {
       return mockFs.createReadStream(path);
     },

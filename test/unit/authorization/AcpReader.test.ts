@@ -63,7 +63,7 @@ describe('An AcpReader', (): void => {
     const target = { path: joinUrl(baseUrl, 'foo') };
     dataMap[baseUrl] = toQuads(`
       []
-        acp:resource <./> ;
+        acp:resource <./>;
         acp:accessControl [ acp:apply _:policy ].
       _:policy
         acp:allow acl:Read;
@@ -89,7 +89,7 @@ describe('An AcpReader', (): void => {
     const target = { path: joinUrl(baseUrl, 'foo') };
     dataMap[baseUrl] = toQuads(`
       []
-        acp:resource <./> ;
+        acp:resource <./>;
         acp:memberAccessControl [ acp:apply _:policy ].
       _:policy
         acp:allow acl:Read;
@@ -109,7 +109,7 @@ describe('An AcpReader', (): void => {
     const target = { path: joinUrl(baseUrl, 'foo') };
     dataMap[baseUrl] = toQuads(`
       []
-        acp:resource <./> ;
+        acp:resource <./>;
         acp:accessControl [ acp:apply _:controlPolicy ];
         acp:memberAccessControl [ acp:apply _:readPolicy ].
       _:readPolicy
@@ -122,7 +122,7 @@ describe('An AcpReader', (): void => {
     `, baseUrl);
     dataMap[target.path] = toQuads(`
       []
-        acp:resource <./foo> ;
+        acp:resource <./foo>;
         acp:accessControl [ acp:apply _:appendPolicy ].
       _:appendPolicy
         acp:allow acl:Append;
@@ -143,7 +143,7 @@ describe('An AcpReader', (): void => {
     const target2 = { path: joinUrl(baseUrl, 'foo/bar') };
     dataMap[baseUrl] = toQuads(`
       []
-        acp:resource <./> ;
+        acp:resource <./>;
         acp:memberAccessControl [ acp:apply _:policy ].
       _:policy
         acp:allow acl:Read;
