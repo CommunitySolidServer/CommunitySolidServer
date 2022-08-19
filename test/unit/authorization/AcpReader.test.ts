@@ -1,6 +1,6 @@
 import { Parser } from 'n3';
 import type { Quad } from 'rdf-js';
-import type { CredentialSet } from '../../../src/authentication/Credentials';
+import type { Credentials } from '../../../src/authentication/Credentials';
 import { AcpReader } from '../../../src/authorization/AcpReader';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
@@ -30,7 +30,7 @@ function toQuads(turtle: string, baseIRI: string): Quad[] {
 
 describe('An AcpReader', (): void => {
   const baseUrl = 'http://example.com/';
-  let credentials: CredentialSet;
+  let credentials: Credentials;
   // Subject identifiers are used as keys, values are the output of their corresponding ACR resource
   let dataMap: Record<string, Quad[]>;
   let acrStrategy: AuxiliaryStrategy;
@@ -39,7 +39,7 @@ describe('An AcpReader', (): void => {
   let acpReader: AcpReader;
 
   beforeEach(async(): Promise<void> => {
-    credentials = { public: {}};
+    credentials = {};
     dataMap = {};
 
     acrStrategy = new SimpleSuffixStrategy(acrSuffix);
@@ -166,5 +166,31 @@ describe('An AcpReader', (): void => {
       .toHaveBeenCalledWith(acrStrategy.getAuxiliaryIdentifier(target2), { type: { [INTERNAL_QUADS]: 1 }});
     expect(acrStore.getRepresentation)
       .toHaveBeenCalledWith(acrStrategy.getAuxiliaryIdentifier({ path: baseUrl }), { type: { [INTERNAL_QUADS]: 1 }});
+  });
+
+  it('correctly puts the credentials in the context.', async(): Promise<void> => {
+    dataMap[baseUrl] = toQuads(`
+      []
+        acp:resource <./> ;
+        acp:accessControl [ acp:apply _:policy ].
+      _:policy
+        acp:allow acl:Read;
+        acp:allOf _:matcher.
+      _:matcher 
+        acp:agent <http://example.com/#me>;
+        acp:client <http://client.example.com/#me>;
+        acp:issuer <http://example.com/idp>.        
+    `, baseUrl);
+    const requestedModes = new IdentifierSetMultiMap([[{ path: baseUrl }, AccessMode.read ]]);
+    let expectedPermissions = new IdentifierMap([[{ path: baseUrl }, { agent: {}}]]);
+    compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
+
+    credentials = {
+      agent: { webId: 'http://example.com/#me' },
+      client: { clientId: 'http://client.example.com/#me' },
+      issuer: { url: 'http://example.com/idp' },
+    };
+    expectedPermissions = new IdentifierMap([[{ path: baseUrl }, { agent: { read: true }}]]);
+    compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
   });
 });

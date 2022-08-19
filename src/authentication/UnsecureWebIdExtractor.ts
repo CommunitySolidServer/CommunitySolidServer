@@ -2,8 +2,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { matchesAuthorizationScheme } from '../util/HeaderUtil';
-import { CredentialGroup } from './Credentials';
-import type { CredentialSet } from './Credentials';
+import type { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 
 /**
@@ -19,9 +18,9 @@ export class UnsecureWebIdExtractor extends CredentialsExtractor {
     }
   }
 
-  public async handle({ headers }: HttpRequest): Promise<CredentialSet> {
+  public async handle({ headers }: HttpRequest): Promise<Credentials> {
     const webId = /^WebID\s+(.*)/ui.exec(headers.authorization!)![1];
     this.logger.info(`Agent unsecurely claims to be ${webId}`);
-    return { [CredentialGroup.agent]: { webId }};
+    return { agent: { webId }};
   }
 }

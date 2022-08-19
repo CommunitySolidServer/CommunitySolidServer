@@ -1,4 +1,4 @@
-import type { CredentialSet } from '../authentication/Credentials';
+import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
 import type { PermissionReader } from '../authorization/PermissionReader';
@@ -60,14 +60,14 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
 
   public async handle(input: OperationHttpHandlerInput): Promise<ResponseDescription> {
     const { request, operation } = input;
-    const credentials: CredentialSet = await this.credentialsExtractor.handleSafe(request);
+    const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
     this.logger.verbose(`Extracted credentials: ${JSON.stringify(credentials)}`);
 
     const requestedModes = await this.modesExtractor.handleSafe(operation);
-    this.logger.verbose(`Retrieved required modes: ${[ ...requestedModes ].join(',')}`);
+    this.logger.verbose(`Retrieved required modes: ${[ ...requestedModes.entrySets() ]}`);
 
     const availablePermissions = await this.permissionReader.handleSafe({ credentials, requestedModes });
-    this.logger.verbose(`Available permissions are ${JSON.stringify(availablePermissions)}`);
+    this.logger.verbose(`Available permissions are ${[ ...availablePermissions.entries() ]}`);
 
     try {
       await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });

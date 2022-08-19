@@ -6,8 +6,7 @@ import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { matchesAuthorizationScheme } from '../util/HeaderUtil';
-import { CredentialGroup } from './Credentials';
-import type { CredentialSet } from './Credentials';
+import type { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 
 /**
@@ -33,7 +32,7 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     }
   }
 
-  public async handle(request: HttpRequest): Promise<CredentialSet> {
+  public async handle(request: HttpRequest): Promise<Credentials> {
     const { headers: { authorization, dpop }, method } = request;
     if (!dpop) {
       throw new BadRequestHttpError('No DPoP header specified.');
@@ -46,7 +45,7 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     // Validate the Authorization and DPoP header headers
     // and extract the WebID provided by the client
     try {
-      const { webid: webId } = await this.verify(
+      const { webid: webId, client_id: clientId, iss: issuer } = await this.verify(
         authorization!,
         {
           header: dpop as string,
@@ -54,8 +53,13 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
           url: originalUrl.path,
         },
       );
-      this.logger.info(`Verified WebID via DPoP-bound access token: ${webId}`);
-      return { [CredentialGroup.agent]: { webId }};
+      this.logger.info(`Verified WebID via DPoP-bound access token. WebID: ${webId
+      }, client ID: ${clientId}, issuer: ${issuer}`);
+      const credentials: Credentials = { agent: { webId }, issuer: { url: issuer }};
+      if (clientId) {
+        credentials.client = { clientId };
+      }
+      return credentials;
     } catch (error: unknown) {
       const message = `Error verifying WebID via DPoP-bound access token: ${(error as Error).message}`;
       this.logger.warn(message);

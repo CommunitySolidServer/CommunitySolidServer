@@ -1,4 +1,3 @@
-import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
@@ -15,11 +14,11 @@ import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError'
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 
 describe('An AuthorizingHttpHandler', (): void => {
-  const credentials = { [CredentialGroup.public]: {}};
+  const credentials = { };
   const target = { path: 'http://test.com/foo' };
   const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>([[ target, AccessMode.read ]]);
   const availablePermissions: PermissionMap = new IdentifierMap(
-    [[ target, { [CredentialGroup.public]: { read: true }}]],
+    [[ target, { public: { read: true }}]],
   );
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;

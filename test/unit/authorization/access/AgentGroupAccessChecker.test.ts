@@ -33,17 +33,17 @@ describe('An AgentGroupAccessChecker', (): void => {
   });
 
   it('returns true if the WebID is a valid group member.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credential: { webId }};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credentials: { agent: { webId }}};
     await expect(checker.handle(input)).resolves.toBe(true);
   });
 
   it('returns false if the WebID is not a valid group member.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('noMatch'), credential: { webId }};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('noMatch'), credentials: { agent: { webId }}};
     await expect(checker.handle(input)).resolves.toBe(false);
   });
 
   it('returns false if there are no WebID credentials.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credential: {}};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credentials: {}};
     await expect(checker.handle(input)).resolves.toBe(false);
   });
 });

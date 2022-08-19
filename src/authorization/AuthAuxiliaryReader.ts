@@ -1,4 +1,3 @@
-import type { CredentialGroup } from '../authentication/Credentials';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -67,7 +66,7 @@ export class AuthAuxiliaryReader extends PermissionReader {
    */
   protected interpretControl(identifier: ResourceIdentifier, permissionSet: PermissionSet = {}): PermissionSet {
     const authSet: PermissionSet = {};
-    for (const [ group, permissions ] of Object.entries(permissionSet) as [ CredentialGroup, AclPermission ][]) {
+    for (const [ group, permissions ] of Object.entries(permissionSet) as [ keyof PermissionSet, AclPermission ][]) {
       const { control } = permissions;
       authSet[group] = {
         read: control,

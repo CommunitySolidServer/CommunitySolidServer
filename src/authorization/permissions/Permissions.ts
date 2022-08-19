@@ -1,4 +1,3 @@
-import type { CredentialGroup } from '../../authentication/Credentials';
 import type { IdentifierMap, IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 
 /**
@@ -23,9 +22,18 @@ export type AccessMap = IdentifierSetMultiMap<AccessMode>;
 export type Permission = Partial<Record<AccessMode, boolean>>;
 
 /**
- * Permission per CredentialGroup.
+ * The keys that can be used in a {@link PermissionSet};
  */
-export type PermissionSet = Partial<Record<CredentialGroup, Permission>>;
+export const permissionSetKeys = [ 'public', 'agent' ] as const;
+
+/**
+ * Contains the public permissions and those specific for the agent.
+ * There is no good reason to subdivide permissions per type of credentials
+ * since credentials are a combination of multiple factors.
+ * The only reason is the WAC-Allow header which requires this subdivision,
+ * which is why we make that same division here.
+ */
+export type PermissionSet = Partial<Record<typeof permissionSetKeys[number], Permission>>;
 
 /**
  * PermissionSet per identifier.

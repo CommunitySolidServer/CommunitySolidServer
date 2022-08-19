@@ -1,4 +1,4 @@
-import type { CredentialSet } from '../../../src/authentication/Credentials';
+import type { Credentials } from '../../../src/authentication/Credentials';
 import { AuthAuxiliaryReader } from '../../../src/authorization/AuthAuxiliaryReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import { AclMode } from '../../../src/authorization/permissions/AclPermission';
@@ -16,7 +16,7 @@ describe('An AuthAuxiliaryReader', (): void => {
   const acl1 = { path: joinUrl(subject1.path, '.acl') };
   const subject2 = { path: joinUrl(baseUrl, 'bar/') };
   const acl2 = { path: joinUrl(subject2.path, '.acl') };
-  const credentials: CredentialSet = { public: {}};
+  const credentials: Credentials = {};
   let requestedModes: AccessMap;
   let sourceResult: PermissionMap;
   let aclStrategy: jest.Mocked<AuxiliaryStrategy>;

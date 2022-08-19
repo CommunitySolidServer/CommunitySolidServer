@@ -1,4 +1,3 @@
-import type { CredentialGroup } from '../authentication/Credentials';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
@@ -84,8 +83,8 @@ export class ParentContainerReader extends PermissionReader {
     // Already copying the `permissionSet` here since the loop only iterates over the container entries.
     // It is possible `resourceSet` contains a key that `containerSet` does not contain.
     const resultSet: PermissionSet = { ...resourceSet };
-    for (const [ group, containerPermission ] of Object.entries(containerSet) as [ CredentialGroup, Permission ][]) {
-      resultSet[group] = this.interpretContainerPermission(resourceSet[group] ?? {}, containerPermission);
+    for (const [ group, containerPerms ] of Object.entries(containerSet) as [ keyof PermissionSet, Permission ][]) {
+      resultSet[group] = this.interpretContainerPermission(resourceSet[group] ?? {}, containerPerms);
     }
     return resultSet;
   }

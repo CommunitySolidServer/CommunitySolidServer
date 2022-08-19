@@ -4,7 +4,7 @@ import type { IAccessControlledResource } from '@solid/access-control-policy/dis
 import type { IContext } from '@solid/access-control-policy/dist/type/i_context';
 import type { IPolicy } from '@solid/access-control-policy/dist/type/i_policy';
 import type { Store } from 'n3';
-import type { CredentialSet } from '../authentication/Credentials';
+import type { Credentials } from '../authentication/Credentials';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -70,7 +70,7 @@ export class AcpReader extends PermissionReader {
    * @param credentials - Credentials that are trying to access the resource.
    * @param resourceCache - Cache used to store ACR data.
    */
-  private async extractPermissions(target: ResourceIdentifier, credentials: CredentialSet,
+  private async extractPermissions(target: ResourceIdentifier, credentials: Credentials,
     resourceCache: IdentifierMap<IAccessControlledResource[]>): Promise<PermissionSet> {
     const context = this.createContext(target, credentials);
     const policies: IPolicy[] = [];
@@ -108,10 +108,12 @@ export class AcpReader extends PermissionReader {
   /**
    * Creates an ACP context targeting the given identifier with the provided credentials.
    */
-  private createContext(target: ResourceIdentifier, credentials: CredentialSet): IContext {
+  private createContext(target: ResourceIdentifier, credentials: Credentials): IContext {
     return {
       target: target.path,
       agent: credentials.agent?.webId,
+      client: credentials.client?.clientId,
+      issuer: credentials.issuer?.url,
     };
   }
 

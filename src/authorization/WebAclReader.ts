@@ -1,6 +1,5 @@
 import { Store } from 'n3';
-import type { Credential, CredentialSet } from '../authentication/Credentials';
-import { CredentialGroup } from '../authentication/Credentials';
+import type { Credentials } from '../authentication/Credentials';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -78,17 +77,17 @@ export class WebAclReader extends PermissionReader {
    * @param aclMap - A map containing stores of ACL data linked to their relevant identifiers.
    * @param credentials - Credentials to check permissions for.
    */
-  private async findPermissions(aclMap: Map<Store, ResourceIdentifier[]>, credentials: CredentialSet):
+  private async findPermissions(aclMap: Map<Store, ResourceIdentifier[]>, credentials: Credentials):
   Promise<PermissionMap> {
     const result: PermissionMap = new IdentifierMap();
     for (const [ store, aclIdentifiers ] of aclMap) {
-      // WebACL only supports public and agent permissions
-      const publicPermissions = await this.determinePermissions(store, credentials.public);
-      const agentPermissions = await this.determinePermissions(store, credentials.agent);
+      // WebACL requires knowledge of both the public and agent-specific permissions for the WAC-Allow header.
+      const publicPermissions = await this.determinePermissions(store, {});
+      const agentPermissions = credentials.agent ? await this.determinePermissions(store, credentials) : {};
       for (const identifier of aclIdentifiers) {
         result.set(identifier, {
-          [CredentialGroup.public]: publicPermissions,
-          [CredentialGroup.agent]: agentPermissions,
+          public: publicPermissions,
+          agent: agentPermissions,
         });
       }
     }
@@ -98,20 +97,16 @@ export class WebAclReader extends PermissionReader {
 
   /**
    * Determines the available permissions for the given credentials.
-   * Will deny all permissions if credentials are not defined
    * @param acl - Store containing all relevant authorization triples.
-   * @param credential - Credentials to find the permissions for.
+   * @param credentials - Credentials to find the permissions for.
    */
-  private async determinePermissions(acl: Store, credential?: Credential): Promise<AclPermission> {
+  private async determinePermissions(acl: Store, credentials: Credentials): Promise<AclPermission> {
     const aclPermissions: AclPermission = {};
-    if (!credential) {
-      return aclPermissions;
-    }
 
     // Apply all ACL rules
     const aclRules = acl.getSubjects(RDF.type, ACL.Authorization, null);
     for (const rule of aclRules) {
-      const hasAccess = await this.accessChecker.handleSafe({ acl, rule, credential });
+      const hasAccess = await this.accessChecker.handleSafe({ acl, rule, credentials });
       if (hasAccess) {
         // Set all allowed modes to true
         const modes = acl.getObjects(rule, ACL.mode, null);
