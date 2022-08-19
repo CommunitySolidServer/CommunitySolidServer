@@ -118,6 +118,10 @@ export const ACL = createVocabulary('http://www.w3.org/ns/auth/acl#',
 );
 
 export const ACP = createVocabulary('http://www.w3.org/ns/solid/acp#',
+  // Used for ACP middleware headers
+  'AccessControlResource',
+  'grant',
+  'attribute',
   // Access Control Resource
   'resource',
   'accessControl',
