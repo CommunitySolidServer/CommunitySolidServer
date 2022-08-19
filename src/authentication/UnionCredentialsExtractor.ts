@@ -1,6 +1,5 @@
 import { UnionHandler } from '../util/handlers/UnionHandler';
-import type { CredentialGroup, Credential, CredentialSet } from './Credentials';
-
+import type { Credentials } from './Credentials';
 import type { CredentialsExtractor } from './CredentialsExtractor';
 
 /**
@@ -13,15 +12,22 @@ export class UnionCredentialsExtractor extends UnionHandler<CredentialsExtractor
     super(extractors);
   }
 
-  public async combine(results: CredentialSet[]): Promise<CredentialSet> {
+  public async combine(results: Credentials[]): Promise<Credentials> {
     // Combine all the results into a single object
-    return results.reduce((result, credential): CredentialSet => {
-      for (const [ key, value ] of Object.entries(credential) as [ CredentialGroup, Credential ][]) {
-        if (value) {
-          result[key] = value;
-        }
+    return results.reduce((result, credentials): Credentials => {
+      for (const key of Object.keys(credentials) as (keyof Credentials)[]) {
+        this.setValue(result, key, credentials[key]);
       }
       return result;
     }, {});
+  }
+
+  /**
+   * Helper function that makes sure the typings are correct.
+   */
+  private setValue<T extends keyof Credentials>(credentials: Credentials, key: T, value?: Credentials[T]): void {
+    if (value) {
+      credentials[key] = value;
+    }
   }
 }

@@ -1,6 +1,5 @@
 import { DataFactory } from 'n3';
-import type { CredentialSet } from '../../../src/authentication/Credentials';
-import { CredentialGroup } from '../../../src/authentication/Credentials';
+import type { Credentials } from '../../../src/authentication/Credentials';
 import type { AccessChecker } from '../../../src/authorization/access/AccessChecker';
 import type { PermissionReaderInput } from '../../../src/authorization/PermissionReader';
 import { AclMode } from '../../../src/authorization/permissions/AclPermission';
@@ -36,14 +35,14 @@ describe('A WebAclReader', (): void => {
   let resourceSet: jest.Mocked<ResourceSet>;
   let store: jest.Mocked<ResourceStore>;
   const identifierStrategy = new SingleRootIdentifierStrategy('http://example.com/');
-  let credentials: CredentialSet;
+  let credentials: Credentials;
   let identifier: ResourceIdentifier;
   let accessMap: AccessMap;
   let input: PermissionReaderInput;
   let accessChecker: jest.Mocked<AccessChecker>;
 
   beforeEach(async(): Promise<void> => {
-    credentials = { [CredentialGroup.public]: {}, [CredentialGroup.agent]: {}};
+    credentials = { agent: { webId: 'http://example.com/#me' }};
     identifier = { path: 'http://example.com/foo' };
 
     accessMap = new IdentifierSetMultiMap([
@@ -79,8 +78,8 @@ describe('A WebAclReader', (): void => {
   it('returns undefined permissions for undefined credentials.', async(): Promise<void> => {
     input.credentials = {};
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: {},
-      [CredentialGroup.agent]: {},
+      public: {},
+      agent: {},
     }]]));
   });
 
@@ -92,8 +91,8 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: { read: true },
-      [CredentialGroup.agent]: { read: true },
+      public: { read: true },
+      agent: { read: true },
     }]]));
   });
 
@@ -105,8 +104,8 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: {},
-      [CredentialGroup.agent]: {},
+      public: {},
+      agent: {},
     }]]));
   });
 
@@ -119,8 +118,8 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}fakeMode1`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: { read: true },
-      [CredentialGroup.agent]: { read: true },
+      public: { read: true },
+      agent: { read: true },
     }]]));
   });
 
@@ -133,8 +132,8 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: { read: true },
-      [CredentialGroup.agent]: { read: true },
+      public: { read: true },
+      agent: { read: true },
     }]]));
   });
 
@@ -150,8 +149,8 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth2'), nn(`${acl}mode`), nn(`${acl}Append`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, {
-      [CredentialGroup.public]: { append: true },
-      [CredentialGroup.agent]: { append: true },
+      public: { append: true },
+      agent: { append: true },
     }]]));
   });
 
@@ -172,8 +171,8 @@ describe('A WebAclReader', (): void => {
   it('ignores rules where no access is granted.', async(): Promise<void> => {
     credentials.agent = { webId: 'http://test.com/user' };
     // CredentialGroup.public gets true on auth1, CredentialGroup.agent on auth2
-    accessChecker.handleSafe.mockImplementation(async({ rule, credential: cred }): Promise<boolean> =>
-      (rule.value === 'auth1') === !cred.webId);
+    accessChecker.handleSafe.mockImplementation(async({ rule, credentials: cred }): Promise<boolean> =>
+      (rule.value === 'auth1') === !cred.agent?.webId);
 
     store.getRepresentation.mockResolvedValue(new BasicRepresentation([
       quad(nn('auth1'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
@@ -185,8 +184,8 @@ describe('A WebAclReader', (): void => {
     ], INTERNAL_QUADS));
 
     compareMaps(await reader.handle(input), new IdentifierMap<PermissionSet>([[ identifier, {
-      [CredentialGroup.public]: { read: true },
-      [CredentialGroup.agent]: { append: true },
+      public: { read: true },
+      agent: { append: true },
     }]]));
   });
 
@@ -225,9 +224,9 @@ describe('A WebAclReader', (): void => {
     input.requestedModes.set(identifier3, new Set([ AccessMode.append ]));
 
     compareMaps(await reader.handle(input), new IdentifierMap([
-      [ identifier, { [CredentialGroup.public]: { read: true }, [CredentialGroup.agent]: { read: true }}],
-      [ identifier2, { [CredentialGroup.public]: { read: true }, [CredentialGroup.agent]: { read: true }}],
-      [ identifier3, { [CredentialGroup.public]: { append: true }, [CredentialGroup.agent]: { append: true }}],
+      [ identifier, { public: { read: true }, agent: { read: true }}],
+      [ identifier2, { public: { read: true }, agent: { read: true }}],
+      [ identifier3, { public: { append: true }, agent: { append: true }}],
     ]));
     // http://example.com/.acl and http://example.com/bar/.acl
     expect(store.getRepresentation).toHaveBeenCalledTimes(2);

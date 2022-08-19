@@ -1,4 +1,4 @@
-import type { CredentialSet } from '../authentication/Credentials';
+import type { Credentials } from '../authentication/Credentials';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
 import type { AccessMap, PermissionMap } from './permissions/Permissions';
 
@@ -6,7 +6,7 @@ export interface PermissionReaderInput {
   /**
    * Credentials of the entity requesting access to resources.
    */
-  credentials: CredentialSet;
+  credentials: Credentials;
   /**
    * For each credential, the reader will check which of the given per-resource access modes are available.
    * However, non-exhaustive information about other access modes and resources can still be returned.

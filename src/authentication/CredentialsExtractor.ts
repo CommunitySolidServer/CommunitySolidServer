@@ -1,8 +1,8 @@
 import type { HttpRequest } from '../server/HttpRequest';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
-import type { CredentialSet } from './Credentials';
+import type { Credentials } from './Credentials';
 
 /**
  * Responsible for extracting credentials from an incoming request.
  */
-export abstract class CredentialsExtractor extends AsyncHandler<HttpRequest, CredentialSet> {}
+export abstract class CredentialsExtractor extends AsyncHandler<HttpRequest, Credentials> {}

@@ -1,4 +1,3 @@
-import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { PublicCredentialsExtractor } from '../../../src/authentication/PublicCredentialsExtractor';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 
@@ -8,6 +7,6 @@ describe('A PublicCredentialsExtractor', (): void => {
   it('returns the empty credentials.', async(): Promise<void> => {
     const headers = {};
     const result = extractor.handleSafe({ headers } as HttpRequest);
-    await expect(result).resolves.toEqual({ [CredentialGroup.public]: {}});
+    await expect(result).resolves.toEqual({});
   });
 });

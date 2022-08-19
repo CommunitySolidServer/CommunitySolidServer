@@ -1,4 +1,3 @@
-import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { AuxiliaryReader } from '../../../src/authorization/AuxiliaryReader';
 import type { PermissionReaderInput, PermissionReader } from '../../../src/authorization/PermissionReader';
 import type { AccessMap, PermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
@@ -16,7 +15,7 @@ describe('An AuxiliaryReader', (): void => {
   const subjectIdentifier = { path: 'http://test.com/foo' };
   const auxiliaryIdentifier1 = { path: 'http://test.com/foo.dummy1' };
   const auxiliaryIdentifier2 = { path: 'http://test.com/foo.dummy2' };
-  const permissionSet: PermissionSet = { [CredentialGroup.agent]: { read: true }};
+  const permissionSet: PermissionSet = { agent: { read: true }};
   let source: jest.Mocked<PermissionReader>;
   let strategy: jest.Mocked<AuxiliaryStrategy>;
   let reader: AuxiliaryReader;
@@ -77,7 +76,7 @@ describe('An AuxiliaryReader', (): void => {
       [ auxiliaryIdentifier2, AccessMode.read ],
       [ subjectIdentifier, AccessMode.delete ],
     ]);
-    const resultSet = { [CredentialGroup.agent]: { read: true, write: true, delete: true }};
+    const resultSet = { agent: { read: true, write: true, delete: true }};
     source.handleSafe.mockResolvedValueOnce(new IdentifierMap([[ subjectIdentifier, resultSet ]]));
     const permissionMap: PermissionMap = new IdentifierMap([
       [ subjectIdentifier, resultSet ],

@@ -16,17 +16,17 @@ describe('A AgentAccessChecker', (): void => {
   });
 
   it('returns true if a match is found for the given WebID.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('match'), credential: { webId }};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('match'), credentials: { agent: { webId }}};
     await expect(checker.handle(input)).resolves.toBe(true);
   });
 
   it('returns false if no match is found.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('noMatch'), credential: { webId }};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('noMatch'), credentials: { agent: { webId }}};
     await expect(checker.handle(input)).resolves.toBe(false);
   });
 
   it('returns false if the credentials contain no WebID.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('match'), credential: {}};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('match'), credentials: {}};
     await expect(checker.handle(input)).resolves.toBe(false);
   });
 });

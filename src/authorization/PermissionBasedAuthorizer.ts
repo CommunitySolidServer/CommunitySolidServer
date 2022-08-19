@@ -1,4 +1,4 @@
-import type { CredentialSet } from '../authentication/Credentials';
+import type { Credentials } from '../authentication/Credentials';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceSet } from '../storage/ResourceSet';
@@ -75,7 +75,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * @param permissionSet - PermissionSet describing the available permissions of the credentials.
    * @param mode - Which mode is requested.
    */
-  private requireModePermission(credentials: CredentialSet, permissionSet: PermissionSet, mode: AccessMode): void {
+  private requireModePermission(credentials: Credentials, permissionSet: PermissionSet, mode: AccessMode): void {
     if (!this.hasModePermission(permissionSet, mode)) {
       if (this.isAuthenticated(credentials)) {
         this.logger.warn(`Agent ${credentials.agent!.webId} has no ${mode} permissions`);
@@ -106,7 +106,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * Checks whether the agent is authenticated (logged in) or not (public/anonymous).
    * @param credentials - Credentials to check.
    */
-  private isAuthenticated(credentials: CredentialSet): boolean {
+  private isAuthenticated(credentials: Credentials): boolean {
     return typeof credentials.agent?.webId === 'string';
   }
 }
