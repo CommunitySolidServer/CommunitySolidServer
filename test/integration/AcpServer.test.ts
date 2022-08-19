@@ -118,4 +118,21 @@ describe.each(stores)('An LDP handler with ACP using %s', (name, { storeConfig, 
     response = await fetch(baseUrl);
     expect(response.status).toBe(200);
   });
+
+  it('returns the required Link headers.', async(): Promise<void> => {
+    const baseAcr = joinUrl(baseUrl, '.acr');
+    const response = await fetch(baseAcr, { method: 'OPTIONS' });
+    const linkHeaders = response.headers.get('link');
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/solid/acp#AccessControlResource>; rel="type"');
+
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/auth/acl#Read>; rel="http://www.w3.org/ns/solid/acp#grant"');
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/auth/acl#Append>; rel="http://www.w3.org/ns/solid/acp#grant"');
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/auth/acl#Write>; rel="http://www.w3.org/ns/solid/acp#grant"');
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/auth/acl#Control>; rel="http://www.w3.org/ns/solid/acp#grant"');
+
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/solid/acp#target>; rel="http://www.w3.org/ns/solid/acp#attribute"');
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/solid/acp#agent>; rel="http://www.w3.org/ns/solid/acp#attribute"');
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/solid/acp#client>; rel="http://www.w3.org/ns/solid/acp#attribute"');
+    expect(linkHeaders).toContain('<http://www.w3.org/ns/solid/acp#issuer>; rel="http://www.w3.org/ns/solid/acp#attribute"');
+  });
 });

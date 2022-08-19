@@ -38,6 +38,28 @@
       "subfolders": [ "acp" ]
     },
     {
+      "comment": "Middleware exposes the required ACP headers.",
+      "@id": "urn:solid-server:default:ParallelMiddleware",
+      "@type": "ParallelHandler",
+      "handlers": [{
+        "@type": "AcpHeaderHandler",
+        "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+        "strategy": { "@id": "urn:solid-server:default:AcrIdentifierStrategy" },
+        "modes": [
+          "http://www.w3.org/ns/auth/acl#Read",
+          "http://www.w3.org/ns/auth/acl#Append",
+          "http://www.w3.org/ns/auth/acl#Write",
+          "http://www.w3.org/ns/auth/acl#Control"
+        ],
+        "attributes": [
+          "http://www.w3.org/ns/solid/acp#target",
+          "http://www.w3.org/ns/solid/acp#agent",
+          "http://www.w3.org/ns/solid/acp#client",
+          "http://www.w3.org/ns/solid/acp#issuer"
+        ]
+      }]
+    },
+    {
       "comment": "In case of ACP authorization the ACR resources determine authorization.",
       "@id": "urn:solid-server:default:AuthResourceHttpHandler",
       "@type": "RouterHandler",
