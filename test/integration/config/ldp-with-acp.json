@@ -4,20 +4,24 @@
     "css:config/app/main/default.json",
     "css:config/app/init/default.json",
     "css:config/app/setup/disabled.json",
+
     "css:config/http/handler/simple.json",
     "css:config/http/middleware/no-websockets.json",
     "css:config/http/server-factory/no-websockets.json",
     "css:config/http/static/default.json",
     "css:config/identity/access/public.json",
+
     "css:config/identity/handler/default.json",
     "css:config/identity/ownership/token.json",
     "css:config/identity/pod/static.json",
+
     "css:config/ldp/authentication/debug-auth-header.json",
     "css:config/ldp/authorization/acp.json",
     "css:config/ldp/handler/default.json",
     "css:config/ldp/metadata-parser/default.json",
     "css:config/ldp/metadata-writer/default.json",
     "css:config/ldp/modes/default.json",
+
     "css:config/storage/key-value/memory.json",
     "css:config/storage/middleware/default.json",
     "css:config/util/auxiliary/acr.json",
@@ -30,7 +34,7 @@
   ],
   "@graph": [
     {
-      "comment": "An HTTP server with only the LDP handler as HttpHandler and an unsecure authenticator.",
+      "comment": "An HTTP server with only the LDP handler as HttpHandler and an unsecure authenticator using ACP.",
       "@id": "urn:solid-server:test:Instances",
       "@type": "RecordObject",
       "record": [

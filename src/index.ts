@@ -292,6 +292,7 @@ export * from './server/WebSocketHandler';
 export * from './server/WebSocketServerFactory';
 
 // Server/Middleware
+export * from './server/middleware/AcpHeaderHandler';
 export * from './server/middleware/CorsHandler';
 export * from './server/middleware/HeaderHandler';
 export * from './server/middleware/StaticAssetHandler';
