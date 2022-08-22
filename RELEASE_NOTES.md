@@ -1,5 +1,29 @@
 # Community Solid Server release notes
 
+## v6.0.0
+### New features
+- ...
+
+### Data migration
+No actions are required to migrate data.
+
+### Configuration changes
+You might need to make changes to your v5 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- ...
+
+The following changes are relevant for v5 custom configs that replaced certain features.
+- ...
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- `AgentGroupAccessChecker` no longer accepts any input parameters.
+- The functions in `Vocabularies.ts` were renamed, the typings have been made more precise and several utility types were added.
+
 ## v5.0.0
 ### New features
 - Metadata of resources can now be edited by PATCHing its description resource.
@@ -52,7 +76,7 @@ The following changes are relevant for v4 custom configs that replaced certain f
   - `/util/resource-locker/file.json`
   - `/util/resource-locker/redis.json`
 - Updated finalizers.
-  - `/app/identity/handler/account-store/default.json` 
+  - `/app/identity/handler/account-store/default.json`
   - `/identity/ownership/token.json`
   - `/ldp/authorization/readers/access-checkers/agent-group.json`
   - `/ldp/handler/*`
@@ -63,7 +87,7 @@ The following changes are relevant for v4 custom configs that replaced certain f
 - Several components now take a `metadataStrategy` parameter to support the new metadata feature.
   - `/ldp/handler/components/operation-handler.json`
   - `/storage/backend/*`
-- Generation of auxiliary link headers was updated. 
+- Generation of auxiliary link headers was updated.
   - `/ldp/metadata-writer/writers/link-rel.json`
 - The `ConstantMetadataWriter` that adds the `MS-Author-Via` header was removed
   - `/ldp/metadata-writer/default.json`
@@ -108,15 +132,15 @@ as described in https://github.com/inrupt/solid-client-authn-js/issues/2103.
 
 ## v4.0.0
 ### New features
-- The server can be started with a new parameter to automatically generate accounts and pods, 
+- The server can be started with a new parameter to automatically generate accounts and pods,
   for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/seeding-pods/).
 - It is now possible to automate authentication requests using Client Credentials,
   for more info see [here](https://communitysolidserver.github.io/CommunitySolidServer/4.0/client-credentials/).
 - A new `RedirectingHttpHandler` class has been added which can be used to redirect certain URLs.
-- A new default configuration `config/https-file-cli.json` 
+- A new default configuration `config/https-file-cli.json`
   that can set the HTTPS parameters through the CLI has been added.
   This is also an example of how to add CLI parameters through a custom configuration.
-- A new RedisLocker has been added to replace the old RedisResourceLocker class. 
+- A new RedisLocker has been added to replace the old RedisResourceLocker class.
   It allows for true threadsafe read/write locking.
 
 ### Configuration changes
@@ -131,7 +155,7 @@ The following changes pertain to the imports in the default configs:
 The following changes are relevant for v3 custom configs that replaced certain features.
 - The key/value storage configs in `config/storage/key-value/*` have been changed to reduce config duplication.
   All storages there that were only relevant for 1 class have been moved to the config of that class.
-- Due to a parameter rename in `CombinedSettingsResolver`, 
+- Due to a parameter rename in `CombinedSettingsResolver`,
   `config/app/variables/resolver/resolver.json` has been updated.
 - The OIDC provider setup was changed to add client_credentials support.
   - `/identity/handler/adapter-factory/webid.json`
@@ -147,20 +171,20 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `RepresentationMetadata` no longer accepts strings for predicates in any of its functions.
 - `CombinedSettingsResolver` parameter `computers` has been renamed to `resolvers`.
 - `IdentityProviderFactory` requires an additional `credentialStorage` parameter.
-- The `RedisResourceLocker` class has been removed and the `RedisLocker`class was added instead. 
+- The `RedisResourceLocker` class has been removed and the `RedisLocker`class was added instead.
  `RedisLocker` implements both the `ResourceLocker` and `ReadWriteLocker` interface.
 
 ## v3.0.0
 ### New features
 - The Identity Provider now uses the `webid` scope as required for Solid-OIDC.
-- The `VoidLocker` can be used to disable locking for development/testing purposes. 
+- The `VoidLocker` can be used to disable locking for development/testing purposes.
   This can be enabled by changing the `/config/util/resource-locker/` import to `debug-void.json`
 - Added support for setting a quota on the server. See the `config/quota-file.json` config for an example.
 - An official docker image is now built on each version tag and published at https://hub.docker.com/r/solidproject/community-server.
 - Added support for N3 Patch.
-- It is now possible to customize arguments to the `community-solid-server` command, 
+- It is now possible to customize arguments to the `community-solid-server` command,
   which enables passing custom variables to configurations and setting new default values.
-- The AppRunner functions have changed to require Components.js variables. 
+- The AppRunner functions have changed to require Components.js variables.
   This is important for anyone who starts the server from code.
 - When logging in, a consent screen will now provide information about the client.
 
@@ -174,12 +198,12 @@ This will not delete the user accounts, but users will have to log in again.
 ### Configuration changes
 You might need to make changes to your v2 configuration if you use a custom config.
 
-The `@context` needs to be updated to 
+The `@context` needs to be updated to
 `https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld`.
 
 The following changes pertain to the imports in the default configs:
 - A new configuration option needs to be imported:
-  - `/app/variables/default.json` contains everything related to parsing CLI arguments 
+  - `/app/variables/default.json` contains everything related to parsing CLI arguments
     and assigning values to variables.
 
 The following changes are relevant for v2 custom configs that replaced certain features.
@@ -196,7 +220,7 @@ The following changes are relevant for v2 custom configs that replaced certain f
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
-- `TypedRepresentationConverter` function signatures changed 
+- `TypedRepresentationConverter` function signatures changed
   and base functionality moved to `BaseTypedRepresentationConverter`.
 - Many changes to several components related to the IDP. This includes the HTML templates.
 
@@ -227,29 +251,29 @@ The following changes pertain to the imports in the default configs:
 - There are 2 new configuration options that for which a valid option needs to be imported:
   - `/app/setup` determines how and if setup should be enabled.
   - `/identity/access` determines if IDP access (e.g., registration) should be restricted
-- The `/app/init/default.json` configuration no longer initializes the root container. 
+- The `/app/init/default.json` configuration no longer initializes the root container.
   This behaviour has been moved to the other options for `/app/init`.
 - `/ldp/permissions` changed to `/ldp/modes` and only has a default option now.
 
 The following changes are relevant for v1 custom configs that replaced certain features.
 The path indicates which JSON-LD files were impacted by the change.
-- `IdentityProviderHttpHandler` and `InteractionRoute` arguments have changed substantially. 
+- `IdentityProviderHttpHandler` and `InteractionRoute` arguments have changed substantially.
   - `/identity/handler/default.json`
   - `/identity/handler/interaction/*`
   - `/identity/registration/*`.
-- All internal storage is now stored in the `/.internal/` container. 
-  - `/storage/key-value/resource-store.json`. 
-- Patching related classes have changed. 
+- All internal storage is now stored in the `/.internal/` container.
+  - `/storage/key-value/resource-store.json`.
+- Patching related classes have changed.
   - `/storage/middleware/stores/patching.json`.
 - `BasicRequestParser` now needs a `conditionsParser` argument.
   - `/ldp/handler/components/request-parser.json`.
-- `LinkTypeParser` has been renamed to `LinkRelParser` and now takes mappings as input. 
+- `LinkTypeParser` has been renamed to `LinkRelParser` and now takes mappings as input.
   - `/ldp/metadata-parser/*`
-- `ComposedAuxiliaryStrategy` `isRootRequired` has been renamed to `requiredInRoot`. 
+- `ComposedAuxiliaryStrategy` `isRootRequired` has been renamed to `requiredInRoot`.
   - `/util/auxiliary/strategies/acl.json`.
-- Many changes to authentication and authorization structure. 
+- Many changes to authentication and authorization structure.
   - Config `/ldp/authentication/*` and `/ldp/authorization/*`.
-- All `HttpHandler`s have been changed. 
+- All `HttpHandler`s have been changed.
   - `/app/setup/handlers/setup.json`
   - `/http/handler/default.json`
   - `/identity/handler/default.json`

@@ -4,23 +4,7 @@
     {
       "comment": "Checks if the agent belongs to a group that has access.",
       "@id": "urn:solid-server:default:AgentGroupAccessChecker",
-      "@type": "AgentGroupAccessChecker",
-      "cache": {
-        "@id": "urn:solid-server:default:ExpiringAclCache",
-        "@type": "WrappedExpiringStorage",
-        "source": { "@type": "MemoryMapStorage" }
-      }
-    },
-    {
-      "comment": "Makes sure the expiring storage cleanup timer is stopped when the application needs to stop.",
-      "@id": "urn:solid-server:default:Finalizer",
-      "@type": "ParallelHandler",
-      "handlers": [ 
-        { 
-          "@type": "FinalizableHandler",
-          "finalizable": { "@id": "urn:solid-server:default:ExpiringAclCache" }
-        } 
-      ]
+      "@type": "AgentGroupAccessChecker"
     }
   ]
 }
