@@ -3,6 +3,7 @@
 ### `PUT`: Creating resources for a given URL
 
 Create a plain text file:
+
 ```shell
 curl -X PUT -H "Content-Type: text/plain" \
   -d "abc" \
@@ -10,6 +11,7 @@ curl -X PUT -H "Content-Type: text/plain" \
 ```
 
 Create a turtle file:
+
 ```shell
 curl -X PUT -H "Content-Type: text/turtle" \
   -d "<ex:s> <ex:p> <ex:o>." \
@@ -19,6 +21,7 @@ curl -X PUT -H "Content-Type: text/turtle" \
 ### `POST`: Creating resources at a generated URL
 
 Create a plain text file:
+
 ```shell
 curl -X POST -H "Content-Type: text/plain" \
   -d "abc" \
@@ -26,6 +29,7 @@ curl -X POST -H "Content-Type: text/plain" \
 ```
 
 Create a turtle file:
+
 ```shell
 curl -X POST -H "Content-Type: text/turtle" \
   -d "<ex:s> <ex:p> <ex:o>." \
@@ -37,18 +41,21 @@ The response's `Location` header will contain the URL of the created resource.
 ### `GET`: Retrieving resources
 
 Retrieve a plain text file:
+
 ```shell
 curl -H "Accept: text/plain" \
   http://localhost:3000/myfile.txt
 ```
 
 Retrieve a turtle file:
+
 ```shell
 curl -H "Accept: text/turtle" \
   http://localhost:3000/myfile.ttl
 ```
 
 Retrieve a turtle file in a different serialization:
+
 ```shell
 curl -H "Accept: application/ld+json" \
   http://localhost:3000/myfile.ttl
@@ -90,4 +97,3 @@ curl -I -H "Accept: text/plain" \
 ```shell
 curl -X OPTIONS -i http://localhost:3000/myfile.txt
 ```
-

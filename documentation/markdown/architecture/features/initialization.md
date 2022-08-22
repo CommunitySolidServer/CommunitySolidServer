@@ -6,11 +6,12 @@ Similarly, when stopping the server several Finalizers trigger to clean up where
 although the latter only happens when starting the server through code.
 
 ## App
+
 ```mermaid
 flowchart TD
   App("<strong>App</strong><br>App")
   App --> AppArgs
-  
+
   subgraph AppArgs[" "]
     Initializer("<strong>Initializer</strong><br><i>Initializer</i>")
     AppFinalizer("<strong>Finalizer</strong><br><i>Finalizer</i>")
@@ -24,18 +25,19 @@ It's only function is to contain an `Initializer` and `Finalizer`
 which get called by calling `start`/`stop` respectively.
 
 ## Initializer
+
 ```mermaid
 flowchart TD
   Initializer("<strong>Initializer</strong><br>SequenceHandler")
   Initializer --> InitializerArgs
-  
+
   subgraph InitializerArgs[" "]
     direction LR
     LoggerInitializer("<strong>LoggerInitializer</strong><br>LoggerInitializer")
     PrimaryInitializer("<strong>PrimaryInitializer</strong><br>ProcessHandler")
     WorkerInitializer("<strong>WorkerInitializer</strong><br>ProcessHandler")
   end
-  
+
   LoggerInitializer --> PrimaryInitializer
   PrimaryInitializer --> WorkerInitializer
 ```
@@ -49,26 +51,28 @@ Although if your server setup is single-threaded, which is the default,
 there is no relevant difference between those two.
 
 ### PrimaryInitializer
+
 ```mermaid
 flowchart TD
   PrimaryInitializer("<strong>PrimaryInitializer</strong><br>ProcessHandler")
   PrimaryInitializer --> PrimarySequenceInitializer("<strong>PrimarySequenceInitializer</strong><br>SequenceHandler")
   PrimarySequenceInitializer --> PrimarySequenceInitializerArgs
-  
+
   subgraph PrimarySequenceInitializerArgs[" "]
     direction LR
     CleanupInitializer("<strong>CleanupInitializer</strong><br>SequenceHandler")
     PrimaryParallelInitializer("<strong>PrimaryParallelInitializer</strong><br>ParallelHandler")
     WorkerManager("<strong>WorkerManager</strong><br>WorkerManager")
   end
-  
+
   CleanupInitializer --> PrimaryParallelInitializer
   PrimaryParallelInitializer --> WorkerManager
 ```
+
 The above is a simplification of all the initializers that are present in the `PrimaryInitializer`
 as there are several smaller initializers that also trigger but are less relevant here.
 
-The `CleanupInitializer` is an initializer that cleans up anything 
+The `CleanupInitializer` is an initializer that cleans up anything
 that might have remained from a previous server start
 and could impact behaviour.
 Relevant components in other parts of the configuration are responsible for adding themselves to this array if needed.
@@ -80,35 +84,39 @@ This makes it easier for users to add initializers by being able to append to it
 The `WorkerManager` is responsible for setting up the worker threads, if any.
 
 ### WorkerInitializer
+
 ```mermaid
 flowchart TD
   WorkerInitializer("<strong>WorkerInitializer</strong><br>ProcessHandler")
   WorkerInitializer --> WorkerSequenceInitializer("<strong>WorkerSequenceInitializer</strong><br>SequenceHandler")
   WorkerSequenceInitializer --> WorkerSequenceInitializerArgs
-  
+
   subgraph WorkerSequenceInitializerArgs[" "]
     direction LR
     WorkerParallelInitializer("<strong>WorkerParallelInitializer</strong><br>ParallelHandler")
     ServerInitializer("<strong>ServerInitializer</strong><br>ServerInitializer")
   end
-  
+
   WorkerParallelInitializer --> ServerInitializer
 ```
+
 The `WorkerInitializer` is quite similar to the `PrimaryInitializer` but triggers once per worker thread.
 Like the `PrimaryParallelInitializer`, the `WorkerParallelInitializer` can be used
 to add any custom initializers that need to run.
 
 ### ServerInitializer
+
 The `ServerInitializer` is the initializer that finally starts up the server by listening to the relevant port,
 once all the initialization described above is finished.
 This is an example of a component that differs based on some of the choices made during configuration.
+
 ```mermaid
 flowchart TD
   ServerInitializer("<strong>ServerInitializer</strong><br>ServerInitializer")
   ServerInitializer --> WebSocketServerFactory("<strong>ServerFactory</strong><br>WebSocketServerFactory")
   WebSocketServerFactory --> BaseHttpServerFactory("<br>BaseHttpServerFactory")
   BaseHttpServerFactory --> HttpHandler("<strong>HttpHandler</strong><br><i>HttpHandler</i>")
-  
+
   ServerInitializer2("<strong>ServerInitializer</strong><br>ServerInitializer")
   ServerInitializer2 ---> BaseHttpServerFactory2("<strong>ServerFactory</strong><br>BaseHttpServerFactory")
   BaseHttpServerFactory2 --> HttpHandler2("<strong>HttpHandler</strong><br><i>HttpHandler</i>")

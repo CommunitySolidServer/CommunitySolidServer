@@ -5,7 +5,8 @@
   // Disable line length check
   "MD013": {
     "line_length": 120,
-    "tables": false
+    "tables": false,
+    "code_blocks": false
   },
 
   // Set Ordered list item prefix to "ordered" (use 1. 2. 3. not 1. 1. 1.)
