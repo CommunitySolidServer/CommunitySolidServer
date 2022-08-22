@@ -50,7 +50,7 @@ flowchart TD
 ```
 
 Both of the WebID extractors make use of
-the (`access-token-verifier`)[https://github.com/CommunitySolidServer/access-token-verifier] library
+the [`access-token-verifier`](https://github.com/CommunitySolidServer/access-token-verifier) library
 to parse incoming tokens based on the [Solid-OIDC specification](https://solid.github.io/solid-oidc/).
 Besides those there are always the public credentials, which everyone has.
 All these credentials then get combined into a single union object.
@@ -81,7 +81,8 @@ flowchart TD
 ```
 
 The `IntermediateCreateExtractor` is responsible if requests try to create intermediate containers with a single request.
-E.g., a PUT request to `/foo/bar/baz` should create both the `/foo/` and `/foo/bar/` containers in case they do not exist yet.
+E.g., a PUT request to `/foo/bar/baz` should create both the `/foo/` and `/foo/bar/` containers in case they do not
+exist yet.
 This extractor makes sure that `create` permissions are also checked on those containers.
 
 Modes can usually be determined based on just the HTTP methods,
