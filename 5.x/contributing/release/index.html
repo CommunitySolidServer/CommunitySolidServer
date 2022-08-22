@@ -890,38 +890,44 @@
 <p>Steps to follow:</p>
 <ul>
 <li>Merge <code>main</code> into <code>versions/x.0.0</code>.</li>
-<li>Verify if there are issues when upgrading an existing installation to the new version.</li>
+<li>Verify if there are issues when upgrading an existing installation to the new version.<ul>
 <li>Can the data still be accessed?</li>
 <li>Does authentication still work?</li>
 <li>Is there an issue upgrading any of the dependent repositories (see below for links)?</li>
 <li>None of the above has to be blocking per se, but should be noted in the release notes if relevant.</li>
-<li>Verify that the RELEASE_NOTES.md are correct.</li>
-<li><code>npm run release -- -r major</code> or <code>npx standard-version -r major</code></li>
-<li>Automatically updates Components.js references to the new version. Committed with <code>chore(release): Update configs to vx.0.0</code>.</li>
-<li>Updates the <code>package.json</code>, generate a tag, and generate the new entries in <code>CHANGELOG.md</code>. Commited with <code>chore(release): Release version vx0.0 of the npm package</code></li>
-<li>You can always add <code>--dry-run</code> to the above command to preview the commands that will be run and the changes to <code>CHANGELOG.md</code>.</li>
-<li>Manually edit the <code>CHANGELOG.md</code>.</li>
-<li>All entries are added in separate sections of the new release according to their commit prefixes.</li>
-<li>Re-organize the entries accordingly, referencing previous releases.<ul>
-<li>Most of the entries in Chores and Documentation can be removed.</li>
 </ul>
 </li>
-<li>Make sure there are 2 newlines between this and the previous section.</li>
-<li><code>git add CHANGELOG.md &amp;&amp; git commit --amend --no-edit --no-verify</code> to add manual changes to the release commit.</li>
-<li><code>git push --follow-tags</code></li>
+<li>Verify that the <code>RELEASE_NOTES.md</code> are correct.</li>
+<li><code>npm run release -- -r major</code><ul>
+<li>Automatically updates Components.js references to the new version. Committed with <code>chore(release): Update configs to vx.0.0</code>.</li>
+<li>Updates the <code>package.json</code>, and generates the new entries in <code>CHANGELOG.md</code>. Commited with <code>chore(release): Release version vx.0.0 of the npm package</code></li>
+<li>Optionally run <code>npx commit-and-tag-version -r major --dry-run</code> to preview the commands that will be run and the changes to <code>CHANGELOG.md</code>.</li>
+</ul>
+</li>
+<li>The <code>postrelease</code> script will now prompt you to manually edit the <code>CHANGELOG.md</code>.<ul>
+<li>All entries are added in separate sections of the new release according to their commit prefixes.</li>
+<li>Re-organize the entries accordingly, referencing previous releases. Most of the entries in Chores and Documentation can be removed.</li>
+<li>Press any key in your terminal when your changes are ready.</li>
+<li>The <code>postrelease</code> script will amend the release commit, create an annotated tag and push changes to origin.</li>
+</ul>
+</li>
 <li>Merge <code>versions/x.0.0</code> into <code>main</code> and push.</li>
 <li>Do a GitHub release.</li>
-<li><code>npm publish</code></li>
+<li><code>npm publish</code><ul>
 <li>Check if there is a <code>next</code> tag that needs to be replaced.</li>
+</ul>
+</li>
 <li>Rename the <code>versions/x.0.0</code> branch to the next version.</li>
 <li>Update <code>.github/workflows/schedule.yml</code> and <code>.github/dependabot.yml</code> to point at the new branch.</li>
-<li>Potentially upgrade dependent repositories:</li>
+<li>Potentially upgrade dependent repositories:<ul>
 <li>Recipes at <a href="https://github.com/CommunitySolidServer/recipes/">https://github.com/CommunitySolidServer/recipes/</a></li>
 <li>Tutorials at <a href="https://github.com/CommunitySolidServer/tutorials/">https://github.com/CommunitySolidServer/tutorials/</a></li>
 </ul>
+</li>
+</ul>
 <p>Changes when doing a pre-release of a major version:</p>
 <ul>
-<li>Version with <code>npm release -- -r major --pre-release alpha</code></li>
+<li>Version with <code>npm run release -- -r major --prerelease alpha</code></li>
 <li>Do not merge <code>versions/x.0.0</code> into <code>main</code>.</li>
 <li>Publish with <code>npm publish --tag next</code>.</li>
 <li>Do not update the branch or anything related.</li>
