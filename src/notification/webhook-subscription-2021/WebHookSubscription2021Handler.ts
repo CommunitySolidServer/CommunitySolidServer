@@ -85,7 +85,7 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebH
         SOLID_NOTIFICATION.namespace,
       ],
       id: `urn:uuid:${v4()}`,
-      type: [ subscription.type ],
+      type: [ type ],
       object: {
         id: resource.path,
       },
