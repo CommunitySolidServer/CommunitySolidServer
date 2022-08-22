@@ -57,7 +57,8 @@
     "jest": "jest --coverageReporters text-summary --",
     "lint": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
     "prepare": "npm run build",
-    "release": "standard-version",
+    "release": "commit-and-tag-version",
+    "postrelease": "ts-node ./scripts/finalizeRelease.ts",
     "start": "node ./bin/server.js",
     "start:file": "node ./bin/server.js -c config/file.json -f ./data",
     "start:file-no-setup": "node ./bin/server.js -c config/file-no-setup.json -f ./data",
@@ -76,10 +77,16 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "standard-version": {
+  "commit-and-tag-version": {
     "scripts": {
       "postbump": "ts-node ./scripts/upgradeConfig.ts",
       "postchangelog": "ts-node ./scripts/formatChangelog.ts"
+    },
+    "writerOpts": {
+      "commitsSort": false
+    },
+    "skip": {
+      "tag": true
     }
   },
   "files": [
@@ -180,8 +187,8 @@
     "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.19",
     "set-cookie-parser": "^2.5.1",
-    "simple-git": "^3.11.0",
-    "standard-version": "^9.5.0",
+    "simple-git": "^3.12.0",
+    "commit-and-tag-version": "^10.1.0",
     "supertest": "^6.2.4",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.1",
