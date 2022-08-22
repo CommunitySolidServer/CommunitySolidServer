@@ -40,12 +40,13 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebH
     return trimTrailingSlashes(joinUrl(this.baseUrl, this.webhookUnsubscribePath, subscriptionId));
   }
 
-  public getResponseData(subscription: WebHookSubscription2021): Guarded<Readable> {
+  public getResponseData(subscription: WebHookSubscription2021, topic: string): Guarded<Readable> {
     return guardStream(
       Readable.from(
         JSON.stringify({
           '@context': SOLID_NOTIFICATION.namespace,
           type: this.getType(),
+          topic,
           target: subscription.target,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           unsubscribe_endpoint: this.getUnsubscribeEndpoint(subscription.id),

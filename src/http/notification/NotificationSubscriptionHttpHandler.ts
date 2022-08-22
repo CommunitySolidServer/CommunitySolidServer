@@ -118,7 +118,7 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
     const representationMetadata = new RepresentationMetadata('application/ld+json');
     return new OkResponseDescription(
       representationMetadata,
-      subscriptionHandler.getResponseData(subscription),
+      subscriptionHandler.getResponseData(subscription, topicURI),
     );
   }
 

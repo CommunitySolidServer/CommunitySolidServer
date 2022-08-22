@@ -50,10 +50,12 @@ describe('A WebHookSubscription2021Handler', (): void => {
 
   describe('getResponseData()', (): void => {
     it('should return the expected Readable.', (): void => {
-      const readable = handler.getResponseData(mockSubscription);
+      const topic = 'topicString';
+      const readable = handler.getResponseData(mockSubscription, topic);
       expect(JSON.parse(readable.read())).toMatchObject({
         '@context': SOLID_NOTIFICATION.namespace,
         type: handler.getType(),
+        topic,
         target: mockSubscription.target,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         unsubscribe_endpoint: `http://example.com/unsubscribe/${mockSubscription.id}`,
