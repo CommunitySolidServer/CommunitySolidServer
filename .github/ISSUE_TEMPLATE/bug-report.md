@@ -8,7 +8,9 @@ assignees: ''
 ---
 
 #### Environment
-- Server version: *Output of `community-solid-server --version` for a global or `npx community-solid-server --version` for a local installation*
+
+- Server version: *Output of `community-solid-server --version` for a
+  global or `npx community-solid-server --version` for a local installation*
 - Node.js version: *Output of `node -v`*
 - npm version: *Output of `npm -v`*
 
