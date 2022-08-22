@@ -1,6 +1,8 @@
+<!-- markdownlint-disable MD013 -->
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
 ## [5.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.1...v5.0.0) (2022-08-08)
 
 ### Features
