@@ -9,6 +9,7 @@ import { TEXT_TURTLE } from '../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../src/util/errors/ConflictHttpError';
 import { ensureTrailingSlash, joinUrl } from '../../src/util/PathUtil';
 import { AclHelper } from '../util/AclHelper';
+import { AcpHelper } from '../util/AcpHelper';
 import { getPort } from '../util/Util';
 import {
   getDefaultVariables,
@@ -121,25 +122,74 @@ function toPermission(modes: AM[]): AclPermission {
   return Object.fromEntries(modes.map((mode): [AM, boolean] => [ mode, true ]));
 }
 
+async function setWebAclPermissions(store: ResourceStore, target: string, permissions: AclPermission,
+  childPermissions: AclPermission): Promise<void> {
+  const aclHelper = new AclHelper(store);
+  await aclHelper.setSimpleAcl(target, [
+    { permissions, agentClass: 'agent', accessTo: true },
+    { permissions: childPermissions, agentClass: 'agent', default: true },
+  ]);
+}
+
+async function setAcpPermissions(store: ResourceStore, target: string, permissions: AclPermission,
+  childPermissions: AclPermission): Promise<void> {
+  const acpHelper = new AcpHelper(store);
+  const publicMatcher = acpHelper.createMatcher({ publicAgent: true });
+  const policies = [ acpHelper.createPolicy({
+    // Casting from enum to strings
+    allow: Object.keys(permissions) as any,
+    anyOf: [ publicMatcher ],
+  }) ];
+  const memberPolicies = [ acpHelper.createPolicy({
+    allow: Object.keys(childPermissions) as any,
+    anyOf: [ publicMatcher ],
+  }) ];
+  await acpHelper.setAcp(target, acpHelper.createAcr({
+    resource: target,
+    policies,
+    memberPolicies,
+  }));
+}
+
 const port = getPort('PermissionTable');
 const baseUrl = `http://localhost:${port}/`;
 
-const rootFilePath = getTestFolder('permissionTable');
-const stores: [string, any][] = [
-  [ 'in-memory storage', {
-    storeConfig: 'storage/backend/memory.json',
-    teardown: jest.fn(),
-  }],
-  [ 'on-disk storage', {
-    storeConfig: 'storage/backend/file.json',
-    teardown: async(): Promise<void> => removeFolder(rootFilePath),
-  }],
-];
+type AuthFunctionType = (store: ResourceStore, target: string,
+  permissions: AclPermission, childPermissions: AclPermission) => Promise<void>;
 
-describe.each(stores)('A request on a server with %s', (name, { storeConfig, teardown }): void => {
+const rootFilePath = getTestFolder('permissionTable');
+const stores: [string, string, { configs: string[]; authFunction: AuthFunctionType; teardown: () => Promise<void> }][] =
+  [
+    [ 'WebACL',
+      'in-memory storage', {
+        configs: [ 'ldp/authorization/webacl.json', 'util/auxiliary/acl.json', 'storage/backend/memory.json' ],
+        authFunction: setWebAclPermissions,
+        teardown: jest.fn(),
+      }],
+    [ 'WebACL',
+      'on-disk storage', {
+        configs: [ 'ldp/authorization/webacl.json', 'util/auxiliary/acl.json', 'storage/backend/file.json' ],
+        authFunction: setWebAclPermissions,
+        teardown: async(): Promise<void> => removeFolder(rootFilePath),
+      }],
+    [ 'ACP',
+      'in-memory storage', {
+        configs: [ 'ldp/authorization/acp.json', 'util/auxiliary/acr.json', 'storage/backend/memory.json' ],
+        authFunction: setAcpPermissions,
+        teardown: jest.fn(),
+      }],
+    [ 'ACP',
+      'on-disk storage', {
+        configs: [ 'ldp/authorization/acp.json', 'util/auxiliary/acr.json', 'storage/backend/file.json' ],
+        authFunction: setAcpPermissions,
+        teardown: async(): Promise<void> => removeFolder(rootFilePath),
+      }],
+  ];
+
+describe.each(stores)('A request on a server with %s authorization and %s', (auth, name,
+  { configs, authFunction, teardown }): void => {
   let app: App;
   let store: ResourceStore;
-  let aclHelper: AclHelper;
 
   beforeAll(async(): Promise<void> => {
     const variables = {
@@ -151,25 +201,14 @@ describe.each(stores)('A request on a server with %s', (name, { storeConfig, tea
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       [
-        getPresetConfigPath(storeConfig),
-        getTestConfigPath('ldp-with-auth.json'),
+        ...configs.map(getPresetConfigPath),
+        getTestConfigPath('permission-table.json'),
       ],
       variables,
     ) as Record<string, any>;
     ({ app, store } = instances);
 
     await app.start();
-
-    // Create test helper for manipulating acl
-    aclHelper = new AclHelper(store);
-
-    // Set the root acl file to allow everything
-    await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { read: true, write: true, append: true, control: true },
-      agentClass: 'agent',
-      accessTo: true,
-      default: true,
-    });
   });
 
   afterAll(async(): Promise<void> => {
@@ -201,11 +240,10 @@ describe.each(stores)('A request on a server with %s', (name, { storeConfig, tea
         }
       }
 
-      await aclHelper.setSimpleAcl(parent, [
-        // In case we are targeting C/ we assume everything is allowed by the parent
-        { permissions: toPermission(parent === root ? allModes : cPerm), agentClass: 'agent', accessTo: true },
-        { permissions: toPermission(parent === root ? cPerm : crPerm), agentClass: 'agent', default: true },
-      ]);
+      await authFunction(store,
+        parent,
+        toPermission(parent === root ? allModes : cPerm),
+        toPermission(parent === root ? cPerm : crPerm));
 
       // Set up fetch parameters
       init = { method };

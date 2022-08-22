@@ -58,7 +58,7 @@ export class AcpReader extends PermissionReader {
     const permissionMap: PermissionMap = new IdentifierMap();
 
     // Resolves the targets sequentially so the `resourceCache` can be filled and reused
-    for (const target of requestedModes.keys()) {
+    for (const target of requestedModes.distinctKeys()) {
       permissionMap.set(target, await this.extractPermissions(target, credentials, resourceCache));
     }
     return permissionMap;
