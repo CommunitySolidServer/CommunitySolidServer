@@ -4,7 +4,7 @@
   // Set Ordered list item prefix to "ordered" (use 1. 2. 3. not 1. 1. 1.)
   "MD029": { "style": "ordered" },
 
-  // If the content of every item of the list is fits in a single paragraph, use 1 space.
+  // If the content of every item of the list fits in a single paragraph, use 1 space.
   // Otherwise, for every item of the list:
   // - use 3 spaces for unordered lists.
   // - use 2 spaces for ordered lists.
