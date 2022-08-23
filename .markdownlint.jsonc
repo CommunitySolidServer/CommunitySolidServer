@@ -9,18 +9,8 @@
     "code_blocks": false
   },
 
-  // Allow multiple top level headings
-  "MD025": false,
-
   // Allow multiple headings with the same content
-  "MD024": false,
-
-  // Exclude code block style
-  "MD046": false,
-
-  // Allow inline HTML
-  "MD033": true,
-
-  // Allow no heading at start of file
-  "MD041": false
+  "MD024": {
+    "allow_different_nesting": true
+  }
 }

@@ -279,16 +279,16 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0](https://github.com/solid/community-server/compare/v1.0.0-beta.2...v1.0.0) (2021-08-04)
 
-## Added
+### Added
 
 * feat: Create ChainedTemplateEngine for combining engines ([18a7103](https://github.com/solid/community-server/commit/18a71032c0ba872a3acd08fa1c63136fdf6489de))
 * feat: Accept asset paths as config. ([f28279e](https://github.com/solid/community-server/commit/f28279e3a577072adb9ff27b2a54a1624076a448))
 
-## Changed
+### Changed
 
 * change: Use @css: instead of $PACKAGE_ROOT/ ([1719857](https://github.com/solid/community-server/commit/1719857e4b340fd16cdde9d9a45097072cc68fe2))
 
-## Fixed
+### Fixed
 
 * fix: Replace rimraf with fs-extra.remove ([2a82c4f](https://github.com/solid/community-server/commit/2a82c4f06e25981205d0841fe473d038888bc3ef))
 
