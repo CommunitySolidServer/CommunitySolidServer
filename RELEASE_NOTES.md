@@ -4,7 +4,8 @@
 
 ### New features
 
-- ...
+- The server can be configured to use [ACP](https://solidproject.org/TR/acp) instead of WebACL.
+  `config/file-acp.json` is an example of a configuration that uses this authorization scheme instead.
 
 ### Data migration
 
@@ -28,6 +29,13 @@ The following changes are relevant for v5 custom configs that replaced certain f
     - `/app/main/general/templates.json` was added to configure a generic template engine handler.
     - `/app/main/default.json` now imports the above config file.
     - All files configuring template engines.
+- Several minor changes due to support ACP.
+    - `ldp/authorization/*`
+- Resource generation was changed to there is 1 reusable resource generator.
+    - `init/initializers/*`
+    - `setup/handlers/setup.json`
+    - `identity/access/initializers/*`
+    - `identity/pod/*`
 
 ### Interface changes
 
@@ -36,6 +44,12 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `AgentGroupAccessChecker` no longer accepts any input parameters.
 - The functions in `Vocabularies.ts` were renamed,
   the typings have been made more precise and several utility types were added.
+- Several changes to support ACP.
+    - `WebAclAuxiliaryReader` was renamed to `AuthAuxiliaryReader`.
+    - `OwnerPermissionReader` input parameter `aclStrategy` was renamed to `authStrategy`.
+    - `TemplatedResourcesGenerator` has been renamed to `BaseResourcesGenerator` and has a different interface now.
+- `CredentialSet` was replaced by a single `Credentials` interface.
+  This impacts all authentication and authorization related classes.
 
 ## v5.0.0
 
