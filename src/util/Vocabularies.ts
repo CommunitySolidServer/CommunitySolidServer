@@ -47,8 +47,7 @@ export type VocabularyValue<T> = T extends Vocabulary<any, infer TKey> ? T[TKey]
 export type VocabularyTerm<T> = T extends Vocabulary<any, infer TKey> ? T['terms'][TKey] : never;
 
 /**
- * Creates a function that expands local names from the given base URI,
- * and exports the given local names as properties on the returned object.
+ * Creates a {@link ValueVocabulary} with the given `baseUri` as namespace and all `localNames` as entries.
  */
 function createValueVocabulary<TBase extends string, TLocal extends string>(baseUri: TBase, localNames: TLocal[]):
 ValueVocabulary<TBase, TLocal> {
@@ -64,29 +63,42 @@ ValueVocabulary<TBase, TLocal> {
 }
 
 /**
- * Creates a function that expands local names from the given base URI into named nodes,
- * and exports the given local names as properties on the returned object.
+ * Creates a {@link TermVocabulary} based on the provided {@link ValueVocabulary}.
  */
-function createTermVocabulary<TBase extends string, TLocal extends string>(namespace: ValueVocabulary<TBase, TLocal>):
+function createTermVocabulary<TBase extends string, TLocal extends string>(values: ValueVocabulary<TBase, TLocal>):
 TermVocabulary<ValueVocabulary<TBase, TLocal>> {
   // Need to cast since `fromEntries` typings aren't strict enough
   return Object.fromEntries(
-    Object.entries(namespace).map(([ key, value ]): [string, NamedNode] => [ key, DataFactory.namedNode(value) ]),
+    Object.entries(values).map(([ key, value ]): [string, NamedNode] => [ key, DataFactory.namedNode(value) ]),
   ) as TermVocabulary<ValueVocabulary<TBase, TLocal>>;
 }
 
 /**
- * Creates a function that expands local names from the given base URI into string,
- * and exports the given local names as properties on the returned object.
- * Under the `terms` property, it exposes the expanded local names as named nodes.
+ * Creates a {@link Vocabulary} with the given `baseUri` as namespace and all `localNames` as entries.
+ * The values are the local names expanded from the given base URI as strings.
+ * The `terms` field contains all the same values but as {@link NamedNode} instead.
  */
 export function createVocabulary<TBase extends string, TLocal extends string>(baseUri: TBase,
   ...localNames: TLocal[]): string extends TLocal ? PartialVocabulary<TBase> : Vocabulary<TBase, TLocal> {
-  const namespace = createValueVocabulary(baseUri, localNames);
+  const values = createValueVocabulary(baseUri, localNames);
   return {
-    ...namespace,
-    terms: createTermVocabulary(namespace),
+    ...values,
+    terms: createTermVocabulary(values),
   };
+}
+
+/**
+ * Creates a new {@link Vocabulary} that extends an existing one by adding new local names.
+ * @param vocabulary - The {@link Vocabulary} to extend.
+ * @param newNames - The new local names that need to be added.
+ */
+export function extendVocabulary<TBase extends string, TLocal extends string, TNew extends string>(
+  vocabulary: Vocabulary<TBase, TLocal>, ...newNames: TNew[]):
+  ReturnType<typeof createVocabulary<TBase, TLocal | TNew>> {
+  const localNames = Object.keys(vocabulary)
+    .filter((key): boolean => key !== 'terms' && key !== 'namespace') as TLocal[];
+  const allNames = [ ...localNames, ...newNames ];
+  return createVocabulary(vocabulary.namespace, ...allNames);
 }
 
 export const ACL = createVocabulary('http://www.w3.org/ns/auth/acl#',
