@@ -48,10 +48,10 @@ public constructor(source: ResourceStore, baseUrl: string, container: string)
 
 The important elements here are the following:
 
-*   `"comment"`: _(optional)_ A description of this component.
-*   `"@id"`: _(optional)_ A unique identifier of this component, which allows it to be used as parameter values in
+* `"comment"`: _(optional)_ A description of this component.
+* `"@id"`: _(optional)_ A unique identifier of this component, which allows it to be used as parameter values in
     different places.
-*   `"@type"`: The class name of the component. This must be a TypeScript class name that is exported via `index.ts`.
+* `"@type"`: The class name of the component. This must be a TypeScript class name that is exported via `index.ts`.
 
 As you can see from the constructor, the other fields are direct mappings from the constructor parameters.
 `source` references another object, which we refer to using its identifier `urn:solid-server:default:ResourceStore`.

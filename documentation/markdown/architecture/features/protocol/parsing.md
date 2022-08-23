@@ -16,11 +16,11 @@ flowchart TD
 A `ParsingHttpHandler` handles both the parsing of the input data, and the serializing of the output data.
 It follows these 3 steps:
 
-1.  Use the `RequestParser` to convert the incoming data into an `Operation`.
-2.  Send the `Operation` to the `AuthorizingHttpHandler` to receive either a `Representation` if the operation was a success,
+1. Use the `RequestParser` to convert the incoming data into an `Operation`.
+2. Send the `Operation` to the `AuthorizingHttpHandler` to receive either a `Representation` if the operation was a success,
     or an `Error` in case something went wrong.
     * In case of an error the `ErrorHandler` will convert the `Error` into a `ResponseDescription`.
-3.  Use the `ResponseWriter` to output the `ResponseDescription` as an HTTP response.
+3. Use the `ResponseWriter` to output the `ResponseDescription` as an HTTP response.
 
 ## Parsing the request
 

@@ -37,17 +37,17 @@ flowchart TD
 
 Below is a summary of how to interpret such diagrams:
 
-*   Rounded red box: component instantiated in the Components.js [configuration](dependency-injection.md).
-    *   First line:
-        *   **Bold text**: shorthand of the instance identifier. In case the full URI is not specified,
+* Rounded red box: component instantiated in the Components.js [configuration](dependency-injection.md).
+    * First line:
+        * **Bold text**: shorthand of the instance identifier. In case the full URI is not specified,
             it can usually be found by prepending `urn:solid-server:default:` to the shorthand identifier.
-        *   (empty): this instance has no identifier and is defined in the same place as its parent.
-    *   Second line:
-        *   Regular text: The class of this instance.
-        *   _Italic text_: The interface of this instance.
+        * (empty): this instance has no identifier and is defined in the same place as its parent.
+    * Second line:
+        * Regular text: The class of this instance.
+        * _Italic text_: The interface of this instance.
             Will be used if the actual class is not relevant for the explanation or can differ.
-*   Square grey box: the parameters of the linked instance.
-*   Arrow: links an instance to its parameters. Can also be used to indicate the order of parameters if relevant.
+* Square grey box: the parameters of the linked instance.
+* Arrow: links an instance to its parameters. Can also be used to indicate the order of parameters if relevant.
 
 For example, in the above, **LdpHandler** is a shorthand for the actual identifier `urn:solid-server:default:LdpHandler`
 and is an instance of `ParsingHttpHandler`. It has 4 parameters,

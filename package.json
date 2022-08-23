@@ -57,7 +57,7 @@
     "jest": "jest --coverageReporters text-summary --",
     "lint": "npm run lint:ts && npm run lint:markdown",
     "lint:ts": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
-    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#LICENSE.md\"",
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "npm run build",
     "release": "commit-and-tag-version",
     "postrelease": "ts-node ./scripts/finalizeRelease.ts",

@@ -31,12 +31,12 @@ This store emits the events that are necessary to emit notifications when resour
 
 There are 4 different events that can be emitted:
 
-*   `this.emit('changed', identifier, activity)`: is emitted for every resource that was changed/effected by a
+* `this.emit('changed', identifier, activity)`: is emitted for every resource that was changed/effected by a
     call to the store.
     With activity being undefined or one of the available ActivityStream terms.
-*   `this.emit(AS.Create, identifier)`: is emitted for every resource that was created by the call to the store.
-*   `this.emit(AS.Update, identifier)`: is emitted for every resource that was updated by the call to the store.
-*   `this.emit(AS.Delete, identifier)`: is emitted for every resource that was deleted by the call to the store.
+* `this.emit(AS.Create, identifier)`: is emitted for every resource that was created by the call to the store.
+* `this.emit(AS.Update, identifier)`: is emitted for every resource that was updated by the call to the store.
+* `this.emit(AS.Delete, identifier)`: is emitted for every resource that was deleted by the call to the store.
 
 A `changed` event will always be emitted if a resource was changed.
 If the correct metadata was set by the source `ResourceStore`, an additional field will be sent along indicating the

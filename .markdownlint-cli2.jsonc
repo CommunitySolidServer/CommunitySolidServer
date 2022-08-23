@@ -1,0 +1,4 @@
+{
+  "ignores": [ "node_modules/", "LICENSE.md" ],
+  "globs": [ "**/*.md" ]
+}
