@@ -1,4 +1,3 @@
-<!-- markdownlint-disable MD024-->
 # Community Solid Server release notes
 
 ## v5.0.0
