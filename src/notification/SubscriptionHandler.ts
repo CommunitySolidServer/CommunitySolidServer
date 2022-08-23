@@ -5,7 +5,7 @@ import type { Subscription } from './Subscription';
 
 export interface SubscriptionHandler<TSubscription extends Subscription> {
   getType: () => string;
-  getResponseData: (subscription: TSubscription, topic: string) => Guarded<Readable> | undefined;
+  getResponseData: (subscription: TSubscription) => Guarded<Readable> | undefined;
   subscribe: (request: any) => TSubscription;
   onChange: (resource: ResourceIdentifier, activity: string, subscription: TSubscription) => Promise<void>;
 }

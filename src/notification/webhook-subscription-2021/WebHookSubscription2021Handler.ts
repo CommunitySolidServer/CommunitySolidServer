@@ -14,6 +14,7 @@ import { generateSubscriptionId } from '../Subscription';
 export interface WebHookSubscription2021 extends Subscription {
   id: string;
   target: string;
+  topic: string;
 }
 
 export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebHookSubscription2021> {
@@ -32,6 +33,7 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebH
       type: this.getType(),
       target: request.target,
       id: generateSubscriptionId(request.topic),
+      topic: request.topic,
     };
     return subscription;
   }
@@ -40,13 +42,13 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebH
     return trimTrailingSlashes(joinUrl(this.baseUrl, this.webhookUnsubscribePath, subscriptionId));
   }
 
-  public getResponseData(subscription: WebHookSubscription2021, topic: string): Guarded<Readable> {
+  public getResponseData(subscription: WebHookSubscription2021): Guarded<Readable> {
     return guardStream(
       Readable.from(
         JSON.stringify({
           '@context': SOLID_NOTIFICATION.namespace,
           type: this.getType(),
-          topic,
+          topic: subscription.topic,
           target: subscription.target,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           unsubscribe_endpoint: this.getUnsubscribeEndpoint(subscription.id),
@@ -87,6 +89,7 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler<WebH
       id: `urn:uuid:${v4()}`,
       type: [ type ],
       object: {
+        topic: subscription.topic,
         id: resource.path,
       },
       published: new Date().toISOString(),
