@@ -122,19 +122,19 @@ by passing parameters to the server command.
 These parameters give you direct access
 to some commonly used settings:
 
-| parameter name         | default value              | description                                                                                                                          |
-|------------------------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `--port, -p`           | `3000`                     | The TCP port on which the server should listen.                                                                                      |
-| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The base URL used internally to generate URLs. Change this if your server does not run on `http://localhost:$PORT/`.                 |
-| `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems. Use `debug` for full information.                                        |
-| `--config, -c`         | `@css:config/default.json` | The configuration for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json` |
-| `--rootFilePath, -f`   | `./`                       | Root folder where the server stores data, when using a file-based configuration.                                                     |
-| `--sparqlEndpoint, -s` |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                              |
-| `--showStackTrace, -t` | false                      | Enables detailed logging on error output.                                                                                            |
-| `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                |
-| `--seededPodConfigJson`|                            | Path to the file that keeps track of seeded Pod configurations.                                                                      |
-| `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.                                                |
-| `--workers, -w`        | `1`                        | Run in multithreaded mode using workers. Special values are `-1` (scale to `num_cores-1`), `0` (scale to `num_cores`) and 1 (singlethreaded).     |
+| parameter name         | default value              | description                                                                                                                                   |
+|------------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `--port, -p`           | `3000`                     | The TCP port on which the server should listen.                                                                                               |
+| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The base URL used internally to generate URLs. Change this if your server does not run on `http://localhost:$PORT/`.                          |
+| `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems. Use `debug` for full information.                                                 |
+| `--config, -c`         | `@css:config/default.json` | The configuration(s) for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json`       |
+| `--rootFilePath, -f`   | `./`                       | Root folder where the server stores data, when using a file-based configuration.                                                              |
+| `--sparqlEndpoint, -s` |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                                       |
+| `--showStackTrace, -t` | false                      | Enables detailed logging on error output.                                                                                                     |
+| `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                         |
+| `--seededPodConfigJson`|                            | Path to the file that keeps track of seeded Pod configurations.                                                                               |
+| `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.                                                         |
+| `--workers, -w`        | `1`                        | Run in multithreaded mode using workers. Special values are `-1` (scale to `num_cores-1`), `0` (scale to `num_cores`) and 1 (singlethreaded). |
 
 ### 🔀 Multithreading
 

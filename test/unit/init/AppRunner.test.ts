@@ -281,6 +281,37 @@ describe('AppRunner', (): void => {
       expect(app.start).toHaveBeenCalledTimes(0);
     });
 
+    it('can apply multiple configurations.', async(): Promise<void> => {
+      const params = [
+        'node', 'script',
+        '-c', 'config1.json', 'config2.json',
+      ];
+      await expect(new AppRunner().createCli(params)).resolves.toBe(app);
+
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+      expect(ComponentsManager.build).toHaveBeenCalledWith({
+        dumpErrorState: true,
+        logLevel: 'info',
+        mainModulePath: joinFilePath(__dirname, '../../../'),
+        typeChecking: false,
+      });
+      expect(manager.configRegistry.register).toHaveBeenCalledTimes(2);
+      expect(manager.configRegistry.register).toHaveBeenNthCalledWith(1, '/var/cwd/config1.json');
+      expect(manager.configRegistry.register).toHaveBeenNthCalledWith(2, '/var/cwd/config2.json');
+      expect(manager.instantiate).toHaveBeenCalledTimes(2);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(1);
+      expect(cliExtractor.handleSafe).toHaveBeenCalledWith(params);
+      expect(shorthandResolver.handleSafe).toHaveBeenCalledTimes(1);
+      expect(shorthandResolver.handleSafe).toHaveBeenCalledWith(defaultParameters);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(manager.instantiate).toHaveBeenNthCalledWith(2,
+        'urn:solid-server:default:App',
+        { variables: defaultVariables });
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
+      expect(app.start).toHaveBeenCalledTimes(0);
+    });
+
     it('uses the default process.argv in case none are provided.', async(): Promise<void> => {
       const { argv } = process;
       const argvParameters = [

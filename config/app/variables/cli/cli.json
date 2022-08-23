@@ -12,8 +12,8 @@
           "options": {
             "alias": "c",
             "requiresArg": true,
-            "type": "string",
-            "describe": "The configuration for the server. The default only stores data in memory; to persist to your filesystem, use @css:config/file.json."
+            "type": "array",
+            "describe": "The configuration(s) for the server. The default only stores data in memory; to persist to your filesystem, use @css:config/file.json."
           }
         },
         {
