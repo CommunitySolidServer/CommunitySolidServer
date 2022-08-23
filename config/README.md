@@ -1,3 +1,5 @@
+# Configuration
+
 This folder contains several configurations that can be used to start up the server.
 All those configurations are created in the same way:
 features are enabled or disabled by choosing a specific option for every component.
@@ -8,14 +10,14 @@ Options are then chosen by importing 1 entry from every component subfolder.
 In case none of the available options have the exact feature configuration you want,
 it is always possible to not choose any of them and create your own custom version instead.
 
-# How to use
+## How to use
 
 The easiest way to create a new config is by creating a JSON-LD file
 that imports one option from every component subfolder
 (such as either `allow-all.json` or `webacl.json` from `ldp/authorization`).
 In case none of the available options suffice, there are 2 other ways to handle this:
 
-## Append to an existing config
+### Append to an existing config
 
 In case the options mostly suffice, but they just need to do a bit more,
 it might be possible to append to one of the solutions.
@@ -42,7 +44,7 @@ and the `@type` is needed so it can interpret the other fields (`handlers` in th
 Note that generally it is only advised to append to ParallelHandlers or key/value maps.
 In case the order is important this can not be guaranteed over separate files.
 
-## Create a new option
+### Create a new option
 
 If a more drastic change is required,
 the solution is to not import anything from that folder but instead write your own.

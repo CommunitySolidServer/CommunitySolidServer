@@ -1,6 +1,6 @@
-## Interacting with the server
+# Interacting with the server
 
-### `PUT`: Creating resources for a given URL
+## `PUT`: Creating resources for a given URL
 
 Create a plain text file:
 
@@ -18,7 +18,7 @@ curl -X PUT -H "Content-Type: text/turtle" \
   http://localhost:3000/myfile.ttl
 ```
 
-### `POST`: Creating resources at a generated URL
+## `POST`: Creating resources at a generated URL
 
 Create a plain text file:
 
@@ -38,7 +38,7 @@ curl -X POST -H "Content-Type: text/turtle" \
 
 The response's `Location` header will contain the URL of the created resource.
 
-### `GET`: Retrieving resources
+## `GET`: Retrieving resources
 
 Retrieve a plain text file:
 
@@ -61,13 +61,13 @@ curl -H "Accept: application/ld+json" \
   http://localhost:3000/myfile.ttl
 ```
 
-### `DELETE`: Deleting resources
+## `DELETE`: Deleting resources
 
 ```shell
 curl -X DELETE http://localhost:3000/myfile.txt
 ```
 
-### `PATCH`: Modifying resources
+## `PATCH`: Modifying resources
 
 Modify a resource using [N3 Patch](https://solidproject.org/TR/protocol#n3-patch):
 
@@ -85,14 +85,14 @@ curl -X PATCH -H "Content-Type: application/sparql-update" \
   http://localhost:3000/myfile.ttl
 ```
 
-### `HEAD`: Retrieve resources headers
+## `HEAD`: Retrieve resources headers
 
 ```shell
 curl -I -H "Accept: text/plain" \
   http://localhost:3000/myfile.txt
 ```
 
-### `OPTIONS`: Retrieve resources communication options
+## `OPTIONS`: Retrieve resources communication options
 
 ```shell
 curl -X OPTIONS -i http://localhost:3000/myfile.txt

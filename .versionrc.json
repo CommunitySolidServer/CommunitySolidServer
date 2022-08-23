@@ -10,6 +10,6 @@
         {"type": "perf", "section": "Performance"},
         {"type": "test", "section": "Testing"}
     ],
-    "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.",
+    "header": "<!-- markdownlint-disable MD013 --># Changelog\n\nAll notable changes to this project will be documented in this file.",
     "releaseCommitMessageFormat": "chore(release): Release version {{currentTag}} of the npm package"
 }

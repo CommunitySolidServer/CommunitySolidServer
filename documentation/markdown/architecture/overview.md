@@ -53,7 +53,7 @@ For example, in the above, **LdpHandler** is a shorthand for the actual identifi
 and is an instance of `ParsingHttpHandler`. It has 4 parameters,
 one of which has no identifier but is an instance of `AuthorizingHttpHandler`.
 
-# Features
+## Features
 
 Below are the sections that go deeper into the features of the server and how those work.
 
