@@ -1,34 +1,15 @@
 {
-  // Enable all markdownlint rules
-  "default": true,
-
-  // Enable line length check but exclude tables and code blocks
-  "MD013": {
-    "line_length": 120,
-    "tables": false,
-    "code_blocks": false
-  },
+  "extends": "../.markdownlint.jsonc",
 
   // Set Ordered list item prefix to "ordered" (use 1. 2. 3. not 1. 1. 1.)
   "MD029": { "style": "ordered" },
 
+  // If the content of every item of the list is fits in a single paragraph, use 1 space.
+  // Otherwise, for every item of the list:
+  // - use 3 spaces for unordered lists.
+  // - use 2 spaces for ordered lists.
   "MD030": { "ul_multi": 3, "ol_multi": 2 },
 
-  // Allow multiple top level headings
-  "MD025": false,
-
-  // Allow multiple headings with the same content
-  "MD024": false,
-
   // Set list indent level to 4 which Python-Markdown requires
-  "MD007": { "indent": 4 },
-
-  // Exclude code block style
-  "MD046": false,
-
-  // Allow inline HTML
-  "MD033": false,
-
-  // Allow no heading at start of file
-  "MD041": false
+  "MD007": { "indent": 4 }
 }
