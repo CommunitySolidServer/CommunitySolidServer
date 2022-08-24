@@ -1,4 +1,3 @@
-<!-- markdownlint-disable MD041 -->
 #### 📁 Related issues
 
 <!--
@@ -14,10 +13,12 @@ Reference any relevant issues here. Closing keywords only have an effect when ta
 Before this pull request can be merged, a core maintainer will check whether
 
 * [ ] this PR is labeled with the correct semver label
-    * semver.patch: Backwards compatible bug fixes.
-    * semver.minor: Backwards compatible feature additions.
-    * semver.major: Breaking changes. This includes changing interfaces or configuration behaviour.
-* [ ] the correct branch is targeted. Patch updates can target main, other changes should target the latest versions/* branch.
+  * semver.patch: Backwards compatible bug fixes.
+  * semver.minor: Backwards compatible feature additions.
+  * semver.major: Breaking changes. This includes changing interfaces or
+    configuration behaviour.
+* [ ] the correct branch is targeted. Patch updates can target main, other changes
+      should target the latest versions/* branch.
 * [ ] the RELEASE_NOTES.md document in case of relevant feature or config changes.
 * [ ] any relevant documentation was updated to reflect the changes in this PR.
 

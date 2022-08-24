@@ -1,7 +1,7 @@
 # Community Solid Server
-<!-- markdownlint-disable -->
-<img src="https://raw.githubusercontent.com/CommunitySolidServer/CommunitySolidServer/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
-<!-- markdownlint-enable -->
+
+<img src="https://raw.githubusercontent.com/CommunitySolidServer/CommunitySolidServer/main/templates/images/solid.svg"
+ alt="[Solid logo]" height="150" align="right"/>
 
 [![MIT license](https://img.shields.io/npm/l/@solid/community-server)](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/LICENSE.md)
 [![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
