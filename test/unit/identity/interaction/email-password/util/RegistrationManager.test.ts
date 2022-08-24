@@ -65,57 +65,57 @@ describe('A RegistrationManager', (): void => {
   describe('validating data', (): void => {
     it('errors on invalid emails.', async(): Promise<void> => {
       let input: any = { email: undefined };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a valid e-mail address.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please enter a valid e-mail address.');
 
       input = { email: '' };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a valid e-mail address.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please enter a valid e-mail address.');
 
       input = { email: 'invalidEmail' };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a valid e-mail address.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please enter a valid e-mail address.');
     });
 
     it('errors on invalid passwords.', async(): Promise<void> => {
       const input: any = { email, webId, password, confirmPassword: 'bad' };
-      expect((): any => manager.validateInput(input)).toThrow('Your password and confirmation did not match.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Your password and confirmation did not match.');
     });
 
     it('errors on missing passwords.', async(): Promise<void> => {
       const input: any = { email, webId };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a password.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please enter a password.');
     });
 
     it('errors when setting rootPod to true when not allowed.', async(): Promise<void> => {
       const input = { email, password, confirmPassword, createWebId, rootPod };
-      expect((): any => manager.validateInput(input)).toThrow('Creating a root pod is not supported.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Creating a root pod is not supported.');
     });
 
     it('errors when a required WebID is not valid.', async(): Promise<void> => {
       let input: any = { email, password, confirmPassword, register, webId: undefined };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a valid WebID.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please enter a valid WebID.');
 
       input = { email, password, confirmPassword, register, webId: '' };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a valid WebID.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please enter a valid WebID.');
     });
 
     it('errors on invalid pod names when required.', async(): Promise<void> => {
       let input: any = { email, webId, password, confirmPassword, createPod, podName: undefined };
-      expect((): any => manager.validateInput(input)).toThrow('Please specify a Pod name.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please specify a Pod name.');
 
       input = { email, webId, password, confirmPassword, createPod, podName: ' ' };
-      expect((): any => manager.validateInput(input)).toThrow('Please specify a Pod name.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please specify a Pod name.');
 
       input = { email, webId, password, confirmPassword, createWebId };
-      expect((): any => manager.validateInput(input)).toThrow('Please specify a Pod name.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please specify a Pod name.');
     });
 
     it('errors when no option is chosen.', async(): Promise<void> => {
       const input = { email, webId, password, confirmPassword };
-      expect((): any => manager.validateInput(input)).toThrow('Please register for a WebID or create a Pod.');
+      expect((): any => manager.validateInput(input, false)).toThrow('Please register for a WebID or create a Pod.');
     });
 
     it('adds the template parameter if there is one.', async(): Promise<void> => {
       const input = { email, webId, password, confirmPassword, podName, template: 'template', createPod };
-      expect(manager.validateInput(input)).toEqual({
+      expect(manager.validateInput(input, false)).toEqual({
         email,
         webId,
         password,
@@ -146,12 +146,12 @@ describe('A RegistrationManager', (): void => {
         register,
         createPod,
       };
-      expect(manager.validateInput(input)).toEqual({
+      expect(manager.validateInput(input, false)).toEqual({
         email, password: ' a ', podName, template: 'template', createWebId, register, createPod, rootPod: false,
       });
 
       input = { email, webId: ` ${webId} `, password: ' a ', confirmPassword: ' a ', register: true };
-      expect(manager.validateInput(input)).toEqual({
+      expect(manager.validateInput(input, false)).toEqual({
         email, webId, password: ' a ', createWebId: false, register, createPod: false, rootPod: false,
       });
     });
@@ -160,7 +160,7 @@ describe('A RegistrationManager', (): void => {
   describe('handling data', (): void => {
     it('can register a user.', async(): Promise<void> => {
       const params: any = { email, webId, password, register, createPod: false, createWebId: false };
-      await expect(manager.register(params)).resolves.toEqual({
+      await expect(manager.register(params, false)).resolves.toEqual({
         email,
         webId,
         oidcIssuer: baseUrl,
@@ -184,7 +184,7 @@ describe('A RegistrationManager', (): void => {
 
     it('can create a pod.', async(): Promise<void> => {
       const params: any = { email, webId, password, podName, createPod, createWebId: false, register: false };
-      await expect(manager.register(params)).resolves.toEqual({
+      await expect(manager.register(params, false)).resolves.toEqual({
         email,
         webId,
         oidcIssuer: baseUrl,
@@ -211,7 +211,7 @@ describe('A RegistrationManager', (): void => {
     it('adds an oidcIssuer to the data when doing both IDP registration and pod creation.', async(): Promise<void> => {
       const params: any = { email, webId, password, confirmPassword, podName, register, createPod, createWebId: false };
       podSettings.oidcIssuer = baseUrl;
-      await expect(manager.register(params)).resolves.toEqual({
+      await expect(manager.register(params, false)).resolves.toEqual({
         email,
         webId,
         oidcIssuer: baseUrl,
@@ -240,7 +240,7 @@ describe('A RegistrationManager', (): void => {
       const params: any = { email, webId, password, confirmPassword, podName, register, createPod };
       podSettings.oidcIssuer = baseUrl;
       (podManager.createPod as jest.Mock).mockRejectedValueOnce(new Error('pod error'));
-      await expect(manager.register(params)).rejects.toThrow('pod error');
+      await expect(manager.register(params, false)).rejects.toThrow('pod error');
 
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
@@ -263,7 +263,7 @@ describe('A RegistrationManager', (): void => {
       podSettings.webId = generatedWebID;
       podSettings.oidcIssuer = baseUrl;
 
-      await expect(manager.register(params)).resolves.toEqual({
+      await expect(manager.register(params, false)).resolves.toEqual({
         email,
         webId: generatedWebID,
         oidcIssuer: baseUrl,

@@ -33,6 +33,12 @@ export interface SetupHttpHandlerArgs {
    * Renders the main view.
    */
   templateEngine: TemplateEngine;
+  /**
+   * Determines if pods can be created in the root of the server.
+   * Relevant to make sure there are no nested storages if registration is enabled for example.
+   * Defaults to `true`.
+   */
+  allowRootPod?: boolean;
 }
 
 /**
@@ -53,6 +59,7 @@ export class SetupHttpHandler extends OperationHttpHandler {
   private readonly storageKey: string;
   private readonly storage: KeyValueStorage<string, boolean>;
   private readonly templateEngine: TemplateEngine;
+  private readonly allowRootPod: boolean;
 
   public constructor(args: SetupHttpHandlerArgs) {
     super();
@@ -62,6 +69,7 @@ export class SetupHttpHandler extends OperationHttpHandler {
     this.storageKey = args.storageKey;
     this.storage = args.storage;
     this.templateEngine = args.templateEngine;
+    this.allowRootPod = args.allowRootPod ?? true;
   }
 
   public async handle({ operation }: OperationHttpHandlerInput): Promise<ResponseDescription> {
@@ -76,7 +84,7 @@ export class SetupHttpHandler extends OperationHttpHandler {
    * Returns the HTML representation of the setup page.
    */
   private async handleGet(operation: Operation): Promise<ResponseDescription> {
-    const result = await this.templateEngine.handleSafe({ contents: {}});
+    const result = await this.templateEngine.handleSafe({ contents: { allowRootPod: this.allowRootPod }});
     const representation = new BasicRepresentation(result, operation.target, TEXT_HTML);
     return new OkResponseDescription(representation.metadata, representation.data);
   }

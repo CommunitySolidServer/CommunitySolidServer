@@ -19,7 +19,8 @@ The `@context` needs to be updated to
 
 The following changes pertain to the imports in the default configs:
 
-- ...
+- All default configurations which had setup disabled have been updated to also disable registration.
+  This is done to prevent configurations with accidental nested storage containers.
 
 The following changes are relevant for v5 custom configs that replaced certain features.
 

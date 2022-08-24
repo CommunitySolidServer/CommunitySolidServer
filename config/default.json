@@ -34,7 +34,7 @@
   ],
   "@graph": [
     {
-      "comment": "A single-pod server that stores its resources in memory."
+      "comment": "A Solid server that stores its resources in memory."
     }
   ]
 }

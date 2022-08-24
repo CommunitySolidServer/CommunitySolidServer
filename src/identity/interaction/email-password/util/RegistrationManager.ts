@@ -110,12 +110,12 @@ export class RegistrationManager {
    *  * Only create a root pod when allowed.
    *
    * @param input - Input parameters for the registration procedure.
-   * @param allowRoot - If creating a pod in the root container should be allowed.
+   * @param allowRootPod - If creating a pod in the root container should be allowed.
    *
    * @returns A cleaned up version of the input parameters.
    * Only (trimmed) parameters that are relevant to the registration procedure will be retained.
    */
-  public validateInput(input: NodeJS.Dict<unknown>, allowRoot = false): RegistrationParams {
+  public validateInput(input: NodeJS.Dict<unknown>, allowRootPod: boolean): RegistrationParams {
     const {
       email, password, confirmPassword, webId, podName, register, createPod, createWebId, template, rootPod,
     } = input;
@@ -135,7 +135,7 @@ export class RegistrationManager {
       rootPod: Boolean(rootPod),
     };
     assert(validated.register || validated.createPod, 'Please register for a WebID or create a Pod.');
-    assert(allowRoot || !validated.rootPod, 'Creating a root pod is not supported.');
+    assert(allowRootPod || !validated.rootPod, 'Creating a root pod is not supported.');
 
     // Parse WebID
     if (!validated.createWebId) {
@@ -171,7 +171,7 @@ export class RegistrationManager {
    *  * Ownership will be verified when the WebID is provided.
    *  * When registering and creating a pod, the base URL will be used as oidcIssuer value.
    */
-  public async register(input: RegistrationParams, allowRoot = false): Promise<RegistrationResponse> {
+  public async register(input: RegistrationParams, allowRootPod: boolean): Promise<RegistrationResponse> {
     // This is only used when createWebId and/or createPod are true
     let podBaseUrl: ResourceIdentifier | undefined;
     if (input.createPod) {
@@ -213,7 +213,7 @@ export class RegistrationManager {
 
       try {
         // Only allow overwrite for root pods
-        await this.podManager.createPod(podBaseUrl!, podSettings, allowRoot);
+        await this.podManager.createPod(podBaseUrl!, podSettings, allowRootPod);
       } catch (error: unknown) {
         await this.accountStore.deleteAccount(input.email);
         throw error;

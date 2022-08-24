@@ -3,13 +3,14 @@
   "@graph": [
     {
       "comment": "Handles everything related to the first-time server setup.",
-      "@id": "urn:solid-server:default:SetupHttpHandler",
+      "@id": "urn:solid-server:default:SetupParsingHandler",
       "@type": "ParsingHttpHandler",
       "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
       "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "args_operationHandler": {
+        "@id": "urn:solid-server:default:SetupHttpHandler",
         "@type": "SetupHttpHandler",
         "args_handler": {
           "@type": "SetupHandler",
