@@ -22,7 +22,7 @@
             "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
             "args_allowedMethods": [ "*" ],
             "args_allowedPathNames": [ "/setup" ],
-            "args_handler": { "@id": "urn:solid-server:default:SetupHttpHandler" }
+            "args_handler": { "@id": "urn:solid-server:default:SetupParsingHandler" }
           }
         ]
       }
