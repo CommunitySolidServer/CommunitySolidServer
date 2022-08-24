@@ -13,7 +13,7 @@ The links here assume the server is hosted at `http://localhost:3000/`.
 ## Registering an account
 
 To register an account, you can go to `http://localhost:3000/idp/register/` if this feature is enabled,
-which it is on all configurations we provide.
+which it is on most configurations we provide.
 Currently our registration page ties 3 features together on the same page:
 
 * Creating an account on the server.

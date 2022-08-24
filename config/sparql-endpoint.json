@@ -35,7 +35,7 @@
   "@graph": [
     {
       "comment": [
-        "A single-pod server that stores its resources in a SPARQL endpoint.",
+        "A Solid server that stores its resources in a SPARQL endpoint.",
         "This server only supports RDF data. For this reason it can not use its resource store for internal key/value storage."
       ]
     }

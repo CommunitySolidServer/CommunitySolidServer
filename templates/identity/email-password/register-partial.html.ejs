@@ -56,29 +56,15 @@
       <label>
         <input type="checkbox" id="createPod" name="createPod"<%
         if (isBlankForm || prefilled.createPod) { %> checked<% } %>>
-        Create a new Pod with my WebID as owner<% if (!locals.allowRoot) { %>.<% } %>
+        Create a new Pod with my WebID as owner<% if (locals.allowRootPod) { %> in the root<% } %>.
       </label>
       <ol id="createPodForm">
-        <% if (locals.allowRoot) { %>
-          <li class="radio">
-            <label>
-              <input type="radio" id="rootPodOn" name="rootPod" value="on"<%
-              if (isBlankForm || prefilled.rootPod) { %> checked<% } %>>
-              …in the root.
-            </label>
-          </li>
-          <li class="radio">
-            <label>
-              <input type="radio" id="rootPodOff" name="rootPod" value=""<%
-              if (!isBlankForm && !prefilled.rootPod) { %> checked<% } %>>
-              …in its own namespace.
-            </label>
-          </li>
-        <% } %>
+        <% if (!locals.allowRootPod) { %>
         <li id="podNameForm">
           <label for="podName">Pod name:</label>
           <input id="podName" type="text" name="podName" value="<%= prefilled.podName || '' %>">
         </li>
+        <% } %>
       </ol>
     </li>
   </ol>
@@ -124,7 +110,7 @@
   [
     'mainForm',
     'createWebIdOn', 'createWebIdOff', 'createWebIdForm', 'existingWebIdForm', 'webId',
-    'createPod', 'createPodForm', 'rootPodOn', 'rootPodOff', 'podNameForm', 'podName',
+    'createPod', 'createPodForm', 'podNameForm', 'podName',
     'register', 'passwordForm',
   ].forEach(registerElement);
 
@@ -133,7 +119,6 @@
     createWebIdForm: () => elements.createWebIdOn.checked,
     existingWebIdForm: () => elements.createWebIdOff.checked,
     createPodForm: () => elements.createPod.checked,
-    podNameForm: () => !elements.rootPodOn.checked,
   };
 
   // Ensures that the only relevant input fields are visible and enabled
@@ -158,7 +143,6 @@
         webId.focus();
         break;
       case elements.createPod:
-      case elements.rootPodOff:
         elements.podName.focus();
         break;
       }
