@@ -1,4 +1,6 @@
-{
+"use strict";
+
+module.exports = {
   "ignores": [ "node_modules/", "LICENSE.md" ],
 
   "globs": [ "**/*.md" ],
@@ -27,4 +29,4 @@
     "MD029": { "style": "ordered" }
 
   }
-}
+};
