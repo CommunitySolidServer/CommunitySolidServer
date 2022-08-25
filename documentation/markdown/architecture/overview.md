@@ -1,6 +1,6 @@
 # Architecture overview
 
-The initial architecture document the project was started from can be found 
+The initial architecture document the project was started from can be found
 [here](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf).
 Many things have been added since the original inception of the project,
 but the core ideas within that document are still valid.
@@ -26,7 +26,7 @@ We will use an example below to explain the formatting used throughout the archi
 flowchart TD
   LdpHandler("<strong>LdpHandler</strong><br>ParsingHttphandler")
   LdpHandler --> LdpHandlerArgs
-  
+
   subgraph LdpHandlerArgs[" "]
     RequestParser("<strong>RequestParser</strong><br>BasicRequestParser")
     Auth("<br>AuthorizingHttpHandler")
@@ -38,14 +38,14 @@ flowchart TD
 Below is a summary of how to interpret such diagrams:
 
 * Rounded red box: component instantiated in the Components.js [configuration](dependency-injection.md).
-  * First line: 
-    * **Bold text**: shorthand of the instance identifier. In case the full URI is not specified,
-      it can usually be found by prepending `urn:solid-server:default:` to the shorthand identifier.
-    * (empty): this instance has no identifier and is defined in the same place as its parent.
-  * Second line: 
-    * Regular text: The class of this instance.
-    * _Italic text_: The interface of this instance. 
-      Will be used if the actual class is not relevant for the explanation or can differ.
+    * First line:
+        * **Bold text**: shorthand of the instance identifier. In case the full URI is not specified,
+            it can usually be found by prepending `urn:solid-server:default:` to the shorthand identifier.
+        * (empty): this instance has no identifier and is defined in the same place as its parent.
+    * Second line:
+        * Regular text: The class of this instance.
+        * _Italic text_: The interface of this instance.
+            Will be used if the actual class is not relevant for the explanation or can differ.
 * Square grey box: the parameters of the linked instance.
 * Arrow: links an instance to its parameters. Can also be used to indicate the order of parameters if relevant.
 
@@ -53,7 +53,8 @@ For example, in the above, **LdpHandler** is a shorthand for the actual identifi
 and is an instance of `ParsingHttpHandler`. It has 4 parameters,
 one of which has no identifier but is an instance of `AuthorizingHttpHandler`.
 
-# Features
+## Features
+
 Below are the sections that go deeper into the features of the server and how those work.
 
 * [How Command Line Arguments are parsed and used](features/cli.md)

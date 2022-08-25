@@ -12,12 +12,16 @@ Steps to follow:
     * None of the above has to be blocking per se, but should be noted in the release notes if relevant.
 * Verify that the `RELEASE_NOTES.md` are correct.
 * `npm run release -- -r major`
-    * Automatically updates Components.js references to the new version. Committed with `chore(release): Update configs to vx.0.0`.
-    * Updates the `package.json`, and generates the new entries in `CHANGELOG.md`. Commited with `chore(release): Release version vx.0.0 of the npm package`
-    * Optionally run `npx commit-and-tag-version -r major --dry-run` to preview the commands that will be run and the changes to `CHANGELOG.md`.
+    * Automatically updates Components.js references to the new version.
+      Committed with `chore(release): Update configs to vx.0.0`.
+    * Updates the `package.json`, and generates the new entries in `CHANGELOG.md`.
+      Commited with `chore(release): Release version vx.0.0 of the npm package`
+    * Optionally run `npx commit-and-tag-version -r major --dry-run` to preview the commands that will be run
+      and the changes to `CHANGELOG.md`.
 * The `postrelease` script will now prompt you to manually edit the `CHANGELOG.md`.
     * All entries are added in separate sections of the new release according to their commit prefixes.
-    * Re-organize the entries accordingly, referencing previous releases. Most of the entries in Chores and Documentation can be removed.
+    * Re-organize the entries accordingly, referencing previous releases. Most of the entries in Chores and
+      Documentation can be removed.
     * Press any key in your terminal when your changes are ready.
     * The `postrelease` script will amend the release commit, create an annotated tag and push changes to origin.
 * Merge `versions/x.0.0` into `main` and push.

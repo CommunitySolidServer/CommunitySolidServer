@@ -20,7 +20,7 @@ has `http://example.org/resource.meta` as its description resource.
 ## How to edit the metadata of a resource
 
 Editing the metadata of a resource is performed by editing the description resource directly.
-This can only be done using `PATCH` requests 
+This can only be done using `PATCH` requests
 (see [example workflow](#example-of-a-workflow-for-editing-a-description-resource)).
 
 `PUT` requests on description resources are not allowed,
@@ -38,17 +38,18 @@ The CSS will throw an error (409 `ConflictHttpError`) when trying to change this
 
 ### Preserving metadata
 
-`PUT` requests on a resource will reset the description resource. 
+`PUT` requests on a resource will reset the description resource.
 There is however a way to keep the contents of description resource prior to the `PUT` request:
 adding the HTTP `Link` header targeting the description resource with `rel="preserve"`.
 
-When the resource URL is `http://localhost:3000/foobar`, preserving its description resource when updating its contents can be achieved like in the following example:
+When the resource URL is `http://localhost:3000/foobar`, preserving its description resource when updating its contents
+can be achieved like in the following example:
 
 ```shell
 curl -X PUT 'http://localhost:3000/foobar' \
 -H 'Content-Type: text/turtle' \
 -H 'Link: <http://localhost:3000/foobar.meta>;rel="preserve"' \
--d "<ex:s> <ex:p> <ex:o>." 
+-d "<ex:s> <ex:p> <ex:o>."
 ```
 
 ## Impact on creating containers
@@ -80,6 +81,7 @@ which will produce a response with at least these headers:
 HTTP/1.1 200 OK
 Link: <http://localhost:3000/foo/.meta>; rel="describedby"
 ```
+
 Now that we have the URL of the description resource,
 we create a patch for adding the inbox in the description of the resource.
 
@@ -96,7 +98,9 @@ After this update, we can verify that the inbox is added by performing a GET req
 ```shell
 curl 'http://localhost:3000/foo/.meta'
 ```
+
 With as result for the body
+
 ```turtle
 @prefix dc: <http://purl.org/dc/terms/>.
 @prefix ldp: <http://www.w3.org/ns/ldp#>.
