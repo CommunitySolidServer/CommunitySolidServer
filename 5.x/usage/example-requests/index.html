@@ -426,6 +426,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Example request
@@ -442,6 +444,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -450,64 +454,51 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#interacting-with-the-server" class="md-nav__link">
-    Interacting with the server
-  </a>
-  
-    <nav class="md-nav" aria-label="Interacting with the server">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#put-creating-resources-for-a-given-url" class="md-nav__link">
     PUT: Creating resources for a given URL
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#post-creating-resources-at-a-generated-url" class="md-nav__link">
     POST: Creating resources at a generated URL
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#get-retrieving-resources" class="md-nav__link">
     GET: Retrieving resources
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#delete-deleting-resources" class="md-nav__link">
     DELETE: Deleting resources
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#patch-modifying-resources" class="md-nav__link">
     PATCH: Modifying resources
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#head-retrieve-resources-headers" class="md-nav__link">
     HEAD: Retrieve resources headers
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#options-retrieve-resources-communication-options" class="md-nav__link">
     OPTIONS: Retrieve resources communication options
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -952,6 +943,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -960,64 +953,51 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#interacting-with-the-server" class="md-nav__link">
-    Interacting with the server
-  </a>
-  
-    <nav class="md-nav" aria-label="Interacting with the server">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#put-creating-resources-for-a-given-url" class="md-nav__link">
     PUT: Creating resources for a given URL
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#post-creating-resources-at-a-generated-url" class="md-nav__link">
     POST: Creating resources at a generated URL
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#get-retrieving-resources" class="md-nav__link">
     GET: Retrieving resources
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#delete-deleting-resources" class="md-nav__link">
     DELETE: Deleting resources
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#patch-modifying-resources" class="md-nav__link">
     PATCH: Modifying resources
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#head-retrieve-resources-headers" class="md-nav__link">
     HEAD: Retrieve resources headers
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#options-retrieve-resources-communication-options" class="md-nav__link">
     OPTIONS: Retrieve resources communication options
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1035,49 +1015,47 @@
                 
 
 
-  <h1>Example request</h1>
-
-<h2 id="interacting-with-the-server">Interacting with the server<a class="headerlink" href="#interacting-with-the-server" title="Permanent link">&para;</a></h2>
-<h3 id="put-creating-resources-for-a-given-url"><code>PUT</code>: Creating resources for a given URL<a class="headerlink" href="#put-creating-resources-for-a-given-url" title="Permanent link">&para;</a></h3>
-<p>Create a plain text file:
+<h1 id="interacting-with-the-server">Interacting with the server<a class="headerlink" href="#interacting-with-the-server" title="Permanent link">&para;</a></h1>
+<h2 id="put-creating-resources-for-a-given-url"><code>PUT</code>: Creating resources for a given URL<a class="headerlink" href="#put-creating-resources-for-a-given-url" title="Permanent link">&para;</a></h2>
+<p>Create a plain text file:</p>
 <div class="highlight"><pre><span></span><code>curl -X PUT -H <span class="s2">&quot;Content-Type: text/plain&quot;</span> <span class="se">\</span>
   -d <span class="s2">&quot;abc&quot;</span> <span class="se">\</span>
   http://localhost:3000/myfile.txt
-</code></pre></div></p>
-<p>Create a turtle file:
+</code></pre></div>
+<p>Create a turtle file:</p>
 <div class="highlight"><pre><span></span><code>curl -X PUT -H <span class="s2">&quot;Content-Type: text/turtle&quot;</span> <span class="se">\</span>
   -d <span class="s2">&quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot;</span> <span class="se">\</span>
   http://localhost:3000/myfile.ttl
-</code></pre></div></p>
-<h3 id="post-creating-resources-at-a-generated-url"><code>POST</code>: Creating resources at a generated URL<a class="headerlink" href="#post-creating-resources-at-a-generated-url" title="Permanent link">&para;</a></h3>
-<p>Create a plain text file:
+</code></pre></div>
+<h2 id="post-creating-resources-at-a-generated-url"><code>POST</code>: Creating resources at a generated URL<a class="headerlink" href="#post-creating-resources-at-a-generated-url" title="Permanent link">&para;</a></h2>
+<p>Create a plain text file:</p>
 <div class="highlight"><pre><span></span><code>curl -X POST -H <span class="s2">&quot;Content-Type: text/plain&quot;</span> <span class="se">\</span>
   -d <span class="s2">&quot;abc&quot;</span> <span class="se">\</span>
   http://localhost:3000/
-</code></pre></div></p>
-<p>Create a turtle file:
+</code></pre></div>
+<p>Create a turtle file:</p>
 <div class="highlight"><pre><span></span><code>curl -X POST -H <span class="s2">&quot;Content-Type: text/turtle&quot;</span> <span class="se">\</span>
   -d <span class="s2">&quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot;</span> <span class="se">\</span>
   http://localhost:3000/
-</code></pre></div></p>
+</code></pre></div>
 <p>The response's <code>Location</code> header will contain the URL of the created resource.</p>
-<h3 id="get-retrieving-resources"><code>GET</code>: Retrieving resources<a class="headerlink" href="#get-retrieving-resources" title="Permanent link">&para;</a></h3>
-<p>Retrieve a plain text file:
+<h2 id="get-retrieving-resources"><code>GET</code>: Retrieving resources<a class="headerlink" href="#get-retrieving-resources" title="Permanent link">&para;</a></h2>
+<p>Retrieve a plain text file:</p>
 <div class="highlight"><pre><span></span><code>curl -H <span class="s2">&quot;Accept: text/plain&quot;</span> <span class="se">\</span>
   http://localhost:3000/myfile.txt
-</code></pre></div></p>
-<p>Retrieve a turtle file:
+</code></pre></div>
+<p>Retrieve a turtle file:</p>
 <div class="highlight"><pre><span></span><code>curl -H <span class="s2">&quot;Accept: text/turtle&quot;</span> <span class="se">\</span>
   http://localhost:3000/myfile.ttl
-</code></pre></div></p>
-<p>Retrieve a turtle file in a different serialization:
+</code></pre></div>
+<p>Retrieve a turtle file in a different serialization:</p>
 <div class="highlight"><pre><span></span><code>curl -H <span class="s2">&quot;Accept: application/ld+json&quot;</span> <span class="se">\</span>
   http://localhost:3000/myfile.ttl
-</code></pre></div></p>
-<h3 id="delete-deleting-resources"><code>DELETE</code>: Deleting resources<a class="headerlink" href="#delete-deleting-resources" title="Permanent link">&para;</a></h3>
+</code></pre></div>
+<h2 id="delete-deleting-resources"><code>DELETE</code>: Deleting resources<a class="headerlink" href="#delete-deleting-resources" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>curl -X DELETE http://localhost:3000/myfile.txt
 </code></pre></div>
-<h3 id="patch-modifying-resources"><code>PATCH</code>: Modifying resources<a class="headerlink" href="#patch-modifying-resources" title="Permanent link">&para;</a></h3>
+<h2 id="patch-modifying-resources"><code>PATCH</code>: Modifying resources<a class="headerlink" href="#patch-modifying-resources" title="Permanent link">&para;</a></h2>
 <p>Modify a resource using <a href="https://solidproject.org/TR/protocol#n3-patch">N3 Patch</a>:</p>
 <div class="highlight"><pre><span></span><code>curl -X PATCH -H <span class="s2">&quot;Content-Type: text/n3&quot;</span> <span class="se">\</span>
   --data-raw <span class="s2">&quot;@prefix solid: &lt;http://www.w3.org/ns/solid/terms#&gt;. _:rename a solid:InsertDeletePatch; solid:inserts { &lt;ex:s2&gt; &lt;ex:p2&gt; &lt;ex:o2&gt;. }.&quot;</span> <span class="se">\</span>
@@ -1088,11 +1066,11 @@
   -d <span class="s2">&quot;INSERT DATA { &lt;ex:s2&gt; &lt;ex:p2&gt; &lt;ex:o2&gt; }&quot;</span> <span class="se">\</span>
   http://localhost:3000/myfile.ttl
 </code></pre></div>
-<h3 id="head-retrieve-resources-headers"><code>HEAD</code>: Retrieve resources headers<a class="headerlink" href="#head-retrieve-resources-headers" title="Permanent link">&para;</a></h3>
+<h2 id="head-retrieve-resources-headers"><code>HEAD</code>: Retrieve resources headers<a class="headerlink" href="#head-retrieve-resources-headers" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>curl -I -H <span class="s2">&quot;Accept: text/plain&quot;</span> <span class="se">\</span>
   http://localhost:3000/myfile.txt
 </code></pre></div>
-<h3 id="options-retrieve-resources-communication-options"><code>OPTIONS</code>: Retrieve resources communication options<a class="headerlink" href="#options-retrieve-resources-communication-options" title="Permanent link">&para;</a></h3>
+<h2 id="options-retrieve-resources-communication-options"><code>OPTIONS</code>: Retrieve resources communication options<a class="headerlink" href="#options-retrieve-resources-communication-options" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>curl -X OPTIONS -i http://localhost:3000/myfile.txt
 </code></pre></div>
 

@@ -983,7 +983,7 @@ to send along the email and password of that account to identify yourself.
 This is a temporary solution until the server has more advanced account management,
 after which this API will change.</p>
 <p>Below is example code of how to make use of these tokens.
-It makes use of several utility functions from the 
+It makes use of several utility functions from the
 <a href="https://github.com/inrupt/solid-client-authn-js">Solid Authentication Client</a>.
 Note that the code below uses top-level <code>await</code>, which not all JavaScript engines support,
 so this should all be contained in an <code>async</code> function.</p>
@@ -1036,7 +1036,7 @@ This Access Token is only valid for a certain amount of time, after which a new 
 <span class="p">});</span><span class="w"></span>
 
 <span class="c1">// This is the Access token that will be used to do an authenticated request to the server.</span><span class="w"></span>
-<span class="c1">// The JSON also contains an &quot;expires_in&quot; field in seconds, </span><span class="w"></span>
+<span class="c1">// The JSON also contains an &quot;expires_in&quot; field in seconds,</span><span class="w"></span>
 <span class="c1">// which you can use to know when you need request a new Access token.</span><span class="w"></span>
 <span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">access_token</span><span class="o">:</span><span class="w"> </span><span class="kt">accessToken</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span><span class="w"></span>
 </code></pre></div>

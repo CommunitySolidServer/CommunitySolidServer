@@ -886,12 +886,12 @@
 
 
 <h1 id="how-to-seed-accounts-and-pods">How to seed Accounts and Pods<a class="headerlink" href="#how-to-seed-accounts-and-pods" title="Permanent link">&para;</a></h1>
-<p>If you need to seed accounts and pods, 
+<p>If you need to seed accounts and pods,
 the <code>--seededPodConfigJson</code> command line option can be used
 with as value the path to a JSON file containing configurations for every required pod.
-The file needs to contain an array of JSON objects, 
-with each object containing at least a <code>podName</code>, <code>email</code>, and <code>password</code> field. </p>
-<p>For example:
+The file needs to contain an array of JSON objects,
+with each object containing at least a <code>podName</code>, <code>email</code>, and <code>password</code> field.</p>
+<p>For example:</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span><span class="w"></span>
 <span class="w">  </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;podName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example&quot;</span><span class="p">,</span><span class="w"></span>
@@ -899,10 +899,10 @@ with each object containing at least a <code>podName</code>, <code>email</code>,
 <span class="w">    </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abc123&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">]</span><span class="w"></span>
-</code></pre></div></p>
-<p>You may optionally specify other parameters 
+</code></pre></div>
+<p>You may optionally specify other parameters
 as described in the <a href="../identity-provider/#json-api">Identity Provider documentation</a>.</p>
-<p>For example, to set up a pod without registering the generated WebID with the Identity Provider:
+<p>For example, to set up a pod without registering the generated WebID with the Identity Provider:</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span><span class="w"></span>
 <span class="w">  </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;podName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example&quot;</span><span class="p">,</span><span class="w"></span>
@@ -912,7 +912,7 @@ as described in the <a href="../identity-provider/#json-api">Identity Provider d
 <span class="w">    </span><span class="nt">&quot;register&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"></span>
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">]</span><span class="w"></span>
-</code></pre></div></p>
+</code></pre></div>
 <p>This feature cannot be used to register pods with pre-existing WebIDs,
 which requires an interactive validation step.</p>
 

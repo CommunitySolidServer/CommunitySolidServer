@@ -952,7 +952,7 @@ to link all class instances together,
 and uses <a href="https://github.com/LinkedSoftwareDependencies/Components-Generator.js">Components-Generator.js</a>
 to automatically generate the necessary description configurations of all classes.
 This framework allows us to configure our components in a JSON file.
-The advantage of this is that changing the configuration of components does not require any changes to the code, 
+The advantage of this is that changing the configuration of components does not require any changes to the code,
 as one can just change the default configuration file, or provide a custom configuration file.</p>
 <p>More information can be found in the Components.js <a href="https://componentsjs.readthedocs.io/">documentation</a>,
 but a summarized overview can be found below.</p>
@@ -967,7 +967,7 @@ or they will not get a component file.</p>
 All the community server configurations can be found in
 the <a href="https://github.com/CommunitySolidServer/CommunitySolidServer/tree/main/config/"><code>config</code> folder</a>.
 That folder also contains information about how different pre-defined configurations can be used.</p>
-<p>A single component in such a configuration file might look as follows: 
+<p>A single component in such a configuration file might look as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Storage used for account management.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountStorage&quot;</span><span class="p">,</span><span class="w"></span>
@@ -976,14 +976,17 @@ That folder also contains information about how different pre-defined configurat
 <span class="w">  </span><span class="nt">&quot;baseUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:variable:baseUrl&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;container&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/.internal/accounts/&quot;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</code></pre></div></p>
-<p>With the corresponding constructor of the <code>JsonResourceStorage</code> class:
+</code></pre></div>
+<p>With the corresponding constructor of the <code>JsonResourceStorage</code> class:</p>
 <div class="highlight"><pre><span></span><code><span class="k">public</span><span class="w"> </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">source</span><span class="o">:</span><span class="w"> </span><span class="kt">ResourceStore</span><span class="p">,</span><span class="w"> </span><span class="nx">baseUrl</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">container</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"></span>
-</code></pre></div></p>
-<p>The important elements here are the following:
-* <code>"comment"</code>: <em>(optional)</em> A description of this component.
-* <code>"@id"</code>: <em>(optional)</em> A unique identifier of this component, which allows it to be used as parameter values in different places.
-* <code>"@type"</code>: The class name of the component. This must be a TypeScript class name that is exported via <code>index.ts</code>.</p>
+</code></pre></div>
+<p>The important elements here are the following:</p>
+<ul>
+<li><code>"comment"</code>: <em>(optional)</em> A description of this component.</li>
+<li><code>"@id"</code>: <em>(optional)</em> A unique identifier of this component, which allows it to be used as parameter values in
+    different places.</li>
+<li><code>"@type"</code>: The class name of the component. This must be a TypeScript class name that is exported via <code>index.ts</code>.</li>
+</ul>
 <p>As you can see from the constructor, the other fields are direct mappings from the constructor parameters.
 <code>source</code> references another object, which we refer to using its identifier <code>urn:solid-server:default:ResourceStore</code>.
 <code>baseUrl</code> is just a string, but here we use a variable that was set before calling Components.js

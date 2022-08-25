@@ -1047,12 +1047,14 @@ It follows these 3 steps:</p>
 <ol>
 <li>Use the <code>RequestParser</code> to convert the incoming data into an <code>Operation</code>.</li>
 <li>Send the <code>Operation</code> to the <code>AuthorizingHttpHandler</code> to receive either a <code>Representation</code> if the operation was a success,
-   or an <code>Error</code> in case something went wrong.</li>
+    or an <code>Error</code> in case something went wrong.<ul>
 <li>In case of an error the <code>ErrorHandler</code> will convert the <code>Error</code> into a <code>ResponseDescription</code>.</li>
+</ul>
+</li>
 <li>Use the <code>ResponseWriter</code> to output the <code>ResponseDescription</code> as an HTTP response.</li>
 </ol>
 <h2 id="parsing-the-request">Parsing the request<a class="headerlink" href="#parsing-the-request" title="Permanent link">&para;</a></h2>
-<p><pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>flowchart TD
   RequestParser("&lt;strong&gt;RequestParser&lt;/strong&gt;&lt;br&gt;BasicRequestParser") --&gt; RequestParserArgs
   subgraph RequestParserArgs[" "]
     TargetExtractor("&lt;strong&gt;TargetExtractor&lt;/strong&gt;&lt;br&gt;OriginalUrlExtractor")
@@ -1063,7 +1065,7 @@ It follows these 3 steps:</p>
   end
 
   OriginalUrlExtractor --&gt; IdentifierStrategy("&lt;strong&gt;IdentifierStrategy&lt;/strong&gt;&lt;br&gt;&lt;i&gt;IdentifierStrategy&lt;/i&gt;")</code></pre>
-The <code>BasicRequestParser</code> is mostly an aggregator of multiple smaller parsers that each handle a very specific part.</p>
+<p>The <code>BasicRequestParser</code> is mostly an aggregator of multiple smaller parsers that each handle a very specific part.</p>
 <h3 id="url">URL<a class="headerlink" href="#url" title="Permanent link">&para;</a></h3>
 <p>This is a single class, the <code>OriginalUrlExtractor</code>, but fulfills the very important role
 of making sure input URLs are handled consistently.</p>
@@ -1078,7 +1080,7 @@ This can differ depending on if the server uses subdomains or not.</p>
 <p>The <code>AcceptPreferenceParser</code> parses the <code>Accept</code> header and all the relevant <code>Accept-*</code> headers.
 These will all be put into the <code>preferences</code> field of an <code>Operation</code> object.
 These will later be used to handle the content negotiation.</p>
-<p>For example, when sending an <code>Accept: text/turtle; q=0.9</code> header, 
+<p>For example, when sending an <code>Accept: text/turtle; q=0.9</code> header,
 this wil result in the preferences object <code>{ type: { 'text/turtle': 0.9 } }</code>.</p>
 <h3 id="headers">Headers<a class="headerlink" href="#headers" title="Permanent link">&para;</a></h3>
 <p>Several other headers can have relevant metadata,
@@ -1106,7 +1108,7 @@ These will later be used to make sure the request should be aborted or not.</p>
 and if not it will throw an error.</p>
 <p>In case an error gets thrown, this will be caught by the <code>ErrorHandler</code> and converted into a <code>ResponseDescription</code>.
 The request preferences will be used to make sure the serialization is one that is preferred.</p>
-<p>Either way we will have a <code>ResponseDescription</code>, 
+<p>Either way we will have a <code>ResponseDescription</code>,
 which will be sent to the <code>BasicResponseWriter</code> to convert into output headers, data and a status code.</p>
 <p>To convert the metadata into headers, it uses a <code>MetadataWriter</code>,
 which functions as the reverse of the <code>MetadataParser</code> mentioned above:

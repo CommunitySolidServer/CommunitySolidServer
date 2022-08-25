@@ -574,6 +574,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    Features
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -917,6 +924,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    Features
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -932,7 +946,7 @@
 
 
 <h1 id="architecture-overview">Architecture overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h1>
-<p>The initial architecture document the project was started from can be found 
+<p>The initial architecture document the project was started from can be found
 <a href="https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf">here</a>.
 Many things have been added since the original inception of the project,
 but the core ideas within that document are still valid.</p>
@@ -961,17 +975,19 @@ We will use an example below to explain the formatting used throughout the archi
   end</code></pre>
 <p>Below is a summary of how to interpret such diagrams:</p>
 <ul>
-<li>Rounded red box: component instantiated in the Components.js <a href="../dependency-injection/">configuration</a>.</li>
-<li>First line: <ul>
+<li>Rounded red box: component instantiated in the Components.js <a href="../dependency-injection/">configuration</a>.<ul>
+<li>First line:<ul>
 <li><strong>Bold text</strong>: shorthand of the instance identifier. In case the full URI is not specified,
-  it can usually be found by prepending <code>urn:solid-server:default:</code> to the shorthand identifier.</li>
+    it can usually be found by prepending <code>urn:solid-server:default:</code> to the shorthand identifier.</li>
 <li>(empty): this instance has no identifier and is defined in the same place as its parent.</li>
 </ul>
 </li>
-<li>Second line: <ul>
+<li>Second line:<ul>
 <li>Regular text: The class of this instance.</li>
-<li><em>Italic text</em>: The interface of this instance. 
-  Will be used if the actual class is not relevant for the explanation or can differ.</li>
+<li><em>Italic text</em>: The interface of this instance.
+    Will be used if the actual class is not relevant for the explanation or can differ.</li>
+</ul>
+</li>
 </ul>
 </li>
 <li>Square grey box: the parameters of the linked instance.</li>
@@ -980,7 +996,7 @@ We will use an example below to explain the formatting used throughout the archi
 <p>For example, in the above, <strong>LdpHandler</strong> is a shorthand for the actual identifier <code>urn:solid-server:default:LdpHandler</code>
 and is an instance of <code>ParsingHttpHandler</code>. It has 4 parameters,
 one of which has no identifier but is an instance of <code>AuthorizingHttpHandler</code>.</p>
-<h1 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h1>
+<h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <p>Below are the sections that go deeper into the features of the server and how those work.</p>
 <ul>
 <li><a href="../features/cli/">How Command Line Arguments are parsed and used</a></li>

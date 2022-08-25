@@ -1031,15 +1031,18 @@ The default configurations come with the following stores:</p>
 and all the entries in <code>config/storage/backend</code>.</p>
 <h2 id="monitoringstore">MonitoringStore<a class="headerlink" href="#monitoringstore" title="Permanent link">&para;</a></h2>
 <p>This store emits the events that are necessary to emit notifications when resources change.</p>
-<p>There are 4 different events that can be emitted:
-- <code>this.emit('changed', identifier, activity)</code>: is emitted for every resource that was changed/effected by a call to the store.
-  With activity being undefined or one of the available ActivityStream terms.
-- <code>this.emit(AS.Create, identifier)</code>: is emitted for every resource that was created by the call to the store.
-- <code>this.emit(AS.Update, identifier)</code>: is emitted for every resource that was updated by the call to the store.
-- <code>this.emit(AS.Delete, identifier)</code>: is emitted for every resource that was deleted by the call to the store.</p>
+<p>There are 4 different events that can be emitted:</p>
+<ul>
+<li><code>this.emit('changed', identifier, activity)</code>: is emitted for every resource that was changed/effected by a
+    call to the store.
+    With activity being undefined or one of the available ActivityStream terms.</li>
+<li><code>this.emit(AS.Create, identifier)</code>: is emitted for every resource that was created by the call to the store.</li>
+<li><code>this.emit(AS.Update, identifier)</code>: is emitted for every resource that was updated by the call to the store.</li>
+<li><code>this.emit(AS.Delete, identifier)</code>: is emitted for every resource that was deleted by the call to the store.</li>
+</ul>
 <p>A <code>changed</code> event will always be emitted if a resource was changed.
-If the correct metadata was set by the source <code>ResourceStore</code>, an additional field will be sent along indicating the type of change,
-and an additional corresponding event will be emitted, depending on what the change is.</p>
+If the correct metadata was set by the source <code>ResourceStore</code>, an additional field will be sent along indicating the
+type of change, and an additional corresponding event will be emitted, depending on what the change is.</p>
 <h2 id="indexrepresentationstore">IndexRepresentationStore<a class="headerlink" href="#indexrepresentationstore" title="Permanent link">&para;</a></h2>
 <p>When doing a GET request on a container <code>/container/</code>,
 this container returns the contents of <code>/container/index.html</code> instead if HTML is the preferred response type.
@@ -1070,15 +1073,13 @@ the SPARQL backend only accepts triples for example,
 that is also handled here</p>
 <h2 id="dataaccessorbasedstore">DataAccessorBasedStore<a class="headerlink" href="#dataaccessorbasedstore" title="Permanent link">&para;</a></h2>
 <p>Large parts of the requirements of the Solid protocol specification are resolved by the <code>DataAccessorBasedStore</code>:
-POST only working on containers, 
-DELETE not working on non-empty containers, 
+POST only working on containers, DELETE not working on non-empty containers,
 generating <code>ldp:contains</code> triples for containers, etc.
 Most of this behaviour is independent of how the data is stored which is why it can be generalized here.
 The store's name comes from the fact that it makes use of <code>DataAccessor</code>s to handle the read/write of resources.
 A <code>DataAccessor</code> is a simple interface that only focuses on handling the data.
 It does not concern itself with any of the necessary Solid checks as it assumes those have already been made.
-This means that if a storage method needs to be supported,
-only a new <code>DataAccessor</code> needs to be made,
+This means that if a storage method needs to be supported, only a new <code>DataAccessor</code> needs to be made,
 after which it can be plugged into the rest of the server.</p>
 
 

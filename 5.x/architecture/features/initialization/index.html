@@ -1040,7 +1040,7 @@ while the <code>WorkerInitializer</code> will trigger for every worker thread.
 Although if your server setup is single-threaded, which is the default,
 there is no relevant difference between those two.</p>
 <h3 id="primaryinitializer">PrimaryInitializer<a class="headerlink" href="#primaryinitializer" title="Permanent link">&para;</a></h3>
-<p><pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>flowchart TD
   PrimaryInitializer("&lt;strong&gt;PrimaryInitializer&lt;/strong&gt;&lt;br&gt;ProcessHandler")
   PrimaryInitializer --&gt; PrimarySequenceInitializer("&lt;strong&gt;PrimarySequenceInitializer&lt;/strong&gt;&lt;br&gt;SequenceHandler")
   PrimarySequenceInitializer --&gt; PrimarySequenceInitializerArgs
@@ -1054,9 +1054,9 @@ there is no relevant difference between those two.</p>
 
   CleanupInitializer --&gt; PrimaryParallelInitializer
   PrimaryParallelInitializer --&gt; WorkerManager</code></pre>
-The above is a simplification of all the initializers that are present in the <code>PrimaryInitializer</code>
+<p>The above is a simplification of all the initializers that are present in the <code>PrimaryInitializer</code>
 as there are several smaller initializers that also trigger but are less relevant here.</p>
-<p>The <code>CleanupInitializer</code> is an initializer that cleans up anything 
+<p>The <code>CleanupInitializer</code> is an initializer that cleans up anything
 that might have remained from a previous server start
 and could impact behaviour.
 Relevant components in other parts of the configuration are responsible for adding themselves to this array if needed.
@@ -1065,7 +1065,7 @@ An example of this is file-based locking components which might need to remove a
 This makes it easier for users to add initializers by being able to append to its handlers.</p>
 <p>The <code>WorkerManager</code> is responsible for setting up the worker threads, if any.</p>
 <h3 id="workerinitializer">WorkerInitializer<a class="headerlink" href="#workerinitializer" title="Permanent link">&para;</a></h3>
-<p><pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>flowchart TD
   WorkerInitializer("&lt;strong&gt;WorkerInitializer&lt;/strong&gt;&lt;br&gt;ProcessHandler")
   WorkerInitializer --&gt; WorkerSequenceInitializer("&lt;strong&gt;WorkerSequenceInitializer&lt;/strong&gt;&lt;br&gt;SequenceHandler")
   WorkerSequenceInitializer --&gt; WorkerSequenceInitializerArgs
@@ -1077,13 +1077,13 @@ This makes it easier for users to add initializers by being able to append to it
   end
 
   WorkerParallelInitializer --&gt; ServerInitializer</code></pre>
-The <code>WorkerInitializer</code> is quite similar to the <code>PrimaryInitializer</code> but triggers once per worker thread.
+<p>The <code>WorkerInitializer</code> is quite similar to the <code>PrimaryInitializer</code> but triggers once per worker thread.
 Like the <code>PrimaryParallelInitializer</code>, the <code>WorkerParallelInitializer</code> can be used
 to add any custom initializers that need to run.</p>
 <h3 id="serverinitializer">ServerInitializer<a class="headerlink" href="#serverinitializer" title="Permanent link">&para;</a></h3>
 <p>The <code>ServerInitializer</code> is the initializer that finally starts up the server by listening to the relevant port,
 once all the initialization described above is finished.
-This is an example of a component that differs based on some of the choices made during configuration.
+This is an example of a component that differs based on some of the choices made during configuration.</p>
 <pre class="mermaid"><code>flowchart TD
   ServerInitializer("&lt;strong&gt;ServerInitializer&lt;/strong&gt;&lt;br&gt;ServerInitializer")
   ServerInitializer --&gt; WebSocketServerFactory("&lt;strong&gt;ServerFactory&lt;/strong&gt;&lt;br&gt;WebSocketServerFactory")
@@ -1092,7 +1092,7 @@ This is an example of a component that differs based on some of the choices made
 
   ServerInitializer2("&lt;strong&gt;ServerInitializer&lt;/strong&gt;&lt;br&gt;ServerInitializer")
   ServerInitializer2 ---&gt; BaseHttpServerFactory2("&lt;strong&gt;ServerFactory&lt;/strong&gt;&lt;br&gt;BaseHttpServerFactory")
-  BaseHttpServerFactory2 --&gt; HttpHandler2("&lt;strong&gt;HttpHandler&lt;/strong&gt;&lt;br&gt;&lt;i&gt;HttpHandler&lt;/i&gt;")</code></pre></p>
+  BaseHttpServerFactory2 --&gt; HttpHandler2("&lt;strong&gt;HttpHandler&lt;/strong&gt;&lt;br&gt;&lt;i&gt;HttpHandler&lt;/i&gt;")</code></pre>
 <p>Depending on if the configurations necessary for websockets are imported or not,
 the <code>urn:solid-server:default:ServerFactory</code> identifier will point to a different resource.
 There will always be a <code>BaseHttpServerFactory</code> that starts the HTTP(S) server,

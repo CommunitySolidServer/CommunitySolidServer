@@ -888,26 +888,26 @@
 <h1 id="pull-requests">Pull requests<a class="headerlink" href="#pull-requests" title="Permanent link">&para;</a></h1>
 <p>The community server is fully written in <a href="https://www.typescriptlang.org/docs/home.html">Typescript</a>.</p>
 <p>All changes should be done through
-<a href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork">pull requests</a>. </p>
+<a href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork">pull requests</a>.</p>
 <p>We recommend first discussing a possible solution in the relevant issue
 to reduce the amount of changes that will be requested.</p>
 <p>In case any of your changes are breaking, make sure you target the next major branch (<code>versions/x.0.0</code>)
 instead of the main branch. Breaking changes include: changing interface/class signatures,
-potentially breaking external custom configurations, 
+potentially breaking external custom configurations,
 and breaking how internal data is stored.
 In case of doubt you probably want to target the next major branch.</p>
 <p>We make use of <a href="https://www.conventionalcommits.org">Conventional Commits</a>.</p>
-<p>Don't forget to update the <a href="https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/RELEASE_NOTES.md">release notes</a> 
+<p>Don't forget to update the <a href="https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/RELEASE_NOTES.md">release notes</a>
 when adding new major features.
 Also update any relevant documentation in case this is needed.</p>
-<p>When making changes to a pull request, 
+<p>When making changes to a pull request,
 we prefer to update the existing commits with a rebase instead of appending new commits,
 this way the PR can be rebased directly onto the target branch
 instead of needing to be squashed.</p>
 <p>There are strict requirements from the linter and the test coverage before a PR is valid.
 These are configured to run automatically when trying to commit to git.
 Although there are no tests for it (yet), we strongly advice documenting with <a href="https://github.com/microsoft/tsdoc">TSdoc</a>.</p>
-<p>If a list of entries is alphabetically sorted, 
+<p>If a list of entries is alphabetically sorted,
 such as <a href="https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/src/index.ts">index.ts</a>,
 make sure it stays that way.</p>
 
