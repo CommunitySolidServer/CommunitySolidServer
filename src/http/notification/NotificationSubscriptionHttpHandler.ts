@@ -128,12 +128,21 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
   ): Promise<void> {
     if (!this.ignoreFolders.some((folder: RegExp): boolean =>
       folder.test(resource.path.slice(this.base.length)))) {
-      const topic = await this.notificationStorage.get(encodeURIComponent(resource.path));
-      if (topic?.subscriptions) {
-        for (const [ , subscription ] of Object.entries(topic.subscriptions)) {
-          const subscriptionHandler = this.subscriptionHandlers.get(subscription.type);
-          if (subscriptionHandler) {
-            await subscriptionHandler.onChange(resource, activity, subscription);
+      const notifyResources = [
+        resource,
+        // For both AS.Create and AS.Delete we want to notify the parent resource of what has changed
+        ...activity !== AS.Update ?
+          [{ path: resource.path.slice(0, resource.path.replace(/\/$/u, '').lastIndexOf('/') + 1) }] :
+          [],
+      ];
+      for (const res of notifyResources) {
+        const topic = await this.notificationStorage.get(encodeURIComponent(res.path));
+        if (topic?.subscriptions) {
+          for (const [ , subscription ] of Object.entries(topic.subscriptions)) {
+            const subscriptionHandler = this.subscriptionHandlers.get(subscription.type);
+            if (subscriptionHandler) {
+              await subscriptionHandler.onChange(resource, activity, subscription);
+            }
           }
         }
       }

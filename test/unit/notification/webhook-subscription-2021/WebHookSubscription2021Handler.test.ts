@@ -22,6 +22,7 @@ describe('A WebHookSubscription2021Handler', (): void => {
       id: generateSubscriptionId('http://example.com/folder/file'),
       type: handler.getType(),
       target: 'http://target.example.com/webhook',
+      topic: 'http://example.com/folder/file',
     };
     mockResource = { path: 'http://example.com/folder/file' };
   });
@@ -50,12 +51,11 @@ describe('A WebHookSubscription2021Handler', (): void => {
 
   describe('getResponseData()', (): void => {
     it('should return the expected Readable.', (): void => {
-      const topic = 'topicString';
-      const readable = handler.getResponseData(mockSubscription, topic);
+      const readable = handler.getResponseData(mockSubscription);
       expect(JSON.parse(readable.read())).toMatchObject({
         '@context': SOLID_NOTIFICATION.namespace,
         type: handler.getType(),
-        topic,
+        topic: mockSubscription.topic,
         target: mockSubscription.target,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         unsubscribe_endpoint: `http://example.com/unsubscribe/${mockSubscription.id}`,
