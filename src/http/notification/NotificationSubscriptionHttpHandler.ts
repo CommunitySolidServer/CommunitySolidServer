@@ -130,10 +130,7 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
       folder.test(resource.path.slice(this.base.length)))) {
       const notifyResources = [
         resource,
-        // For both AS.Create and AS.Delete we want to notify the parent resource of what has changed
-        ...activity !== AS.Update ?
-          [{ path: resource.path.slice(0, resource.path.replace(/\/$/u, '').lastIndexOf('/') + 1) }] :
-          [],
+        { path: resource.path.slice(0, resource.path.replace(/\/$/u, '').lastIndexOf('/') + 1) },
       ];
       for (const res of notifyResources) {
         const topic = await this.notificationStorage.get(encodeURIComponent(res.path));
