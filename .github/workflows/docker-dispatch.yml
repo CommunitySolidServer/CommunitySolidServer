@@ -21,7 +21,7 @@ jobs:
           # edge will always be executed (without latest tag), semver only on tag push events (with latest tag)
           tags: |
             type=edge
-            type=edge2
+            type=raw,value=next
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}

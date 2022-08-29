@@ -4,3 +4,6 @@
         "tags": "jveessen/community-server:5.1.0\njveessen/community-server:5.1\njveessen/community-server:5\njveessen/community-server:latest"
     }
 }
+%0A
+
+jveessen/community-server:5.1.0%0Ajveessen/community-server:5.1%0Ajveessen/community-server:5%0Ajveessen/community-server:latest
