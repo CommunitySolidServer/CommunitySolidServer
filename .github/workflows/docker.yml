@@ -66,12 +66,12 @@ jobs:
             docker run --rm --pull never $i --version
           done <<< "${{ inputs.tags }}";
 
-      -
-        name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          platforms: linux/amd64,linux/arm/v7
-          tags: ${{ inputs.tags }}
-          labels: ${{ inputs.labels }}
+      # -
+      #   name: Build and push
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     context: .
+      #     push: true
+      #     platforms: linux/amd64,linux/arm/v7
+      #     tags: ${{ inputs.tags }}
+      #     labels: ${{ inputs.labels }}
