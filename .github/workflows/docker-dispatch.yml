@@ -36,3 +36,6 @@ jobs:
     with:
       tags: ${{ needs.docker-meta.outputs.tags }}
       labels: ${{ needs.docker-meta.outputs.tags }}
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
