@@ -24,7 +24,7 @@ jobs:
         name: Docker meta
         id: meta-main
         uses: docker/metadata-action@v4
-        if: emulateMain
+        if: inputs.emulateMain
         with:
           images: |
             jveessen/community-server
@@ -39,7 +39,7 @@ jobs:
         name: Docker meta
         id: meta-version
         uses: docker/metadata-action@v4
-        if: ! emulateMain
+        if: ! inputs.emulateMain
         with:
           images: |
             jveessen/community-server
