@@ -1,5 +1,5 @@
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       labels:
         description: labels to pass
@@ -23,22 +23,13 @@ jobs:
         name: Checkout
         uses: actions/checkout@v3
       -
-        id: meta
-        run: |
-          tags=$(echo -e ${{ inputs.tags }})
-          labels=$(echo -e ${{ inputs.labels }})
-          echo $tags
-          echo $labels
-          echo "::set-output name=labels::$labels"
-          echo "::set-output name=tags::$tags"
-      -
         id: test-meta
         run: |
           echo "TAGS"
-          echo ${{ steps.meta.outputs.tags }}
+          echo ${{ inputs.tags }}
           echo -e "\n---\n"
           echo "LABELS"
-          echo ${{ steps.meta.outputs.labels }}
+          echo ${{ inputs.labels }}
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -58,8 +49,8 @@ jobs:
         with:
           context: .
           load: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ inputs.tags }}
+          labels: ${{ inputs.labels }}
 
       -
         name: "Test all docker-built image tags"
@@ -71,7 +62,7 @@ jobs:
         run: |
           while read i; do
             docker run --rm --pull never $i --version
-          done <<< "${{ steps.meta.outputs.tags }}";
+          done <<< "${{ inputs.tags }}";
 
       # -
       #   name: Build and push

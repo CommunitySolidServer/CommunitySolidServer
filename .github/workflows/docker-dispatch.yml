@@ -1,0 +1,33 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  docker-meta:
+
+    # Only run on tag push events starting with v prefix for now OR main branch push events
+    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: |
+          git tag v5.1.0
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            jveessen/community-server
+          # edge will always be executed (without latest tag), semver only on tag push events (with latest tag)
+          tags: |
+            type=edge
+            type=edge2
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+          github-token: ${{ secrets.github_token }}
+      - name: call docker
+        uses: ./.github/workflows/docker.yml
+        with:
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.tags }}
