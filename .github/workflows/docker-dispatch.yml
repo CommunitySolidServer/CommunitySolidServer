@@ -1,33 +1,51 @@
 on:
   workflow_dispatch:
+    inputs:
+      emulateMain:
+        required: true
+        description: "Emulate main? False emulates version"
+        type: boolean
+        default: true
+
 
 jobs:
   docker-meta:
-
     # Only run on tag push events starting with v prefix for now OR main branch push events
-    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
+    # if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/heads/versions/')
     runs-on: ubuntu-latest
     outputs:
-      labels: ${{ steps.meta.outputs.labels }}
-      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta-main.outputs.labels || steps.meta-version.outputs.labels }}
+      tags: ${{ steps.meta-main.outputs.tags || steps.meta-version.outputs.tags }}
     steps:
-      - name: Checkout
+      -
+        name: Checkout
         uses: actions/checkout@v3
-      - run: |
-          git tag v5.1.0
-      - name: Docker meta
-        id: meta
+      -
+        name: Docker meta
+        id: meta-main
         uses: docker/metadata-action@v4
+        if: emulateMain
         with:
           images: |
             jveessen/community-server
           # edge will always be executed (without latest tag), semver only on tag push events (with latest tag)
           tags: |
             type=edge
-            type=raw,value=next
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
+          github-token: ${{ secrets.github_token }}
+      -
+        name: Docker meta
+        id: meta-version
+        uses: docker/metadata-action@v4
+        if: ! emulateMain
+        with:
+          images: |
+            jveessen/community-server
+          # Just one label: next (no latest here) for the last pushed commit on this branch
+          tags: |
+            type=raw,value=next
           github-token: ${{ secrets.github_token }}
 
   call-docker:
@@ -37,5 +55,5 @@ jobs:
       tags: ${{ needs.docker-meta.outputs.tags }}
       labels: ${{ needs.docker-meta.outputs.tags }}
     secrets:
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKER_USER }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKER_PAT }}

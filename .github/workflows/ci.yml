@@ -155,22 +155,20 @@ jobs:
       - test-integration-windows
       - test-configs
     # Only run on tag push events starting with v prefix for now OR main branch push events
-    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
+    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/heads/versions/')
     runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.meta-main.outputs.labels || steps.meta-version.outputs.labels }}
+      tags: ${{ steps.meta-main.outputs.tags || steps.meta-version.outputs.tags }}
     steps:
       -
-        name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-      - 
         name: Checkout
         uses: actions/checkout@v3
-      - 
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
       -
         name: Docker meta
-        id: meta
+        id: meta-main
         uses: docker/metadata-action@v4
+        if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
         with:
           images: |
             solidproject/community-server
@@ -181,50 +179,18 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
           github-token: ${{ secrets.github_token }}
-      - 
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - 
-        name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - 
-        name: Build and export to docker
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          load: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
       -
-        name: Store built tags in env variable
-        shell: bash
-        run: |
-          echo 'generated_tags<<EOM' >> $GITHUB_ENV
-          echo '${{ toJSON(fromJSON(steps.meta.outputs.json).tags) }}' >> $GITHUB_ENV
-          echo 'EOM' >> $GITHUB_ENV
-      - 
-        name: "Test all docker-built image tags"
-        shell: bash
-        # Loop over all generated image:tag names and docker run them. 
-        # If they aren't built previously, the command will error.
-        # If they don't work, the job will fail.
-        # If they work the --version argument should return a version. and the job succeeds.
-        run: |
-          jq -rc '.[]' <<< '${{env.generated_tags}}' | while read i; do
-            docker run --rm --pull never $i --version
-          done;
-      - 
-        name: Build and push
-        uses: docker/build-push-action@v3
+        name: Docker meta
+        id: meta-version
+        uses: docker/metadata-action@v4
+        if: startsWith(github.ref, 'refs/heads/versions/')
         with:
-          context: .
-          push: true
-          platforms: linux/amd64,linux/arm/v7
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          images: |
+            solidproject/community-server
+          # Just one label: next (no latest here) for the last pushed commit on this branch
+          tags: |
+            type=raw,value=next
+          github-token: ${{ secrets.github_token }}
 
   docker-versions-branch:
     needs:
@@ -237,14 +203,11 @@ jobs:
     if: startsWith(github.ref, 'refs/heads/versions/')
     runs-on: ubuntu-latest
     steps:
-      - 
+      -
         name: Checkout
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-      - 
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
       -
         name: Docker meta
         id: meta
@@ -256,16 +219,16 @@ jobs:
           tags: |
             type=raw,value=next
           github-token: ${{ secrets.github_token }}
-      - 
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - 
+      -
         name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - 
+      -
         name: Build and export to docker
         uses: docker/build-push-action@v3
         with:
@@ -273,11 +236,11 @@ jobs:
           load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      - 
+      -
         name: "Test docker image 'next'"
         run: |
           docker run --rm --pull never solidproject/community-server:next --version
-      - 
+      -
         name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -317,26 +280,26 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
-      - run: pip install mkdocs-material 
+      - run: pip install mkdocs-material
       - run: pip install mike
       - run: git config user.name ci-bot
       - run: git config user.email ci-bot@example.com
       - run: git fetch origin gh-pages --depth=1
       - run: cd documentation && mike deploy --push --update-aliases ${{steps.get_version.outputs.major}}.x latest
-  
+
   mkdocs-latest:
     runs-on: ubuntu-latest
     # Runs on main branch commits: thus rebuild documentation of the version in the package.json
     if: github.ref == 'refs/heads/main'
     needs:
-      - docker-main-branch    
+      - docker-main-branch
       - typedocs
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
-      - run: pip install mkdocs-material 
+      - run: pip install mkdocs-material
       - run: pip install mike
       - run: sudo apt-get update && sudo apt-get install -y jq
       - run: git config user.name ci-bot
