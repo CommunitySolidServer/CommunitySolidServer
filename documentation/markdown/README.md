@@ -4,7 +4,6 @@ hide:
 ---
 # Welcome
 
-Meaningless change
 Welcome to the Community Solid Server!
 Here we will cover many aspects of the server,
 such as how to propose changes,
