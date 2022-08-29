@@ -25,13 +25,20 @@ jobs:
       -
         id: meta
         run: |
-          tags=$(echo -e "${{ inputs.tags }}")
-          labels=$(echo -e "${{ inputs.labels }}")
+          tags=$(echo -e ${{ inputs.tags }})
+          labels=$(echo -e ${{ inputs.labels }})
           echo $tags
           echo $labels
           echo "::set-output name=labels::$labels"
           echo "::set-output name=tags::$tags"
-
+      -
+        id: test-meta
+        run: |
+          echo "TAGS"
+          echo ${{ steps.meta.outputs.tags }}
+          echo -e "\n---\n"
+          echo "LABELS"
+          echo ${{ steps.meta.outputs.labels }}
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
