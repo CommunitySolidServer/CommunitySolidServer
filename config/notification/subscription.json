@@ -34,7 +34,7 @@
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "ignoreFolders": [ "^\\.internal.*" ],
       "source": { "@id": "urn:solid-server:default:ResourceStore"},
-      "locker": { "@id": "urn:solid-server:default:NotificationReadWriteLocker" }
+      "locker": { "@id": "urn:solid-server:default:ResourceLocker" }
     },
     {
       "comment": "Handles WebHookSubscription2021 subscriptions",
@@ -78,16 +78,7 @@
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
       "notificationStorage": { "@id": "urn:solid-server:default:NotificationStorage"},
-      "locker": { "@id": "urn:solid-server:default:NotificationReadWriteLocker" }
-    },
-    {
-      "@id": "urn:solid-server:default:NotificationReadWriteLocker",
-      "@type": "GreedyReadWriteLocker",
-      "locker": { "@id": "urn:solid-server:default:FileSystemResourceLocker" },
-      "storage": { "@id": "urn:solid-server:default:LockStorage" },
-      "suffixes_count": "notification_count",
-      "suffixes_read": "notification_read",
-      "suffixes_write": "notification_write"
+      "locker": { "@id": "urn:solid-server:default:ResourceLocker" }
     }
   ]
 }
