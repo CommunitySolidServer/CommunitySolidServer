@@ -26,10 +26,10 @@ jobs:
         id: test-meta
         run: |
           echo "TAGS"
-          echo ${{ inputs.tags }}
+          echo "${{ inputs.tags }}"
           echo -e "\n---\n"
           echo "LABELS"
-          echo ${{ inputs.labels }}
+          echo "${{ inputs.labels }}"
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
