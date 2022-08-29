@@ -1,0 +1,77 @@
+on:
+  workflow_dispatch:
+    inputs:
+      labels:
+        description: labels to pass
+        required: true
+        type: string
+        default: 'failure'
+      tags:
+        description: tags to build
+        required: true
+        type: string
+        default: 'failure'
+
+jobs:
+  docker:
+    env:
+      TAGS: ${{ inputs.tags }}
+      LABELS: ${{ inputs.labels }}
+
+    # Only run on tag push events starting with v prefix for now OR main branch push events
+    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        run: |
+          echo Output $TAGS
+          echo Output $LABELS
+          echo "${{ inputs.tags }}"
+          echo "${{ github.events.inputs.tags }}"
+          sleep 100
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: jveessen
+          password: dckr_pat_XCLA2RjgpZFDvNUH_Tksb3jyODc
+      -
+        name: Build and export to docker
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          load: true
+          tags: ${{ inputs.tags }}
+          labels: ${{ inputs.labels }}
+
+      -
+        name: "Test all docker-built image tags"
+        shell: bash
+        # Loop over all generated image:tag names and docker run them.
+        # If they aren't built previously, the command will error.
+        # If they don't work, the job will fail.
+        # If they work the --version argument should return a version. and the job succeeds.
+        run: |
+          while read i; do
+            docker run --rm --pull never $i --version
+          done <<< "${{ inputs.tags }}";
+
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm/v7
+          tags: ${{ inputs.tags }}
+          labels: ${{ inputs.labels }}
