@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
     inputs:
-      emulateMain:
+      emulate:
         required: true
         description: "Emulate main? False emulates version"
         type: boolean
@@ -24,7 +24,7 @@ jobs:
         name: Docker meta
         id: meta-main
         uses: docker/metadata-action@v4
-        if: inputs.emulateMain
+        if: ${{ inputs.emulate }}
         with:
           images: |
             jveessen/community-server
@@ -39,7 +39,7 @@ jobs:
         name: Docker meta
         id: meta-version
         uses: docker/metadata-action@v4
-        if: ! inputs.emulateMain
+        if: ${{ ! inputs.emulate }}
         with:
           images: |
             jveessen/community-server
