@@ -1,3 +1,4 @@
+name: CI
 on:
   push:
     branches:
@@ -23,8 +24,8 @@ jobs:
 
   typedocs:
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
-    uses: ./.github/workflows/docs/typedocs.yml
+    uses: ./.github/workflows/typedocs.yml
 
   mkdocs:
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
-    uses: ./.github/workflows/docs/mkdocs.yml
+    uses: ./.github/workflows/mkdocs.yml
