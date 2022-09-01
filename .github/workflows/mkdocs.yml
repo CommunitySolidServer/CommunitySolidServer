@@ -1,13 +1,13 @@
 name: mkdocs
 on:
   push:
-    branches:
-      - main
-    paths:
-      - documentation/**
+    # branches:
+    #   - main
+    # paths:
+    #   - documentation/**
     tags:
-      - 'v*'
-      - '!v*-*'
+      - "v*"
+      - "!v*-*"
 
 jobs:
   typedocs:
