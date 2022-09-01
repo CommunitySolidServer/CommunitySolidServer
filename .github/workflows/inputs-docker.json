@@ -1,9 +1,0 @@
-{
-    "inputs": {
-        "labels": "org.opencontainers.image.title=CommunitySolidServer\norg.opencontainers.image.description=Community Solid Server: an open and modular implementation of the Solid specifications\norg.opencontainers.image.url=https://github.com/MisterTimn/CommunitySolidServer\norg.opencontainers.image.source=https://github.com/MisterTimn/CommunitySolidServer\norg.opencontainers.image.version=5.1.0\norg.opencontainers.image.created=2022-08-25T12:49:37.484Z\norg.opencontainers.image.revision=04695e76510e4c5d89c3ab8dce3ce7fee4a0e334\norg.opencontainers.image.licenses=MIT",
-        "tags": "jveessen/community-server:5.1.0\njveessen/community-server:5.1\njveessen/community-server:5\njveessen/community-server:latest"
-    }
-}
-%0A
-
-jveessen/community-server:5.1.0%0Ajveessen/community-server:5.1%0Ajveessen/community-server:5%0Ajveessen/community-server:latest

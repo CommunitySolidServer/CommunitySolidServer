@@ -1,8 +1,8 @@
-name: mkdocs
+name: Documentation
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
     # paths:
     #   - documentation/**
     tags:
@@ -27,12 +27,17 @@ jobs:
           path: docs
           retention-days: 1
 
-  mkdocs:
+  docs-prep:
     runs-on: ubuntu-latest
     outputs:
       major: ${{ steps.tagged_version.outputs.major || steps.current_version.ouputs.major }}
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: npm ci --ignore-scripts
+      - run: npm run lint:markdown -- documentation/**/*.md
       - if: startsWith(github.ref, 'refs/tags/v')
         name: "Get newly tagged version"
         id: tagged_version
@@ -43,6 +48,13 @@ jobs:
         run: |
           VERSION=$(git show origin/main:package.json | jq -r .version | grep -Po '^(\d+)').x
           echo "::set-output name=major::$VERSION"
+
+
+  mkdocs:
+    runs-on: ubuntu-latest
+    needs: docs-prep
+    steps:
+      - uses: actions/checkout@v2
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
@@ -53,11 +65,11 @@ jobs:
       - run: git fetch origin gh-pages --depth=1
       - run: |
           cd documentation && mike deploy --push --update-aliases \
-            ${{ steps.tagged_version.outputs.major || steps.current_version.outputs.major }}.x latest
+            ${{ needs.docs-prep.outputs.major}}.x latest
 
   publish-typedocs:
     needs:
-      - mkdocs
+      - docs-prep
       - typedocs
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
@@ -72,4 +84,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-          destination_dir:  ${{ needs.mkdocs.outputs.major }}.x/docs
+          destination_dir:  ${{ needs.docs-prep.outputs.major }}.x/docs
