@@ -3,46 +3,8 @@ on:
     branches:
       - 'main'
       - 'versions/*'
-
-jobs:
-  npm-test:
-    uses: ./.github/workflows/npm-test.yml
-
-  docker:
-    needs: npm-test
-    uses: ./.github/workflows/docker.yml
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
----
-
-on:
-  push:
     tags:
       - 'v*'
-
-jobs:
-  npm-test:
-    uses: ./.github/workflows/npm-test.yml
-
-  docker:
-    needs: npm-test
-    uses: ./.github/workflows/docker.yml
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-
-  typedocs:
-    if: ${{ ! contains(github.ref, '-') }}
-    uses: ./.github/workflows/docs/typedocs.yml
-
-  mkdocs:
-    if: ${{ ! contains(github.ref, '-') }}
-    uses: ./.github/workflows/docs/mkdocs.yml
-
----
-
-on:
   pull_request:
     branches:
       - '**'
@@ -50,3 +12,19 @@ on:
 jobs:
   npm-test:
     uses: ./.github/workflows/npm-test.yml
+
+  docker:
+    needs: npm-test
+    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/heads/versions/')
+    uses: ./.github/workflows/docker.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  typedocs:
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
+    uses: ./.github/workflows/typedocs.yml
+
+  mkdocs:
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
+    uses: ./.github/workflows/mkdocs.yml
