@@ -50,13 +50,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - id: test-meta
-        run: |
-          echo "TAGS"
-          echo "${{ needs.docker-meta.outputs.tags }}"
-          echo -e "\n---\n"
-          echo "LABELS"
-          echo "${{ needs.docker-meta.outputs.labels }}"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx

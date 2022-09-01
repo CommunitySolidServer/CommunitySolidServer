@@ -28,11 +28,11 @@ jobs:
       - run: echo OK
 
   typedocs:
-    needs: docs-release
+    needs: npm-test
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
     uses: ./.github/workflows/typedocs.yml
 
   mkdocs:
-    needs: docs-release
+    needs: npm-test
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
     uses: ./.github/workflows/mkdocs.yml
