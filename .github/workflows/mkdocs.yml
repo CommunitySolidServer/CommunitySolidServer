@@ -7,7 +7,7 @@ on:
       - documentation/**
     tags:
       - 'v*'
-      - '!v*.*'
+      - '!v*-*'
 
 jobs:
   typedocs:
