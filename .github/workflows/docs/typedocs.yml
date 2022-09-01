@@ -12,10 +12,10 @@ jobs:
           node-version: '16.x'
       - run: npm ci --ignore-scripts
       - run: npm run typedocs
-      - id: get_version
+      - id: version
         uses: battila7/get-version-action@v2
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-          destination_dir:  ${{ needs.docs-prep.outputs.major }}.x/docs
+          destination_dir:  ${{ steps.version.outputs.major }}.x/docs
