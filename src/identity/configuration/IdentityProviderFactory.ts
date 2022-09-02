@@ -17,6 +17,7 @@ import type { Operation } from '../../http/Operation';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
@@ -77,6 +78,8 @@ const COOKIES_KEY = 'cookie-secret';
  * Routes will be updated based on the `baseUrl` and `oidcPath`.
  */
 export class IdentityProviderFactory implements ProviderFactory {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly config: Configuration;
   private readonly adapterFactory: AdapterFactory;
   private readonly baseUrl: string;
@@ -136,7 +139,42 @@ export class IdentityProviderFactory implements ProviderFactory {
     const provider = new Provider(this.baseUrl, config);
     provider.proxy = true;
 
+    this.captureErrorResponses(provider);
+
     return provider;
+  }
+
+  /**
+   * In the `configureErrors` function below, we configure the `renderError` function of the provider configuration.
+   * This function is called by the OIDC provider library to render errors,
+   * but only does this if the accept header is HTML.
+   * Otherwise, it just returns the error object iself as a JSON object.
+   * See https://github.com/panva/node-oidc-provider/blob/0fcc112e0a95b3b2dae4eba6da812253277567c9/lib/shared/error_handler.js#L48-L52.
+   *
+   * In this function we override the `ctx.accepts` function
+   * to make the above code think HTML is always requested there.
+   * This way we have full control over error representation as configured in `configureErrors`.
+   * We still check the accept headers ourselves so there still is content negotiation on the output,
+   * the client will not simply always receive HTML.
+   *
+   * Should this part of the OIDC library code ever change, our function will break,
+   * at which point behaviour will simply revert to what it was before.
+   */
+  private captureErrorResponses(provider: Provider): void {
+    provider.use(async(ctx, next): Promise<void> => {
+      const accepts = ctx.accepts.bind(ctx);
+
+      // Using `any` typings to make sure we support all different versions of `ctx.accepts`
+      ctx.accepts = (...types: any[]): any => {
+        // Make sure we only override our specific case
+        if (types.length === 2 && types[0] === 'json' && types[1] === 'html') {
+          return 'html';
+        }
+        return accepts(...types);
+      };
+
+      return next();
+    });
   }
 
   /**
@@ -340,14 +378,19 @@ export class IdentityProviderFactory implements ProviderFactory {
       // Doesn't really matter which type it is since all relevant fields are optional
       const oidcError = error as errors.OIDCProviderError;
 
+      let detailedError = error.message;
+      if (oidcError.error_description) {
+        detailedError += ` - ${oidcError.error_description}`;
+      }
+      if (oidcError.error_detail) {
+        detailedError += ` - ${oidcError.error_detail}`;
+      }
+
+      this.logger.warn(`OIDC request failed: ${detailedError}`);
+
       // OIDC library hides extra details in these fields
       if (this.showStackTrace) {
-        if (oidcError.error_description) {
-          error.message += ` - ${oidcError.error_description}`;
-        }
-        if (oidcError.error_detail) {
-          oidcError.message += ` - ${oidcError.error_detail}`;
-        }
+        error.message = detailedError;
 
         // Also change the error message in the stack trace
         if (error.stack) {
