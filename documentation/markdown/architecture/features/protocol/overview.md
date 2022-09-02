@@ -1,4 +1,5 @@
 # Solid protocol
+
 The `LdpHandler`, named as a reference to the Linked Data Platform specification,
 chains several handlers together, each with their own specific purpose, to fully resolve the HTTP request.
 It specifically handles Solid requests as described

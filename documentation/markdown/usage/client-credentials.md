@@ -11,7 +11,7 @@ This is a temporary solution until the server has more advanced account manageme
 after which this API will change.
 
 Below is example code of how to make use of these tokens.
-It makes use of several utility functions from the 
+It makes use of several utility functions from the
 [Solid Authentication Client](https://github.com/inrupt/solid-client-authn-js).
 Note that the code below uses top-level `await`, which not all JavaScript engines support,
 so this should all be contained in an `async` function.
@@ -72,7 +72,7 @@ const response = await fetch(tokenUrl, {
 });
 
 // This is the Access token that will be used to do an authenticated request to the server.
-// The JSON also contains an "expires_in" field in seconds, 
+// The JSON also contains an "expires_in" field in seconds,
 // which you can use to know when you need request a new Access token.
 const { access_token: accessToken } = await response.json();
 ```

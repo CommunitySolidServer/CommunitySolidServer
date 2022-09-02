@@ -1,6 +1,7 @@
 # Community Solid Server
 
-<img src="https://raw.githubusercontent.com/CommunitySolidServer/CommunitySolidServer/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
+<img src="https://raw.githubusercontent.com/CommunitySolidServer/CommunitySolidServer/main/templates/images/solid.svg"
+ alt="[Solid logo]" height="150" align="right"/>
 
 [![MIT license](https://img.shields.io/npm/l/@solid/community-server)](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/LICENSE.md)
 [![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
@@ -30,15 +31,16 @@ And, of course, for many others who like to experience Solid.
 You can install the software locally or on your server
 and get started with Solid immediately.
 
-
 ## ⚡ Running the server
+
 To run the server, you will need [Node.js](https://nodejs.org/en/).
 We support versions 14.2 and up.
-<br>
+
 If you do not use Node.js,
 you can run a [Docker](https://www.docker.com/) version instead.
 
 ### 💻 Installing and running locally
+
 After installing Node.js,
 install the latest server version
 from the [npm package repository](https://www.npmjs.com/):
@@ -48,19 +50,23 @@ npm install -g @solid/community-server
 ```
 
 To run the server with in-memory storage, use:
+
 ```shell
 community-solid-server # add parameters if needed
 ```
 
 To run the server with your current folder as storage, use:
+
 ```shell
 community-solid-server -c @css:config/file.json
 ```
 
 ### 📃 Installing and running from source
+
 If you rather prefer to run the latest source code version,
 or if you want to try a specific [branch](https://www.npmjs.com/) of the code,
 you can use:
+
 ```shell
 git clone https://github.com/CommunitySolidServer/CommunitySolidServer.git
 cd CommunitySolidServer
@@ -69,7 +75,9 @@ npm start -- # add parameters if needed
 ```
 
 ### 📦 Running via Docker
-Docker allows you to run the server without having Node.js installed. Images are built on each tagged version and hosted on [Docker Hub](https://hub.docker.com/r/solidproject/community-server).
+
+Docker allows you to run the server without having Node.js installed. Images are built on each tagged version and hosted
+on [Docker Hub](https://hub.docker.com/r/solidproject/community-server).
 
 ```shell
 # Clone the repo to get access to the configs
@@ -86,15 +94,20 @@ docker run --rm -v ~/Solid:/data -p 3000:3000 -it -e CSS_CONFIG=config/file-no-s
 ```
 
 ### 🗃️ Helm Chart
-The official [Helm](https://helm.sh/) Chart for Kubernetes deployment is maintained at [CommunitySolidServer/css-helm-chart](https://github.com/CommunitySolidServer/css-helm-chart) and published on [ArtifactHUB](https://artifacthub.io/packages/helm/community-solid-server/community-solid-server). There you will find complete installation instructions.
 
-```
+The official [Helm](https://helm.sh/) Chart for Kubernetes deployment is maintained at
+[CommunitySolidServer/css-helm-chart](https://github.com/CommunitySolidServer/css-helm-chart) and published on
+[ArtifactHUB](https://artifacthub.io/packages/helm/community-solid-server/community-solid-server).
+There you will find complete installation instructions.
+
+```shell
 # Summary
 helm repo add community-solid-server https://communitysolidserver.github.io/css-helm-chart/charts/
 helm install my-css community-solid-server/community-solid-server
 ```
 
 ## 🔧 Configuring the server
+
 The Community Solid Server is designed to be flexible
 such that people can easily run different configurations.
 This is useful for customizing the server with plugins,
@@ -103,6 +116,7 @@ or developing new parts for the server
 without needing to change its base code.
 
 ### ⏱️ Parameters
+
 An easy way to customize the server is
 by passing parameters to the server command.
 These parameters give you direct access
@@ -123,7 +137,10 @@ to some commonly used settings:
 | `--workers, -w`        | `1`                        | Run in multithreaded mode using workers. Special values are `-1` (scale to `num_cores-1`), `0` (scale to `num_cores`) and 1 (singlethreaded).     |
 
 ### 🔀 Multithreading
-The Community Solid Server can be started in multithreaded mode with any config. The config must only contain components that are threadsafe though. If a non-threadsafe component is used in multithreaded mode, the server will describe with an error which class is the culprit.
+
+The Community Solid Server can be started in multithreaded mode with any config. The config must only contain components
+that are threadsafe though. If a non-threadsafe component is used in multithreaded mode, the server will describe with
+an error which class is the culprit.
 
 ```node
 # Running multithreaded with autoscaling to number of logical cores minus 1
@@ -131,7 +148,8 @@ npm start -- -c config/file.json -w -1
 ```
 
 ### 🖥️ Environment variables
-Parameters can also be passed through environment variables. 
+
+Parameters can also be passed through environment variables.
 
 They are prefixed with `CSS_` and converted from `camelCase` to `CAMEL_CASE`
 
@@ -140,6 +158,7 @@ They are prefixed with `CSS_` and converted from `camelCase` to `CAMEL_CASE`
 **Note: command-line arguments will always override environment variables!**
 
 ### 🧶 Custom configurations
+
 More substantial changes to server behavior can be achieved
 by writing new configuration files in JSON-LD.
 The Community Solid Server uses [Components.js](https://componentsjs.readthedocs.io/en/latest/)
@@ -150,8 +169,8 @@ are available in the [`config` folder](https://github.com/CommunitySolidServer/C
 
 Recipes for configuring the server can be found at [CommunitySolidServer/recipes](https://github.com/CommunitySolidServer/recipes).
 
-
 ## 👩🏽‍💻 Developing server code
+
 The server allows writing and plugging in custom modules
 without altering its base source code.
 
@@ -163,8 +182,8 @@ If you want to help out with server development,
 have a look at the [📓 user documentation](https://communitysolidserver.github.io/CommunitySolidServer/) and
 [🛠️ good first issues](https://github.com/CommunitySolidServer/CommunitySolidServer/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
-
 ## 📜 License
+
 The Solid Community Server code
 is copyrighted by [Inrupt Inc.](https://inrupt.com/)
 and [imec](https://www.imec-int.com/)
@@ -177,8 +196,8 @@ Core contributors are
 and
 [Matthieu Bosquet](https://github.com/matthieubosquet).
 
-
 ## 🎤 Feedback and questions
+
 Don't hesitate to [start a discussion](https://github.com/CommunitySolidServer/CommunitySolidServer/discussions)
 or [report a bug](https://github.com/CommunitySolidServer/CommunitySolidServer/issues).
 
