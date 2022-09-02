@@ -1,0 +1,21 @@
+name: Typedocs
+on:
+  workflow_call:
+
+jobs:
+  typedocs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: npm ci --ignore-scripts
+      - run: npm run typedocs
+      - id: version
+        uses: battila7/get-version-action@v2
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          destination_dir:  ${{ steps.version.outputs.major }}.x/docs
