@@ -11,10 +11,13 @@ jobs:
         with:
           node-version: '16.x'
       - run: npm ci --ignore-scripts
-      - run: npm run typedocs
-      - id: version
+      - name: Generate typedocs
+        run: npm run typedocs
+      - name: Get tagged version
+        id: version
         uses: battila7/get-version-action@v2
-      - uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy typedocs
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs

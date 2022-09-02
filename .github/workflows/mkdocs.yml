@@ -2,6 +2,9 @@ name: Documentation
 on:
   workflow_call:
 
+# Additional trigger to deploy changes to the documentation/ folder
+#   on push to main, ignoring tags so we don't trigger twice upon
+#   release
   push:
     branches:
       - main
@@ -21,14 +24,14 @@ jobs:
         with:
           node-version: '16.x'
       - run: npm ci --ignore-scripts
-      # TODO: uncomment this when markdownlint changes have been pulled
-      # - run: npm run lint:markdown -- documentation/**/*.md
+      - name: Lint documentation markdown
+        run: npm run lint:markdown -- documentation/**/*.md
       - if: startsWith(github.ref, 'refs/tags/v')
-        name: "Get newly tagged version"
+        name: Get tagged version
         id: tagged_version
         uses: battila7/get-version-action@v2
       - if: github.ref == 'refs/heads/main'
-        name: "Get current version"
+        name: Get current version
         id: current_version
         run: |
           VERSION=$(git show origin/main:package.json | jq -r .version | grep -Po '^(\d+)').x

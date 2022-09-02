@@ -78,11 +78,11 @@ jobs:
             docker run --rm --pull never $i --version
           done <<< "${{ needs.docker-meta.outputs.tags }}";
 
-      # - name: Build and push
-      #   uses: docker/build-push-action@v3
-      #   with:
-      #     context: .
-      #     push: true
-      #     platforms: linux/amd64,linux/arm/v7
-      #     tags: ${{ needs.docker-meta.outputs.tags }}
-      #     labels: ${{ needs.docker-meta.outputs.labels }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm/v7
+          tags: ${{ needs.docker-meta.outputs.tags }}
+          labels: ${{ needs.docker-meta.outputs.labels }}

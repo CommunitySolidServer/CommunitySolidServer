@@ -22,10 +22,10 @@ jobs:
           - ubuntu-latest
           - windows-latest
         node-version:
-          # - '14.2'
-          # - '14.x'
-          # - '16.0'
-          # - '16.x'
+          - '14.2'
+          - '14.x'
+          - '16.0'
+          - '16.x'
           - '18.0'
           - '18.x'
     timeout-minutes: 15
@@ -51,62 +51,62 @@ jobs:
           flag-name: test-unit-${{ matrix.node-version }}-${{ matrix.operating-system }}
           parallel: true
 
-  # test-integration:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       node-version:
-  #         - '14.x'
-  #         - '16.x'
-  #         - '18.x'
-  #   env:
-  #     TEST_DOCKER: true
-  #   services:
-  #     sparql-endpoint:
-  #       image: tenforce/virtuoso
-  #       env:
-  #         SPARQL_UPDATE: true
-  #       ports:
-  #         - 4000:8890
-  #     redis:
-  #       image: redis
-  #       ports:
-  #         - 6379:6379
-  #   timeout-minutes: 15
-  #   steps:
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - name: Check out repository
-  #       uses: actions/checkout@v3
-  #     - name: Install dependencies and run build scripts
-  #       run: npm ci
-  #     - name: Run integration tests
-  #       run: npm run test:integration
+  test-integration:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - '14.x'
+          - '16.x'
+          - '18.x'
+    env:
+      TEST_DOCKER: true
+    services:
+      sparql-endpoint:
+        image: tenforce/virtuoso
+        env:
+          SPARQL_UPDATE: true
+        ports:
+          - 4000:8890
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+    timeout-minutes: 15
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Run integration tests
+        run: npm run test:integration
 
-  # test-integration-windows:
-  #   runs-on: windows-latest
-  #   strategy:
-  #     matrix:
-  #       node-version:
-  #         - '14.x'
-  #         - '16.x'
-  #         - '18.x'
-  #   timeout-minutes: 15
-  #   steps:
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - name: Ensure line endings are consistent
-  #       run: git config --global core.autocrlf input
-  #     - name: Check out repository
-  #       uses: actions/checkout@v3
-  #     - name: Install dependencies and run build scripts
-  #       run: npm ci
-  #     - name: Run integration tests
-  #       run: npm run test:integration
+  test-integration-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version:
+          - '14.x'
+          - '16.x'
+          - '18.x'
+    timeout-minutes: 15
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Run integration tests
+        run: npm run test:integration
 
   test-configs:
     runs-on: ubuntu-latest
