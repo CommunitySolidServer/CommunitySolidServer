@@ -621,9 +621,13 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('should return correct error output.', async(): Promise<void> => {
-      const res = await fetch(`${baseUrl}.oidc/auth`);
-      expect(res.status).toBe(400);
-      await expect(res.text()).resolves.toContain('InvalidRequest: invalid_request');
+      const res = await fetch(`${baseUrl}.oidc/foo`, { headers: { accept: 'application/json' }});
+      expect(res.status).toBe(404);
+      const json = await res.json();
+      expect(json.name).toBe(`InvalidRequest`);
+      expect(json.message).toBe(`invalid_request - unrecognized route or not allowed method (GET on /.oidc/foo)`);
+      expect(json.statusCode).toBe(404);
+      expect(json.stack).toBeDefined();
     });
   });
 });
