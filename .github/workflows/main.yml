@@ -1,0 +1,35 @@
+name: CI
+on:
+  push:
+    branches:
+      - 'main'
+      - 'versions/*'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  npm-test:
+  # Run the tests in every case
+    uses: ./.github/workflows/npm-test.yml
+
+  docker:
+  # Build docker containers on version tag, push to main and push to versions/
+    needs: npm-test
+    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/heads/versions/')
+    uses: ./.github/workflows/docker.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  typedocs-release:
+  # Release typedocs on version tag, but ignore pre-releases
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
+    uses: ./.github/workflows/typedocs.yml
+
+  mkdocs-release:
+  # Release mkdocs on version tag, but ignore pre-releases
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
+    uses: ./.github/workflows/mkdocs.yml
