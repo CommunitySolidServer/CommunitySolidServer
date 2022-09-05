@@ -15,6 +15,7 @@ jobs:
       - run: npm run lint
 
   test-unit:
+  # Run unit tests on windows and linux
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
@@ -52,6 +53,7 @@ jobs:
           parallel: true
 
   test-integration:
+  # Run integration tests on linux (full suite, with external dependencies)
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -86,6 +88,7 @@ jobs:
         run: npm run test:integration
 
   test-integration-windows:
+  # Run integration tests on windows (no external dependencies)
     runs-on: windows-latest
     strategy:
       matrix:
@@ -109,6 +112,7 @@ jobs:
         run: npm run test:integration
 
   test-configs:
+  # Test startup of CSS with all configs inside the config/ folder
     runs-on: ubuntu-latest
     services:
       sparql-endpoint:
@@ -130,6 +134,7 @@ jobs:
         run: npm run test:deploy
 
   coveralls:
+  # Consolidate test coverage reports from all unit tests
     needs: test-unit
     runs-on: ubuntu-latest
     steps:
