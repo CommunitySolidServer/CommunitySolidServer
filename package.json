@@ -45,6 +45,9 @@
     "build": "npm run build:ts && npm run build:components",
     "build:components": "componentsjs-generator -s src -c dist/components -r css -i .componentsignore",
     "build:ts": "tsc",
+    "mkdocs": "npm run mkdocs:docker || npm run mkdocs:pip",
+    "mkdocs:docker": "docker run --rm -it -p 8000:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material",
+    "mkdocs:pip": "pip install mkdocs mkdocs-material && cd documentation && mkdocs serve",
     "docker": "npm run docker:setup && npm run docker:start",
     "docker:clean": "./test/docker/docker-clean.sh",
     "docker:setup": "./test/docker/docker-setup.sh",
@@ -52,9 +55,13 @@
     "docker:stop": "./test/docker/docker-stop.sh",
     "typedocs": "typedoc --customCss ./documentation/typedoc.css",
     "jest": "jest --coverageReporters text-summary --",
-    "lint": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
+    "lint": "npm run lint:ts && npm run lint:markdown",
+    "lint:ts": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
+    "lint:markdown": "markdownlint-cli2",
+    "lint:markdown:fix": "markdownlint-cli2-fix",
     "prepare": "npm run build",
-    "release": "standard-version",
+    "release": "commit-and-tag-version",
+    "postrelease": "ts-node ./scripts/finalizeRelease.ts",
     "start": "node ./bin/server.js",
     "start:file": "node ./bin/server.js -c config/file.json -f ./data",
     "start:file-no-setup": "node ./bin/server.js -c config/file-no-setup.json -f ./data",
@@ -73,10 +80,16 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "standard-version": {
+  "commit-and-tag-version": {
     "scripts": {
       "postbump": "ts-node ./scripts/upgradeConfig.ts",
       "postchangelog": "ts-node ./scripts/formatChangelog.ts"
+    },
+    "writerOpts": {
+      "commitsSort": false
+    },
+    "skip": {
+      "tag": true
     }
   },
   "files": [
@@ -161,6 +174,7 @@
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.3.0",
     "cheerio": "^1.0.0-rc.12",
+    "commit-and-tag-version": "^10.1.0",
     "componentsjs-generator": "^3.0.3",
     "eslint": "^8.21.0",
     "eslint-config-es": "4.1.0",
@@ -174,11 +188,12 @@
     "husky": "^4.3.8",
     "jest": "^27.5.1",
     "jest-rdf": "^1.7.0",
+    "markdownlint-cli2": "^0.5.1",
     "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.19",
     "set-cookie-parser": "^2.5.1",
-    "simple-git": "^3.11.0",
-    "standard-version": "^9.5.0",
+    "simple-git": "^3.12.0",
+    "commit-and-tag-version": "^10.1.0",
     "supertest": "^6.2.4",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.1",

@@ -4,6 +4,7 @@ There are several core building blocks used in many places of the server.
 These are described here.
 
 ## Handlers
+
 A very important building block that gets reused in many places is the `AsyncHandler`.
 The idea is that a handler has 2 important functions.
 `canHandle` determines if this class is capable of correctly handling the request,
@@ -33,6 +34,7 @@ and the `SequenceHandler` that runs all of them one after the other.
 Since multiple handlers are executed here, these only work for handlers that have no output.
 
 ## Streams
+
 Almost all data is handled in a streaming fashion.
 This allows us to work with very large resources without having to fully load them in memory,
 a client could be reading data that is being returned by the server while the server is still reading the file.
