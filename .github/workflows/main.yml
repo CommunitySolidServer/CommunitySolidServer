@@ -22,10 +22,10 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  typedocs:
+  typedocs-release:
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
     uses: ./.github/workflows/typedocs.yml
 
-  mkdocs:
+  mkdocs-release:
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
     uses: ./.github/workflows/mkdocs.yml

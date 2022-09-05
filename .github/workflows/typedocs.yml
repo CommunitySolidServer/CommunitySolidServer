@@ -4,6 +4,7 @@ on:
 
 jobs:
   typedocs:
+  # Build typedocs and publish them to the GH page
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
