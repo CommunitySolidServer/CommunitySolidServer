@@ -44,7 +44,7 @@ jobs:
       - name: Wait until the server has started
         run: >
           curl --output /dev/null --silent --head --fail --retry 30
-            --retry-connrefused --retry-delay 0 -k http://localhost:3000/
+          --retry-connrefused --retry-delay 0 -k http://localhost:3000/
       - name: Create users
         run: npx ts-node test/deploy/createAccountCredentials.ts http://localhost:3000/ >> test/deploy/conformance.env
       - name: Set ignore failures option?
