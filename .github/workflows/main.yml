@@ -23,7 +23,7 @@ jobs:
     with:
       ignore_failures: true
       version: 1.1.7
-
+      branch: ${{ github.head_ref }}
 
   docker:
   # Build docker containers on version tag, push to main and push to versions/

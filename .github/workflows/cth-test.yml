@@ -1,7 +1,7 @@
 name: Conformance test harness
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       version:
         type: string

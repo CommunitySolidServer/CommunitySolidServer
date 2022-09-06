@@ -3,69 +3,15 @@ name: Conformance test harness
 on:
   schedule:
     - cron: '23 5 * * *'
-  push:
-    branches:
-     - test/conformance
+
 jobs:
   conformance:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         branch:
           - 'main'
           - 'versions/6.0.0'
-    timeout-minutes: 10
-    steps:
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-      - name: Check out the project
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ matrix.branch }}
-      - name: Install dependencies and run build scripts
-        run: npm ci
-      - name: Start the server in the background
-        run: npm start > server-output.log  &
-      - name: Create the necessary folders
-        run: mkdir -p reports/css
-      - name: Pull the conformance harness docker
-        run: docker pull solidproject/conformance-test-harness
-      - name: Wait until the server has started
-        run: |
-          until $(curl --output /dev/null --silent --head --fail -k http://localhost:3000/); do
-            sleep 1
-          done
-      - name: Create users
-        run: npx ts-node test/deploy/createAccountCredentials.ts http://localhost:3000/ >> test/deploy/conformance.env
-      - name: Run the test harness
-        run: >
-          docker run -i --rm
-          -v "$(pwd)"/reports/css:/reports
-          --env-file=./test/deploy/conformance.env
-          --network="host"
-          solidproject/conformance-test-harness
-          --skip-teardown
-          --output=/reports
-          --target=https://github.com/solid/conformance-test-harness/css
-      # Steps below use `always()` to make sure logs get uploaded in case the CTH errors
-      - name: Sanitize branch name for artifact upload
-        id: sanitize
-        if: always()
-        uses: yeouchien/sanitize-branch-name-action@v1
-        with:
-          branch-name: ${{ matrix.branch }}
-      - name: Save the reports
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.sanitize.outputs.sanitized-branch-name }} reports
-          path: reports
-      - name: Save the server output
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.sanitize.outputs.sanitized-branch-name }} server output
-          path: server-output.log
+    uses: ./.github/workflows/cth-test.yml
+    with:
+      branch: ${{ matrix.branch }}
