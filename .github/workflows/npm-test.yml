@@ -14,132 +14,132 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run lint
 
-  # test-unit:
-  # # Run unit tests on windows and linux
-  #   runs-on: ${{ matrix.operating-system }}
-  #   strategy:
-  #     matrix:
-  #       operating-system:
-  #         - ubuntu-latest
-  #         - windows-latest
-  #       node-version:
-  #         - '14.2'
-  #         - '14.x'
-  #         - '16.0'
-  #         - '16.x'
-  #         - '18.0'
-  #         - '18.x'
-  #   timeout-minutes: 15
-  #   steps:
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - name: Ensure line endings are consistent
-  #       run: git config --global core.autocrlf input
-  #     - name: Check out repository
-  #       uses: actions/checkout@v3
-  #     - name: Install dependencies and run build scripts
-  #       run: npm ci
-  #     - name: Type-check tests
-  #       run: npm run test:ts
-  #     - name: Run unit tests
-  #       run: npm run test:unit
-  #     - name: Submit unit test coverage
-  #       uses: coverallsapp/github-action@master
-  #       with:
-  #         github-token: ${{ secrets.github_token }}
-  #         flag-name: test-unit-${{ matrix.node-version }}-${{ matrix.operating-system }}
-  #         parallel: true
+  test-unit:
+  # Run unit tests on windows and linux
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system:
+          - ubuntu-latest
+          - windows-latest
+        node-version:
+          - '14.2'
+          - '14.x'
+          - '16.0'
+          - '16.x'
+          - '18.0'
+          - '18.x'
+    timeout-minutes: 15
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Type-check tests
+        run: npm run test:ts
+      - name: Run unit tests
+        run: npm run test:unit
+      - name: Submit unit test coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: test-unit-${{ matrix.node-version }}-${{ matrix.operating-system }}
+          parallel: true
 
-  # test-integration:
-  # # Run integration tests on linux (full suite, with external dependencies)
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       node-version:
-  #         - '14.x'
-  #         - '16.x'
-  #         - '18.x'
-  #   env:
-  #     TEST_DOCKER: true
-  #   services:
-  #     sparql-endpoint:
-  #       image: tenforce/virtuoso
-  #       env:
-  #         SPARQL_UPDATE: true
-  #       ports:
-  #         - 4000:8890
-  #     redis:
-  #       image: redis
-  #       ports:
-  #         - 6379:6379
-  #   timeout-minutes: 15
-  #   steps:
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - name: Check out repository
-  #       uses: actions/checkout@v3
-  #     - name: Install dependencies and run build scripts
-  #       run: npm ci
-  #     - name: Run integration tests
-  #       run: npm run test:integration
+  test-integration:
+  # Run integration tests on linux (full suite, with external dependencies)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - '14.x'
+          - '16.x'
+          - '18.x'
+    env:
+      TEST_DOCKER: true
+    services:
+      sparql-endpoint:
+        image: tenforce/virtuoso
+        env:
+          SPARQL_UPDATE: true
+        ports:
+          - 4000:8890
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+    timeout-minutes: 15
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Run integration tests
+        run: npm run test:integration
 
-  # test-integration-windows:
-  # # Run integration tests on windows (no external dependencies)
-  #   runs-on: windows-latest
-  #   strategy:
-  #     matrix:
-  #       node-version:
-  #         - '14.x'
-  #         - '16.x'
-  #         - '18.x'
-  #   timeout-minutes: 15
-  #   steps:
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - name: Ensure line endings are consistent
-  #       run: git config --global core.autocrlf input
-  #     - name: Check out repository
-  #       uses: actions/checkout@v3
-  #     - name: Install dependencies and run build scripts
-  #       run: npm ci
-  #     - name: Run integration tests
-  #       run: npm run test:integration
+  test-integration-windows:
+  # Run integration tests on windows (no external dependencies)
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version:
+          - '14.x'
+          - '16.x'
+          - '18.x'
+    timeout-minutes: 15
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Run integration tests
+        run: npm run test:integration
 
-  # test-configs:
-  # # Test startup of CSS with all configs inside the config/ folder
-  #   runs-on: ubuntu-latest
-  #   services:
-  #     sparql-endpoint:
-  #       image: tenforce/virtuoso
-  #       env:
-  #         SPARQL_UPDATE: true
-  #       ports:
-  #         - 4000:8890
-  #   steps:
-  #     - name: Use Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '16.x'
-  #     - name: Check out repository
-  #       uses: actions/checkout@v3
-  #     - name: Install dependencies and run build scripts
-  #       run: npm ci
-  #     - name: Run deploy tests
-  #       run: npm run test:deploy
+  test-configs:
+  # Test startup of CSS with all configs inside the config/ folder
+    runs-on: ubuntu-latest
+    services:
+      sparql-endpoint:
+        image: tenforce/virtuoso
+        env:
+          SPARQL_UPDATE: true
+        ports:
+          - 4000:8890
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Run deploy tests
+        run: npm run test:deploy
 
-  # coveralls:
-  # # Consolidate test coverage reports from all unit tests
-  #   needs: test-unit
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Consolidate test coverage from different jobs
-  #       uses: coverallsapp/github-action@master
-  #       with:
-  #         github-token: ${{ secrets.github_token }}
-  #         parallel-finished: true
+  coveralls:
+  # Consolidate test coverage reports from all unit tests
+    needs: test-unit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consolidate test coverage from different jobs
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
