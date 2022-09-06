@@ -15,7 +15,7 @@ on:
       ignore_failures:
         type: boolean
         default: false
-        description: Should failure of CTH test block the pipeline?
+        description: Should failure of CTH test be ignored and not block the pipeline?
         required: false
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
       - name: Create users
         run: npx ts-node test/deploy/createAccountCredentials.ts http://localhost:3000/ >> test/deploy/conformance.env
       - name: Set ignore failures option?
-        if: ignore_failures
+        if: inputs.ignore_failures
         id: ignore_failures
         run: echo "::set-output name=flag::--ignore_failures"
       - name: Run the test harness
