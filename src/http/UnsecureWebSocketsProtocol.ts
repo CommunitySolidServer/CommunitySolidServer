@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import type { TLSSocket } from 'tls';
 import type { WebSocket } from 'ws';
+import type { SingleThreaded } from '../init/cluster/SingleThreaded';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { WebSocketHandler } from '../server/WebSocketHandler';
@@ -119,7 +120,7 @@ class WebSocketListener extends EventEmitter {
  * Provides live update functionality following
  * the Solid WebSockets API Spec solid-0.1
  */
-export class UnsecureWebSocketsProtocol extends WebSocketHandler {
+export class UnsecureWebSocketsProtocol extends WebSocketHandler implements SingleThreaded {
   private readonly logger = getLoggerFor(this);
   private readonly listeners = new Set<WebSocketListener>();
 
