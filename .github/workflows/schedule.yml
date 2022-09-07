@@ -3,6 +3,7 @@ name: Conformance test harness
 on:
   schedule:
     - cron: '23 5 * * *'
+  workflow_dispatch:
 
 jobs:
   conformance:
