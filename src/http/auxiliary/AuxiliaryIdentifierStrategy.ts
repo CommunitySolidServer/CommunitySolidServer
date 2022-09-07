@@ -2,6 +2,8 @@ import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 
 /**
  * A strategy for handling auxiliary related ResourceIdentifiers.
+ *
+ * Trigger PR
  */
 export interface AuxiliaryIdentifierStrategy {
   /**
