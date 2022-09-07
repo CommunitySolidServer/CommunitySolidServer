@@ -15,7 +15,6 @@ jobs:
 
   cth-test:
   # Run the Conformance Test Harness on PRs targeting main or versions/
-    needs: npm-test
     if: github.event_name == 'pull_request' && ( github.base_ref == 'main' || startsWith( github.base_ref, 'versions/' ) )
     uses: ./.github/workflows/cth-test.yml
     with:
