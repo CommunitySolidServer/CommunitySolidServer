@@ -8,6 +8,10 @@ on:
         required: false
         default: latest
         description: Version of the Conformance Test Harness that has to be tested against
+      branch:
+        type: string
+        required: false
+        description: branch to run tests against (used for matrix strategy)
       ignore_failures:
         type: boolean
         default: false
@@ -29,6 +33,7 @@ on:
 jobs:
   # Run the Conformance Test Harness and upload output as artifacts to GitHub
   conformance:
+    continue-on-error: ${{ inputs.ignore_failures }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -52,10 +57,6 @@ jobs:
           --retry-connrefused --retry-delay 0 -k http://localhost:3000/
       - name: Create users
         run: npx ts-node test/deploy/createAccountCredentials.ts http://localhost:3000/ >> test/deploy/conformance.env
-      - name: Set ignore failures option?
-        if: inputs.ignore_failures
-        id: ignore-failures
-        run: echo "::set-output name=flag::--ignore-failures"
       - name: Run the test harness
         run: >
           docker run -i --rm
@@ -65,15 +66,14 @@ jobs:
           solidproject/conformance-test-harness
           --skip-teardown
           --output=/reports
-          ${{ steps.ignore-failures.outputs.flag }}
-          --target=https://github.com/solid/conformance-test-harness/css
+          --target=https://github.com/solid/conformance-test-harness/css && return 1
       # Steps below use `always()` to make sure logs get uploaded in case the CTH errors
       - name: Sanitize branch name for artifact upload
         id: sanitize
         if: always()
         uses: yeouchien/sanitize-branch-name-action@v1
         with:
-          branch-name: ${{ matrix.branch }}
+          branch-name: ${{ inputs.branch || github.head_ref }}
       - name: Save the reports
         if: always()
         uses: actions/upload-artifact@v3
