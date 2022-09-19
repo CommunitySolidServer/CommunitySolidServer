@@ -1,4 +1,14 @@
 /**
+ * Returns an object that maps IDs to the corresponding element.
+ *
+ * @param ...ids - IDs of the element (empty to retrieve all elements)
+ */
+function getElements(...ids) {
+  ids = ids.length ? ids : [...document.querySelectorAll("[id]")].map(e => e.id);
+  return Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+}
+
+/**
  * Acquires all data from the given form and POSTs it as JSON to the target URL.
  * In case of failure this function will throw an error.
  * In case of success a parsed JSON body of the response will be returned,
