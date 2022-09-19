@@ -1,8 +1,12 @@
-<h1>Authorize</h1>
-<p id="webId">Your WebID: </p>
-<p>The following client wants to do authorized requests in your name:</p>
-<ul id="clientInfo">
-</ul>
+<h1>An application is requesting access</h1>
+<p>
+  Your WebID is <strong id="webId"></strong>
+</p>
+<p>
+  Do you trust this application
+  to read and write data on your behalf?
+</p>
+<dl id="client"></dl>
 <form method="post" id="mainForm">
   <p class="error" id="error"></p>
 
@@ -15,52 +19,54 @@
   </fieldset>
 
   <p class="actions">
-    <button autofocus type="submit" name="submit">Consent</button>
-    <button onclick="logOut(event)">Log in with a different account</button>
+    <button id="authorize" type="submit" autofocus>Authorize</button>
+    <button id="cancel" type="button">Cancel</button>
+    <button id="switch" type="button" class="alternate">Use a different WebID</button>
   </p>
 </form>
 
 <script>
-  async function logOut(e) {
-    e.preventDefault();
+  // Wire up elements
+  const elements = getElements();
+  elements.cancel.addEventListener('click', logOut);
+  elements.switch.addEventListener('click', logOut);
+  addPostListener('mainForm', 'error', '', () => {
+    throw new Error('Expected a location field in the response.');
+  });
+
+  // Retrieve and display client information
+  (async() => {
+    const res = await fetch('', { headers: { accept: 'application/json' } });
+    const { webId, client } = await res.json();
+    showWebId(webId);
+    showClientInfo('Name', client.client_name);
+    showClientInfo('ID', client.client_id);
+  })();
+
+  // Updates the user's WebID in the UI
+  function showWebId(webId) {
+    elements.webId.innerText = webId;
+  }
+
+  // Adds client info to the UI
+  function showClientInfo(label, value) {
+    if (value) {
+      const dt = document.createElement('dt');
+      const dd = document.createElement('dd')
+      dt.innerText = label;
+      dd.innerText = value;
+      elements.client.append(dt, dd);
+    }
+  }
+
+  // Logs the user out
+  async function logOut(event) {
     const res = await fetch('', {
       method: 'POST',
       headers: { accept: 'application/json', 'content-type': 'application/json' },
       body: JSON.stringify({ logOut: true }),
     });
-    const json = await res.json();
-    location.href = json.location;
+    const body = await res.json();
+    location.href = body.location;
   }
-</script>
-
-<script>
-  function addWebId(webId) {
-    const p = document.getElementById('webId');
-    const strong = document.createElement('strong')
-    strong.appendChild(document.createTextNode(webId));
-    p.appendChild(strong);
-  }
-
-  const clientInfo = document.getElementById('clientInfo');
-  function addClientInfo(text, value) {
-    if (value) {
-      const li = document.createElement('li');
-      const strong = document.createElement('strong')
-      strong.appendChild(document.createTextNode(value));
-      li.appendChild(document.createTextNode(`${text}: `));
-      li.appendChild(strong);
-      clientInfo.appendChild(li);
-    }
-  }
-
-  // Update the client information
-  (async() => {
-    const res = await fetch('', { headers: { accept: 'application/json' } });
-    const { webId, client } = await res.json();
-    addWebId(webId);
-    addClientInfo('Name', client.client_name);
-    addClientInfo('ID', client.client_id);
-  })()
-
-  addPostListener('mainForm', 'error', '', () => { throw new Error('Expected a location field in the response.') });
 </script>
