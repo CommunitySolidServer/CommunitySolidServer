@@ -37,3 +37,46 @@ For example, to set up a pod without registering the generated WebID with the Id
 
 This feature cannot be used to register pods with pre-existing WebIDs,
 which requires an interactive validation step.
+
+## Seeding data to a Pod
+
+You may also seed custom data files to a Pod.
+
+For example, to add the contents of `data.ttl` into a Pod in the `/music/data` path:
+
+```json
+[
+  {
+    "podName": "example",
+    "email": "hello@example.com",
+    "password": "abc123",
+    "data": [
+      {
+        "path": "./data.ttl",
+        "resource": "/music/data",
+        "contentType": "text/turtle"
+      }
+    ]
+  }
+]
+```
+
+The default permissions is `read: true` for all agents. To set custom permissions:
+
+```json
+[
+  {
+    "podName": "example",
+    "email": "hello@example.com",
+    "password": "abc123",
+    "data": [
+      {
+        "path": "./data.ttl",
+        "resource": "/music/data",
+        "contentType": "text/turtle",
+        "permissions": { "read": true, "write": true }
+      }
+    ]
+  }
+]
+```
