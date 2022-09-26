@@ -1,6 +1,6 @@
-import type { ResourceStore } from '../../src/';
-import { BasicRepresentation } from '../../src/';
-import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
+import type { ResourceStore } from '..';
+import { BasicRepresentation } from '..';
+import type { AclPermission } from '../authorization/permissions/AclPermission';
 
 export type AclHelperInput = {
   permissions: AclPermission;
