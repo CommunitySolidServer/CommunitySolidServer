@@ -4,7 +4,7 @@ import type { App } from '../../src/init/App';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 
-const port = getPort('WebSocketsProtocol');
+const port = getPort('LegacyWebSocketsProtocol');
 const serverUrl = `http://localhost:${port}/`;
 const headers = { forwarded: 'host=example.pod;proto=https' };
 
@@ -14,7 +14,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
   beforeAll(async(): Promise<void> => {
     app = await instantiateFromConfig(
       'urn:solid-server:default:App',
-      getTestConfigPath('server-without-auth.json'),
+      getTestConfigPath('legacy-websockets.json'),
       getDefaultVariables(port, 'https://example.pod/'),
     ) as App;
 

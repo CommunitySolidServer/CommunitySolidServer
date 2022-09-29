@@ -13,6 +13,7 @@ const portNames = [
   'FileBackend',
   'GlobalQuota',
   'Identity',
+  'LegacyWebSocketsProtocol',
   'LpdHandlerWithAuth',
   'LpdHandlerWithoutAuth',
   'Middleware',
@@ -28,10 +29,9 @@ const portNames = [
   'SetupMemory',
   'SparqlStorage',
   'Subdomains',
-  'WebSocketsProtocol',
 
   // Unit
-  'BaseHttpServerFactory',
+  'BaseServerFactory',
 ] as const;
 
 export function getPort(name: typeof portNames[number]): number {

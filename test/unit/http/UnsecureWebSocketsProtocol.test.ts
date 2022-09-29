@@ -1,6 +1,18 @@
 import { EventEmitter } from 'events';
+import type { Server } from 'http';
 import { UnsecureWebSocketsProtocol } from '../../../src/http/UnsecureWebSocketsProtocol';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
+import { BaseActivityEmitter } from '../../../src/server/notifications/ActivityEmitter';
+import { AS } from '../../../src/util/Vocabularies';
+
+jest.mock('ws', (): any => ({
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  WebSocketServer: jest.fn().mockImplementation((): any => ({
+    handleUpgrade(upgradeRequest: any, socket: any, head: any, callback: any): void {
+      callback(socket, upgradeRequest);
+    },
+  })),
+}));
 
 class DummySocket extends EventEmitter {
   public readonly messages = new Array<string>();
@@ -12,13 +24,18 @@ class DummySocket extends EventEmitter {
 }
 
 describe('An UnsecureWebSocketsProtocol', (): void => {
-  const source = new EventEmitter();
-  const protocol = new UnsecureWebSocketsProtocol(source);
+  let server: Server;
+  let webSocket: DummySocket;
+  const source = new BaseActivityEmitter();
+  let protocol: UnsecureWebSocketsProtocol;
 
   describe('after registering a socket', (): void => {
-    const webSocket = new DummySocket();
-
     beforeAll(async(): Promise<void> => {
+      server = new EventEmitter() as any;
+      webSocket = new DummySocket();
+      protocol = new UnsecureWebSocketsProtocol(source);
+      await protocol.handle(server);
+
       const upgradeRequest = {
         headers: {
           host: 'mypod.example',
@@ -28,11 +45,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
           encrypted: true,
         },
       } as any as HttpRequest;
-      await protocol.handle({ webSocket, upgradeRequest } as any);
-    });
-
-    afterEach((): void => {
-      webSocket.messages.length = 0;
+      server.emit('upgrade', upgradeRequest, webSocket);
     });
 
     it('sends a protocol message.', (): void => {
@@ -54,7 +67,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
 
     describe('before subscribing to resources', (): void => {
       it('does not emit pub messages.', (): void => {
-        source.emit('changed', { path: 'https://mypod.example/foo/bar' });
+        source.emit('changed', { path: 'https://mypod.example/foo/bar' }, AS.terms.Update);
         expect(webSocket.messages).toHaveLength(0);
       });
     });
@@ -70,7 +83,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       });
 
       it('emits pub messages for that resource.', (): void => {
-        source.emit('changed', { path: 'https://mypod.example/foo/bar' });
+        source.emit('changed', { path: 'https://mypod.example/foo/bar' }, AS.terms.Update);
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift()).toBe('pub https://mypod.example/foo/bar');
       });
@@ -87,7 +100,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       });
 
       it('emits pub messages for that resource.', (): void => {
-        source.emit('changed', { path: 'https://mypod.example/relative/foo' });
+        source.emit('changed', { path: 'https://mypod.example/relative/foo' }, AS.terms.Update);
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift()).toBe('pub https://mypod.example/relative/foo');
       });
@@ -118,84 +131,83 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
     });
   });
 
-  it('unsubscribes when a socket closes.', async(): Promise<void> => {
-    const webSocket = new DummySocket();
-    await protocol.handle({ webSocket, upgradeRequest: { headers: {}, socket: {}}} as any);
-    expect(webSocket.listenerCount('message')).toBe(1);
-    webSocket.emit('close');
-    expect(webSocket.listenerCount('message')).toBe(0);
-    expect(webSocket.listenerCount('close')).toBe(0);
-    expect(webSocket.listenerCount('error')).toBe(0);
-  });
+  describe('handling other situations', (): void => {
+    beforeEach(async(): Promise<void> => {
+      server = new EventEmitter() as any;
+      webSocket = new DummySocket();
+      protocol = new UnsecureWebSocketsProtocol(source);
+      await protocol.handle(server);
+    });
 
-  it('unsubscribes when a socket errors.', async(): Promise<void> => {
-    const webSocket = new DummySocket();
-    await protocol.handle({ webSocket, upgradeRequest: { headers: {}, socket: {}}} as any);
-    expect(webSocket.listenerCount('message')).toBe(1);
-    webSocket.emit('error');
-    expect(webSocket.listenerCount('message')).toBe(0);
-    expect(webSocket.listenerCount('close')).toBe(0);
-    expect(webSocket.listenerCount('error')).toBe(0);
-  });
+    it('unsubscribes when a socket closes.', async(): Promise<void> => {
+      server.emit('upgrade', { headers: {}, socket: {}} as any, webSocket);
+      expect(webSocket.listenerCount('message')).toBe(1);
+      webSocket.emit('close');
+      expect(webSocket.listenerCount('message')).toBe(0);
+      expect(webSocket.listenerCount('close')).toBe(0);
+      expect(webSocket.listenerCount('error')).toBe(0);
+    });
 
-  it('emits a warning when no Sec-WebSocket-Protocol is supplied.', async(): Promise<void> => {
-    const webSocket = new DummySocket();
-    const upgradeRequest = {
-      headers: {},
-      socket: {},
-    } as any as HttpRequest;
-    await protocol.handle({ webSocket, upgradeRequest } as any);
-    expect(webSocket.messages).toHaveLength(2);
-    expect(webSocket.messages.pop())
-      .toBe('warning Missing Sec-WebSocket-Protocol header, expected value \'solid-0.1\'');
-    expect(webSocket.close).toHaveBeenCalledTimes(0);
-  });
+    it('unsubscribes when a socket errors.', async(): Promise<void> => {
+      server.emit('upgrade', { headers: {}, socket: {}} as any, webSocket);
+      expect(webSocket.listenerCount('message')).toBe(1);
+      webSocket.emit('error');
+      expect(webSocket.listenerCount('message')).toBe(0);
+      expect(webSocket.listenerCount('close')).toBe(0);
+      expect(webSocket.listenerCount('error')).toBe(0);
+    });
 
-  it('emits an error and closes the connection with the wrong Sec-WebSocket-Protocol.', async(): Promise<void> => {
-    const webSocket = new DummySocket();
-    const upgradeRequest = {
-      headers: {
-        'sec-websocket-protocol': 'solid/1.0.0, other',
-      },
-      socket: {},
-    } as any as HttpRequest;
-    await protocol.handle({ webSocket, upgradeRequest } as any);
-    expect(webSocket.messages).toHaveLength(2);
-    expect(webSocket.messages.pop()).toBe('error Client does not support protocol solid-0.1');
-    expect(webSocket.close).toHaveBeenCalledTimes(1);
-    expect(webSocket.listenerCount('message')).toBe(0);
-    expect(webSocket.listenerCount('close')).toBe(0);
-    expect(webSocket.listenerCount('error')).toBe(0);
-  });
+    it('emits a warning when no Sec-WebSocket-Protocol is supplied.', async(): Promise<void> => {
+      server.emit('upgrade', { headers: {}, socket: {}} as any, webSocket);
+      expect(webSocket.messages).toHaveLength(2);
+      expect(webSocket.messages.pop())
+        .toBe('warning Missing Sec-WebSocket-Protocol header, expected value \'solid-0.1\'');
+      expect(webSocket.close).toHaveBeenCalledTimes(0);
+    });
 
-  it('respects the Forwarded header.', async(): Promise<void> => {
-    const webSocket = new DummySocket();
-    const upgradeRequest = {
-      headers: {
-        forwarded: 'proto=https;host=other.example',
-        'sec-websocket-protocol': 'solid-0.1',
-      },
-      socket: {},
-    } as any as HttpRequest;
-    await protocol.handle({ webSocket, upgradeRequest } as any);
-    webSocket.emit('message', 'sub https://other.example/protocol/foo');
-    expect(webSocket.messages).toHaveLength(2);
-    expect(webSocket.messages.pop()).toBe('ack https://other.example/protocol/foo');
-  });
+    it('emits an error and closes the connection with the wrong Sec-WebSocket-Protocol.', async(): Promise<void> => {
+      const upgradeRequest = {
+        headers: {
+          'sec-websocket-protocol': 'solid/1.0.0, other',
+        },
+        socket: {},
+      } as any as HttpRequest;
+      server.emit('upgrade', upgradeRequest, webSocket);
+      expect(webSocket.messages).toHaveLength(2);
+      expect(webSocket.messages.pop()).toBe('error Client does not support protocol solid-0.1');
+      expect(webSocket.close).toHaveBeenCalledTimes(1);
+      expect(webSocket.listenerCount('message')).toBe(0);
+      expect(webSocket.listenerCount('close')).toBe(0);
+      expect(webSocket.listenerCount('error')).toBe(0);
+    });
 
-  it('respects the X-Forwarded-* headers if Forwarded header is not present.', async(): Promise<void> => {
-    const webSocket = new DummySocket();
-    const upgradeRequest = {
-      headers: {
-        'x-forwarded-host': 'other.example',
-        'x-forwarded-proto': 'https',
-        'sec-websocket-protocol': 'solid-0.1',
-      },
-      socket: {},
-    } as any as HttpRequest;
-    await protocol.handle({ webSocket, upgradeRequest } as any);
-    webSocket.emit('message', 'sub https://other.example/protocol/foo');
-    expect(webSocket.messages).toHaveLength(2);
-    expect(webSocket.messages.pop()).toBe('ack https://other.example/protocol/foo');
+    it('respects the Forwarded header.', async(): Promise<void> => {
+      const upgradeRequest = {
+        headers: {
+          forwarded: 'proto=https;host=other.example',
+          'sec-websocket-protocol': 'solid-0.1',
+        },
+        socket: {},
+      } as any as HttpRequest;
+      server.emit('upgrade', upgradeRequest, webSocket);
+      webSocket.emit('message', 'sub https://other.example/protocol/foo');
+      expect(webSocket.messages).toHaveLength(2);
+      expect(webSocket.messages.pop()).toBe('ack https://other.example/protocol/foo');
+    });
+
+    it('respects the X-Forwarded-* headers if Forwarded header is not present.', async(): Promise<void> => {
+      const upgradeRequest = {
+        headers: {
+          'x-forwarded-host': 'other.example',
+          'x-forwarded-proto': 'https',
+          'sec-websocket-protocol': 'solid-0.1',
+        },
+        socket: {},
+      } as any as HttpRequest;
+      server.emit('upgrade', upgradeRequest, webSocket);
+      webSocket.emit('message', 'sub https://other.example/protocol/foo');
+      expect(webSocket.messages).toHaveLength(2);
+      expect(webSocket.messages.pop()).toBe('ack https://other.example/protocol/foo');
+    });
   });
 });

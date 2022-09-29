@@ -21,6 +21,7 @@
   "Promise",
   "Readonly",
   "RegExp",
+  "Server",
   "Shorthand",
   "Template",
   "TemplateEngine",
