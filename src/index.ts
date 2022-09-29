@@ -423,6 +423,7 @@ export * from './util/errors/UnauthorizedHttpError';
 export * from './util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Handlers
+export * from './util/handlers/ArrayUnionHandler';
 export * from './util/handlers/AsyncHandler';
 export * from './util/handlers/BooleanHandler';
 export * from './util/handlers/ConditionalHandler';
