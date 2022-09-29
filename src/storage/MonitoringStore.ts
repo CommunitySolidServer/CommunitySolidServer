@@ -1,21 +1,22 @@
-import { EventEmitter } from 'events';
+import type { Term } from '@rdfjs/types';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
+import { BaseActivityEmitter } from '../server/notifications/ActivityEmitter';
 import { AS, SOLID_AS } from '../util/Vocabularies';
 import type { Conditions } from './Conditions';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 // The ActivityStream terms for which we emit an event
-const emittedActivities: Set<string> = new Set([ AS.Create, AS.Delete, AS.Update ]);
+const knownActivities = [ AS.terms.Create, AS.terms.Delete, AS.terms.Update ];
 
 /**
  * Store that notifies listeners of changes to its source
  * by emitting a `changed` event.
  */
 export class MonitoringStore<T extends ResourceStore = ResourceStore>
-  extends EventEmitter implements ResourceStore {
+  extends BaseActivityEmitter implements ResourceStore {
   private readonly source: T;
 
   public constructor(source: T) {
@@ -55,12 +56,16 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   private emitChanged(changes: ChangeMap): ChangeMap {
     for (const [ identifier, metadata ] of changes) {
       const activity = metadata.get(SOLID_AS.terms.Activity);
-      this.emit('changed', identifier, activity);
-      if (activity && emittedActivities.has(activity.value)) {
+      if (this.isKnownActivity(activity)) {
+        this.emit('changed', identifier, activity);
         this.emit(activity.value, identifier);
       }
     }
 
     return changes;
+  }
+
+  private isKnownActivity(term?: Term): term is typeof knownActivities[number] {
+    return Boolean(term && knownActivities.some((entry): boolean => entry.equals(term)));
   }
 }

@@ -155,14 +155,14 @@ describe('A MonitoringStore', (): void => {
     expect(source.hasResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' });
   });
 
-  it('should not emit an extra event when the Activity is not a valid AS value.', async(): Promise<void> => {
+  it('should not emit an event when the Activity is not a valid AS value.', async(): Promise<void> => {
     source.addResource = jest.fn().mockResolvedValue(new IdentifierMap([
       [{ path: 'http://example.org/path' }, new RepresentationMetadata({ [SOLID_AS.Activity]: 'SomethingRandom' }) ],
     ]));
 
     await store.addResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
 
-    expect(changedCallback).toHaveBeenCalledTimes(1);
+    expect(changedCallback).toHaveBeenCalledTimes(0);
     expect(createdCallback).toHaveBeenCalledTimes(0);
     expect(updatedCallback).toHaveBeenCalledTimes(0);
     expect(deletedCallback).toHaveBeenCalledTimes(0);
