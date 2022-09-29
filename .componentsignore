@@ -1,6 +1,7 @@
 [
   "AccessMap",
   "Adapter",
+  "BaseActivityEmitter",
   "BaseHttpError",
   "BasicConditions",
   "BasicRepresentation",
@@ -9,6 +10,7 @@
   "Dict",
   "Error",
   "EventEmitter",
+  "GenericEventEmitter",
   "HashMap",
   "HttpErrorOptions",
   "HttpResponse",
