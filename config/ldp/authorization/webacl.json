@@ -60,7 +60,6 @@
       "@type": "RouterHandler",
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
-      "args_allowedMethods": [ "*" ],
       "args_allowedPathNames": [ "^/.*\\.acl$" ],
       "args_handler": { "@id": "urn:solid-server:default:LdpHandler" }
     }

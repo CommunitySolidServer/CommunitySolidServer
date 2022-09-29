@@ -1,131 +1,57 @@
-import { createRequest, createResponse } from 'node-mocks-http';
-import type {
-  AsyncHandler,
-  HttpHandlerInput,
-  HttpRequest,
+import type { HttpRequest,
   HttpResponse,
   TargetExtractor,
   ResourceIdentifier,
-  RouterHandlerArgs,
-} from '../../../../src';
-import { guardStream, joinUrl } from '../../../../src';
+  HttpHandler } from '../../../../src';
+import { joinUrl } from '../../../../src';
 import { RouterHandler } from '../../../../src/server/util/RouterHandler';
-import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A RouterHandler', (): void => {
-  const baseUrl = 'http://test.com/foo/';
+  const baseUrl = 'http://test.com/';
   let targetExtractor: jest.Mocked<TargetExtractor>;
-  let subHandler: AsyncHandler<any, any>;
-  let genericRequest: HttpRequest;
-  let genericResponse: HttpResponse;
-  let genericInput: HttpHandlerInput;
-  let args: RouterHandlerArgs;
+  let request: HttpRequest;
+  const response: HttpResponse = {} as any;
+  let handler: jest.Mocked<HttpHandler>;
+  let router: RouterHandler;
 
   beforeEach((): void => {
+    request = { method: 'GET', url: '/test' } as any;
+
     targetExtractor = {
       handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url!) })),
     } as any;
 
-    subHandler = new StaticAsyncHandler(true, undefined);
+    handler = {
+      canHandle: jest.fn(),
+      handle: jest.fn(),
+    } as any;
 
-    args = {
+    router = new RouterHandler({
       baseUrl,
       targetExtractor,
-      handler: subHandler,
-      allowedMethods: [],
-      allowedPathNames: [],
-    };
-
-    genericRequest = guardStream(createRequest({
-      url: '/test',
-    }));
-    genericResponse = createResponse() as HttpResponse;
-    genericInput = {
-      request: genericRequest,
-      response: genericResponse,
-    };
+      handler,
+      allowedMethods: [ 'GET' ],
+      allowedPathNames: [ '^/test$' ],
+    });
   });
 
-  it('calls the sub handler when handle is called.', async(): Promise<void> => {
-    args.allowedMethods = [ 'GET' ];
-    args.allowedPathNames = [ '/test' ];
-    const handler = new RouterHandler(args);
-    expect(await handler.handle(genericInput)).toBeUndefined();
+  it('errors if there is no url.', async(): Promise<void> => {
+    delete request.url;
+    await expect(router.canHandle({ request, response }))
+      .rejects.toThrow('Cannot handle request without a url');
   });
 
-  it('throws an error if the request does not have a url.', async(): Promise<void> => {
-    args.allowedMethods = [ 'GET' ];
-    args.allowedPathNames = [ '/test' ];
-    const handler = new RouterHandler(args);
-    const request = guardStream(createRequest());
-    await expect(handler.canHandle({
-      request,
-      response: genericResponse,
-    })).rejects.toThrow('Cannot handle request without a url');
+  it('passes the request method.', async(): Promise<void> => {
+    await expect(router.canHandle({ request, response })).resolves.toBeUndefined();
+    request.method = 'POST';
+    await expect(router.canHandle({ request, response })).rejects.toThrow('POST is not allowed.');
+    delete request.method;
+    await expect(router.canHandle({ request, response })).rejects.toThrow('UNKNOWN is not allowed.');
   });
 
-  it('throws an error if the request does not have a method.', async(): Promise<void> => {
-    args.allowedMethods = [ 'GET' ];
-    args.allowedPathNames = [ '/test' ];
-    const handler = new RouterHandler(args);
-    const request = guardStream(createRequest({
-      url: '/test',
-    }));
-    // @ts-expect-error manually set the method
-    request.method = undefined;
-    await expect(handler.canHandle({
-      request,
-      response: genericResponse,
-    })).rejects.toThrow('Cannot handle request without a method');
-  });
-
-  it('throws an error when there are no allowed methods or pathnames.', async(): Promise<void> => {
-    args.allowedMethods = [];
-    args.allowedPathNames = [];
-    const handler = new RouterHandler(args);
-    await expect(handler.canHandle(genericInput)).rejects.toThrow('GET is not allowed.');
-  });
-
-  it('throws an error when there are no allowed methods.', async(): Promise<void> => {
-    args.allowedMethods = [];
-    args.allowedPathNames = [ '/test' ];
-    const handler = new RouterHandler(args);
-    await expect(handler.canHandle(genericInput)).rejects.toThrow('GET is not allowed.');
-  });
-
-  it('throws an error when there are no allowed pathnames.', async(): Promise<void> => {
-    args.allowedMethods = [ 'GET' ];
-    args.allowedPathNames = [];
-    const handler = new RouterHandler(args);
-    await expect(handler.canHandle(genericInput)).rejects.toThrow('Cannot handle route /test');
-  });
-
-  it('throws an error if the RegEx string is not valid Regex.', async(): Promise<void> => {
-    args.allowedMethods = [ 'GET' ];
-    args.allowedPathNames = [ '[' ];
-    expect((): RouterHandler => new RouterHandler(args))
-      .toThrow('Invalid regular expression: /[/: Unterminated character class');
-  });
-
-  it('throws an error if all else is successful, but the sub handler cannot handle.', async(): Promise<void> => {
-    args.handler = new StaticAsyncHandler(false, undefined);
-    args.allowedMethods = [ 'GET' ];
-    args.allowedPathNames = [ '/test' ];
-    const handler = new RouterHandler(args);
-    await expect(handler.canHandle(genericInput)).rejects.toThrow('Not supported');
-  });
-
-  it('does not throw an error if the sub handler is successful.', async(): Promise<void> => {
-    args.allowedMethods = [ 'GET' ];
-    args.allowedPathNames = [ '/test' ];
-    const handler = new RouterHandler(args);
-    expect(await handler.canHandle(genericInput)).toBeUndefined();
-  });
-
-  it('supports * for all methods.', async(): Promise<void> => {
-    args.allowedMethods = [ '*' ];
-    args.allowedPathNames = [ '/test' ];
-    const handler = new RouterHandler(args);
-    expect(await handler.canHandle(genericInput)).toBeUndefined();
+  it('generates a ResourceIdentifier based on the url.', async(): Promise<void> => {
+    await expect(router.canHandle({ request, response })).resolves.toBeUndefined();
+    request.url = '/wrongTest';
+    await expect(router.canHandle({ request, response })).rejects.toThrow('Cannot handle route /wrongTest');
   });
 });

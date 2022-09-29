@@ -305,6 +305,8 @@ export * from './server/middleware/WebSocketAdvertiser';
 export * from './server/notifications/ActivityEmitter';
 
 // Server/Util
+export * from './server/util/BaseRouterHandler';
+export * from './server/util/OperationRouterHandler';
 export * from './server/util/RedirectingHttpHandler';
 export * from './server/util/RouterHandler';
 
