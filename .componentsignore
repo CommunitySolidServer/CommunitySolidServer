@@ -3,6 +3,7 @@
   "Adapter",
   "BaseActivityEmitter",
   "BaseHttpError",
+  "BaseRouterHandler",
   "BasicConditions",
   "BasicRepresentation",
   "ChangeMap",
