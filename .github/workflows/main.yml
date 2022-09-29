@@ -7,13 +7,23 @@ on:
     tags:
       - 'v*'
   pull_request:
-    branches:
-      - '**'
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   npm-test:
   # Run the tests in every case
     uses: ./.github/workflows/npm-test.yml
+
+  cth-test:
+  # Run the Conformance Test Harness on PRs targeting main or versions/
+    if: github.event_name == 'pull_request' && ( github.base_ref == 'main' || startsWith( github.base_ref, 'versions/' ) )
+    uses: ./.github/workflows/cth-test.yml
+    with:
+      ignore_failures: true
+      version: 1.1.7 # The latest version that CSS is confirmed to pass
 
   docker:
   # Build docker containers on version tag, push to main and push to versions/

@@ -138,6 +138,20 @@ ul ul, ol ul {
   padding-left: 1em;
 }
 
+dl {
+  padding: 0 0 0 2em;
+  margin: .75em 0 0;
+}
+dl dt {
+  font-weight: bold;
+  float: left;
+  clear: left;
+  min-width: 4em;
+}
+dl dt:after {
+  content: ": ";
+}
+
 pre {
   overflow-x: scroll;
 }
@@ -207,11 +221,29 @@ button {
   border: 0px;
   background-color: var(--solid-purple);
   color: white;
-
-  font-weight: 600;
 }
 button:hover {
   background-color: var(--solid-blue);
+}
+button[type=submit] {
+  font-weight: 600;
+}
+
+button.alternate {
+  display: block;
+  padding: 0;
+  margin: .5em 0;
+
+  background: none;
+  color: var(--solid-purple);
+  font-weight: normal;
+}
+button.alternate:hover {
+  color: var(--solid-blue);
+}
+
+input:focus, button:focus {
+  outline: var(--solid-blue) solid 1.5px;
 }
 
 form p.actions {
@@ -221,6 +253,9 @@ form p.actions {
 form p.error {
   color: #ad0f0f;
   font-weight: 600;
+}
+form p.error:empty {
+  display :none;
 }
 
 form ul.actions {

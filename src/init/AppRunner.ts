@@ -21,7 +21,7 @@ const DEFAULT_CLI_RESOLVER = 'urn:solid-server-app-setup:default:CliResolver';
 const DEFAULT_APP = 'urn:solid-server:default:App';
 
 const CORE_CLI_PARAMETERS = {
-  config: { type: 'string', alias: 'c', default: DEFAULT_CONFIG, requiresArg: true },
+  config: { type: 'array', alias: 'c', default: [ DEFAULT_CONFIG ], requiresArg: true },
   loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true, choices: LOG_LEVELS },
   mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
 } as const;
@@ -48,13 +48,13 @@ export class AppRunner {
    * The values in `variableBindings` take priority over those in `shorthand`.
    *
    * @param loaderProperties - Components.js loader properties.
-   * @param configFile - Path to the server config file.
+   * @param configFile - Path to the server config file(s).
    * @param variableBindings - Bindings of Components.js variables.
    * @param shorthand - Shorthand values that need to be resolved.
    */
   public async run(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
-    configFile: string,
+    configFile: string | string[],
     variableBindings?: VariableBindings,
     shorthand?: Shorthand,
   ): Promise<void> {
@@ -75,13 +75,13 @@ export class AppRunner {
    * The values in `variableBindings` take priority over those in `shorthand`.
    *
    * @param loaderProperties - Components.js loader properties.
-   * @param configFile - Path to the server config file.
+   * @param configFile - Path to the server config file(s).
    * @param variableBindings - Bindings of Components.js variables.
    * @param shorthand - Shorthand values that need to be resolved.
    */
   public async create(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
-    configFile: string,
+    configFile: string | string[],
     variableBindings?: VariableBindings,
     shorthand?: Shorthand,
   ): Promise<App> {
@@ -152,16 +152,16 @@ export class AppRunner {
       typeChecking: false,
     };
 
-    const config = resolveAssetPath(params.config);
+    const configs = params.config.map(resolveAssetPath);
 
     // Create the Components.js manager used to build components from the provided config
     let componentsManager: ComponentsManager<any>;
     try {
-      componentsManager = await this.createComponentsManager(loaderProperties, config);
+      componentsManager = await this.createComponentsManager(loaderProperties, configs);
     } catch (error: unknown) {
       // Print help of the expected core CLI parameters
       const help = await yargv.getHelp();
-      this.resolveError(`${help}\n\nCould not build the config files from ${config}`, error);
+      this.resolveError(`${help}\n\nCould not build the config files from ${configs}`, error);
     }
 
     // Build the CLI components and use them to generate values for the Components.js variables
@@ -176,10 +176,12 @@ export class AppRunner {
    */
   public async createComponentsManager<T>(
     loaderProperties: IComponentsManagerBuilderOptions<T>,
-    configFile: string,
+    configFile: string | string[],
   ): Promise<ComponentsManager<T>> {
     const componentsManager = await ComponentsManager.build(loaderProperties);
-    await componentsManager.configRegistry.register(configFile);
+    for (const config of Array.isArray(configFile) ? configFile : [ configFile ]) {
+      await componentsManager.configRegistry.register(config);
+    }
     return componentsManager;
   }
 

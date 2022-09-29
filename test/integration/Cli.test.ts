@@ -29,7 +29,7 @@ describe('An instantiated CliResolver', (): void => {
       '-s', 's',
       '-w', '2',
     ]);
-    expect(shorthand.config).toBe('c');
+    expect(shorthand.config).toEqual([ 'c' ]);
     expect(shorthand.mainModulePath).toBe('m');
     expect(shorthand.loggingLevel).toBe('l');
     expect(shorthand.baseUrl).toBe('b');

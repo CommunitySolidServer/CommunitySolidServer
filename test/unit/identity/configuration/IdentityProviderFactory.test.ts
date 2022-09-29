@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import type * as Koa from 'koa';
 import type { errors, Configuration, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
@@ -14,7 +15,8 @@ import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 jest.mock('oidc-provider', (): any => ({
-  Provider: jest.fn().mockImplementation((issuer: string, config: Configuration): any => ({ issuer, config })),
+  Provider: jest.fn().mockImplementation((issuer: string, config: Configuration): any =>
+    ({ issuer, config, use: jest.fn() })),
 }));
 
 const routes = {
@@ -58,6 +60,7 @@ describe('An IdentityProviderFactory', (): void => {
       request: {
         href: 'http://example.com/idp/',
       },
+      accepts: jest.fn().mockReturnValue('type'),
     } as any;
 
     interactionHandler = {
@@ -146,10 +149,11 @@ describe('An IdentityProviderFactory', (): void => {
     });
 
     // Test the renderError function
-    await expect((config.renderError as any)(ctx, {}, 'error!')).resolves.toBeUndefined();
+    const error = new Error('error!');
+    await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
-      .toHaveBeenLastCalledWith({ error: 'error!', request: ctx.req });
+      .toHaveBeenLastCalledWith({ error, request: ctx.req });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
   });
@@ -229,5 +233,36 @@ describe('An IdentityProviderFactory', (): void => {
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
     expect(error.message).toBe('bad data - more info - more details');
     expect(error.stack).toContain('Error: bad data - more info - more details');
+  });
+
+  it('adds middleware to make the OIDC provider think the request wants HTML.', async(): Promise<void> => {
+    const provider = await factory.getProvider() as any;
+    const use = provider.use as jest.Mock<ReturnType<Koa['use']>, Parameters<Koa['use']>>;
+    expect(use).toHaveBeenCalledTimes(1);
+    const middleware = use.mock.calls[0][0];
+
+    const oldAccept = ctx.accepts;
+    const next = jest.fn();
+    await expect(middleware(ctx, next)).resolves.toBeUndefined();
+    expect(next).toHaveBeenCalledTimes(1);
+
+    expect(ctx.accepts('json', 'html')).toBe('html');
+    expect(oldAccept).toHaveBeenCalledTimes(0);
+  });
+
+  it('does not modify the context accepts function in other cases.', async(): Promise<void> => {
+    const provider = await factory.getProvider() as any;
+    const use = provider.use as jest.Mock<ReturnType<Koa['use']>, Parameters<Koa['use']>>;
+    expect(use).toHaveBeenCalledTimes(1);
+    const middleware = use.mock.calls[0][0];
+
+    const oldAccept = ctx.accepts;
+    const next = jest.fn();
+    await expect(middleware(ctx, next)).resolves.toBeUndefined();
+    expect(next).toHaveBeenCalledTimes(1);
+
+    expect(ctx.accepts('something')).toBe('type');
+    expect(oldAccept).toHaveBeenCalledTimes(1);
+    expect(oldAccept).toHaveBeenLastCalledWith('something');
   });
 });
