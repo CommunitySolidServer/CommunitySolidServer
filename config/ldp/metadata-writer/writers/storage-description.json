@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Adds a link header pointing to the storage description resource.",
+      "@id": "urn:solid-server:default:MetadataWriter_StorageDescription",
+      "@type": "StorageDescriptionAdvertiser",
+      "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "store": { "@id": "urn:solid-server:default:ResourceStore" },
+      "suffix": { "@id": "urn:solid-server:default:variable:storageDescriptionSuffix" }
+    }
+  ]
+}
