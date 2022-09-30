@@ -218,6 +218,7 @@ export const SOLID = createVocabulary('http://www.w3.org/ns/solid/terms#',
   'oidcIssuer',
   'oidcIssuerRegistrationToken',
   'oidcRegistration',
+  'storageDescription',
   'where',
 
   'InsertDeletePatch',
