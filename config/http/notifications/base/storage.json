@@ -1,0 +1,16 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Storage to be used to keep track of subscriptions.",
+      "@id": "urn:solid-server:default:SubscriptionStorage",
+      "@type": "KeyValueSubscriptionStorage",
+      "locker": { "@id": "urn:solid-server:default:ResourceLocker" },
+      "storage": {
+        "@type": "EncodingPathStorage",
+        "relativePath": "/notifications/",
+        "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+      }
+    }
+  ]
+}

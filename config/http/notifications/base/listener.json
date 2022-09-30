@@ -1,0 +1,26 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Listens to the activities emitted by the MonitoringStore.",
+      "@id": "urn:solid-server:default:ListeningActivityHandler",
+      "@type": "ListeningActivityHandler",
+      "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" },
+      "emitter": { "@id": "urn:solid-server:default:ResourceStore" },
+      "handler": {
+        "comment": "New notification types should add a handler here to emit events.",
+        "@id": "urn:solid-server:default:NotificationHandler",
+        "@type": "WaterfallHandler",
+        "handlers": [
+
+        ]
+      }
+    },
+    {
+      "comment": "The ListeningActivityHandler is added to the list of Initializers so Components.js finds and instantiates it.",
+      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
+      "@type": "ParallelHandler",
+      "handlers": [ { "@id": "urn:solid-server:default:ListeningActivityHandler" } ]
+    }
+  ]
+}
