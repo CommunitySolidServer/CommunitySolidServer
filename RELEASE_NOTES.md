@@ -6,6 +6,8 @@
 
 - The server can be configured to use [ACP](https://solidproject.org/TR/acp) instead of WebACL.
   `config/file-acp.json` is an example of a configuration that uses this authorization scheme instead.
+- Support for the new [WebSocket Notification protocol](https://solidproject.org/TR/websocket-subscription-2021)
+  was added.
 
 ### Data migration
 
@@ -22,6 +24,10 @@ The following changes pertain to the imports in the default configs:
 
 - All default configurations which had setup disabled have been updated to also disable registration.
   This is done to prevent configurations with accidental nested storage containers.
+- All references to WebSockets have been removed from the `http/middleware` and `http/server-factory` imports.
+- A new `http/notifications` set of import options have been added
+  to determine which notification specification a CSS instance should use.
+  All default configurations have been updated to use `http/notifications/websockets.json`.
 
 The following changes are relevant for v5 custom configs that replaced certain features.
 
@@ -30,12 +36,22 @@ The following changes are relevant for v5 custom configs that replaced certain f
     - `/app/main/default.json` now imports the above config file.
     - All files configuring template engines.
 - Several minor changes due to support ACP.
-    - `ldp/authorization/*`
+    - `/ldp/authorization/*`
 - Resource generation was changed to there is 1 reusable resource generator.
-    - `init/initializers/*`
-    - `setup/handlers/setup.json`
-    - `identity/access/initializers/*`
-    - `identity/pod/*`
+    - `/init/initializers/*`
+    - `/setup/handlers/setup.json`
+    - `/identity/access/initializers/*`
+    - `/identity/pod/*`
+- Creating an HTTP(S) server is now separate from attaching a handler to it.
+    - `/http/server-factory/*`
+- The WebSocket middleware was moved to the relevant WebSocket configuration.
+    - `/http/middleware/*`
+- Storage description support was added.
+    - `/http/handler/*`
+    - `/ldp/metadata-writer/*`
+- Notification support was added.
+    - `/http/handler/*`
+    - `/notifications/*`
 
 ### Interface changes
 
@@ -50,6 +66,7 @@ These changes are relevant if you wrote custom modules for the server that depen
     - `TemplatedResourcesGenerator` has been renamed to `BaseResourcesGenerator` and has a different interface now.
 - `CredentialSet` was replaced by a single `Credentials` interface.
   This impacts all authentication and authorization related classes.
+- `HttpServerFactory.startServer` function was renamed to `createServer` and is no longer expected to start the server.
 
 ## v5.1.0
 

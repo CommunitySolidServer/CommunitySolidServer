@@ -1,0 +1,31 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the generation and serialization of notifications for WebSocketSubscription2021.",
+      "@id": "urn:solid-server:default:WebSocket2021NotificationHandler",
+      "@type": "TypedNotificationHandler",
+      "type": "WebSocketSubscription2021",
+      "source": {
+        "@type": "ComposedNotificationHandler",
+        "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
+        "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
+        "emitter": { "@id": "urn:solid-server:default:WebSocket2021Emitter" }
+      }
+    },
+    {
+      "comment": "Emits serialized notifications through WebSockets.",
+      "@id": "urn:solid-server:default:WebSocket2021Emitter",
+      "@type": "WebSocket2021Emitter",
+      "socketMap": { "@id": "urn:solid-server:default:WebSocketMap" }
+    },
+
+    {
+      "@id": "urn:solid-server:default:NotificationHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:WebSocket2021NotificationHandler" }
+      ]
+    }
+  ]
+}

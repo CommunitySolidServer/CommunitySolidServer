@@ -13,7 +13,7 @@ import { MetadataWriter } from './MetadataWriter';
 /**
  * Adds a link header pointing to the relevant storage description resource.
  * Recursively checks parent containers until a storage container is found,
- * and then appends the provided suffix to determine the storage description resource.
+ * and then appends the provided relative path to determine the storage description resource.
  */
 export class StorageDescriptionAdvertiser extends MetadataWriter {
   protected readonly logger = getLoggerFor(this);
@@ -21,15 +21,15 @@ export class StorageDescriptionAdvertiser extends MetadataWriter {
   private readonly targetExtractor: TargetExtractor;
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly store: ResourceStore;
-  private readonly suffix: string;
+  private readonly path: string;
 
   public constructor(targetExtractor: TargetExtractor, identifierStrategy: IdentifierStrategy, store: ResourceStore,
-    suffix: string) {
+    path: string) {
     super();
     this.identifierStrategy = identifierStrategy;
     this.targetExtractor = targetExtractor;
     this.store = store;
-    this.suffix = suffix;
+    this.path = path;
   }
 
   public async handle({ response, metadata }: MetadataWriterInput): Promise<void> {
@@ -45,7 +45,7 @@ export class StorageDescriptionAdvertiser extends MetadataWriter {
       this.logger.error(`Unable to find storage root: ${createErrorMessage(error)}`);
       return;
     }
-    const storageDescription = joinUrl(storageRoot.path, this.suffix);
+    const storageDescription = joinUrl(storageRoot.path, this.path);
     addHeader(response, 'Link', `<${storageDescription}>; rel="${SOLID.storageDescription}"`);
   }
 

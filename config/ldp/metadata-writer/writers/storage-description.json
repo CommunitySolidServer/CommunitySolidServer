@@ -8,7 +8,7 @@
       "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "store": { "@id": "urn:solid-server:default:ResourceStore" },
-      "suffix": { "@id": "urn:solid-server:default:variable:storageDescriptionSuffix" }
+      "path": { "@id": "urn:solid-server:default:variable:storageDescriptionPath" }
     }
   ]
 }
