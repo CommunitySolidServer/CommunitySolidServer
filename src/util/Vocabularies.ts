@@ -191,6 +191,16 @@ export const MA = createVocabulary('http://www.w3.org/ns/ma-ont#',
   'format',
 );
 
+export const NOTIFY = createVocabulary('http://www.w3.org/ns/solid/notifications#',
+  'accept',
+  'expiration',
+  'feature',
+  'notificationChannel',
+  'rate',
+  'state',
+  'subscription',
+);
+
 export const OIDC = createVocabulary('http://www.w3.org/ns/solid/oidc#',
   'redirect_uris',
 );

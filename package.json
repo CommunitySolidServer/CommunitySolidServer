@@ -138,6 +138,7 @@
     "fs-extra": "^10.1.0",
     "handlebars": "^4.7.7",
     "ioredis": "^5.2.2",
+    "iso8601-duration": "^2.1.1",
     "jose": "^4.8.3",
     "jsonld-context-parser": "^2.1.5",
     "lodash.orderby": "^4.6.0",
@@ -152,6 +153,7 @@
     "rdf-dereference": "^2.0.0",
     "rdf-parse": "^2.1.0",
     "rdf-serialize": "^2.0.0",
+    "rdf-string": "^1.6.1",
     "rdf-terms": "^1.9.0",
     "sparqlalgebrajs": "^4.0.3",
     "sparqljs": "^3.5.2",
@@ -160,7 +162,8 @@
     "winston": "^3.8.1",
     "winston-transport": "^4.5.0",
     "ws": "^8.8.1",
-    "yargs": "^17.5.1"
+    "yargs": "^17.5.1",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",

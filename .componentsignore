@@ -24,6 +24,7 @@
   "RegExp",
   "Server",
   "Shorthand",
+  "SubscriptionType",
   "Template",
   "TemplateEngine",
   "ValuePreferencesArg",

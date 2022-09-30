@@ -1,0 +1,27 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:NotificationHttpHandler",
+      "@type": "RouterHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "allowedPathNames": [ "^/.notifications/" ],
+      "handler": { "@id": "urn:solid-server:default:NotificationParsingHandler" }
+    },
+    {
+      "@id": "urn:solid-server:default:NotificationParsingHandler",
+      "@type": "ParsingHttpHandler",
+      "requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
+      "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "operationHandler": {
+        "comment": "New notification subscription types should be added here to allow subscriptions.",
+        "@id": "urn:solid-server:default:NotificationTypeHandler",
+        "@type": "WaterfallHandler",
+        "handlers": [ ]
+      }
+    }
+  ]
+}

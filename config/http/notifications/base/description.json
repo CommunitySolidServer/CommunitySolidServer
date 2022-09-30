@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "New notification subscription types should add a handler containing their descriptions so they can be discovered.",
+      "@id": "urn:solid-server:default:StorageDescriber",
+      "@type": "ArrayUnionHandler",
+      "handlers": [ ]
+    },
+
+    {
+      "comment": "The root URL of all Notification subscription routes.",
+      "@id": "urn:solid-server:default:NotificationRoute",
+      "@type": "RelativePathInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "relativePath": "/.notifications/"
+    },
+  ]
+}
