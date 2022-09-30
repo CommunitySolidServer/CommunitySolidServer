@@ -15,7 +15,7 @@ describe('A StorageDescriptionAdvertiser', (): void => {
   let response: jest.Mocked<HttpResponse>;
   let input: MetadataWriterInput;
   const baseUrl = 'http://example.com/';
-  const suffix = '.well-known/solid';
+  const path = '.well-known/solid';
   let targetExtractor: jest.Mocked<TargetExtractor>;
   const identifierStrategy = new SingleRootIdentifierStrategy(baseUrl);
   let store: jest.Mocked<ResourceStore>;
@@ -41,7 +41,7 @@ describe('A StorageDescriptionAdvertiser', (): void => {
       getRepresentation: jest.fn().mockResolvedValue(new BasicRepresentation('', { [RDF.type]: PIM.terms.Storage })),
     } as any;
 
-    advertiser = new StorageDescriptionAdvertiser(targetExtractor, identifierStrategy, store, suffix);
+    advertiser = new StorageDescriptionAdvertiser(targetExtractor, identifierStrategy, store, path);
   });
 
   it('adds a storage description link header.', async(): Promise<void> => {

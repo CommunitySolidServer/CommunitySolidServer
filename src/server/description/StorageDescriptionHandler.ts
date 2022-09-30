@@ -14,20 +14,20 @@ import type { StorageDescriber } from './StorageDescriber';
 
 /**
  * Generates the response for GET requests targeting a storage description resource.
- * The suffix needs to match the suffix used to generate storage description resources
- * and will be used to verify the container it is linked to is an actual storage.
+ * The input path needs to match the relative path used to generate storage description resources
+ * and will be used to verify if the container it is linked to is an actual storage.
  */
 export class StorageDescriptionHandler extends OperationHttpHandler {
   private readonly store: ResourceStore;
-  private readonly suffix: string;
+  private readonly path: string;
   private readonly converter: RepresentationConverter;
   private readonly describer: StorageDescriber;
 
-  public constructor(store: ResourceStore, suffix: string, converter: RepresentationConverter,
+  public constructor(store: ResourceStore, path: string, converter: RepresentationConverter,
     describer: StorageDescriber) {
     super();
     this.store = store;
-    this.suffix = suffix;
+    this.path = path;
     this.converter = converter;
     this.describer = describer;
   }
@@ -36,7 +36,7 @@ export class StorageDescriptionHandler extends OperationHttpHandler {
     if (method !== 'GET') {
       throw new MethodNotAllowedHttpError([ method ], `Only GET requests can target the storage description.`);
     }
-    const container = { path: ensureTrailingSlash(target.path.slice(0, -this.suffix.length)) };
+    const container = { path: ensureTrailingSlash(target.path.slice(0, -this.path.length)) };
     const representation = await this.store.getRepresentation(container, {});
     representation.data.destroy();
     if (!representation.metadata.has(RDF.terms.type, PIM.terms.Storage)) {

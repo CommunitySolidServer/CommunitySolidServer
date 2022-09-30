@@ -1,0 +1,46 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Catches newly opened WebSockets and verifies if they belong to a subscription.",
+      "@id": "urn:solid-server:default:WebSocket2021Listener",
+      "@type": "WebSocket2021Listener",
+      "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" },
+      "route": { "@id": "urn:solid-server:default:WebSocket2021Route" },
+      "handler": {
+        "@type": "SequenceHandler",
+        "handlers": [
+          { "@id": "urn:solid-server:default:WebSocket2021Storer" },
+          { "@id": "urn:solid-server:default:WebSocket2021StateHandler" }
+        ]
+      }
+    },
+    {
+      "comment": "Opened WebSockets will be stored in this Map.",
+      "@id": "urn:solid-server:default:WebSocketMap",
+      "@type": "WebSocketMap"
+    },
+    {
+      "comment": "Stores the opened WebSockets for reuse.",
+      "@id": "urn:solid-server:default:WebSocket2021Storer",
+      "@type": "WebSocket2021Storer",
+      "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" },
+      "socketMap": { "@id": "urn:solid-server:default:WebSocketMap" }
+    },
+    {
+      "comment": "Handles the state feature of a WebSocketSubscription2021 subscription.",
+      "@id": "urn:solid-server:default:WebSocket2021StateHandler",
+      "@type": "BaseStateHandler",
+      "handler": { "@id": "urn:solid-server:default:WebSocket2021NotificationHandler" },
+      "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
+    },
+
+    {
+      "@id": "urn:solid-server:default:ServerConfigurator",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:WebSocket2021Listener" }
+      ]
+    }
+  ]
+}

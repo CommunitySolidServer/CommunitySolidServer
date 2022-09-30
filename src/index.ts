@@ -317,6 +317,15 @@ export * from './server/notifications/generate/StateNotificationGenerator';
 export * from './server/notifications/serialize/ConvertingNotificationSerializer';
 export * from './server/notifications/serialize/JsonLdNotificationSerializer';
 export * from './server/notifications/serialize/NotificationSerializer';
+
+// Server/Notifications/WebSocketSubscription2021
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Emitter';
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Handler';
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Listener';
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Storer';
+export * from './server/notifications/WebSocketSubscription2021/WebSocketMap';
+export * from './server/notifications/WebSocketSubscription2021/WebSocketSubscription2021';
+
 // Server/Notifications
 export * from './server/notifications/ActivityEmitter';
 export * from './server/notifications/BaseStateHandler';

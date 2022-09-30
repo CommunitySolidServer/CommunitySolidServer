@@ -23,6 +23,7 @@
   "Readonly",
   "RegExp",
   "Server",
+  "SetMultiMap",
   "Shorthand",
   "SubscriptionType",
   "Template",

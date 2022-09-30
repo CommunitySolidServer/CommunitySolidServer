@@ -15,7 +15,7 @@ import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
 
 describe('A StorageDescriptionHandler', (): void => {
-  const suffix = '.well-known/solid';
+  const path = '.well-known/solid';
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
   let operation: Operation;
@@ -28,7 +28,7 @@ describe('A StorageDescriptionHandler', (): void => {
   beforeEach(async(): Promise<void> => {
     operation = {
       method: 'GET',
-      target: { path: `http://example.com/${suffix}` },
+      target: { path: `http://example.com/${path}` },
       body: new BasicRepresentation(),
       preferences: {},
     };
@@ -50,7 +50,7 @@ describe('A StorageDescriptionHandler', (): void => {
         [ quad(namedNode(target.path), RDF.terms.type, PIM.terms.Storage) ]),
     } as any;
 
-    handler = new StorageDescriptionHandler(store, suffix, converter, describer);
+    handler = new StorageDescriptionHandler(store, path, converter, describer);
   });
 
   it('only handles GET requests.', async(): Promise<void> => {

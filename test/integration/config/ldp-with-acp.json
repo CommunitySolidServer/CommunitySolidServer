@@ -4,9 +4,9 @@
     "css:config/app/main/default.json",
     "css:config/app/init/default.json",
     "css:config/app/setup/disabled.json",
-
     "css:config/http/handler/simple.json",
     "css:config/http/middleware/default.json",
+    "css:config/http/notifications/disabled.json",
     "css:config/http/server-factory/http.json",
     "css:config/http/static/default.json",
     "css:config/identity/access/public.json",

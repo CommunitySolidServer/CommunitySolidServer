@@ -2,8 +2,8 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "The suffix appended to a storage container to find its description resource.",
-      "@id": "urn:solid-server:default:variable:storageDescriptionSuffix",
+      "comment": "The relative path appended to a storage container URL to find its description resource.",
+      "@id": "urn:solid-server:default:variable:storageDescriptionPath",
       "valueRaw": ".well-known/solid"
     },
     {
@@ -22,7 +22,7 @@
         "operationHandler": {
           "@type": "StorageDescriptionHandler",
           "store": { "@id": "urn:solid-server:default:ResourceStore" },
-          "suffix": { "@id": "urn:solid-server:default:variable:storageDescriptionSuffix" },
+          "path": { "@id": "urn:solid-server:default:variable:storageDescriptionPath" },
           "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
           "describer": { "@id": "urn:solid-server:default:StorageDescriber" }
         }

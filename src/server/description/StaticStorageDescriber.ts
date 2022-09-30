@@ -9,6 +9,9 @@ import namedNode = DataFactory.namedNode;
 /**
  * Adds a fixed set of triples to the storage description resource,
  * with the resource identifier as subject.
+ *
+ * This can be used to add descriptions that a storage always needs to have,
+ * such as the `<> a pim:Storage` triple.
  */
 export class StaticStorageDescriber extends StorageDescriber {
   private readonly terms: ReadonlyMap<NamedNode, Quad_Object[]>;

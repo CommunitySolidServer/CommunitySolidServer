@@ -29,6 +29,7 @@ const portNames = [
   'SetupMemory',
   'SparqlStorage',
   'Subdomains',
+  'WebSocketSubscription2021',
 
   // Unit
   'BaseServerFactory',

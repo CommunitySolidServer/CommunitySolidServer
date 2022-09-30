@@ -14,19 +14,26 @@ Sets up all the handlers a request will potentially pass through.
 A set of handlers that will always be run on all requests to add some metadata
 and then pass the request along.
 
-* *no-websockets*: The default setup but without the websocket-related metadata.
-* *websockets*: The default setup with several handlers.
+* *default*: The default setup with several handlers.
+
+## Notifications
+
+Determines how notifications should be sent out from the server when resources change.
+
+* *disabled*: No notifications are sent out.
+* *legacy-websocket*: Follows the legacy Solid WebSocket
+  [specification](https://github.com/solid/solid-spec/blob/master/api-websockets.md).
+* *websockets*: Follows the WebSocketSubscription2021
+  [specification](https://solidproject.org/TR/websocket-subscription-2021).
 
 ## Server-Factory
 
 The factory used to create the actual server object.
 
-* *no-websockets*: Only HTTP.
-* *websockets*: HTTP and websockets.
-* *https-no-websockets*: Only HTTPS. Adds 2 new CLI params to set the key/cert paths.
-* *https-websockets*: HTTPS and websockets. Adds 2 new CLI params to set the key/cert paths.
-* *https-example*: An example configuration to use HTTPS directly at the server (instead of at a reverse proxy)
-  by adding the key/cert paths to the config itself.
+* *http*: A HTTP server.
+* *https*: A HTTPS server.
+* *https-no-cli-example*: An example of how to set up an HTTPS server
+  by defining the key/cert paths directly in the config itself.
 
 ## Static
 
