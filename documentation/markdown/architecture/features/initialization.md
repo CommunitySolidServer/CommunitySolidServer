@@ -108,25 +108,32 @@ to add any custom initializers that need to run.
 
 The `ServerInitializer` is the initializer that finally starts up the server by listening to the relevant port,
 once all the initialization described above is finished.
-This is an example of a component that differs based on some of the choices made during configuration.
+It takes as input 2 components: a `HttpServerFactory` and a `ServerListener`.
 
 ```mermaid
 flowchart TD
   ServerInitializer("<strong>ServerInitializer</strong><br>ServerInitializer")
-  ServerInitializer --> WebSocketServerFactory("<strong>ServerFactory</strong><br>WebSocketServerFactory")
-  WebSocketServerFactory --> BaseHttpServerFactory("<br>BaseHttpServerFactory")
-  BaseHttpServerFactory --> HttpHandler("<strong>HttpHandler</strong><br><i>HttpHandler</i>")
-
-  ServerInitializer2("<strong>ServerInitializer</strong><br>ServerInitializer")
-  ServerInitializer2 ---> BaseHttpServerFactory2("<strong>ServerFactory</strong><br>BaseHttpServerFactory")
-  BaseHttpServerFactory2 --> HttpHandler2("<strong>HttpHandler</strong><br><i>HttpHandler</i>")
+  ServerInitializer --> ServerInitializerArgs
+  
+  subgraph ServerInitializerArgs[" "]
+    direction LR
+    ServerFactory("<strong>ServerFactory</strong><br>BaseServerFactory")
+    ServerListener("<strong>ServerListener</strong><br>ParallelHandler")
+  end
+  
+  ServerListener --> HandlerServerListener("<strong>HandlerServerListener</strong><br>HandlerServerListener")
+  
+  HandlerServerListener --> HttpHandler("<strong>HttpHandler</strong><br><i>HttpHandler</i>")
 ```
 
-Depending on if the configurations necessary for websockets are imported or not,
-the `urn:solid-server:default:ServerFactory` identifier will point to a different resource.
-There will always be a `BaseHttpServerFactory` that starts the HTTP(S) server,
-but there might also be a `WebSocketServerFactory` wrapped around it to handle websocket support.
-Although not indicated here, the parameters for initializing the `BaseHttpServerFactory`
-might also differ in case an HTTPS configuration is imported.
+The `HttpServerFactory` is responsible for starting a server on a given port.
+Depending on the configuration this can be an HTTP or an HTTPS server.
+The created server emits events when it receives requests.
 
-The `HttpHandler` it takes as input is responsible for how [HTTP requests get resolved](http-handler.md).
+A `ServerListener` is a class that takes the created server as input and attaches a listener to interpret events.
+One listener that is always used is the `urn:solid-server:default:HandlerServerListener`,
+which calls an `HttpHandler` [to resolve HTTP requests](http-handler.md).
+
+Sometimes it is necessary to add additional listeners,
+these can then be added to the `urn:solid-server:default:ServerListener` as it is a `ParallellHandler`.
+An example of this is when WebSockets are used [to handle notifications](notifications.md).
