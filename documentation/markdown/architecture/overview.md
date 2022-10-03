@@ -61,3 +61,4 @@ Below are the sections that go deeper into the features of the server and how th
 * [How the server is initialized and started](features/initialization.md)
 * [How HTTP requests are handled](features/http-handler.md)
 * [How the server handles a standard Solid request](features/protocol/overview.md)
+* [How Notification components are configured](features/notifications.md)

@@ -21,6 +21,8 @@ flowchart LR
     StaticAssetHandler("<strong>StaticAssetHandler</strong><br>StaticAssetHandler")
     SetupHandler("<strong>SetupHandler</strong><br><i>HttpHandler</i>")
     OidcHandler("<strong>OidcHandler</strong><br><i>HttpHandler</i>")
+    NotificationHttpHandler("<strong>NotificationHttpHandler</strong><br><i>HttpHandler</i>")
+    StorageDescriptionHandler("<strong>StorageDescriptionHandler</strong><br><i>HttpHandler</i>")
     AuthResourceHttpHandler("<strong>AuthResourceHttpHandler</strong><br><i>HttpHandler</i>")
     IdentityProviderHttpHandler("<strong>IdentityProviderHttpHandler</strong><br><i>HttpHandler</i>")
     LdpHandler("<strong>LdpHandler</strong><br><i>HttpHandler</i>")
@@ -28,7 +30,9 @@ flowchart LR
 
   StaticAssetHandler --> SetupHandler
   SetupHandler --> OidcHandler
-  OidcHandler --> AuthResourceHttpHandler
+  OidcHandler --> NotificationHttpHandler
+  NotificationHttpHandler --> StorageDescriptionHandler
+  StorageDescriptionHandler --> AuthResourceHttpHandler
   AuthResourceHttpHandler --> IdentityProviderHttpHandler
   IdentityProviderHttpHandler --> LdpHandler
 ```
@@ -65,6 +69,19 @@ The `urn:solid-server:default:OidcHandler` handles all requests related
 to the Solid-OIDC [specification](https://solid.github.io/solid-oidc/).
 The OIDC component is configured to work on the `/.oidc/` subpath,
 so this handler catches all those requests and sends them to the internal OIDC library that is used.
+
+## NotificationHttpHandler
+
+The `urn:solid-server:default:NotificationHttpHandler` catches all notification subscription requests.
+By default these are requests targeting `/.notifications/`.
+Which specific subscription type is targeted is then based on the next part of the URL.
+
+## StorageDescriptionHandler
+
+The `urn:solid-server:default:StorageDescriptionHandler` returns the relevant RDF data
+for requests targeting a storage description resource.
+It does this by knowing which URL suffix is used for such resources,
+and verifying that the associated container is an actual storage container.
 
 ## AuthResourceHttpHandler
 
