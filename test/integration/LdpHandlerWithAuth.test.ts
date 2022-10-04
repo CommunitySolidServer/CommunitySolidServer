@@ -2,7 +2,7 @@ import { promises as fsPromises } from 'fs';
 import fetch from 'cross-fetch';
 import type { ResourceStore, App } from '../../src/';
 import { BasicRepresentation, isSystemError, joinFilePath, joinUrl } from '../../src/';
-import { AclHelper } from '../util/AclHelper';
+import { AclHelper } from '../../src/init/AclHelper';
 import { deleteResource, getResource, postResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
 import {

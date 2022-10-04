@@ -4,7 +4,7 @@
 
 ### New features
 
-- ...
+- Pods seeding can now add data files as well
 
 ### Data migration
 

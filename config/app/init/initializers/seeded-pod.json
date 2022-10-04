@@ -17,6 +17,7 @@
       "@id": "urn:solid-server:default:SeededPodInitializer",
       "@type": "SeededPodInitializer",
       "registrationManager": { "@id": "urn:solid-server:default:SeededPodRegistrationManager" },
+      "store": { "@id": "urn:solid-server:default:ResourceStore" },
       "configFilePath": { "@id": "urn:solid-server:default:variable:seededPodConfigJson" }
     }
   ]
