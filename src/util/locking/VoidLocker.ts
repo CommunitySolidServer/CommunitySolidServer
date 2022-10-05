@@ -1,5 +1,6 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
+import type { PromiseOrValue } from '../PromiseUtil';
 import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';
 
 /**
@@ -20,14 +21,14 @@ export class VoidLocker implements ExpiringReadWriteLocker {
 
   public async withReadLock<T>(
     identifier: ResourceIdentifier,
-    whileLocked: (maintainLock: () => void) => T | Promise<T>,
+    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
   ): Promise<T> {
     return whileLocked(noop);
   }
 
   public async withWriteLock<T>(
     identifier: ResourceIdentifier,
-    whileLocked: (maintainLock: () => void) => T | Promise<T>,
+    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
   ): Promise<T> {
     return whileLocked(noop);
   }

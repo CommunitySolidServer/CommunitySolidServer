@@ -15,6 +15,7 @@ import { InternalServerError } from '../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { IdentifierMap } from '../util/map/IdentifierMap';
+import { getDefault } from '../util/map/MapUtil';
 import { readableToQuads } from '../util/StreamUtil';
 import { ACL } from '../util/Vocabularies';
 import { getAccessControlledResources } from './AcpUtil';
@@ -78,12 +79,8 @@ export class AcpReader extends PermissionReader {
     // Extract all the policies relevant for the target
     const identifiers = this.getAncestorIdentifiers(target);
     for (const identifier of identifiers) {
-      let acrs = resourceCache.get(identifier);
-      if (!acrs) {
-        const data = await this.readAcrData(identifier);
-        acrs = [ ...getAccessControlledResources(data) ];
-        resourceCache.set(identifier, acrs);
-      }
+      const acrs = await getDefault(resourceCache, identifier, async(): Promise<IAccessControlledResource[]> =>
+        [ ...getAccessControlledResources(await this.readAcrData(identifier)) ]);
       const size = policies.length;
       policies.push(...this.getEffectivePolicies(target, acrs));
       this.logger.debug(`Found ${policies.length - size} policies relevant for ${target.path} in ${identifier.path}`);

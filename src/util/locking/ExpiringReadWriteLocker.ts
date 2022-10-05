@@ -1,4 +1,5 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+import type { PromiseOrValue } from '../PromiseUtil';
 import type { ReadWriteLocker } from './ReadWriteLocker';
 
 /**
@@ -14,7 +15,7 @@ export interface ExpiringReadWriteLocker extends ReadWriteLocker {
    * @param whileLocked - A function to execute while the resource is locked.
    * Receives a callback as input parameter to maintain the lock.
    */
-  withReadLock: <T>(identifier: ResourceIdentifier, whileLocked: (maintainLock: () => void) => T | Promise<T>)
+  withReadLock: <T>(identifier: ResourceIdentifier, whileLocked: (maintainLock: () => void) => PromiseOrValue<T>)
   => Promise<T>;
 
   /**
@@ -26,6 +27,6 @@ export interface ExpiringReadWriteLocker extends ReadWriteLocker {
    * @param whileLocked - A function to execute while the resource is locked.
    * Receives a callback as input parameter to maintain the lock.
    */
-  withWriteLock: <T>(identifier: ResourceIdentifier, whileLocked: (maintainLock: () => void) => T | Promise<T>)
+  withWriteLock: <T>(identifier: ResourceIdentifier, whileLocked: (maintainLock: () => void) => PromiseOrValue<T>)
   => Promise<T>;
 }

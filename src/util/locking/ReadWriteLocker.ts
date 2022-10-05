@@ -1,4 +1,5 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+import type { PromiseOrValue } from '../PromiseUtil';
 
 /**
  * Allows the locking of resources which is needed for non-atomic {@link ResourceStore}s.
@@ -14,7 +15,7 @@ export interface ReadWriteLocker {
    *
    * @returns A promise resolving when the lock is released.
    */
-  withReadLock: <T>(identifier: ResourceIdentifier, whileLocked: () => T | Promise<T>) => Promise<T>;
+  withReadLock: <T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>) => Promise<T>;
 
   /**
    * Run the given function while the resource is locked.
@@ -26,5 +27,5 @@ export interface ReadWriteLocker {
    *
    * @returns A promise resolving when the lock is released.
    */
-  withWriteLock: <T>(identifier: ResourceIdentifier, whileLocked: () => T | Promise<T>) => Promise<T>;
+  withWriteLock: <T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>) => Promise<T>;
 }

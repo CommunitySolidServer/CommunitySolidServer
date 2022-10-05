@@ -1,6 +1,7 @@
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import { WrappedExpiringReadWriteLocker } from '../../../../src/util/locking/WrappedExpiringReadWriteLocker';
+import type { PromiseOrValue } from '../../../../src/util/PromiseUtil';
 
 jest.useFakeTimers();
 
@@ -14,9 +15,9 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
 
   beforeEach(async(): Promise<void> => {
     wrappedLocker = {
-      withReadLock: jest.fn(async<T>(id: ResourceIdentifier, whileLocked: () => T | Promise<T>):
+      withReadLock: jest.fn(async<T>(id: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>):
       Promise<T> => whileLocked()),
-      withWriteLock: jest.fn(async<T>(id: ResourceIdentifier, whileLocked: () => T | Promise<T>):
+      withWriteLock: jest.fn(async<T>(id: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>):
       Promise<T> => whileLocked()),
     };
 
