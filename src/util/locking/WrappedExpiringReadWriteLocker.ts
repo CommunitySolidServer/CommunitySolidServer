@@ -1,6 +1,7 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../errors/InternalServerError';
+import type { PromiseOrValue } from '../PromiseUtil';
 import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';
 import type { ReadWriteLocker } from './ReadWriteLocker';
 import Timeout = NodeJS.Timeout;
@@ -24,12 +25,12 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
   }
 
   public async withReadLock<T>(identifier: ResourceIdentifier,
-    whileLocked: (maintainLock: () => void) => T | Promise<T>): Promise<T> {
+    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> {
     return this.locker.withReadLock(identifier, async(): Promise<T> => this.expiringPromise(identifier, whileLocked));
   }
 
   public async withWriteLock<T>(identifier: ResourceIdentifier,
-    whileLocked: (maintainLock: () => void) => T | Promise<T>): Promise<T> {
+    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> {
     return this.locker.withWriteLock(identifier, async(): Promise<T> => this.expiringPromise(identifier, whileLocked));
   }
 
@@ -39,7 +40,7 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
    * it receives. The ResourceIdentifier is only used for logging.
    */
   private async expiringPromise<T>(identifier: ResourceIdentifier,
-    whileLocked: (maintainLock: () => void) => T | Promise<T>): Promise<T> {
+    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> {
     let timer: Timeout;
     let createTimeout: () => Timeout;
 

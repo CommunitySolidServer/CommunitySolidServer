@@ -1,10 +1,10 @@
 import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { PromiseOrValue } from '../../util/PromiseUtil';
 import { getConversionTarget, getTypeWeight, preferencesToString } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
-type PromiseOrValue<T> = T | Promise<T>;
 type ValuePreferencesArg =
   PromiseOrValue<string> |
   PromiseOrValue<string[]> |

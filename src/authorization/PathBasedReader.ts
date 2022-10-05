@@ -1,6 +1,7 @@
 import { getLoggerFor } from '../logging/LogUtil';
 import { concat } from '../util/IterableUtil';
 import { IdentifierMap, IdentifierSetMultiMap } from '../util/map/IdentifierMap';
+import { getDefault } from '../util/map/MapUtil';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/PathUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
@@ -44,11 +45,7 @@ export class PathBasedReader extends PermissionReader {
     for (const [ identifier, modes ] of accessMap) {
       const reader = this.findReader(identifier.path);
       if (reader) {
-        let matches = result.get(reader);
-        if (!matches) {
-          matches = new IdentifierSetMultiMap();
-          result.set(reader, matches);
-        }
+        const matches = getDefault(result, reader, (): AccessMap => new IdentifierSetMultiMap());
         matches.set(identifier, modes);
       }
     }

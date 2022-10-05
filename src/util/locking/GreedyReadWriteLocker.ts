@@ -2,6 +2,7 @@ import type { ResourceIdentifier } from '../../http/representation/ResourceIdent
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { ForbiddenHttpError } from '../errors/ForbiddenHttpError';
 import { InternalServerError } from '../errors/InternalServerError';
+import type { PromiseOrValue } from '../PromiseUtil';
 import type { ReadWriteLocker } from './ReadWriteLocker';
 import type { ResourceLocker } from './ResourceLocker';
 
@@ -43,7 +44,7 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
     this.suffixes = suffixes;
   }
 
-  public async withReadLock<T>(identifier: ResourceIdentifier, whileLocked: () => (Promise<T> | T)): Promise<T> {
+  public async withReadLock<T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>): Promise<T> {
     await this.preReadSetup(identifier);
     try {
       return await whileLocked();
@@ -52,7 +53,7 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
     }
   }
 
-  public async withWriteLock<T>(identifier: ResourceIdentifier, whileLocked: () => (Promise<T> | T)): Promise<T> {
+  public async withWriteLock<T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>): Promise<T> {
     if (identifier.path.endsWith(`.${this.suffixes.count}`)) {
       throw new ForbiddenHttpError('This resource is used for internal purposes.');
     }
@@ -117,7 +118,7 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
   /**
    * Safely runs an action on the count.
    */
-  private async withInternalReadLock<T>(identifier: ResourceIdentifier, whileLocked: () => (Promise<T> | T)):
+  private async withInternalReadLock<T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>):
   Promise<T> {
     const read = this.getReadLockKey(identifier);
     await this.locker.acquire(read);
