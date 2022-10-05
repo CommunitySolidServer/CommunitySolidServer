@@ -1,4 +1,5 @@
 import type { Representation } from '../../../src/http/representation/Representation';
+import type { RepresentationPreferences } from '../../../src/http/representation/RepresentationPreferences';
 import type { RepresentationConverter } from '../../../src/storage/conversion/RepresentationConverter';
 import { RepresentationConvertingStore } from '../../../src/storage/RepresentationConvertingStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
@@ -23,9 +24,11 @@ describe('A RepresentationConvertingStore', (): void => {
   const inConverter: RepresentationConverter = { handleSafe: jest.fn().mockResolvedValue(convertedIn) } as any;
   const outConverter: RepresentationConverter = { handleSafe: jest.fn().mockResolvedValue(convertedOut) } as any;
 
-  const inType = 'text/turtle';
+  const inPreferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
   const metadataStrategy = new SimpleSuffixStrategy('.meta');
-  const store = new RepresentationConvertingStore(source, metadataStrategy, { inType, inConverter, outConverter });
+  const store = new RepresentationConvertingStore(source,
+    metadataStrategy,
+    { inPreferences, inConverter, outConverter });
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();

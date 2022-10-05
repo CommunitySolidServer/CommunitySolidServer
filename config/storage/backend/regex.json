@@ -67,7 +67,10 @@
       "@type": "RepresentationConvertingStore",
       "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
       "options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
-      "options_inType": "internal/quads",
+      "options_inPreferences_type": {
+        "RepresentationConvertingStore:_options_inPreferences_type_key": "internal/quads",
+        "RepresentationConvertingStore:_options_inPreferences_type_value": 1
+      },
       "source": {
         "@type": "DataAccessorBasedStore",
         "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
