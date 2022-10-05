@@ -63,6 +63,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `AgentGroupAccessChecker` no longer accepts any input parameters.
 - The functions in `Vocabularies.ts` were renamed,
   the typings have been made more precise and several utility types were added.
+- The `RepresentationConvetingStore` `options.inType` was replaced with `options.inPreferences`.
 - Several changes to support ACP.
     - `WebAclAuxiliaryReader` was renamed to `AuthAuxiliaryReader`.
     - `OwnerPermissionReader` input parameter `aclStrategy` was renamed to `authStrategy`.

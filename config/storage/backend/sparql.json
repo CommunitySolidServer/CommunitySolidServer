@@ -17,7 +17,10 @@
       "comment": "This makes it so all incoming data is converted to quad objects.",
       "@id": "urn:solid-server:default:ResourceStore_Converting",
       "@type": "RepresentationConvertingStore",
-      "options_inType": "internal/quads"
+      "options_inPreferences_type": {
+        "RepresentationConvertingStore:_options_inPreferences_type_key": "internal/quads",
+        "RepresentationConvertingStore:_options_inPreferences_type_value": 1
+      }
     }
   ]
 }
