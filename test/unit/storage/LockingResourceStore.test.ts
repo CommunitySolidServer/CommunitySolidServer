@@ -6,6 +6,7 @@ import type { ResourceIdentifier } from '../../../src/http/representation/Resour
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import type { ExpiringReadWriteLocker } from '../../../src/util/locking/ExpiringReadWriteLocker';
+import type { PromiseOrValue } from '../../../src/util/PromiseUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { flushPromises } from '../../util/Util';
 
@@ -47,7 +48,7 @@ describe('A LockingResourceStore', (): void => {
 
     locker = {
       withReadLock: jest.fn(async <T>(id: ResourceIdentifier,
-        whileLocked: (maintainLock: () => void) => T | Promise<T>): Promise<T> => {
+        whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> => {
         order.push('lock read');
         try {
           // Allows simulating a timeout event
@@ -61,7 +62,7 @@ describe('A LockingResourceStore', (): void => {
         }
       }),
       withWriteLock: jest.fn(async <T>(identifier: ResourceIdentifier,
-        whileLocked: (maintainLock: () => void) => T | Promise<T>): Promise<T> => {
+        whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> => {
         order.push('lock write');
         try {
           return await whileLocked(emptyFn);

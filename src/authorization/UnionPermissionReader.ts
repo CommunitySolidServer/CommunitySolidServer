@@ -27,7 +27,7 @@ export class UnionPermissionReader extends UnionHandler<PermissionReader> {
   private mergePermissionMaps(permissionMap: PermissionMap, result: PermissionMap): void {
     for (const [ identifier, permissionSet ] of permissionMap) {
       for (const [ credential, permission ] of Object.entries(permissionSet) as [keyof PermissionSet, Permission][]) {
-        const resultSet = getDefault(result, identifier, {});
+        const resultSet = getDefault(result, identifier, (): PermissionSet => ({}));
         resultSet[credential] = this.mergePermissions(permission, resultSet[credential]);
       }
     }

@@ -5,6 +5,7 @@ import type { Initializable } from '../../init/Initializable';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { AttemptSettings } from '../LockUtils';
 import { retryFunction } from '../LockUtils';
+import type { PromiseOrValue } from '../PromiseUtil';
 import type { ReadWriteLocker } from './ReadWriteLocker';
 import type { ResourceLocker } from './ResourceLocker';
 import type { RedisResourceLock, RedisReadWriteLock, RedisAnswer } from './scripts/RedisLuaScripts';
@@ -127,7 +128,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
     };
   }
 
-  public async withReadLock<T>(identifier: ResourceIdentifier, whileLocked: () => (Promise<T> | T)): Promise<T> {
+  public async withReadLock<T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>): Promise<T> {
     const key = this.getReadWriteKey(identifier);
     await retryFunction(
       this.swallowFalse(this.redisRw.acquireReadLock.bind(this.redisRw, key)),
@@ -143,7 +144,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
     }
   }
 
-  public async withWriteLock<T>(identifier: ResourceIdentifier, whileLocked: () => (Promise<T> | T)): Promise<T> {
+  public async withWriteLock<T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>): Promise<T> {
     const key = this.getReadWriteKey(identifier);
     await retryFunction(
       this.swallowFalse(this.redisRw.acquireWriteLock.bind(this.redisRw, key)),

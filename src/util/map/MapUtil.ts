@@ -1,3 +1,5 @@
+import { resolvePromiseOrValue } from '../PromiseUtil';
+import type { PromiseOrValue } from '../PromiseUtil';
 import type { SetMultiMap } from './SetMultiMap';
 
 export type MapKey<T> = T extends Map<infer TKey, any> ? TKey : never;
@@ -42,18 +44,33 @@ export function modify<T extends SetMultiMap<any, any>>(map: T, options: ModifyO
 
 /**
  * Finds the result of calling `map.get(key)`.
- * If there is no result, it instead returns the default value.
+ * If there is no result, it instead returns the result of the default function.
  * The Map will also be updated to assign that default value to the given key.
  *
  * @param map - Map to use.
  * @param key - Key to find the value for.
- * @param defaultValue - Value to insert and return if no result was found.
+ * @param defaultFn - Function to generate default value to insert and return if no result was found.
  */
-export function getDefault<TKey, TValue>(map: Map<TKey, TValue>, key: TKey, defaultValue: TValue): TValue {
+export function getDefault<TKey, TValue>(map: Map<TKey, TValue>, key: TKey, defaultFn: () => TValue): TValue;
+/**
+ * Finds the result of calling `map.get(key)`.
+ * If there is no result, it instead returns the result of the default function.
+ * The Map will also be updated to assign the resolved default value to the given key.
+ *
+ * @param map - Map to use.
+ * @param key - Key to find the value for.
+ * @param defaultFn - Function to generate default value to insert and return if no result was found.
+ */
+export function getDefault<TKey, TValue>(map: Map<TKey, TValue>, key: TKey, defaultFn: () => Promise<TValue>):
+Promise<TValue>;
+export function getDefault<TKey, TValue>(map: Map<TKey, TValue>, key: TKey, defaultFn: () => PromiseOrValue<TValue>):
+PromiseOrValue<TValue> {
   const value = map.get(key);
   if (value) {
     return value;
   }
-  map.set(key, defaultValue);
-  return defaultValue;
+  return resolvePromiseOrValue<TValue, TValue>(defaultFn(), (val): TValue => {
+    map.set(key, val);
+    return val;
+  });
 }

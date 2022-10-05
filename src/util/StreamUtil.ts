@@ -10,6 +10,7 @@ import { isHttpRequest } from '../server/HttpRequest';
 import { InternalServerError } from './errors/InternalServerError';
 import type { Guarded } from './GuardedStream';
 import { guardStream } from './GuardedStream';
+import type { PromiseOrValue } from './PromiseUtil';
 
 export const endOfStream = promisify(eos);
 
@@ -119,12 +120,12 @@ export interface AsyncTransformOptions<T = any> extends DuplexOptions {
   /**
    * Transforms data from the source by calling the `push` method
    */
-  transform?: (this: Transform, data: T, encoding: string) => any | Promise<any>;
+  transform?: (this: Transform, data: T, encoding: string) => PromiseOrValue<any>;
 
   /**
    * Performs any final actions after the source has ended
    */
-  flush?: (this: Transform) => any | Promise<any>;
+  flush?: (this: Transform) => PromiseOrValue<any>;
 }
 
 /**

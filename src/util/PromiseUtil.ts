@@ -1,4 +1,28 @@
+import { types } from 'util';
 import { createAggregateError } from './errors/HttpErrorUtil';
+
+export type PromiseOrValue<T> = T | Promise<T>;
+
+/**
+ * Verifies if the given value is a Promise or not.
+ * @param object - Object to check.
+ */
+export function isPromise<T>(object: PromiseOrValue<T>): object is Promise<T> {
+  return types.isPromise(object);
+}
+
+/**
+ * Calls `callback` with the resolved value of `object`.
+ * In case `object` is a Promise, the result will also be a Promise,
+ * otherwise the result will be sync.
+ */
+export function resolvePromiseOrValue<TIn, TOut>(object: PromiseOrValue<TIn>, callback: (val: TIn) => TOut):
+PromiseOrValue<TOut> {
+  if (isPromise(object)) {
+    return object.then((val): TOut => callback(val));
+  }
+  return callback(object);
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 function noop(): void {}

@@ -44,12 +44,17 @@ describe('MapUtil', (): void => {
   describe('#getDefault', (): void => {
     it('returns the value it finds in the Map for the given key.', async(): Promise<void> => {
       const map = new Map([[ key1, 123 ]]);
-      expect(getDefault(map, key1, 999)).toBe(123);
+      expect(getDefault(map, key1, (): number => 999)).toBe(123);
     });
 
     it('returns the default value if it finds no value for the given key.', async(): Promise<void> => {
       const map = new Map([[ key1, 123 ]]);
-      expect(getDefault(map, key2, 999)).toBe(999);
+      expect(getDefault(map, key2, (): number => 999)).toBe(999);
+    });
+
+    it('can handle async default functions.', async(): Promise<void> => {
+      const map = new Map([[ key1, 123 ]]);
+      await expect(getDefault(map, key2, async(): Promise<number> => 999)).resolves.toBe(999);
     });
   });
 });
