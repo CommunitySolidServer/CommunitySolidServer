@@ -37,24 +37,28 @@
     },
     {
       "@id": "urn:solid-server:default:PatchModesExtractor",
-      "@type": "MethodFilterHandler",
-      "methods": [ "PATCH" ],
+      "@type": "CreateModesExtractor",
+      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
       "source": {
-        "@type": "WaterfallHandler",
-        "handlers": [
-          {
-            "@type": "N3PatchModesExtractor",
-            "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
-          },
-          {
-            "@type": "SparqlUpdateModesExtractor",
-            "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
-          },
-          {
-            "@type": "StaticThrowHandler",
-            "error": { "@type": "UnsupportedMediaTypeHttpError" }
-          }
-        ]
+        "@type": "MethodFilterHandler",
+        "methods": [ "PATCH" ],
+        "source": {
+          "@type": "WaterfallHandler",
+          "handlers": [
+            {
+              "@type": "N3PatchModesExtractor",
+              "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+            },
+            {
+              "@type": "SparqlUpdateModesExtractor",
+              "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+            },
+            {
+              "@type": "StaticThrowHandler",
+              "error": { "@type": "UnsupportedMediaTypeHttpError" }
+            }
+          ]
+        }
       }
     }
   ]
