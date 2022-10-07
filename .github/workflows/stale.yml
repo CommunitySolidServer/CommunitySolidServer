@@ -1,0 +1,22 @@
+name: 'Stale issues and PRs'
+on:
+  schedule:
+    - cron: '30 1 * * *'
+
+permissions:
+  issues: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v5
+        with:
+          stale-issue-message: 'The issue had no activity for 30 days, marking with Stale label.'
+          close-issue-message: 'The issue had no activity for 60 days, closing issue.'
+          days-before-issue-stale: 30
+          days-before-close: 30
+          days-before-pr-stale: -1
+          operations-per-run: 700
+          exempt-issue-labels: bug,enhancement,documentation,feature,performance,test,task,worker-threads
+          exempt-all-assignees: true
