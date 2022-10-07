@@ -434,6 +434,7 @@ export * from './util/errors/UnsupportedMediaTypeHttpError';
 export * from './util/handlers/ArrayUnionHandler';
 export * from './util/handlers/AsyncHandler';
 export * from './util/handlers/BooleanHandler';
+export * from './util/handlers/CachedHandler';
 export * from './util/handlers/ConditionalHandler';
 export * from './util/handlers/HandlerUtil';
 export * from './util/handlers/MethodFilterHandler';
