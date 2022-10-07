@@ -12,8 +12,13 @@ jobs:
     steps:
       - uses: actions/stale@v5
         with:
-          stale-issue-message: 'The issue had no activity for 30 days, marking with Stale label.'
-          close-issue-message: 'This issue has been closed due to inactivity.'
+          stale-issue-label: 🏚️ abandoned
+          stale-issue-message: >
+            This issue has been automatically marked as `🏚️ abandoned`
+            because it has not had recent activity. It will be closed if no
+            further activity occurs.
+          close-issue-message: >
+            Closing stale issue. If this issue is still relevant, please reopen it.
           days-before-issue-stale: 30
           days-before-close: 30
           days-before-pr-stale: -1
