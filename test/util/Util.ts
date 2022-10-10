@@ -34,6 +34,11 @@ const portNames = [
   'BaseHttpServerFactory',
 ] as const;
 
+const socketNames = [
+  // Unit
+  'BaseHttpServerFactory',
+];
+
 export function getPort(name: typeof portNames[number]): number {
   const idx = portNames.indexOf(name);
   // Just in case something doesn't listen to the typings
@@ -41,6 +46,15 @@ export function getPort(name: typeof portNames[number]): number {
     throw new Error(`Unknown port name ${name}`);
   }
   return 6000 + idx;
+}
+
+export function getSocket(name: typeof socketNames[number]): string {
+  const idx = socketNames.indexOf(name);
+  // Just in case something doesn't listen to the typings
+  if (idx < 0) {
+    throw new Error(`Unknown socket name ${name}`);
+  }
+  return `css${idx}.sock`;
 }
 
 export function describeIf(envFlag: string): Describe {

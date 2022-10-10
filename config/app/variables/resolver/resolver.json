@@ -29,6 +29,14 @@
           }
         },
         {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:socket",
+          "CombinedShorthandResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "socket",
+            "defaultValue" : null
+          }
+        },
+        {
           "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:rootFilePath",
           "CombinedShorthandResolver:_resolvers_value": {
             "@type": "AssetPathExtractor",

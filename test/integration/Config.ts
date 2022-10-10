@@ -51,6 +51,7 @@ export function getDefaultVariables(port: number, baseUrl?: string): Record<stri
   return {
     'urn:solid-server:default:variable:baseUrl': baseUrl ?? `http://localhost:${port}/`,
     'urn:solid-server:default:variable:port': port,
+    'urn:solid-server:default:variable:socket': null,
     'urn:solid-server:default:variable:loggingLevel': 'off',
     'urn:solid-server:default:variable:showStackTrace': true,
     'urn:solid-server:default:variable:seededPodConfigJson': null,

@@ -58,6 +58,15 @@
         },
         {
           "@type": "YargsParameter",
+          "name": "socket",
+          "options": {
+            "requiresArg": true,
+            "type": "string",
+            "describe": "The path to the Unix Domain Socket on which the server runs. This overrides the port argument."
+          }
+        },
+        {
+          "@type": "YargsParameter",
           "name": "rootFilePath",
           "options": {
             "alias": "f",

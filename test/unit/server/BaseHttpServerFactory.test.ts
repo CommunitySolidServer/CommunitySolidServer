@@ -1,3 +1,4 @@
+import { mkdirSync } from 'fs';
 import type { Server } from 'http';
 import request from 'supertest';
 import type { BaseHttpServerOptions } from '../../../src/server/BaseHttpServerFactory';
@@ -5,7 +6,8 @@ import { BaseHttpServerFactory } from '../../../src/server/BaseHttpServerFactory
 import type { HttpHandler } from '../../../src/server/HttpHandler';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { joinFilePath } from '../../../src/util/PathUtil';
-import { getPort } from '../../util/Util';
+import { getTestFolder, removeFolder } from '../../integration/Config';
+import { getPort, getSocket } from '../../util/Util';
 
 const port = getPort('BaseHttpServerFactory');
 
@@ -125,4 +127,83 @@ describe('A BaseHttpServerFactory', (): void => {
       expect(res.text).toBe(`${error.stack}\n`);
     });
   });
+
+  describe('A Base HttpServerFactory (With Unix Sockets)', (): void => {
+    const socketFolder = getTestFolder('sockets');
+    const socket = joinFilePath(socketFolder, getSocket('BaseHttpServerFactory'));
+    const httpOptions = {
+      http: true,
+      showStackTrace: true,
+    };
+
+    beforeAll(async(): Promise<void> => {
+      mkdirSync(socketFolder, { recursive: true });
+    });
+
+    afterAll(async(): Promise<void> => {
+      server.close();
+      await removeFolder(socketFolder);
+    });
+
+    beforeEach(async(): Promise<void> => {
+      jest.clearAllMocks();
+    });
+    describe('On linux', (): void => {
+      if (process.platform === 'win32') {
+        return;
+      }
+      it('sends incoming requests to the handler.', async(): Promise<void> => {
+        const factory = new BaseHttpServerFactory(handler, httpOptions);
+        server = factory.startServer(socket);
+        await request(`http+unix://${socket.replace(/\//gui, '%2F')}`).get('/').set('Host', 'test.com').expect(200);
+
+        expect(handler.handleSafe).toHaveBeenCalledTimes(1);
+        expect(handler.handleSafe).toHaveBeenLastCalledWith({
+          request: expect.objectContaining({
+            headers: expect.objectContaining({ host: 'test.com' }),
+          }),
+          response: expect.objectContaining({}),
+        });
+      });
+
+      it('throws an error on windows.', async(): Promise<void> => {
+        const prevPlatform = process.platform;
+        Object.defineProperty(process, 'platform', {
+          value: 'win32',
+        });
+
+        const factory = new BaseHttpServerFactory(handler, httpOptions);
+        expect((): void => {
+          factory.startServer(socket);
+        }).toThrow();
+
+        Object.defineProperty(process, 'platform', {
+          value: prevPlatform,
+        });
+      });
+    });
+
+    describe('On Windows', (): void => {
+      if (process.platform !== 'win32') {
+        return;
+      }
+      it('throws an error when trying to start the server on windows.', async(): Promise<void> => {
+        const factory = new BaseHttpServerFactory(handler, httpOptions);
+        expect((): void => {
+          factory.startServer(socket);
+        }).toThrow();
+      });
+    });
+
+    describe('On any platform', (): void => {
+      it('throws an error when trying to start with an invalid socket Path.', async(): Promise<void> => {
+        const factory = new BaseHttpServerFactory(handler, httpOptions);
+        factory.startServer('/fake/path')
+          .on('error', (error): void => {
+            expect(error).toHaveProperty('code', 'EACCES');
+          });
+      });
+    });
+  });
 });
+
