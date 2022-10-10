@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/stale@v5
         with:
+          debug-only: true
           stale-issue-label: 🏚️ abandoned
           stale-issue-message: >
             This issue has been automatically marked as `🏚️ abandoned`
