@@ -19,7 +19,7 @@ jobs:
             further activity occurs.
           close-issue-message: >
             Closing stale issue. If this issue is still relevant, please reopen it.
-          days-before-issue-stale: 30
+          days-before-issue-stale: 60
           days-before-close: 30
           days-before-pr-stale: -1
           operations-per-run: 700
