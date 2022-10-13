@@ -7,6 +7,7 @@
 - The server can be configured to use [ACP](https://solidproject.org/TR/acp) instead of WebACL.
   `config/file-acp.json` is an example of a configuration that uses this authorization scheme instead.
 - Support for the new [WebSocket Notification protocol](https://solidproject.org/TR/websocket-subscription-2021)
+  and the [WebHook Notification protocol draft](https://github.com/solid/notifications/blob/main/webhook-subscription-2021.md)
   was added.
 
 ### Data migration
@@ -27,7 +28,7 @@ The following changes pertain to the imports in the default configs:
 - All references to WebSockets have been removed from the `http/middleware` and `http/server-factory` imports.
 - A new `http/notifications` set of import options have been added
   to determine which notification specification a CSS instance should use.
-  All default configurations have been updated to use `http/notifications/websockets.json`.
+  Most default configurations have been updated to use `http/notifications/websockets.json`.
 
 The following changes are relevant for v5 custom configs that replaced certain features.
 

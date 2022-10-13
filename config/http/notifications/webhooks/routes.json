@@ -1,0 +1,59 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:WebHookRoute",
+      "@type": "RelativePathInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:NotificationRoute" },
+      "relativePath": "/WebHookSubscription2021/"
+    },
+    {
+      "@id": "urn:solid-server:default:WebHookUnsubscribeRoute",
+      "@type": "RelativePathInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:WebHookRoute" },
+      "relativePath": "/unsubscribe/"
+    },
+    {
+      "@id": "urn:solid-server:default:WebHookWebIdRoute",
+      "@type": "RelativePathInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:WebHookRoute" },
+      "relativePath": "/webId"
+    },
+
+
+    {
+      "comment": "Handles unsubscribing from a WebHookSubscription2021.",
+      "@id": "urn:solid-server:default:WebHookUnsubscriber",
+      "@type": "OperationRouterHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "allowedMethods": [ "DELETE" ],
+      "allowedPathNames": [ "/WebHookSubscription2021/unsubscribe/" ],
+      "handler": {
+        "@type": "WebHookUnsubscriber",
+        "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
+        "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
+      }
+    },
+    {
+      "comment": "Handles the WebHookSubscription2021 WebID.",
+      "@id": "urn:solid-server:default:WebHookWebId",
+      "@type": "OperationRouterHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "allowedPathNames": [ "/WebHookSubscription2021/webId" ],
+      "handler": {
+        "@type": "WebHookWebId",
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:NotificationTypeHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:WebHookSubscriber" },
+        { "@id": "urn:solid-server:default:WebHookUnsubscriber" },
+        { "@id": "urn:solid-server:default:WebHookWebId" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:StorageDescriber",
+      "@type": "ArrayUnionHandler",
+      "handlers": [
+        {
+          "comment": "Handles the storage description triples used for discovery of a WebHookSubscription2021 endpoint.",
+          "@type": "WebHookDescriber",
+          "route": { "@id": "urn:solid-server:default:WebHookRoute" },
+          "relative": "#webhookNotification",
+          "webIdRoute": { "@id": "urn:solid-server:default:WebHookWebIdRoute" }
+        }
+      ]
+    }
+  ]
+}
