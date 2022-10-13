@@ -111,7 +111,7 @@ describe('A NotificationSubscriber', (): void => {
     await subscriber.handle({ operation, request, response });
     expect(subscriptionType.subscribe).toHaveBeenLastCalledWith(expect.objectContaining({
       expiration: Date.now() + (60 * 60 * 1000),
-    }));
+    }), { public: {}});
 
     operation.body.data = guardedStreamFrom(JSON.stringify({
       ...subscriptionBody,
@@ -120,7 +120,7 @@ describe('A NotificationSubscriber', (): void => {
     await subscriber.handle({ operation, request, response });
     expect(subscriptionType.subscribe).toHaveBeenLastCalledWith(expect.objectContaining({
       expiration: Date.now() + (60 * 60 * 1000),
-    }));
+    }), { public: {}});
 
     operation.body.data = guardedStreamFrom(JSON.stringify({
       ...subscriptionBody,
@@ -129,7 +129,7 @@ describe('A NotificationSubscriber', (): void => {
     await subscriber.handle({ operation, request, response });
     expect(subscriptionType.subscribe).toHaveBeenLastCalledWith(expect.objectContaining({
       expiration: Date.now() + 5,
-    }));
+    }), { public: {}});
 
     jest.useRealTimers();
   });

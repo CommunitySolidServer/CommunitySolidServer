@@ -1,3 +1,4 @@
+import type { Credentials } from '../../authentication/Credentials';
 import type { CredentialsExtractor } from '../../authentication/CredentialsExtractor';
 import type { Authorizer } from '../../authorization/Authorizer';
 import type { PermissionReader } from '../../authorization/PermissionReader';
@@ -85,14 +86,14 @@ export class NotificationSubscriber extends OperationHttpHandler {
     }
 
     // Verify if the client is allowed to subscribe
-    await this.authorize(request, subscription);
+    const credentials = await this.authorize(request, subscription);
 
-    const { response } = await this.subscriptionType.subscribe(subscription);
+    const { response } = await this.subscriptionType.subscribe(subscription, credentials);
 
     return new OkResponseDescription(response.metadata, response.data);
   }
 
-  private async authorize(request: HttpRequest, subscription: Subscription): Promise<void> {
+  private async authorize(request: HttpRequest, subscription: Subscription): Promise<Credentials> {
     const credentials = await this.credentialsExtractor.handleSafe(request);
     this.logger.debug(`Extracted credentials: ${JSON.stringify(credentials)}`);
 
@@ -104,5 +105,7 @@ export class NotificationSubscriber extends OperationHttpHandler {
 
     await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });
     this.logger.verbose(`Authorization succeeded, creating subscription`);
+
+    return credentials;
   }
 }

@@ -199,6 +199,10 @@ export const NOTIFY = createVocabulary('http://www.w3.org/ns/solid/notifications
   'rate',
   'state',
   'subscription',
+  'webhookAuth',
+  'webid',
+
+  'WebHookSubscription2021',
 );
 
 export const OIDC = createVocabulary('http://www.w3.org/ns/solid/oidc#',

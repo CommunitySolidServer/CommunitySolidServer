@@ -6,7 +6,7 @@ import { NOTIFY, RDF } from '../../util/Vocabularies';
 import { StorageDescriber } from '../description/StorageDescriber';
 const { namedNode, quad } = DataFactory;
 
-const DEFAULT_FEATURES = [
+export const DEFAULT_NOTIFICATION_FEATURES = [
   NOTIFY.accept,
   NOTIFY.expiration,
   NOTIFY.rate,
@@ -14,7 +14,7 @@ const DEFAULT_FEATURES = [
 ];
 
 /**
- * Outputs quads describing how to access a specific Notificaion Subscription type and its features,
+ * Outputs quads describing how to access a specific Notification Subscription type and its features,
  * as described in https://solidproject.org/TR/notifications-protocol#discovery.
  */
 export class NotificationDescriber extends StorageDescriber {
@@ -30,7 +30,8 @@ export class NotificationDescriber extends StorageDescriber {
    * @param type - The rdf:type of the subscription type.
    * @param features - Which features are enabled for this subscription type. Defaults to accept/expiration/rate/state.
    */
-  public constructor(route: InteractionRoute, relative: string, type: string, features: string[] = DEFAULT_FEATURES) {
+  public constructor(route: InteractionRoute, relative: string, type: string,
+    features: string[] = DEFAULT_NOTIFICATION_FEATURES) {
     super();
     this.path = namedNode(route.getPath());
     this.relative = relative;

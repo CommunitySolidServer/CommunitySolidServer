@@ -7,6 +7,7 @@ import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { joinUrl } from '../../src/util/PathUtil';
 import { NOTIFY, RDF } from '../../src/util/Vocabularies';
+import { expectNotification, subscribe } from '../util/NotificationUtil';
 import { getPort } from '../util/Util';
 import {
   getDefaultVariables,
@@ -20,6 +21,7 @@ import namedNode = DataFactory.namedNode;
 
 const port = getPort('WebSocketSubscription2021');
 const baseUrl = `http://localhost:${port}/`;
+const notificationType = 'WebSocketSubscription2021';
 
 const rootFilePath = getTestFolder('WebSocketSubscription2021');
 const stores: [string, any][] = [
@@ -33,51 +35,6 @@ const stores: [string, any][] = [
     teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
 ];
-
-// Send the subscribe request and check the response
-async function subscribe(subscriptionUrl: string, topic: string, features: Record<string, unknown> = {}):
-Promise<string> {
-  const subscription = {
-    '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-    type: 'WebSocketSubscription2021',
-    topic,
-    ...features,
-  };
-
-  const response = await fetch(subscriptionUrl, {
-    method: 'POST',
-    headers: { 'content-type': 'application/ld+json' },
-    body: JSON.stringify(subscription),
-  });
-  expect(response.status).toBe(200);
-  expect(response.headers.get('content-type')).toBe('application/ld+json');
-  const { type, source } = await response.json();
-  expect(type).toBe('WebSocketSubscription2021');
-
-  return source;
-}
-
-// Check if a notification has the correct format
-function expectNotification(notification: unknown, topic: string, type: 'Create' | 'Update' | 'Delete'): void {
-  const expected: any = {
-    '@context': [
-      'https://www.w3.org/ns/activitystreams',
-      'https://www.w3.org/ns/solid/notification/v1',
-    ],
-    id: expect.stringContaining(topic),
-    type: [ type ],
-    object: {
-      id: topic,
-      type: [],
-    },
-    published: expect.anything(),
-  };
-  if (type !== 'Delete') {
-    expected.state = expect.anything();
-    expected.object.type.push('http://www.w3.org/ns/ldp#Resource');
-  }
-  expect(notification).toEqual(expected);
-}
 
 describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', (name, { configs, teardown }): void => {
   let app: App;
@@ -140,7 +97,8 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
   });
 
   it('supports subscribing.', async(): Promise<void> => {
-    webSocketUrl = await subscribe(subscriptionUrl, topic);
+    const response = await subscribe(notificationType, webId, subscriptionUrl, topic);
+    webSocketUrl = (response as any).source;
   });
 
   it('emits Created events.', async(): Promise<void> => {
@@ -242,7 +200,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     });
     expect(response.status).toBe(201);
 
-    const source = await subscribe(subscriptionUrl, topic, { state: 'abc' });
+    const { source } = await subscribe(notificationType, webId, subscriptionUrl, topic, { state: 'abc' }) as any;
 
     const socket = new WebSocket(source);
     const notificationPromise = new Promise<Buffer>((resolve): any => socket.on('message', resolve));
@@ -256,7 +214,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
   });
 
   it('removes expired subscriptions.', async(): Promise<void> => {
-    const source = await subscribe(subscriptionUrl, topic, { expiration: 1 });
+    const { source } = await subscribe(notificationType, webId, subscriptionUrl, topic, { expiration: 1 }) as any;
 
     const socket = new WebSocket(source);
     const messagePromise = new Promise<Buffer>((resolve): any => socket.on('message', resolve));

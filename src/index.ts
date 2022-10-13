@@ -320,6 +320,13 @@ export * from './server/notifications/serialize/ConvertingNotificationSerializer
 export * from './server/notifications/serialize/JsonLdNotificationSerializer';
 export * from './server/notifications/serialize/NotificationSerializer';
 
+// Server/Notifications/WebHookSubscription2021
+export * from './server/notifications/WebHookSubscription2021/WebHookDescriber';
+export * from './server/notifications/WebHookSubscription2021/WebHookEmitter';
+export * from './server/notifications/WebHookSubscription2021/WebHookSubscription2021';
+export * from './server/notifications/WebHookSubscription2021/WebHookUnsubscriber';
+export * from './server/notifications/WebHookSubscription2021/WebHookWebId';
+
 // Server/Notifications/WebSocketSubscription2021
 export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Emitter';
 export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Handler';

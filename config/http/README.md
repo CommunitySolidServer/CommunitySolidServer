@@ -20,9 +20,14 @@ and then pass the request along.
 
 Determines how notifications should be sent out from the server when resources change.
 
+* *all*: Supports all available notification types of the Solid Notifications protocol
+  [specification](https://solidproject.org/TR/notifications-protocol).
+  Currently, this includes WebHookSubscription2021 and WebSocketSubscription2021.
 * *disabled*: No notifications are sent out.
 * *legacy-websocket*: Follows the legacy Solid WebSocket
   [specification](https://github.com/solid/solid-spec/blob/master/api-websockets.md).
+* *webhooks*: Follows the WebHookSubscription2021
+  [specification](https://github.com/solid/notifications/blob/main/webhook-subscription-2021.md) draft.
 * *websockets*: Follows the WebSocketSubscription2021
   [specification](https://solidproject.org/TR/websocket-subscription-2021).
 

@@ -1,4 +1,5 @@
 import type { InferType } from 'yup';
+import type { Credentials } from '../../authentication/Credentials';
 import type { AccessMap } from '../../authorization/permissions/Permissions';
 import type { Representation } from '../../http/representation/Representation';
 import type { SUBSCRIBE_SCHEMA } from './Subscription';
@@ -32,8 +33,9 @@ export interface SubscriptionType<TSub extends typeof SUBSCRIBE_SCHEMA = typeof 
   /**
    * Registers the given subscription.
    * @param subscription - The subscription to register.
+   * @param credentials - The credentials of the client trying to subscribe.
    *
    * @returns A {@link Representation} to return as a response and the generated {@link SubscriptionInfo}.
    */
-  subscribe: (subscription: InferType<TSub>) => Promise<SubscriptionResponse<TFeat>>;
+  subscribe: (subscription: InferType<TSub>, credentials: Credentials) => Promise<SubscriptionResponse<TFeat>>;
 }
