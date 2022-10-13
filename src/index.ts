@@ -138,7 +138,9 @@ export * from './http/Operation';
 export * from './http/UnsecureWebSocketsProtocol';
 
 // Identity/Configuration
+export * from './identity/configuration/CachedJwkGenerator';
 export * from './identity/configuration/IdentityProviderFactory';
+export * from './identity/configuration/JwkGenerator';
 export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Credentials

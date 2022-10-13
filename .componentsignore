@@ -1,6 +1,7 @@
 [
   "AccessMap",
   "Adapter",
+  "AlgJwk",
   "BaseActivityEmitter",
   "BaseHttpError",
   "BaseRouterHandler",

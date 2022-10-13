@@ -52,6 +52,8 @@ The following changes are relevant for v5 custom configs that replaced certain f
 - Notification support was added.
     - `/http/handler/*`
     - `/notifications/*`
+- IDP private key generation was moved to a separate generator class.
+    - `/identity/handler/*`
 
 ### Interface changes
 
@@ -74,6 +76,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 
 - The `--config` CLI parameter now accepts multiple configuration paths, which will be combined.
 - The `RedisLocker` now accepts more configuration parameters.
+- `IdentityProviderFactory` takes an addition `JwkGenerator` as input.
 
 ## v5.0.0
 

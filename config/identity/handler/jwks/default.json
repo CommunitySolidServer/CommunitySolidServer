@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "The JWK that will be used for signing.",
+      "@id": "urn:solid-server:default:JwkGenerator",
+      "@type": "CachedJwkGenerator",
+      "alg": "ES256",
+      "storageKey": "jwks",
+      "storage": { "@id": "urn:solid-server:default:KeyStorage" }
+    },
+    {
+      "@id": "urn:solid-server:default:KeyStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/idp/keys/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    }
+  ]
+}
