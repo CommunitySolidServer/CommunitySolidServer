@@ -4,6 +4,7 @@
     "css:config/identity/handler/account-store/default.json",
     "css:config/identity/handler/adapter-factory/webid.json",
     "css:config/identity/handler/interaction/routes.json",
+    "css:config/identity/handler/jwks/default.json",
     "css:config/identity/handler/provider-factory/identity.json"
   ],
   "@graph": [
