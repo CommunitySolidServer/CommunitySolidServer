@@ -65,7 +65,7 @@ jobs:
           -v "$(pwd)"/reports/css:/reports
           --env-file=./test/deploy/conformance.env
           --network="host"
-          solidproject/conformance-test-harness
+          solidproject/conformance-test-harness:${{ inputs.version }}
           --skip-teardown
           --output=/reports
           --target=https://github.com/solid/conformance-test-harness/css
