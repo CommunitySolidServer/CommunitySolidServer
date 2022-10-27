@@ -50,11 +50,19 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
   private readonly redisRw: RedisReadWriteLock;
   private readonly redisLock: RedisResourceLock;
   private readonly attemptSettings: Required<AttemptSettings>;
+  private readonly namespacePrefix: string;
   private finalized = false;
 
-  public constructor(redisClient = '127.0.0.1:6379', attemptSettings: AttemptSettings = {}) {
+  /**
+   * Creates a new RedisClient
+   * @param redisClient - Redis connection string of a standalone Redis node
+   * @param attemptSettings - Override default AttemptSettings
+   * @param namespacePrefix - Override default namespacePrefixes (used to prefix keys in Redis)
+   */
+  public constructor(redisClient = '127.0.0.1:6379', attemptSettings: AttemptSettings = {}, namespacePrefix = '') {
     this.redis = this.createRedisClient(redisClient);
     this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
+    this.namespacePrefix = namespacePrefix;
 
     // Register lua scripts
     for (const [ name, script ] of Object.entries(REDIS_LUA_SCRIPTS)) {
@@ -94,7 +102,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * @returns A scoped Redis key that allows cleanup afterwards without affecting other keys.
    */
   private getReadWriteKey(identifier: ResourceIdentifier): string {
-    return `${PREFIX_RW}${identifier.path}`;
+    return `${this.namespacePrefix}${PREFIX_RW}${identifier.path}`;
   }
 
   /**
@@ -103,7 +111,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * @returns A scoped Redis key that allows cleanup afterwards without affecting other keys.
    */
   private getResourceKey(identifier: ResourceIdentifier): string {
-    return `${PREFIX_LOCK}${identifier.path}`;
+    return `${this.namespacePrefix}${PREFIX_LOCK}${identifier.path}`;
   }
 
   /* ReadWriteLocker methods */
@@ -199,12 +207,12 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * Remove any lock still open
    */
   private async clearLocks(): Promise<void> {
-    const keysRw = await this.redisRw.keys(`${PREFIX_RW}*`);
+    const keysRw = await this.redisRw.keys(`${this.namespacePrefix}${PREFIX_RW}*`);
     if (keysRw.length > 0) {
       await this.redisRw.del(...keysRw);
     }
 
-    const keysLock = await this.redisLock.keys(`${PREFIX_LOCK}*`);
+    const keysLock = await this.redisLock.keys(`${this.namespacePrefix}${PREFIX_LOCK}*`);
     if (keysLock.length > 0) {
       await this.redisLock.del(...keysLock);
     }
