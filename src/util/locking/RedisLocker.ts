@@ -17,6 +17,20 @@ const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay:
 const PREFIX_RW = '__RW__';
 const PREFIX_LOCK = '__L__';
 
+export interface RedisOptions {
+  /* Username used for AUTH on the Redis server */
+  username?: string;
+  /* Password used for AUTH on the Redis server */
+  password?: string;
+  /* The number of the database to use */
+  db?: number;
+}
+
+export interface OptionalRedisLockerArgs {
+  redisOptions?: RedisOptions;
+  attemptSettings?: AttemptSettings;
+}
+
 /**
  * A Redis Locker that can be used as both:
  *  *  a Read Write Locker that uses a (single) Redis server to store the locks and counts.
@@ -53,9 +67,20 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
   private readonly attemptSettings: Required<AttemptSettings>;
   private finalized = false;
 
-  public constructor(redisClient = '127.0.0.1:6379', attemptSettings: AttemptSettings = {}) {
-    this.redis = this.createRedisClient(redisClient);
-    this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
+  public constructor(
+    port = 6379,
+    host = '127.0.0.1',
+    optionalArgs: OptionalRedisLockerArgs = {},
+  ) {
+    if (port <= 0) {
+      throw new Error(`Invalid port value "${port}" provided! Must be a number greater than 0.`);
+    }
+    if (host.length === 0) {
+      throw new Error(`Invalid host value "${host}" provided! Must be a non empty string.`);
+    }
+
+    this.redis = new Redis(port, host, optionalArgs.redisOptions ?? {});
+    this.attemptSettings = { ...attemptDefaults, ...optionalArgs.attemptSettings };
 
     // Register lua scripts
     for (const [ name, script ] of Object.entries(REDIS_LUA_SCRIPTS)) {
@@ -64,29 +89,6 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
 
     this.redisRw = this.redis as RedisReadWriteLock;
     this.redisLock = this.redis as RedisResourceLock;
-  }
-
-  /**
-   * Generate and return a RedisClient based on the provided string
-   * @param redisClientString - A string that contains either a host address and a
-   *                            port number like '127.0.0.1:6379' or just a port number like '6379'.
-   */
-  private createRedisClient(redisClientString: string): Redis {
-    if (redisClientString.length > 0) {
-      // Check if port number or ip with port number
-      // Definitely not perfect, but configuring this is only for experienced users
-      const match = /^(?:([^:]+):)?(\d{4,5})$/u.exec(redisClientString);
-      if (!match || !match[2]) {
-        // At least a port number should be provided
-        throw new Error(`Invalid data provided to create a Redis client: ${redisClientString}\n
-            Please provide a port number like '6379' or a host address and a port number like '127.0.0.1:6379'`);
-      }
-      const port = Number(match[2]);
-      const host = match[1];
-      return new Redis(port, host);
-    }
-    throw new Error(`Empty redisClientString provided!\n
-            Please provide a port number like '6379' or a host address and a port number like '127.0.0.1:6379'`);
   }
 
   /**

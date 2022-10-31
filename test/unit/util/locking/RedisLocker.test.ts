@@ -109,7 +109,7 @@ describe('A RedisLocker', (): void => {
     beforeEach(async(): Promise<void> => {
       store.reset();
       jest.clearAllMocks();
-      locker = new RedisLocker('6379');
+      locker = new RedisLocker();
     });
 
     afterEach(async(): Promise<void> => {
@@ -127,16 +127,12 @@ describe('A RedisLocker', (): void => {
     });
 
     it('errors when instantiated with incorrect arguments.', (): void => {
-      const arg = 'wrongRedisString';
-      expect((): RedisLocker => new RedisLocker(arg))
-        .toThrow(`Invalid data provided to create a Redis client: ${arg}`);
-      expect((): RedisLocker => new RedisLocker(''))
-        .toThrow(`Empty redisClientString provided!`);
-    });
-
-    it('errors when instantiated with empty arguments.', (): void => {
-      expect((): RedisLocker => new RedisLocker(''))
-        .toThrow(`Empty redisClientString provided!`);
+      const portNegative = -1;
+      expect((): RedisLocker => new RedisLocker(portNegative))
+        .toThrow(`Invalid port value "${portNegative}" provided! Must be a number greater than 0.`);
+      const emptyHost = '';
+      expect((): RedisLocker => new RedisLocker(6379, emptyHost))
+        .toThrow(`Invalid host value "${emptyHost}" provided! Must be a non empty string.`);
     });
 
     it('does not block single read operations.', async(): Promise<void> => {
@@ -399,14 +395,14 @@ describe('A RedisLocker', (): void => {
     });
 
     it('errors when a readLock is not possible.', async(): Promise<void> => {
-      const locker2 = new RedisLocker('localhost:6379', { retryCount: 0 });
+      const locker2 = new RedisLocker(6379, 'localhost', { attemptSettings: { retryCount: 0 }});
       redis.acquireReadLock.mockResolvedValueOnce(0);
       await expect(locker2.withReadLock(resource1, (): any => 5)).rejects
         .toThrow(/The operation did not succeed after the set maximum of tries \(\d+\)./u);
     });
 
     it('errors when a writeLock is not possible.', async(): Promise<void> => {
-      const locker2 = new RedisLocker('localhost:6379', { retryCount: 0 });
+      const locker2 = new RedisLocker(6379, 'localhost', { attemptSettings: { retryCount: 0 }});
       redis.acquireWriteLock.mockResolvedValueOnce(0);
       await expect(locker2.withWriteLock(resource1, (): any => 5)).rejects
         .toThrow(/The operation did not succeed after the set maximum of tries \(\d+\)./u);
@@ -437,7 +433,7 @@ describe('A RedisLocker', (): void => {
 
     beforeEach(async(): Promise<void> => {
       jest.clearAllMocks();
-      locker = new RedisLocker('6379', { retryCount: 5 });
+      locker = new RedisLocker(6379, 'localhost', { attemptSettings: { retryCount: 5 }});
     });
 
     afterEach(async(): Promise<void> => {
@@ -506,16 +502,6 @@ describe('A RedisLocker', (): void => {
       await locker.release({ path: 'path1' });
       await locker.release({ path: 'path2' });
       await locker.release({ path: 'path3' });
-    });
-
-    describe('createRedisClients', (): void => {
-      it('errors when invalid string is passed.', async(): Promise<void> => {
-      // Reset calls done in `beforeEach`
-        jest.clearAllMocks();
-        const clientString = 'noHostOrPort';
-        expect((): any => new RedisLocker(clientString))
-          .toThrow('Invalid data provided to create a Redis client: noHostOrPort');
-      });
     });
 
     describe('initialize()', (): void => {
