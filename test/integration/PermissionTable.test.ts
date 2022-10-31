@@ -104,8 +104,7 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   [ 'DELETE',  'C/R', [ AM.read ],            undefined,              '',     '',  401, 404 ],
   [ 'DELETE',  'C/R', [ AM.append ],          undefined,              '',     '',  401, 401 ],
   [ 'DELETE',  'C/R', [ AM.append ],          [ AM.read ],            '',     '',  401, 404 ],
-  // We throw a 404 instead of 401 since we don't yet check if the parent container has read permissions
-  // [ 'DELETE',  'C/R', [ AM.write ],           undefined,              '',     '',  205, 401 ],
+  [ 'DELETE',  'C/R', [ AM.write ],           undefined,              '',     '',  205, 401 ],
   [ 'DELETE',  'C/R', [ AM.write ],           [ AM.read ],            '',     '',  401, 404 ],
   [ 'DELETE',  'C/R', [ AM.write ],           [ AM.append ],          '',     '',  401, 401 ],
 
