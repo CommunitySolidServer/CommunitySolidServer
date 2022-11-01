@@ -36,10 +36,6 @@ The following changes are relevant for v5 custom configs that replaced certain f
     - `setup/handlers/setup.json`
     - `identity/access/initializers/*`
     - `identity/pod/*`
-- The `RedisLocker` consctructor now takes 3 parameters being:
-    - port (number)
-    - host (string)
-    - optionalArgs (OptionalRedisLockerArgs, check `RedisLocker.ts` for more info).
 
 ### Interface changes
 
