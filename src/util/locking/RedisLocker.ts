@@ -68,7 +68,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * Creates a new RedisClient
    * @param redisClient - Redis connection string of a standalone Redis node
    * @param attemptSettings - Override default AttemptSettings
-   * @param redisSettings - Addition settings used to cr
+   * @param redisSettings - Addition settings used to create the Redis client or to interact with the Redis server
    */
   public constructor(
     redisClient = '127.0.0.1:6379',
