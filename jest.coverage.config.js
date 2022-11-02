@@ -2,6 +2,13 @@ const jestConfig = require('./jest.config');
 
 module.exports = {
   ...jestConfig,
+  collectCoverage: true,
+  coverageReporters: [ 'text', 'lcov' ],
+  coveragePathIgnorePatterns: [
+    '/dist/',
+    '/node_modules/',
+    '/test/',
+  ],
   coverageThreshold: {
     './src': {
       branches: 100,
