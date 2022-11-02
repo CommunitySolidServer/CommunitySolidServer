@@ -1,9 +1,11 @@
-import type { IAccessControl } from '@solid/access-control-policy/dist/type/i_access_control';
-import type { IAccessControlResource } from '@solid/access-control-policy/dist/type/i_access_control_resource';
-import type { IAccessControlledResource } from '@solid/access-control-policy/dist/type/i_access_controlled_resource';
-import type { IAccessMode } from '@solid/access-control-policy/dist/type/i_access_mode';
-import type { IMatcher } from '@solid/access-control-policy/dist/type/i_matcher';
-import type { IPolicy } from '@solid/access-control-policy/dist/type/i_policy';
+import type {
+  IAccessControl,
+  IAccessControlResource,
+  IAccessControlledResource,
+  IAccessMode,
+  IMatcher,
+  IPolicy,
+} from '@solid/access-control-policy';
 import type { Store } from 'n3';
 import type { NamedNode, Term } from 'rdf-js';
 import { ACP } from '../util/Vocabularies';

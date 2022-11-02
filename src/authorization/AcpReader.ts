@@ -1,8 +1,6 @@
 import { Readable } from 'stream';
-import { allowAccessModes } from '@solid/access-control-policy/dist/algorithm/allow_access_modes';
-import type { IAccessControlledResource } from '@solid/access-control-policy/dist/type/i_access_controlled_resource';
-import type { IContext } from '@solid/access-control-policy/dist/type/i_context';
-import type { IPolicy } from '@solid/access-control-policy/dist/type/i_policy';
+import type { IAccessControlledResource, IContext, IPolicy } from '@solid/access-control-policy';
+import { allowAccessModes } from '@solid/access-control-policy';
 import type { Store } from 'n3';
 import type { Credentials } from '../authentication/Credentials';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
