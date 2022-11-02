@@ -14,13 +14,7 @@ module.exports = {
   ],
   testEnvironment: 'node',
   setupFilesAfterEnv: [ 'jest-rdf', '<rootDir>/test/util/SetupTests.ts' ],
-  collectCoverage: true,
-  coverageReporters: [ 'text', 'lcov' ],
-  coveragePathIgnorePatterns: [
-    '/dist/',
-    '/node_modules/',
-    '/test/',
-  ],
+  collectCoverage: false,
   // See https://github.com/matthieubosquet/ts-dpop/issues/13
   moduleNameMapper: {
     '^jose/(.*)$': '<rootDir>/node_modules/jose/dist/node/cjs/$1',
