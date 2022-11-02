@@ -16,6 +16,17 @@ const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay:
 const PREFIX_RW = '__RW__';
 const PREFIX_LOCK = '__L__';
 
+export interface RedisSettings {
+  /* Override default namespacePrefixes (used to prefix keys in Redis) */
+  namespacePrefix: string;
+  /* Username used for AUTH on the Redis server */
+  username?: string;
+  /* Password used for AUTH on the Redis server */
+  password?: string;
+  /* The number of the database to use */
+  db?: number;
+}
+
 /**
  * A Redis Locker that can be used as both:
  *  *  a Read Write Locker that uses a (single) Redis server to store the locks and counts.
@@ -57,10 +68,15 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * Creates a new RedisClient
    * @param redisClient - Redis connection string of a standalone Redis node
    * @param attemptSettings - Override default AttemptSettings
-   * @param namespacePrefix - Override default namespacePrefixes (used to prefix keys in Redis)
+   * @param redisSettings - Addition settings used to create the Redis client or to interact with the Redis server
    */
-  public constructor(redisClient = '127.0.0.1:6379', attemptSettings: AttemptSettings = {}, namespacePrefix = '') {
-    this.redis = this.createRedisClient(redisClient);
+  public constructor(
+    redisClient = '127.0.0.1:6379',
+    attemptSettings: AttemptSettings = {},
+    redisSettings: RedisSettings = { namespacePrefix: '' },
+  ) {
+    const { namespacePrefix, ...options } = redisSettings;
+    this.redis = this.createRedisClient(redisClient, options);
     this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
     this.namespacePrefix = namespacePrefix;
 
@@ -78,7 +94,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * @param redisClientString - A string that contains either a host address and a
    *                            port number like '127.0.0.1:6379' or just a port number like '6379'.
    */
-  private createRedisClient(redisClientString: string): Redis {
+  private createRedisClient(redisClientString: string, options: Omit<RedisSettings, 'namespacePrefix'>): Redis {
     if (redisClientString.length > 0) {
       // Check if port number or ip with port number
       // Definitely not perfect, but configuring this is only for experienced users
@@ -90,7 +106,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
       }
       const port = Number(match[2]);
       const host = match[1];
-      return new Redis(port, host);
+      return new Redis(port, host, options);
     }
     throw new Error(`Empty redisClientString provided!\n
             Please provide a port number like '6379' or a host address and a port number like '127.0.0.1:6379'`);

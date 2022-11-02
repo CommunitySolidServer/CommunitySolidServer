@@ -103,7 +103,7 @@ jest.mock('ioredis', (): any => jest.fn().mockImplementation((): Redis => redis)
 describe('A RedisLocker', (): void => {
   it('will generate keys with the given namespacePrefix.', async(): Promise<void> => {
     const identifier = { path: 'http://test.com/resource' };
-    const lockerPrefixed = new RedisLocker('6379', {}, 'MY_PREFIX');
+    const lockerPrefixed = new RedisLocker('6379', {}, { namespacePrefix: 'MY_PREFIX' });
     await lockerPrefixed.acquire(identifier);
     const allLocksPrefixed = Object.keys(store.internal).every((key): boolean => key.startsWith('MY_PREFIX'));
     await lockerPrefixed.release(identifier);
