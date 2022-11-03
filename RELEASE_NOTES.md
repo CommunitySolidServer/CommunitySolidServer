@@ -1,5 +1,12 @@
 # Community Solid Server release notes
 
+## v5.1.0
+
+### New features
+
+- The `--config` CLI parameter now accepts multiple configuration paths, which will be combined.
+- The `RedisLocker` now accepts more configuration parameters.
+
 ## v5.0.0
 
 ### New features
