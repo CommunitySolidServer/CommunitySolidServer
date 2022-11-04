@@ -1,7 +1,9 @@
 /* eslint-disable unicorn/no-process-exit */
+import path from 'path';
 import type { WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
+import { readJSON } from 'fs-extra';
 import yargs from 'yargs';
 import { LOG_LEVELS } from '../logging/LogLevel';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -14,8 +16,6 @@ import type { CliResolver } from './CliResolver';
 import { listSingleThreadedComponents } from './cluster/SingleThreaded';
 import type { ShorthandResolver } from './variables/ShorthandResolver';
 import type { CliArgv, Shorthand, VariableBindings } from './variables/Types';
-import { readJSON } from 'fs-extra';
-import path from 'path';
 
 const DEFAULT_CONFIG = resolveModulePath('config/default.json');
 
@@ -145,7 +145,7 @@ export class AppRunner {
       // We also read from environment variables
       .env(ENV_VAR_PREFIX);
 
-    let settings: Record<string, unknown> | undefined
+    let settings: Record<string, unknown> | undefined;
     try {
       const pkg = await readJSON(path.join(process.cwd(), 'package.json'));
 
@@ -153,7 +153,7 @@ export class AppRunner {
         settings = pkg.config['community-solid-server'];
         yargv = yargv.default(settings as any);
       }
-    } catch (e) {
+    } catch {
       // If there is no package.json that is ok,
       // we are just running from the command line rather than as part of a package
     }
@@ -204,8 +204,11 @@ export class AppRunner {
    * Handles the first Components.js instantiation.
    * Uses it to extract the CLI shorthand values and use those to create variable bindings.
    */
-  private async cliToVariables(componentsManager: ComponentsManager<CliResolver>, argv: CliArgv, settings?: Record<string, unknown>):
-  Promise<VariableBindings> {
+  private async cliToVariables(
+    componentsManager: ComponentsManager<CliResolver>,
+    argv: CliArgv,
+    settings?: Record<string, unknown>,
+  ): Promise<VariableBindings> {
     const cliResolver = await this.createCliResolver(componentsManager);
     const shorthand = await this.extractShorthand(cliResolver.cliExtractor, argv);
     return await this.resolveShorthand(cliResolver.shorthandResolver, { ...settings, shorthand });
