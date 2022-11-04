@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/no-process-exit */
+import * as fs from 'fs';
 import path from 'path';
 import type { WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
@@ -146,16 +147,25 @@ export class AppRunner {
       .env(ENV_VAR_PREFIX);
 
     let settings: Record<string, unknown> | undefined;
-    try {
-      const pkg = await readJSON(path.join(process.cwd(), 'package.json'));
+    const packageJSONPath = path.join(process.cwd(), 'package.json');
+    const cssConfigPath = path.join(process.cwd(), '.community-solid-server.config.json');
 
-      if (typeof pkg.config['community-solid-server'] === 'object') {
-        settings = pkg.config['community-solid-server'];
+    // eslint-disable-next-line no-sync
+    if (fs.existsSync(packageJSONPath)) {
+      // eslint-disable-next-line no-sync
+      if (fs.existsSync(cssConfigPath)) {
+        settings = await readJSON(path.join(process.cwd(), '.community-solid-server.config.json'));
+      } else {
+        const pkg = await readJSON(path.join(process.cwd(), 'package.json'));
+
+        if (typeof pkg.config?.['community-solid-server'] === 'object') {
+          settings = pkg.config['community-solid-server'];
+        }
+      }
+
+      if (settings !== undefined) {
         yargv = yargv.default(settings as any);
       }
-    } catch {
-      // If there is no package.json that is ok,
-      // we are just running from the command line rather than as part of a package
     }
 
     const params = await yargv.parse();
