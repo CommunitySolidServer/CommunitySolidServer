@@ -154,9 +154,9 @@ export class AppRunner {
     if (fs.existsSync(packageJSONPath)) {
       // eslint-disable-next-line no-sync
       if (fs.existsSync(cssConfigPath)) {
-        settings = await readJSON(path.join(process.cwd(), '.community-solid-server.config.json'));
+        settings = await readJSON(packageJSONPath);
       } else {
-        const pkg = await readJSON(path.join(process.cwd(), 'package.json'));
+        const pkg = await readJSON(cssConfigPath);
 
         if (typeof pkg.config?.['community-solid-server'] === 'object') {
           settings = pkg.config['community-solid-server'];
