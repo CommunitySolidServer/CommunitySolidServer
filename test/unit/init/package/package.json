@@ -7,8 +7,5 @@
       "port": 3101,
       "loggingLevel": "error"
     }
-  },
-  "dependencies": {
-    "@comunica/context-entries": "^2.2.0"
   }
 }
