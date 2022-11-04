@@ -1,6 +1,7 @@
-### Configuring the CSS as a development server in another project
+# Configuring the CSS as a development server in another project
 
-It can be useful to use the CSS as local server to develop Solid applications against. The CSS can be configured in the `package.json` as follows:
+It can be useful to use the CSS as local server to develop Solid applications against.
+The CSS can be configured in the `package.json` as follows:
 
 ```json
 {
@@ -22,7 +23,8 @@ It can be useful to use the CSS as local server to develop Solid applications ag
 }
 ```
 
-alternatively, the configuration parameters may be placed in a configuration file named `.community-solid-server.config.json` as follows
+alternatively, the configuration parameters may be placed in a configuration file named
+`.community-solid-server.config.json` as follows
 
 ```json
 {
