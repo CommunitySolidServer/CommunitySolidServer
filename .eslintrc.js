@@ -139,6 +139,9 @@ module.exports = {
     // Doesn't work with type imports
     'no-duplicate-imports': 'off',
     'unused-imports/no-unused-imports-ts': 'error',
+
+    // We use jest not mocha
+    'mocha/valid-test-description': 'off'
   },
 
   overrides: [
