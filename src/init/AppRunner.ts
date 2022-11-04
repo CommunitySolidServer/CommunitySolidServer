@@ -211,7 +211,7 @@ export class AppRunner {
   ): Promise<VariableBindings> {
     const cliResolver = await this.createCliResolver(componentsManager);
     const shorthand = await this.extractShorthand(cliResolver.cliExtractor, argv);
-    return await this.resolveShorthand(cliResolver.shorthandResolver, { ...settings, shorthand });
+    return await this.resolveShorthand(cliResolver.shorthandResolver, { ...settings, ...shorthand });
   }
 
   /**
