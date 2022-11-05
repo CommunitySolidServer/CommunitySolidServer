@@ -149,10 +149,13 @@ export class AppRunner {
     let settings: Record<string, unknown> | undefined;
     const packageJSONPath = path.join(process.cwd(), 'package.json');
     const cssConfigPath = path.join(process.cwd(), '.community-solid-server.config.json');
+    const cssConfigPathJs = path.join(process.cwd(), '.community-solid-server.config.js');
 
     if (existsSync(packageJSONPath)) {
       if (existsSync(cssConfigPath)) {
         settings = await readJSON(cssConfigPath);
+      } else if (existsSync(cssConfigPathJs)) {
+        settings = await import(cssConfigPathJs);
       } else {
         const pkg = await readJSON(packageJSONPath);
 

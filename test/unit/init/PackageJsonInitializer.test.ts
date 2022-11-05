@@ -36,6 +36,13 @@ describe('An app initialised using configuration in package.json', (): void => {
       (pth: fs.PathLike): boolean => typeof pth === 'string' && pth in files,
     );
 
+    // Mock .community-solid-server.config.js if it is required
+    jest.mock(
+      path.join(__dirname, '.community-solid-server.config.js'),
+      (): any => files[path.join(__dirname, '.community-solid-server.config.js')],
+      { virtual: true },
+    );
+
     // Start up the server
     app = await new AppRunner().createCli([]);
     await app.start();
@@ -112,11 +119,30 @@ describe('An app initialised using configuration in package.json', (): void => {
     });
   });
 
-  describe('package.json with no config and with with .community-solid-server-config.json', (): void => {
+  describe('package.json with no config and with .community-solid-server-config.json', (): void => {
     beforeAll((): void => {
       files = {
         [path.join(__dirname, 'package.json')]: packageJSONbase,
         [path.join(__dirname, '.community-solid-server.config.json')]: config,
+      };
+    });
+
+    it('should have created the CSS with the specified configuration', async(): Promise<void> => {
+      const result = await engine.queryBoolean(
+        'ASK { <http://localhost:3101/> a <http://www.w3.org/ns/pim/space#Storage> }', {
+          sources: [ 'http://localhost:3101' ],
+        },
+      );
+
+      expect(result).toBeTruthy();
+    });
+  });
+
+  describe('package.json with no config and with .community-solid-server-config.js', (): void => {
+    beforeAll((): void => {
+      files = {
+        [path.join(__dirname, 'package.json')]: packageJSONbase,
+        [path.join(__dirname, '.community-solid-server.config.js')]: `module.exports = ${JSON.stringify(config)}`,
       };
     });
 
