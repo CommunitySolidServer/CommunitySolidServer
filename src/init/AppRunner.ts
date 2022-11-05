@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/no-process-exit */
-import * as fs from 'fs';
+import { existsSync } from 'fs';
 import path from 'path';
 import type { WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
@@ -151,12 +151,12 @@ export class AppRunner {
     const cssConfigPath = path.join(process.cwd(), '.community-solid-server.config.json');
 
     // eslint-disable-next-line no-sync
-    if (fs.existsSync(packageJSONPath)) {
+    if (existsSync(packageJSONPath)) {
       // eslint-disable-next-line no-sync
-      if (fs.existsSync(cssConfigPath)) {
-        settings = await readJSON(packageJSONPath);
+      if (existsSync(cssConfigPath)) {
+        settings = await readJSON(cssConfigPath);
       } else {
-        const pkg = await readJSON(cssConfigPath);
+        const pkg = await readJSON(packageJSONPath);
 
         if (typeof pkg.config?.['community-solid-server'] === 'object') {
           settings = pkg.config['community-solid-server'];
