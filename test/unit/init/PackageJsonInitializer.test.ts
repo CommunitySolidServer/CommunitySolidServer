@@ -1,11 +1,11 @@
 // This is required since eslint is referring to the local package.json
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { QueryEngine } from '@comunica/query-sparql';
-import type { App } from '../../../src';
-import { AppRunner } from '../../../src';
-import fsExtra from 'fs-extra';
+
 import fs from 'fs';
 import * as path from 'path';
+import { QueryEngine } from '@comunica/query-sparql';
+import fsExtra, { readJSON } from 'fs-extra';
+import type { App } from '../../../src';
+import { AppRunner } from '../../../src';
 
 describe('An app initialised using configuration in package.json', (): void => {
   let app: App;
@@ -14,27 +14,29 @@ describe('An app initialised using configuration in package.json', (): void => {
 
   const config = {
     port: 3101,
-    loggingLevel: "error"
-  }
+    loggingLevel: 'error',
+  };
 
   const packageJSONbase = {
-    name: "test",
-    version: "0.0.0",
+    name: 'test',
+    version: '0.0.0',
     private: true,
-  }
+  };
 
   const packageJSON = {
     ...packageJSONbase,
     config: {
-      "community-solid-server": config
-    }
-  }
+      'community-solid-server': config,
+    },
+  };
 
-  beforeEach(async (): Promise<void> => {
+  beforeEach(async(): Promise<void> => {
     // Pretend the process is being run from the current folder with the specified set of files available
     jest.spyOn(process, 'cwd').mockReturnValue(__dirname);
-    jest.spyOn(fsExtra, 'readJSON').mockImplementation(async (pth: string) => files[pth] ?? fsExtra.readJSON(pth));
-    jest.spyOn(fs, 'existsSync').mockImplementation((pth: fs.PathLike) => typeof pth === 'string' && pth in files);
+    jest.spyOn(fsExtra, 'readJSON').mockImplementation(async(pth: string): Promise<any> => files[pth] ?? readJSON(pth));
+    jest.spyOn(fs, 'existsSync').mockImplementation(
+      (pth: fs.PathLike): boolean => typeof pth === 'string' && pth in files,
+    );
 
     // Start up the server
     app = await new AppRunner().createCli([]);
@@ -44,90 +46,90 @@ describe('An app initialised using configuration in package.json', (): void => {
     engine = new QueryEngine();
   });
 
-  afterEach(async (): Promise<void> => {
+  afterEach(async(): Promise<void> => {
     await app.stop();
   });
 
-  describe('no package.json or .community-solid-server-config.json is provided', () => {
-    beforeAll(() => {
+  describe('no package.json or .community-solid-server-config.json is provided', (): void => {
+    beforeAll((): void => {
       files = {};
     });
 
-    it('should have created the CSS with the default configuration', async () => {
+    it('should have created the CSS with the default configuration', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3000/> a <http://www.w3.org/ns/pim/space#Storage> }', {
-        sources: ['http://localhost:3000'],
-      },
+          sources: [ 'http://localhost:3000' ],
+        },
       );
 
       expect(result).toBeTruthy();
-    })
+    });
   });
 
-  describe('package.json with no config', () => {
-    beforeAll(() => {
+  describe('package.json with no config', (): void => {
+    beforeAll((): void => {
       files = { [path.join(__dirname, 'package.json')]: packageJSONbase };
     });
 
-    it('should have created the CSS with the default configuration', async () => {
+    it('should have created the CSS with the default configuration', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3000/> a <http://www.w3.org/ns/pim/space#Storage> }', {
-        sources: ['http://localhost:3000'],
-      },
+          sources: [ 'http://localhost:3000' ],
+        },
       );
 
       expect(result).toBeTruthy();
-    })
+    });
   });
 
-  describe('.community-solid-server-config.json but with no package.json', () => {
-    beforeAll(() => {
+  describe('.community-solid-server-config.json but with no package.json', (): void => {
+    beforeAll((): void => {
       files = { [path.join(__dirname, '.community-solid-server.config.json')]: config };
     });
 
-    it('should have created the CSS with the default configuration', async () => {
+    it('should have created the CSS with the default configuration', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3000/> a <http://www.w3.org/ns/pim/space#Storage> }', {
-        sources: ['http://localhost:3000'],
-      },
+          sources: [ 'http://localhost:3000' ],
+        },
       );
 
       expect(result).toBeTruthy();
-    })
+    });
   });
 
-  describe('package.json with config', () => {
-    beforeAll(() => {
+  describe('package.json with config', (): void => {
+    beforeAll((): void => {
       files = { [path.join(__dirname, 'package.json')]: packageJSON };
     });
 
-    it('should have created the CSS with the specified configuration', async () => {
+    it('should have created the CSS with the specified configuration', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3101/> a <http://www.w3.org/ns/pim/space#Storage> }', {
-        sources: ['http://localhost:3101'],
-      },
+          sources: [ 'http://localhost:3101' ],
+        },
       );
 
       expect(result).toBeTruthy();
-    })
+    });
   });
 
-  describe('package.json with no config and with with .community-solid-server-config.json', () => {
-    beforeAll(() => {
+  describe('package.json with no config and with with .community-solid-server-config.json', (): void => {
+    beforeAll((): void => {
       files = {
         [path.join(__dirname, 'package.json')]: packageJSONbase,
         [path.join(__dirname, '.community-solid-server.config.json')]: config,
       };
     });
 
-    it('should have created the CSS with the specified configuration', async () => {
+    it('should have created the CSS with the specified configuration', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3101/> a <http://www.w3.org/ns/pim/space#Storage> }', {
-        sources: ['http://localhost:3101'],
-      },
+          sources: [ 'http://localhost:3101' ],
+        },
       );
 
       expect(result).toBeTruthy();
-    })
+    });
   });
 });
