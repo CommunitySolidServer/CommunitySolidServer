@@ -32,3 +32,13 @@ alternatively, the configuration parameters may be placed in a configuration fil
   "loggingLevel": "error"
 }
 ```
+
+the config may also be written in javascript with the config as the default export
+such as the following `.community-solid-server.config.js`
+
+```js
+module.exports = {
+  port: 3001,
+  loggingLevel: "error"
+}
+```
