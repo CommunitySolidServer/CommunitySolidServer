@@ -1,5 +1,3 @@
-// This is required since eslint is referring to the local package.json
-
 import fs from 'fs';
 import * as path from 'path';
 import { QueryEngine } from '@comunica/query-sparql';
