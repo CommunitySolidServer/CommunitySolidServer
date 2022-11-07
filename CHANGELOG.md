@@ -3,6 +3,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v5.0.0...v5.1.0) (2022-11-03)
+
+### Features
+
+* add additional redis settings to redis locker ([79fa83a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/79fa83a07ab6dded5c7d601dd7b165fa9178ef26))
+* add support for key namespacePrefixes in a RedisLocker instance ([d690cc7](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d690cc7ed02e2b0ab95fa20b8934ac31c44f8566))
+* Allow JSON-LD contexts to be stored locally ([b0924bf](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b0924bf168500070a287cef300047f874deebe0c))
+* Allow multiple configurations to be used during startup ([e050f8b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e050f8be93b7ea9596fdaf250de9f0bf32fa4fd8))
+
+### Fixes
+
+* Require create permission for empty PATCH bodies ([68ee964](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/68ee9648e1c78684708f026d9f4b22ee1cc66790))
+* Return correct status code when deleting non-existent resource ([ef48660](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ef48660b482cb954e5b08e9c3799acfdba6d6f23))
+* Fix incorrect config import ([e1af8ee](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e1af8ee66ef21ac9e0fac4379d7836b3338b8343))
+* Add missing parameter to `sparql-file-storage.json` configuration ([f7742cf](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f7742cffefa2875442798a478a5d7a9960dbfa7e))
+* Always render OIDC errors correctly ([7884348](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7884348c2f4e8f646f38cf987c58a8a47135facd))
+* Clarify application consent screen. ([7987824](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/79878240682b2f7e335db4edd4c6a4ed8044a170))
+* Prevent websockets from being used with worker threads ([327ce74](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/327ce7409ac3f62f8213bd8e300b3726fa848efb))
+* update metadata documentation ([abbf3dd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/abbf3ddeef1494a84aa8e7293108ef63f47ac2d9))
+
 ## [5.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.1...v5.0.0) (2022-08-08)
 
 ### Features

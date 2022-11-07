@@ -26,7 +26,8 @@
         "Link",
         "Location",
         "Updates-Via",
-        "WAC-Allow"
+        "WAC-Allow",
+        "Www-Authenticate"
       ]
     }
   ]

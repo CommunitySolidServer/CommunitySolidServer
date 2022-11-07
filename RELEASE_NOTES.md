@@ -51,6 +51,13 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `CredentialSet` was replaced by a single `Credentials` interface.
   This impacts all authentication and authorization related classes.
 
+## v5.1.0
+
+### New features
+
+- The `--config` CLI parameter now accepts multiple configuration paths, which will be combined.
+- The `RedisLocker` now accepts more configuration parameters.
+
 ## v5.0.0
 
 ### New features

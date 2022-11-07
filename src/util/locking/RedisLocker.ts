@@ -17,6 +17,17 @@ const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay:
 const PREFIX_RW = '__RW__';
 const PREFIX_LOCK = '__L__';
 
+export interface RedisSettings {
+  /* Override default namespacePrefixes (used to prefix keys in Redis) */
+  namespacePrefix: string;
+  /* Username used for AUTH on the Redis server */
+  username?: string;
+  /* Password used for AUTH on the Redis server */
+  password?: string;
+  /* The number of the database to use */
+  db?: number;
+}
+
 /**
  * A Redis Locker that can be used as both:
  *  *  a Read Write Locker that uses a (single) Redis server to store the locks and counts.
@@ -51,11 +62,24 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
   private readonly redisRw: RedisReadWriteLock;
   private readonly redisLock: RedisResourceLock;
   private readonly attemptSettings: Required<AttemptSettings>;
+  private readonly namespacePrefix: string;
   private finalized = false;
 
-  public constructor(redisClient = '127.0.0.1:6379', attemptSettings: AttemptSettings = {}) {
-    this.redis = this.createRedisClient(redisClient);
+  /**
+   * Creates a new RedisClient
+   * @param redisClient - Redis connection string of a standalone Redis node
+   * @param attemptSettings - Override default AttemptSettings
+   * @param redisSettings - Addition settings used to create the Redis client or to interact with the Redis server
+   */
+  public constructor(
+    redisClient = '127.0.0.1:6379',
+    attemptSettings: AttemptSettings = {},
+    redisSettings: RedisSettings = { namespacePrefix: '' },
+  ) {
+    const { namespacePrefix, ...options } = redisSettings;
+    this.redis = this.createRedisClient(redisClient, options);
     this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
+    this.namespacePrefix = namespacePrefix;
 
     // Register lua scripts
     for (const [ name, script ] of Object.entries(REDIS_LUA_SCRIPTS)) {
@@ -71,7 +95,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * @param redisClientString - A string that contains either a host address and a
    *                            port number like '127.0.0.1:6379' or just a port number like '6379'.
    */
-  private createRedisClient(redisClientString: string): Redis {
+  private createRedisClient(redisClientString: string, options: Omit<RedisSettings, 'namespacePrefix'>): Redis {
     if (redisClientString.length > 0) {
       // Check if port number or ip with port number
       // Definitely not perfect, but configuring this is only for experienced users
@@ -83,7 +107,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
       }
       const port = Number(match[2]);
       const host = match[1];
-      return new Redis(port, host);
+      return new Redis(port, host, options);
     }
     throw new Error(`Empty redisClientString provided!\n
             Please provide a port number like '6379' or a host address and a port number like '127.0.0.1:6379'`);
@@ -95,7 +119,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * @returns A scoped Redis key that allows cleanup afterwards without affecting other keys.
    */
   private getReadWriteKey(identifier: ResourceIdentifier): string {
-    return `${PREFIX_RW}${identifier.path}`;
+    return `${this.namespacePrefix}${PREFIX_RW}${identifier.path}`;
   }
 
   /**
@@ -104,7 +128,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * @returns A scoped Redis key that allows cleanup afterwards without affecting other keys.
    */
   private getResourceKey(identifier: ResourceIdentifier): string {
-    return `${PREFIX_LOCK}${identifier.path}`;
+    return `${this.namespacePrefix}${PREFIX_LOCK}${identifier.path}`;
   }
 
   /* ReadWriteLocker methods */
@@ -200,12 +224,12 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
    * Remove any lock still open
    */
   private async clearLocks(): Promise<void> {
-    const keysRw = await this.redisRw.keys(`${PREFIX_RW}*`);
+    const keysRw = await this.redisRw.keys(`${this.namespacePrefix}${PREFIX_RW}*`);
     if (keysRw.length > 0) {
       await this.redisRw.del(...keysRw);
     }
 
-    const keysLock = await this.redisLock.keys(`${PREFIX_LOCK}*`);
+    const keysLock = await this.redisLock.keys(`${this.namespacePrefix}${PREFIX_LOCK}*`);
     if (keysLock.length > 0) {
       await this.redisLock.del(...keysLock);
     }

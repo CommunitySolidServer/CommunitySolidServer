@@ -19,9 +19,15 @@
           "@id": "urn:solid-server:default:PatchModesExtractor"
         },
         {
-          "comment": "Extract access modes based on the HTTP method.",
-          "@type": "MethodModesExtractor",
-          "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+          "comment": "Requires read permissions on parent container when deleting non-existent resource for correct status code.",
+          "@type": "DeleteParentExtractor",
+          "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
+          "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+          "source": {
+            "comment": "Extract access modes based on the HTTP method.",
+            "@type": "MethodModesExtractor",
+            "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+          }
         },
         {
           "@type": "StaticThrowHandler",
@@ -31,24 +37,28 @@
     },
     {
       "@id": "urn:solid-server:default:PatchModesExtractor",
-      "@type": "MethodFilterHandler",
-      "methods": [ "PATCH" ],
+      "@type": "CreateModesExtractor",
+      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
       "source": {
-        "@type": "WaterfallHandler",
-        "handlers": [
-          {
-            "@type": "N3PatchModesExtractor",
-            "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
-          },
-          {
-            "@type": "SparqlUpdateModesExtractor",
-            "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
-          },
-          {
-            "@type": "StaticThrowHandler",
-            "error": { "@type": "UnsupportedMediaTypeHttpError" }
-          }
-        ]
+        "@type": "MethodFilterHandler",
+        "methods": [ "PATCH" ],
+        "source": {
+          "@type": "WaterfallHandler",
+          "handlers": [
+            {
+              "@type": "N3PatchModesExtractor",
+              "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+            },
+            {
+              "@type": "SparqlUpdateModesExtractor",
+              "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+            },
+            {
+              "@type": "StaticThrowHandler",
+              "error": { "@type": "UnsupportedMediaTypeHttpError" }
+            }
+          ]
+        }
       }
     }
   ]
