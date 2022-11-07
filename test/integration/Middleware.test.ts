@@ -133,6 +133,12 @@ describe('An http server with middleware', (): void => {
     expect(splitCommaSeparated(exposed)).toContain('Updates-Via');
   });
 
+  it('exposes the Www-Authenticate header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(splitCommaSeparated(exposed)).toContain('Www-Authenticate');
+  });
+
   it('sends incoming requests to the handler.', async(): Promise<void> => {
     const response = request(server).get('/').set('Host', 'test.com');
     expect(response).toBeDefined();
