@@ -26,6 +26,7 @@
           "openid": [ "azp" ],
           "webid": [ "webid" ]
         },
+        "clockTolerance": 120,
         "cookies": {
           "long": { "signed": true, "maxAge": 86400000 },
           "short": { "signed": true }
