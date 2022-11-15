@@ -11,6 +11,7 @@ import type { Subscription } from '../Subscription';
 import { SUBSCRIBE_SCHEMA } from '../Subscription';
 import type { SubscriptionStorage } from '../SubscriptionStorage';
 import type { SubscriptionResponse, SubscriptionType } from '../SubscriptionType';
+import { generateWebSocketUrl } from './WebSocket2021Util';
 
 const type = 'WebSocketSubscription2021';
 const schema = SUBSCRIBE_SCHEMA.shape({
@@ -48,7 +49,7 @@ export class WebSocketSubscription2021 implements SubscriptionType<typeof schema
     const jsonld = {
       '@context': [ CONTEXT_NOTIFICATION ],
       type: this.type,
-      source: `ws${this.path.slice('http'.length)}?auth=${encodeURI(info.id)}`,
+      source: generateWebSocketUrl(this.path, info.id),
     };
     const response = new BasicRepresentation(JSON.stringify(jsonld), APPLICATION_LD_JSON);
 

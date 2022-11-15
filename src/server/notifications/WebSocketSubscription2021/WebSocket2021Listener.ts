@@ -5,6 +5,7 @@ import { getLoggerFor } from '../../../logging/LogUtil';
 import { WebSocketServerConfigurator } from '../../WebSocketServerConfigurator';
 import type { SubscriptionStorage } from '../SubscriptionStorage';
 import type { WebSocket2021Handler } from './WebSocket2021Handler';
+import { parseWebSocketRequest } from './WebSocket2021Util';
 
 /**
  * Listens for WebSocket connections and verifies if they are valid WebSocketSubscription2021 connections,
@@ -25,22 +26,18 @@ export class WebSocket2021Listener extends WebSocketServerConfigurator {
   }
 
   protected async handleConnection(webSocket: WebSocket, upgradeRequest: IncomingMessage): Promise<void> {
-    // Base doesn't matter since we just want the path and query parameter
-    const { pathname, searchParams } = new URL(upgradeRequest.url ?? '', 'http://example.com');
+    const { path, id } = parseWebSocketRequest(upgradeRequest);
 
-    if (pathname !== this.path) {
+    if (path !== this.path) {
       webSocket.send('Unknown WebSocket target.');
       return webSocket.close();
     }
 
-    const auth = searchParams.get('auth');
-
-    if (!auth) {
+    if (!id) {
       webSocket.send('Missing auth parameter from WebSocket URL.');
       return webSocket.close();
     }
 
-    const id = decodeURI(auth);
     const info = await this.storage.get(id);
 
     if (!info) {

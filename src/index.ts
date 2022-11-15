@@ -325,6 +325,7 @@ export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Emi
 export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Handler';
 export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Listener';
 export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Storer';
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Util';
 export * from './server/notifications/WebSocketSubscription2021/WebSocketMap';
 export * from './server/notifications/WebSocketSubscription2021/WebSocketSubscription2021';
 
