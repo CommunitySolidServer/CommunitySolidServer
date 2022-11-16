@@ -83,7 +83,7 @@
   "commit-and-tag-version": {
     "scripts": {
       "postbump": "ts-node ./scripts/upgradeConfig.ts",
-      "postchangelog": "ts-node ./scripts/formatChangelog.ts"
+      "postchangelog": "ts-node ./scripts/formatChangelog.ts && markdownlint-cli2-fix"
     },
     "writerOpts": {
       "commitsSort": false
