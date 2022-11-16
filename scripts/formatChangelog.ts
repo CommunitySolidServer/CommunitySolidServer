@@ -1,4 +1,5 @@
 #!/usr/bin/env ts-node
+
 /* eslint-disable no-console */
 import { readFile, writeFile } from 'fs-extra';
 
@@ -8,18 +9,25 @@ import { readFile, writeFile } from 'fs-extra';
  * to the changelog.
  * Current automatic changes:
  *  - Change all version titles to H2 ("### [vX.Y.Z]" to "## [vX.Y.Z]")
+ *  - Capitalize all list entries
  */
 
 /**
- * @param from  - Regular expression to search for
- * @param to    - String to replace to
- * @param filePath - File to search/replace
- * @returns Promise
+ * Capitalize all list entries
+ * @param input - String to search/replace
+ * @returns Promise with output string
  */
-async function replaceInFile(from: RegExp, to: string, filePath: string): Promise<void> {
-  const data = await readFile(filePath, 'utf8');
-  const result = data.replace(from, to);
-  return writeFile(filePath, result, 'utf8');
+async function capitalizeListEntries(input: string): Promise<string> {
+  return input.replace(/^(\W*\* [a-z])/gmu, (match): string => match.toUpperCase());
+}
+
+/**
+ * Change all version titles to H2 ("### [vX.Y.Z]" to "## [vX.Y.Z]")
+ * @param input - String to search/replace
+ * @returns Promise with output string
+ */
+async function convertH3ToH2(input: string): Promise<string> {
+  return input.replace(/### \[/gu, '## [');
 }
 
 /**
@@ -30,4 +38,16 @@ function endProcess(error: Error): never {
   process.exit(1);
 }
 
-replaceInFile(/### \[/gu, '## [', 'CHANGELOG.md').catch(endProcess);
+/**
+ * Main function for changelog formatting
+ * @param filePath - Path to the changelog file
+ * @returns Promise
+ */
+async function formatChangelog(filePath: string): Promise<void> {
+  let changelog = await readFile(filePath, 'utf8');
+  changelog = await convertH3ToH2(changelog);
+  changelog = await capitalizeListEntries(changelog);
+  return writeFile(filePath, changelog, 'utf8');
+}
+
+formatChangelog('CHANGELOG.md').catch(endProcess);
