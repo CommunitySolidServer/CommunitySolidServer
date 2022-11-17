@@ -4,10 +4,10 @@ import {
 } from '../../../../src/util/handlers/CachedHandler';
 
 describe('A CachedHandler', (): void => {
-  const input = { entry: { key: 'value' }};
+  const input: any = { field1: { key: 'value' }, field2: { key: 'value' }, field3: { key: 'value2' }};
   const output = 'response';
-  let source: jest.Mocked<AsyncHandler<{ entry: { key: string }}, string>>;
-  let handler: CachedHandler<{ entry: { key: string }}, string>;
+  let source: jest.Mocked<AsyncHandler<any, string>>;
+  let handler: CachedHandler<any, string>;
 
   beforeEach(async(): Promise<void> => {
     source = {
@@ -51,12 +51,34 @@ describe('A CachedHandler', (): void => {
     expect(source.canHandle).toHaveBeenCalledTimes(0);
   });
 
+  it('cannot handle input with multiple keys if the first key is already missing.', async(): Promise<void> => {
+    handler = new CachedHandler(source, [ 'field1', 'field3' ]);
+
+    await expect(handler.canHandle(input)).resolves.toBeUndefined();
+    expect(source.canHandle).toHaveBeenCalledTimes(1);
+  });
+
   it('can use a specific field of the input as key.', async(): Promise<void> => {
-    handler = new CachedHandler(source, 'entry');
+    handler = new CachedHandler(source, [ 'field1' ]);
 
     const copy = { ...input };
     await expect(handler.handle(input)).resolves.toBe(output);
     await expect(handler.handle(copy)).resolves.toBe(output);
     expect(source.handle).toHaveBeenCalledTimes(1);
+  });
+
+  it('can use multiple fields of the object as keys.', async(): Promise<void> => {
+    handler = new CachedHandler(source, [ 'field1', 'field3' ]);
+
+    const copy = { ...input };
+    copy.field2 = { other: 'field' };
+    await expect(handler.handle(input)).resolves.toBe(output);
+    await expect(handler.handle(copy)).resolves.toBe(output);
+    expect(source.handle).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects empty field arrays.', async(): Promise<void> => {
+    expect((): any => new CachedHandler(source, []))
+      .toThrow('The fields parameter needs to have at least 1 entry if defined.');
   });
 });

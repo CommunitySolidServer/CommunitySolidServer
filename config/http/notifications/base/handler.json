@@ -5,7 +5,7 @@
       "comment": "Generates the Notification objects and caches them based on the topic.",
       "@id": "urn:solid-server:default:BaseNotificationGenerator",
       "@type": "CachedHandler",
-      "field": "topic",
+      "fields": [ "topic" ],
       "source": {
         "@type": "StateNotificationGenerator",
         "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
