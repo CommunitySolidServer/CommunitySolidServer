@@ -5,39 +5,44 @@
   ],
   "@graph": [
     {
-      "comment": "Requests permissions on subject resources for auxiliary resources.",
+      "comment": "Caches permissions based on credentials and requested modes. Does not cache the input object itself as that object might be created in different places",
       "@id": "urn:solid-server:default:PermissionReader",
-      "@type": "AuxiliaryReader",
-      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "reader": {
-        "@type": "UnionPermissionReader",
-        "readers": [
-          {
-            "comment": "This PermissionReader will be used to prevent external access to containers used for internal storage.",
-            "@id": "urn:solid-server:default:PathBasedReader",
-            "@type": "PathBasedReader",
-            "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
-          },
-          {
-            "comment": "The config that determines the authorization strategy needs to set the `authStrategy` field of this object.",
-            "@id": "urn:solid-server:default:OwnerPermissionReader",
-            "@type": "OwnerPermissionReader"
-          },
-          {
-            "comment": "Adds parent container checks needed for create/delete permissions.",
-            "@id": "urn:solid-server:default:ParentContainerReader",
-            "@type": "ParentContainerReader",
-            "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-            "reader": {
-              "comment": [
-                "Reinterprets Control permissions as Read/Write on the auth resource.",
-                "The config that determines the authorization strategy needs to set the `authStrategy` and `reader` fields of this object."
-              ],
-              "@id": "urn:solid-server:default:AuthAuxiliaryReader",
-              "@type": "AuthAuxiliaryReader"
+      "@type": "CachedHandler",
+      "fields": [ "credentials", "requestedModes" ],
+      "source": {
+        "comment": "Requests permissions on subject resources for auxiliary resources.",
+        "@type": "AuxiliaryReader",
+        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+        "reader": {
+          "@type": "UnionPermissionReader",
+          "readers": [
+            {
+              "comment": "This PermissionReader will be used to prevent external access to containers used for internal storage.",
+              "@id": "urn:solid-server:default:PathBasedReader",
+              "@type": "PathBasedReader",
+              "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+            },
+            {
+              "comment": "The config that determines the authorization strategy needs to set the `authStrategy` field of this object.",
+              "@id": "urn:solid-server:default:OwnerPermissionReader",
+              "@type": "OwnerPermissionReader"
+            },
+            {
+              "comment": "Adds parent container checks needed for create/delete permissions.",
+              "@id": "urn:solid-server:default:ParentContainerReader",
+              "@type": "ParentContainerReader",
+              "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+              "reader": {
+                "comment": [
+                  "Reinterprets Control permissions as Read/Write on the auth resource.",
+                  "The config that determines the authorization strategy needs to set the `authStrategy` and `reader` fields of this object."
+                ],
+                "@id": "urn:solid-server:default:AuthAuxiliaryReader",
+                "@type": "AuthAuxiliaryReader"
+              }
             }
-          }
-        ]
+          ]
+        }
       }
     }
   ]

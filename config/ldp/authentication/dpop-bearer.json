@@ -2,25 +2,29 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Supports DPoP and Bearer access tokens, or no credentials.",
+      "comment": "Caches the credentials based on the incoming request.",
       "@id": "urn:solid-server:default:CredentialsExtractor",
-      "@type": "UnionCredentialsExtractor",
-      "extractors": [
-        {
-          "@type": "WaterfallHandler",
-          "handlers": [
-            {
-              "@type": "DPoPWebIdExtractor",
-              "originalUrlExtractor": {
-                "@type": "OriginalUrlExtractor",
-                "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
-              }
-            },
-            { "@type": "BearerWebIdExtractor" }
-          ]
-        },
-        { "@type": "PublicCredentialsExtractor" }
-      ]
+      "@type": "CachedHandler",
+      "source": {
+        "comment": "Supports DPoP and Bearer access tokens, or no credentials.",
+        "@type": "UnionCredentialsExtractor",
+        "extractors": [
+          {
+            "@type": "WaterfallHandler",
+            "handlers": [
+              {
+                "@type": "DPoPWebIdExtractor",
+                "originalUrlExtractor": {
+                  "@type": "OriginalUrlExtractor",
+                  "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+                }
+              },
+              { "@type": "BearerWebIdExtractor" }
+            ]
+          },
+          { "@type": "PublicCredentialsExtractor" }
+        ]
+      }
     }
   ]
 }
