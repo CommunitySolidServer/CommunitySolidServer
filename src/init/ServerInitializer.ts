@@ -9,18 +9,27 @@ import { Initializer } from './Initializer';
  */
 export class ServerInitializer extends Initializer implements Finalizable {
   private readonly serverFactory: HttpServerFactory;
-  private readonly port: number;
+  private readonly port?: number;
+  private readonly socketPath?: string;
 
   private server?: Server;
 
-  public constructor(serverFactory: HttpServerFactory, port: number) {
+  public constructor(serverFactory: HttpServerFactory, port?: number, socketPath?: string) {
     super();
     this.serverFactory = serverFactory;
     this.port = port;
+    this.socketPath = socketPath;
+    if (!port && !socketPath) {
+      throw new Error('Either Port or Socket arguments must be set');
+    }
   }
 
   public async handle(): Promise<void> {
-    this.server = this.serverFactory.startServer(this.port);
+    if (this.socketPath) {
+      this.server = this.serverFactory.startServer(this.socketPath);
+    } else if (this.port) {
+      this.server = this.serverFactory.startServer(this.port);
+    }
   }
 
   public async finalize(): Promise<void> {

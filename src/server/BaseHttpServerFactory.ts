@@ -50,12 +50,12 @@ export class BaseHttpServerFactory implements HttpServerFactory {
 
   /**
    * Creates and starts an HTTP(S) server
-   * @param port - Port on which the server listens
+   * @param portOrSocket - Port or Unix Domain Socket on which the server listens
    */
-  public startServer(port: number): Server {
+  public startServer(port: number): Server;
+  public startServer(socket: string): Server;
+  public startServer(portOrSocket: number | string): Server {
     const protocol = this.options.https ? 'https' : 'http';
-    const url = new URL(`${protocol}://localhost:${port}/`).href;
-    this.logger.info(`Listening to server at ${url}`);
 
     const createServer = this.options.https ? createHttpsServer : createHttpServer;
     const options = this.createServerOptions();
@@ -92,7 +92,17 @@ export class BaseHttpServerFactory implements HttpServerFactory {
         }
       });
 
-    return server.listen(port);
+    if (typeof portOrSocket === 'string') {
+      if (process.platform === 'win32') {
+        throw new Error('Windows does not support Unix Domain Sockets');
+      }
+      const result = server.listen(portOrSocket);
+      this.logger.info(`Listening to server at ${server.address()}`);
+      return result;
+    }
+    const url = new URL(`${protocol}://localhost:${portOrSocket}/`).href;
+    this.logger.info(`Listening to server at ${url}`);
+    return server.listen(portOrSocket);
   }
 
   private createServerOptions(): BaseHttpServerOptions {
