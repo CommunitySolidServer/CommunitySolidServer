@@ -22,6 +22,18 @@ describe('ServerInitializer', (): void => {
     expect(serverFactory.startServer).toHaveBeenCalledWith(3000);
   });
 
+  it('starts a server on the specified Unix Domain Socket.', async(): Promise<void> => {
+    initializer = new ServerInitializer(serverFactory, undefined, '/tmp/css.sock');
+    await initializer.handle();
+    expect(serverFactory.startServer).toHaveBeenCalledWith('/tmp/css.sock');
+  });
+
+  it('throws when neither port or socket are set.', async(): Promise<void> => {
+    expect((): void => {
+      initializer = new ServerInitializer(serverFactory, undefined, undefined);
+    }).toThrow('Either Port or Socket arguments must be set');
+  });
+
   it('can stop the server.', async(): Promise<void> => {
     await initializer.handle();
     await expect(initializer.finalize()).resolves.toBeUndefined();

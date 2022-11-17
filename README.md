@@ -125,7 +125,8 @@ to some commonly used settings:
 | parameter name         | default value              | description                                                                                                                                   |
 |------------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
 | `--port, -p`           | `3000`                     | The TCP port on which the server should listen.                                                                                               |
-| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The base URL used internally to generate URLs. Change this if your server does not run on `http://localhost:$PORT/`.                          |
+| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The base URL used internally to generate URLs. Change this if your server does not run on `http://localhost:$PORT/`.
+| `--socket`           |                     | The Unix Domain Socket on which the server should listen. `--baseUrl` must be set if this option is provided |
 | `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems. Use `debug` for full information.                                                 |
 | `--config, -c`         | `@css:config/default.json` | The configuration(s) for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json`       |
 | `--rootFilePath, -f`   | `./`                       | Root folder where the server stores data, when using a file-based configuration.                                                              |
