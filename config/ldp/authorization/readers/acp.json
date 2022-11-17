@@ -2,19 +2,17 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Adds parent container checks needed for create/delete permissions.",
-      "@id": "urn:solid-server:default:WrappedAcpReader",
-      "@type": "ParentContainerReader",
-      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-      "reader": { "@id": "urn:solid-server:default:AcrAuxiliaryReader" }
+      "@id": "urn:solid-server:default:OwnerPermissionReader",
+      "@type": "OwnerPermissionReader",
+      "authStrategy": { "@id": "urn:solid-server:default:AcrStrategy" }
     },
     {
-      "comment": "Reinterprets Control permissions as Read/Write on the ACR document.",
-      "@id": "urn:solid-server:default:AcrAuxiliaryReader",
+      "@id": "urn:solid-server:default:AuthAuxiliaryReader",
       "@type": "AuthAuxiliaryReader",
       "authStrategy": { "@id": "urn:solid-server:default:AcrStrategy" },
       "reader": { "@id": "urn:solid-server:default:AcpReader" }
     },
+
     {
       "comment": "Reads out permissions from ACR documents for subject resources.",
       "@id": "urn:solid-server:default:AcpReader",
