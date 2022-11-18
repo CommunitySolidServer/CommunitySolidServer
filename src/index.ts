@@ -82,10 +82,6 @@ export * from './http/input/preferences/PreferenceParser';
 export * from './http/input/BasicRequestParser';
 export * from './http/input/RequestParser';
 
-// HTTP/LDP/Metadata
-export * from './http/ldp/metadata/OperationMetadataCollector';
-export * from './http/ldp/metadata/WebAclMetadataCollector';
-
 // HTTP/LDP
 export * from './http/ldp/DeleteOperationHandler';
 export * from './http/ldp/GetOperationHandler';
@@ -295,6 +291,7 @@ export * from './server/HttpServerFactory';
 export * from './server/OperationHttpHandler';
 export * from './server/ParsingHttpHandler';
 export * from './server/ServerConfigurator';
+export * from './server/WacAllowHttpHandler';
 export * from './server/WebSocketServerConfigurator';
 
 // Server/Description

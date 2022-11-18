@@ -13,7 +13,6 @@
       "@id": "urn:solid-server:default:NotificationParsingHandler",
       "@type": "ParsingHttpHandler",
       "requestParser": { "@id": "urn:solid-server:default:RequestParser" },
-      "metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
       "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "operationHandler": {
