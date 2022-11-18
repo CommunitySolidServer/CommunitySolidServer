@@ -71,7 +71,6 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
 
     try {
       await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });
-      operation.availablePermissions = availablePermissions;
     } catch (error: unknown) {
       this.logger.verbose(`Authorization failed: ${(error as any).message}`);
       throw error;

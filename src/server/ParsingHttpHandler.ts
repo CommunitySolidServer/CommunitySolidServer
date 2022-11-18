@@ -1,5 +1,4 @@
 import type { RequestParser } from '../http/input/RequestParser';
-import type { OperationMetadataCollector } from '../http/ldp/metadata/OperationMetadataCollector';
 import type { ErrorHandler } from '../http/output/error/ErrorHandler';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import type { ResponseWriter } from '../http/output/ResponseWriter';
@@ -17,10 +16,6 @@ export interface ParsingHttpHandlerArgs {
    * Parses the incoming requests.
    */
   requestParser: RequestParser;
-  /**
-   * Generates generic operation metadata that is required for a response.
-   */
-  metadataCollector: OperationMetadataCollector;
   /**
    * Converts errors to a serializable format.
    */
@@ -46,7 +41,6 @@ export class ParsingHttpHandler extends HttpHandler {
   private readonly requestParser: RequestParser;
   private readonly errorHandler: ErrorHandler;
   private readonly responseWriter: ResponseWriter;
-  private readonly metadataCollector: OperationMetadataCollector;
   private readonly operationHandler: OperationHttpHandler;
 
   public constructor(args: ParsingHttpHandlerArgs) {
@@ -54,7 +48,6 @@ export class ParsingHttpHandler extends HttpHandler {
     this.requestParser = args.requestParser;
     this.errorHandler = args.errorHandler;
     this.responseWriter = args.responseWriter;
-    this.metadataCollector = args.metadataCollector;
     this.operationHandler = args.operationHandler;
   }
 
@@ -79,10 +72,6 @@ export class ParsingHttpHandler extends HttpHandler {
   Promise<ResponseDescription> {
     const operation = await this.requestParser.handleSafe(request);
     const result = await this.operationHandler.handleSafe({ operation, request, response });
-
-    if (result?.metadata) {
-      await this.metadataCollector.handleSafe({ operation, metadata: result.metadata });
-    }
 
     this.logger.verbose(`Parsed ${operation.method} operation on ${operation.target.path}`);
     return result;

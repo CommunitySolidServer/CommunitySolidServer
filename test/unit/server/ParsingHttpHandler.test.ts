@@ -1,8 +1,6 @@
 import type { RequestParser } from '../../../src/http/input/RequestParser';
-import type { OperationMetadataCollector } from '../../../src/http/ldp/metadata/OperationMetadataCollector';
 import type { Operation } from '../../../src/http/Operation';
 import type { ErrorHandler } from '../../../src/http/output/error/ErrorHandler';
-import { OkResponseDescription } from '../../../src/http/output/response/OkResponseDescription';
 import { ResponseDescription } from '../../../src/http/output/response/ResponseDescription';
 import type { ResponseWriter } from '../../../src/http/output/ResponseWriter';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
@@ -20,7 +18,6 @@ describe('A ParsingHttpHandler', (): void => {
   const operation: Operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences: {}, body };
   const errorResponse = new ResponseDescription(400);
   let requestParser: jest.Mocked<RequestParser>;
-  let metadataCollector: jest.Mocked<OperationMetadataCollector>;
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let source: jest.Mocked<OperationHttpHandler>;
@@ -28,7 +25,6 @@ describe('A ParsingHttpHandler', (): void => {
 
   beforeEach(async(): Promise<void> => {
     requestParser = { handleSafe: jest.fn().mockResolvedValue(operation) } as any;
-    metadataCollector = { handleSafe: jest.fn() } as any;
     errorHandler = { handleSafe: jest.fn().mockResolvedValue(errorResponse) } as any;
     responseWriter = { handleSafe: jest.fn() } as any;
 
@@ -37,7 +33,7 @@ describe('A ParsingHttpHandler', (): void => {
     } as any;
 
     handler = new ParsingHttpHandler(
-      { requestParser, metadataCollector, errorHandler, responseWriter, operationHandler: source },
+      { requestParser, errorHandler, responseWriter, operationHandler: source },
     );
   });
 
@@ -58,15 +54,6 @@ describe('A ParsingHttpHandler', (): void => {
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(0);
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result });
-  });
-
-  it('calls the operation metadata collector if there is response metadata.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata();
-    const okResult = new OkResponseDescription(metadata);
-    source.handleSafe.mockResolvedValueOnce(okResult);
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(metadataCollector.handleSafe).toHaveBeenCalledTimes(1);
-    expect(metadataCollector.handleSafe).toHaveBeenLastCalledWith({ operation, metadata });
   });
 
   it('calls the error handler if something goes wrong.', async(): Promise<void> => {
