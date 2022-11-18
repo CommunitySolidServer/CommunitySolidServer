@@ -1,6 +1,6 @@
 import type { Credentials } from '../../../src/authentication/Credentials';
 import { OwnerPermissionReader } from '../../../src/authorization/OwnerPermissionReader';
-import { AclMode } from '../../../src/authorization/permissions/AclPermission';
+import { AclMode } from '../../../src/authorization/permissions/AclPermissionSet';
 import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
@@ -81,14 +81,14 @@ describe('An OwnerPermissionReader', (): void => {
   it('returns full permissions if the owner is accessing an ACL resource in their pod.', async(): Promise<void> => {
     compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap([[
       identifier,
-      { agent: {
+      {
         read: true,
         write: true,
         append: true,
         create: true,
         delete: true,
         control: true,
-      }},
+      },
     ]]));
   });
 });

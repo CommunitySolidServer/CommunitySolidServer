@@ -74,8 +74,8 @@ describe('An AcpReader', (): void => {
       [{ path: baseUrl }, AccessMode.read ],
       [ target, AccessMode.read ]]);
     const expectedPermissions = new IdentifierMap([
-      [{ path: baseUrl }, { agent: { read: true }}],
-      [ target, { agent: {}}]]);
+      [{ path: baseUrl }, { read: true }],
+      [ target, {}]]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
   });
 
@@ -100,8 +100,8 @@ describe('An AcpReader', (): void => {
       [{ path: baseUrl }, AccessMode.read ],
       [ target, AccessMode.read ]]);
     const expectedPermissions = new IdentifierMap([
-      [{ path: baseUrl }, { agent: {}}],
-      [ target, { agent: { read: true }}]]);
+      [{ path: baseUrl }, {}],
+      [ target, { read: true }]]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
   });
 
@@ -133,8 +133,8 @@ describe('An AcpReader', (): void => {
       [{ path: baseUrl }, AccessMode.read ],
       [ target, AccessMode.read ]]);
     const expectedPermissions = new IdentifierMap([
-      [{ path: baseUrl }, { agent: { control: true }}],
-      [ target, { agent: { read: true, append: true }}]]);
+      [{ path: baseUrl }, { control: true }],
+      [ target, { read: true, append: true }]]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
   });
 
@@ -155,9 +155,9 @@ describe('An AcpReader', (): void => {
       [ target1, AccessMode.read ],
       [ target2, AccessMode.read ]]);
     const expectedPermissions = new IdentifierMap([
-      [{ path: baseUrl }, { agent: {}}],
-      [ target1, { agent: { read: true }}],
-      [ target2, { agent: { read: true }}]]);
+      [{ path: baseUrl }, {}],
+      [ target1, { read: true }],
+      [ target2, { read: true }]]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
     expect(acrStore.getRepresentation).toHaveBeenCalledTimes(3);
     expect(acrStore.getRepresentation)
@@ -182,7 +182,7 @@ describe('An AcpReader', (): void => {
         acp:issuer <http://example.com/idp>.        
     `, baseUrl);
     const requestedModes = new IdentifierSetMultiMap([[{ path: baseUrl }, AccessMode.read ]]);
-    let expectedPermissions = new IdentifierMap([[{ path: baseUrl }, { agent: {}}]]);
+    let expectedPermissions = new IdentifierMap([[{ path: baseUrl }, {}]]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
 
     credentials = {
@@ -190,7 +190,7 @@ describe('An AcpReader', (): void => {
       client: { clientId: 'http://client.example.com/#me' },
       issuer: { url: 'http://example.com/idp' },
     };
-    expectedPermissions = new IdentifierMap([[{ path: baseUrl }, { agent: { read: true }}]]);
+    expectedPermissions = new IdentifierMap([[{ path: baseUrl }, { read: true }]]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
   });
 });

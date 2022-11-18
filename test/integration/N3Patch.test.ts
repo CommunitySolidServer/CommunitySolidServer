@@ -1,7 +1,7 @@
 import 'jest-rdf';
 import { fetch } from 'cross-fetch';
 import { Parser } from 'n3';
-import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
+import type { AclPermissionSet } from '../../src/authorization/permissions/AclPermissionSet';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
@@ -59,7 +59,7 @@ async function expectPatch(
 }
 
 // Creates/updates a resource with the given data and permissions
-async function setResource(path: string, turtle: string, permissions: AclPermission): Promise<void> {
+async function setResource(path: string, turtle: string, permissions: AclPermissionSet): Promise<void> {
   const url = joinUrl(baseUrl, path);
   await store.setRepresentation({ path: url }, new BasicRepresentation(turtle, 'text/turtle'));
   await aclHelper.setSimpleAcl(url, { permissions, agentClass: 'agent', accessTo: true });

@@ -68,6 +68,7 @@ These changes are relevant if you wrote custom modules for the server that depen
     - `OwnerPermissionReader` input parameter `aclStrategy` was renamed to `authStrategy`.
     - `TemplatedResourcesGenerator` has been renamed to `BaseResourcesGenerator` and has a different interface now.
 - `CredentialSet` was replaced by a single `Credentials` interface.
+  `PermissionSet` and `Permission` were merged into a single interface.
   This impacts all authentication and authorization related classes.
 - `HttpServerFactory.startServer` function was renamed to `createServer` and is no longer expected to start the server.
 

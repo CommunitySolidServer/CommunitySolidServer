@@ -6,7 +6,7 @@ import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { PermissionMap, Permission, PermissionSet, AccessMap } from './permissions/Permissions';
+import type { PermissionMap, PermissionSet, AccessMap } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 /**
@@ -80,20 +80,16 @@ export class ParentContainerReader extends PermissionReader {
   private addContainerPermissions(resourceSet?: PermissionSet, containerSet?: PermissionSet): PermissionSet {
     resourceSet = resourceSet ?? {};
     containerSet = containerSet ?? {};
-    // Already copying the `permissionSet` here since the loop only iterates over the container entries.
-    // It is possible `resourceSet` contains a key that `containerSet` does not contain.
-    const resultSet: PermissionSet = { ...resourceSet };
-    for (const [ group, containerPerms ] of Object.entries(containerSet) as [ keyof PermissionSet, Permission ][]) {
-      resultSet[group] = this.interpretContainerPermission(resourceSet[group] ?? {}, containerPerms);
-    }
-    return resultSet;
+
+    return this.interpretContainerPermission(resourceSet, containerSet);
   }
 
   /**
    * Determines the create and delete permissions for the given resource permissions
    * based on those of its parent container.
    */
-  private interpretContainerPermission(resourcePermission: Permission, containerPermission: Permission): Permission {
+  private interpretContainerPermission(resourcePermission: PermissionSet, containerPermission: PermissionSet):
+  PermissionSet {
     const mergedPermission = { ...resourcePermission };
 
     // https://solidproject.org/TR/2021/wac-20210711:

@@ -1,7 +1,7 @@
 import type { Credentials } from '../../../src/authentication/Credentials';
 import { AuthAuxiliaryReader } from '../../../src/authorization/AuthAuxiliaryReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
-import { AclMode } from '../../../src/authorization/permissions/AclPermission';
+import { AclMode } from '../../../src/authorization/permissions/AclPermissionSet';
 import type { AccessMap, PermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
@@ -40,10 +40,10 @@ describe('An AuthAuxiliaryReader', (): void => {
   it('requires control permissions on the subject resource to do everything.', async(): Promise<void> => {
     requestedModes.set(acl1, AccessMode.read);
     requestedModes.set(acl2, AccessMode.read);
-    sourceResult.set(subject1, { public: { control: true }} as PermissionSet);
+    sourceResult.set(subject1, { control: true } as PermissionSet);
 
     const result = await reader.handle({ requestedModes, credentials });
-    expect(result.get(acl1)).toEqual({ public: { read: true, append: true, write: true, control: true }});
+    expect(result.get(acl1)).toEqual({ read: true, append: true, write: true, control: true });
     expect(result.get(acl2)).toEqual({ });
 
     const updatedMap = new IdentifierMap();
@@ -59,10 +59,10 @@ describe('An AuthAuxiliaryReader', (): void => {
     requestedModes.set(acl1, AccessMode.read);
     requestedModes.set(subject1, AccessMode.write);
 
-    const resultSet = { public: { read: true, write: true, control: true }} as PermissionSet;
+    const resultSet = { read: true, write: true, control: true } as PermissionSet;
     sourceResult.set(subject1, resultSet);
     const resultMap: PermissionMap = new IdentifierMap([
-      [ acl1, { public: { read: true, write: true, control: true, append: true }} as PermissionSet ],
+      [ acl1, { read: true, write: true, control: true, append: true } as PermissionSet ],
       [ subject1, resultSet ],
     ]);
     compareMaps(await reader.handle({ credentials, requestedModes }), resultMap);

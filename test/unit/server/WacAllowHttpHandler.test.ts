@@ -1,7 +1,6 @@
 import 'jest-rdf';
 import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
-import type { AclPermission } from '../../../src/authorization/permissions/AclPermission';
 import type { ModesExtractor } from '../../../src/authorization/permissions/ModesExtractor';
 import type { Operation } from '../../../src/http/Operation';
 import { OkResponseDescription } from '../../../src/http/output/response/OkResponseDescription';
@@ -56,15 +55,14 @@ describe('A WacAllowHttpHandler', (): void => {
   });
 
   it('adds permission metadata.', async(): Promise<void> => {
-    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap([[ target, {
-      agent: { read: true, write: true, control: false } as AclPermission,
-      public: { read: true, write: false },
-    }]]));
+    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
+      [[ target, { read: true, write: true, append: false }]],
+    ));
 
     await expect(handler.handle({ operation, request, response })).resolves.toEqual(output);
-    expect(output.metadata!.quads()).toHaveLength(3);
+    expect(output.metadata!.quads()).toHaveLength(4);
     expect(output.metadata!.getAll(AUTH.terms.userMode)).toEqualRdfTermArray([ ACL.terms.Read, ACL.terms.Write ]);
-    expect(output.metadata!.get(AUTH.terms.publicMode)).toEqualRdfTerm(ACL.terms.Read);
+    expect(output.metadata!.getAll(AUTH.terms.publicMode)).toEqualRdfTermArray([ ACL.terms.Read, ACL.terms.Write ]);
 
     expect(source.handleSafe).toHaveBeenCalledTimes(1);
     expect(source.handleSafe).toHaveBeenLastCalledWith({ operation, request, response });
@@ -79,21 +77,59 @@ describe('A WacAllowHttpHandler', (): void => {
     });
   });
 
-  it('adds no permissions for credential groups that are not defined.', async(): Promise<void> => {
-    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap([[ target, {}]]));
+  it('determines public permissions separately in case of an authenticated request.', async(): Promise<void> => {
+    credentialsExtractor.handleSafe.mockResolvedValue({ agent: { webId: 'http://example.com/#me' }});
+    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
+      [[ target, { read: true, write: true, append: false }]],
+    ));
+    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
+      [[ target, { read: true, write: false, append: true }]],
+    ));
+
+    await expect(handler.handle({ operation, request, response })).resolves.toEqual(output);
+    expect(output.metadata!.quads()).toHaveLength(4);
+    expect(output.metadata!.getAll(AUTH.terms.userMode)).toEqualRdfTermArray([ ACL.terms.Read, ACL.terms.Write ]);
+    expect(output.metadata!.getAll(AUTH.terms.publicMode)).toEqualRdfTermArray([ ACL.terms.Read, ACL.terms.Append ]);
+
+    expect(source.handleSafe).toHaveBeenCalledTimes(1);
+    expect(source.handleSafe).toHaveBeenLastCalledWith({ operation, request, response });
+    expect(credentialsExtractor.handleSafe).toHaveBeenCalledTimes(1);
+    expect(credentialsExtractor.handleSafe).toHaveBeenLastCalledWith(request);
+    expect(modesExtractor.handleSafe).toHaveBeenCalledTimes(1);
+    expect(modesExtractor.handleSafe).toHaveBeenLastCalledWith(operation);
+    expect(permissionReader.handleSafe).toHaveBeenCalledTimes(2);
+    expect(permissionReader.handleSafe).toHaveBeenNthCalledWith(1, {
+      credentials: { agent: { webId: 'http://example.com/#me' }},
+      requestedModes: await modesExtractor.handleSafe.mock.results[0].value,
+    });
+    expect(permissionReader.handleSafe).toHaveBeenNthCalledWith(2, {
+      credentials: {},
+      requestedModes: await modesExtractor.handleSafe.mock.results[0].value,
+    });
+  });
+
+  it('adds no permissions if none of them are on the target.', async(): Promise<void> => {
+    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
+      [[{ path: 'http://example/other' }, { read: true, write: false }]],
+    ));
 
     await expect(handler.handle({ operation, request, response })).resolves.toEqual(output);
     expect(output.metadata!.quads()).toHaveLength(0);
   });
 
-  it('adds no permissions if none of them are on the target.', async(): Promise<void> => {
-    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap([[{ path: 'http://example/other' }, {
-      agent: { read: true, write: true, control: false } as AclPermission,
-      public: { read: true, write: false },
-    }]]));
+  it('adds no public permissions if the second call has no results for the target.', async(): Promise<void> => {
+    credentialsExtractor.handleSafe.mockResolvedValue({ agent: { webId: 'http://example.com/#me' }});
+    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
+      [[ target, { read: true, write: false }]],
+    ));
+    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
+      [[{ path: 'http://example/other' }, { read: false, write: true }]],
+    ));
 
     await expect(handler.handle({ operation, request, response })).resolves.toEqual(output);
-    expect(output.metadata!.quads()).toHaveLength(0);
+    expect(output.metadata!.quads()).toHaveLength(1);
+    expect(output.metadata!.getAll(AUTH.terms.userMode)).toEqualRdfTermArray([ ACL.terms.Read ]);
+    expect(output.metadata!.getAll(AUTH.terms.publicMode)).toEqualRdfTermArray([]);
   });
 
   it('immediately returns the source output if the operation method is not GET or HEAD.', async(): Promise<void> => {
