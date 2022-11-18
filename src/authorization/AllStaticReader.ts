@@ -1,19 +1,18 @@
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import { permissionSetKeys } from './permissions/Permissions';
-import type { Permission, PermissionMap, PermissionSet } from './permissions/Permissions';
+import type { PermissionSet, PermissionMap } from './permissions/Permissions';
 
 /**
  * PermissionReader which sets all permissions to true or false
  * independently of the identifier and requested permissions.
  */
 export class AllStaticReader extends PermissionReader {
-  private readonly permissions: Permission;
+  private readonly permissionSet: PermissionSet;
 
   public constructor(allow: boolean) {
     super();
-    this.permissions = Object.freeze({
+    this.permissionSet = Object.freeze({
       read: allow,
       write: allow,
       append: allow,
@@ -24,18 +23,9 @@ export class AllStaticReader extends PermissionReader {
 
   public async handle({ requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
     const availablePermissions = new IdentifierMap<PermissionSet>();
-    const permissions = this.createPermissions();
     for (const [ identifier ] of requestedModes) {
-      availablePermissions.set(identifier, permissions);
+      availablePermissions.set(identifier, this.permissionSet);
     }
     return availablePermissions;
-  }
-
-  private createPermissions(): PermissionSet {
-    const result: PermissionSet = {};
-    for (const group of permissionSetKeys) {
-      result[group] = this.permissions;
-    }
-    return result;
   }
 }

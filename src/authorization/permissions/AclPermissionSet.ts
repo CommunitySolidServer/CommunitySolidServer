@@ -1,10 +1,10 @@
-import type { Permission } from './Permissions';
+import type { PermissionSet } from './Permissions';
 
 export enum AclMode {
   control = 'control',
 }
 
 // Adds a control field to the permissions to specify this WAC-specific value
-export type AclPermission = Permission & {
+export type AclPermissionSet = PermissionSet & {
   [mode in AclMode]?: boolean;
 };

@@ -15,7 +15,7 @@ describe('An AuxiliaryReader', (): void => {
   const subjectIdentifier = { path: 'http://test.com/foo' };
   const auxiliaryIdentifier1 = { path: 'http://test.com/foo.dummy1' };
   const auxiliaryIdentifier2 = { path: 'http://test.com/foo.dummy2' };
-  const permissionSet: PermissionSet = { agent: { read: true }};
+  const permissionSet: PermissionSet = { read: true };
   let source: jest.Mocked<PermissionReader>;
   let strategy: jest.Mocked<AuxiliaryStrategy>;
   let reader: AuxiliaryReader;
@@ -76,7 +76,7 @@ describe('An AuxiliaryReader', (): void => {
       [ auxiliaryIdentifier2, AccessMode.read ],
       [ subjectIdentifier, AccessMode.delete ],
     ]);
-    const resultSet = { agent: { read: true, write: true, delete: true }};
+    const resultSet = { read: true, write: true, delete: true };
     source.handleSafe.mockResolvedValueOnce(new IdentifierMap([[ subjectIdentifier, resultSet ]]));
     const permissionMap: PermissionMap = new IdentifierMap([
       [ subjectIdentifier, resultSet ],

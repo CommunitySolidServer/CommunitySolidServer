@@ -10,7 +10,7 @@ import { filter } from '../util/IterableUtil';
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { AclPermission } from './permissions/AclPermission';
+import type { AclPermissionSet } from './permissions/AclPermissionSet';
 import type { PermissionMap } from './permissions/Permissions';
 
 /**
@@ -51,14 +51,14 @@ export class OwnerPermissionReader extends PermissionReader {
     for (const auth of auths) {
       if (this.identifierStrategy.contains(podBaseUrl, auth, true)) {
         this.logger.debug(`Granting Control permissions to owner on ${auth.path}`);
-        result.set(auth, { agent: {
+        result.set(auth, {
           read: true,
           write: true,
           append: true,
           create: true,
           delete: true,
           control: true,
-        } as AclPermission });
+        } as AclPermissionSet);
       }
     }
     return result;

@@ -18,7 +18,7 @@ describe('An AuthorizingHttpHandler', (): void => {
   const target = { path: 'http://example.com/foo' };
   const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>([[ target, AccessMode.read ]]);
   const availablePermissions: PermissionMap = new IdentifierMap(
-    [[ target, { public: { read: true }}]],
+    [[ target, { read: true }]],
   );
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;

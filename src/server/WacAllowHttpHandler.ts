@@ -1,10 +1,9 @@
 import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { PermissionReader } from '../authorization/PermissionReader';
-import { AclMode } from '../authorization/permissions/AclPermission';
-import type { AclPermission } from '../authorization/permissions/AclPermission';
+import type { AclPermissionSet } from '../authorization/permissions/AclPermissionSet';
+import { AclMode } from '../authorization/permissions/AclPermissionSet';
 import type { ModesExtractor } from '../authorization/permissions/ModesExtractor';
-import type { PermissionSet } from '../authorization/permissions/Permissions';
 import { AccessMode } from '../authorization/permissions/Permissions';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
@@ -63,19 +62,32 @@ export class WacAllowHttpHandler extends OperationHttpHandler {
 
     const permissionSet = availablePermissions.get(operation.target);
     if (permissionSet) {
-      this.logger.debug('Adding WAC-Allow metadata.');
-      this.addWacAllowMetadata(metadata, permissionSet);
+      const user: AclPermissionSet = permissionSet;
+      let everyone: AclPermissionSet;
+      if (!credentials.agent?.webId) {
+        // User is not authenticated so public permissions are the same as agent permissions
+        this.logger.debug('User is not authenticated so has public permissions');
+        everyone = user;
+      } else {
+        // Need to determine public permissions
+        this.logger.debug('Determining public permissions');
+        const permissionMap = await this.permissionReader.handleSafe({ credentials: {}, requestedModes });
+        everyone = permissionMap.get(operation.target) ?? {};
+      }
+
+      this.logger.debug('Adding WAC-Allow metadata');
+      this.addWacAllowMetadata(metadata, everyone, user);
     }
 
     return response;
   }
 
-  private addWacAllowMetadata(metadata: RepresentationMetadata, permissionSet: PermissionSet): void {
-    const user: AclPermission = permissionSet.agent ?? {};
-    const everyone: AclPermission = permissionSet.public ?? {};
-
+  /**
+   * Converts the found permissions to triples and puts them in the metadata.
+   */
+  private addWacAllowMetadata(metadata: RepresentationMetadata, everyone: AclPermissionSet, user: AclPermissionSet):
+  void {
     const modes = new Set<AccessMode>([ ...Object.keys(user), ...Object.keys(everyone) ] as AccessMode[]);
-
     for (const mode of modes) {
       if (VALID_ACL_MODES.has(mode)) {
         const capitalizedMode = mode.charAt(0).toUpperCase() + mode.slice(1) as 'Read' | 'Write' | 'Append' | 'Control';

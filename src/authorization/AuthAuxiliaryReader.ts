@@ -6,9 +6,9 @@ import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import { AclMode } from './permissions/AclPermission';
-import type { AclPermission } from './permissions/AclPermission';
-import type { AccessMap, AccessMode, PermissionMap, PermissionSet } from './permissions/Permissions';
+import { AclMode } from './permissions/AclPermissionSet';
+import type { AclPermissionSet } from './permissions/AclPermissionSet';
+import type { AccessMap, AccessMode, PermissionSet, PermissionMap } from './permissions/Permissions';
 
 /**
  * Determines the permission for authorization resources (such as ACL or ACR).
@@ -64,17 +64,13 @@ export class AuthAuxiliaryReader extends PermissionReader {
    * Updates the permissions for an authorization resource
    * by interpreting the Control access mode as allowing full access.
    */
-  protected interpretControl(identifier: ResourceIdentifier, permissionSet: PermissionSet = {}): PermissionSet {
-    const authSet: PermissionSet = {};
-    for (const [ group, permissions ] of Object.entries(permissionSet) as [ keyof PermissionSet, AclPermission ][]) {
-      const { control } = permissions;
-      authSet[group] = {
-        read: control,
-        append: control,
-        write: control,
-        control,
-      } as AclPermission;
-    }
-    return authSet;
+  protected interpretControl(identifier: ResourceIdentifier, permissionSet: AclPermissionSet = {}): PermissionSet {
+    const { control } = permissionSet;
+    return {
+      read: control,
+      append: control,
+      write: control,
+      control,
+    } as AclPermissionSet;
   }
 }

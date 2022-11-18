@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import { v4 } from 'uuid';
-import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
+import type { AclPermissionSet } from '../../src/authorization/permissions/AclPermissionSet';
 import { AccessMode as AM } from '../../src/authorization/permissions/Permissions';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
@@ -120,12 +120,12 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
 ];
 /* eslint-enable no-multi-spaces */
 
-function toPermission(modes: AM[]): AclPermission {
+function toPermission(modes: AM[]): AclPermissionSet {
   return Object.fromEntries(modes.map((mode): [AM, boolean] => [ mode, true ]));
 }
 
-async function setWebAclPermissions(store: ResourceStore, target: string, permissions: AclPermission,
-  childPermissions: AclPermission): Promise<void> {
+async function setWebAclPermissions(store: ResourceStore, target: string, permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet): Promise<void> {
   const aclHelper = new AclHelper(store);
   await aclHelper.setSimpleAcl(target, [
     { permissions, agentClass: 'agent', accessTo: true },
@@ -133,8 +133,8 @@ async function setWebAclPermissions(store: ResourceStore, target: string, permis
   ]);
 }
 
-async function setAcpPermissions(store: ResourceStore, target: string, permissions: AclPermission,
-  childPermissions: AclPermission): Promise<void> {
+async function setAcpPermissions(store: ResourceStore, target: string, permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet): Promise<void> {
   const acpHelper = new AcpHelper(store);
   const publicMatcher = acpHelper.createMatcher({ publicAgent: true });
   const policies = [ acpHelper.createPolicy({
@@ -157,7 +157,7 @@ const port = getPort('PermissionTable');
 const baseUrl = `http://localhost:${port}/`;
 
 type AuthFunctionType = (store: ResourceStore, target: string,
-  permissions: AclPermission, childPermissions: AclPermission) => Promise<void>;
+  permissions: AclPermissionSet, childPermissions: AclPermissionSet) => Promise<void>;
 
 const rootFilePath = getTestFolder('permissionTable');
 const stores: [string, string, { configs: string[]; authFunction: AuthFunctionType; teardown: () => Promise<void> }][] =
