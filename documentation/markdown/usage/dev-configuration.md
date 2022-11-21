@@ -23,8 +23,8 @@ The CSS can be configured in the `package.json` as follows:
 }
 ```
 
-alternatively, the configuration parameters may be placed in a configuration file named
-`.community-solid-server.config.json` as follows
+Alternatively, the configuration parameters may be placed in a configuration file named
+`.community-solid-server.config.json` as follows:
 
 ```json
 {
@@ -33,12 +33,12 @@ alternatively, the configuration parameters may be placed in a configuration fil
 }
 ```
 
-the config may also be written in javascript with the config as the default export
-such as the following `.community-solid-server.config.js`
+The config may also be written in JavaScript with the config as the default export
+such as the following `.community-solid-server.config.js`:
 
 ```js
 module.exports = {
   port: 3001,
   loggingLevel: "error"
-}
+};
 ```

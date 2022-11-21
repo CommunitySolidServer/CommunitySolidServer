@@ -9,7 +9,6 @@
 - Support for the new [WebSocket Notification protocol](https://solidproject.org/TR/websocket-subscription-2021)
   and the [WebHook Notification protocol draft](https://github.com/solid/notifications/blob/main/webhook-subscription-2021.md)
   was added.
-
 - The server configuration settings can be set from the package.json or .community-solid-server.config.json files.
 
 ### Data migration

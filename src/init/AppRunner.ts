@@ -164,7 +164,7 @@ export class AppRunner {
         }
       }
 
-      if (settings !== undefined) {
+      if (typeof settings !== 'undefined') {
         yargv = yargv.default(settings as any);
       }
     }
