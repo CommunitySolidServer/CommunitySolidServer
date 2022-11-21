@@ -60,7 +60,7 @@ describe('An app initialised using configuration in package.json', (): void => {
       files = {};
     });
 
-    it('should have created the CSS with the default configuration', async(): Promise<void> => {
+    it('should have created the CSS with the default configuration .', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3000/> a <http://www.w3.org/ns/pim/space#Storage> }', {
           sources: [ 'http://localhost:3000' ],
@@ -76,7 +76,7 @@ describe('An app initialised using configuration in package.json', (): void => {
       files = { [path.join(__dirname, 'package.json')]: packageJSONbase };
     });
 
-    it('should have created the CSS with the default configuration', async(): Promise<void> => {
+    it('should have created the CSS with the default configuration .', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3000/> a <http://www.w3.org/ns/pim/space#Storage> }', {
           sources: [ 'http://localhost:3000' ],
@@ -92,7 +92,7 @@ describe('An app initialised using configuration in package.json', (): void => {
       files = { [path.join(__dirname, '.community-solid-server.config.json')]: config };
     });
 
-    it('should have created the CSS with the default configuration', async(): Promise<void> => {
+    it('should have created the CSS with the default configuration .', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3000/> a <http://www.w3.org/ns/pim/space#Storage> }', {
           sources: [ 'http://localhost:3000' ],
@@ -108,7 +108,7 @@ describe('An app initialised using configuration in package.json', (): void => {
       files = { [path.join(__dirname, 'package.json')]: packageJSON };
     });
 
-    it('should have created the CSS with the specified configuration', async(): Promise<void> => {
+    it('should have created the CSS with the specified configuration .', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3101/> a <http://www.w3.org/ns/pim/space#Storage> }', {
           sources: [ 'http://localhost:3101' ],
@@ -127,7 +127,7 @@ describe('An app initialised using configuration in package.json', (): void => {
       };
     });
 
-    it('should have created the CSS with the specified configuration', async(): Promise<void> => {
+    it('should have created the CSS with the specified configuration .', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3101/> a <http://www.w3.org/ns/pim/space#Storage> }', {
           sources: [ 'http://localhost:3101' ],
@@ -146,7 +146,7 @@ describe('An app initialised using configuration in package.json', (): void => {
       };
     });
 
-    it('should have created the CSS with the specified configuration', async(): Promise<void> => {
+    it('should have created the CSS with the specified configuration .', async(): Promise<void> => {
       const result = await engine.queryBoolean(
         'ASK { <http://localhost:3101/> a <http://www.w3.org/ns/pim/space#Storage> }', {
           sources: [ 'http://localhost:3101' ],

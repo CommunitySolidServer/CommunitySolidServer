@@ -138,10 +138,7 @@ module.exports = {
     'import/no-named-as-default': 'off',
     // Doesn't work with type imports
     'no-duplicate-imports': 'off',
-    'unused-imports/no-unused-imports-ts': 'error',
-
-    // We use jest not mocha
-    'mocha/valid-test-description': 'off'
+    'unused-imports/no-unused-imports-ts': 'error'
   },
 
   overrides: [
