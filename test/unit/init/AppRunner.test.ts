@@ -7,20 +7,42 @@ import type { ShorthandResolver } from '../../../src/init/variables/ShorthandRes
 import { joinFilePath } from '../../../src/util/PathUtil';
 import { flushPromises } from '../../util/Util';
 
-const defaultParameters = {
+let defaultParameters: Record<string, any> = {
   port: 3000,
   logLevel: 'info',
 };
+
 const cliExtractor: jest.Mocked<CliExtractor> = {
-  handleSafe: jest.fn().mockResolvedValue(defaultParameters),
+  handleSafe: jest.fn((): Record<string, any> => defaultParameters),
 } as any;
 
-const defaultVariables = {
+let defaultVariables: Record<string, any> = {
   'urn:solid-server:default:variable:port': 3000,
   'urn:solid-server:default:variable:loggingLevel': 'info',
 };
+
+const shorthandKeys: Record<string, string> = {
+  port: 'urn:solid-server:default:variable:port',
+  logLevel: 'urn:solid-server:default:variable:loggingLevel',
+};
+
 const shorthandResolver: jest.Mocked<ShorthandResolver> = {
-  handleSafe: jest.fn().mockResolvedValue(defaultVariables),
+  handleSafe: jest.fn((args: Record<string, any>): Record<string, any> => {
+    const variables: Record<string, any> = {};
+
+    for (const key in args) {
+      if (key in shorthandKeys) {
+        variables[shorthandKeys[key]] = args[key];
+
+        // We ignore the default key as this is introduced by the way
+        // we are mocking the module
+      } else if (key !== 'default') {
+        throw new Error(`Unexpected key ${key}`);
+      }
+    }
+
+    return variables;
+  }),
 } as any;
 
 const mockLogger = {
@@ -74,11 +96,61 @@ jest.mock('componentsjs', (): any => ({
   },
 }));
 
+let files: Record<string, any> = {};
+
+const alternateParameters = {
+  port: 3101,
+  logLevel: 'error',
+};
+
+const packageJSONbase = {
+  name: 'test',
+  version: '0.0.0',
+  private: true,
+};
+
+const packageJSON = {
+  ...packageJSONbase,
+  config: {
+    'community-solid-server': alternateParameters,
+  },
+};
+
+jest.mock('fs', (): Partial<Record<string, jest.Mock>> => ({
+  cwd: jest.fn((): string => __dirname),
+  existsSync: jest.fn((pth: string): boolean => typeof pth === 'string' && pth in files),
+}));
+
+jest.mock('fs-extra', (): Partial<Record<string, jest.Mock>> => ({
+  readJSON: jest.fn(async(pth: string): Promise<any> => files[pth]),
+  pathExists: jest.fn(async(pth: string): Promise<boolean> => typeof pth === 'string' && pth in files),
+}));
+
 jest.spyOn(process, 'cwd').mockReturnValue('/var/cwd');
 const write = jest.spyOn(process.stderr, 'write').mockImplementation(jest.fn());
 const exit = jest.spyOn(process, 'exit').mockImplementation(jest.fn() as any);
 
 describe('AppRunner', (): void => {
+  beforeEach((): void => {
+    files = {};
+
+    defaultParameters = {
+      port: 3000,
+      logLevel: 'info',
+    };
+
+    defaultVariables = {
+      'urn:solid-server:default:variable:port': 3000,
+      'urn:solid-server:default:variable:loggingLevel': 'info',
+    };
+
+    jest.mock(
+      '/var/cwd/.community-solid-server.config.js',
+      (): any => alternateParameters,
+      { virtual: true },
+    );
+  });
+
   afterEach((): void => {
     jest.clearAllMocks();
   });
@@ -545,6 +617,100 @@ describe('AppRunner', (): void => {
       } else {
         delete env.CSS_LOGGING_LEVEL;
       }
+    });
+
+    it('runs with no parameters.', async(): Promise<void> => {
+      defaultParameters = {};
+      defaultVariables = {};
+
+      await expect(new AppRunner().runCli()).resolves.toBeUndefined();
+      expect(manager.instantiate).toHaveBeenNthCalledWith(
+        2, 'urn:solid-server:default:App', { variables: {}},
+      );
+    });
+
+    it('runs honouring package.json configuration.', async(): Promise<void> => {
+      files = { '/var/cwd/package.json': packageJSON };
+      defaultParameters = {};
+      defaultVariables = {};
+
+      await expect(new AppRunner().runCli()).resolves.toBeUndefined();
+      expect(manager.instantiate).toHaveBeenNthCalledWith(
+        2, 'urn:solid-server:default:App', { variables: {
+          'urn:solid-server:default:variable:port': 3101,
+          'urn:solid-server:default:variable:loggingLevel': 'error',
+        }},
+      );
+    });
+
+    it('runs honouring package.json configuration with empty config.', async(): Promise<void> => {
+      files = { '/var/cwd/package.json': packageJSONbase };
+      defaultParameters = {};
+      defaultVariables = {};
+
+      await expect(new AppRunner().runCli()).resolves.toBeUndefined();
+      expect(manager.instantiate).toHaveBeenNthCalledWith(
+        2, 'urn:solid-server:default:App', { variables: {}},
+      );
+    });
+
+    it('runs honouring .community-solid-server.config.json if package.json is present.', async(): Promise<void> => {
+      files = {
+        '/var/cwd/.community-solid-server.config.json': alternateParameters,
+        '/var/cwd/package.json': packageJSONbase,
+      };
+      defaultParameters = {};
+      defaultVariables = {};
+
+      await expect(new AppRunner().runCli()).resolves.toBeUndefined();
+      expect(manager.instantiate).toHaveBeenNthCalledWith(
+        2, 'urn:solid-server:default:App', { variables: {
+          'urn:solid-server:default:variable:port': 3101,
+          'urn:solid-server:default:variable:loggingLevel': 'error',
+        }},
+      );
+    });
+
+    it('runs honouring .community-solid-server.config.js if package.json is present.', async(): Promise<void> => {
+      files = {
+        '/var/cwd/.community-solid-server.config.js': alternateParameters,
+        '/var/cwd/package.json': packageJSONbase,
+      };
+
+      defaultParameters = {};
+      defaultVariables = {};
+
+      await expect(new AppRunner().runCli()).resolves.toBeUndefined();
+      expect(manager.instantiate).toHaveBeenNthCalledWith(
+        2, 'urn:solid-server:default:App', { variables: {
+          'urn:solid-server:default:variable:port': 3101,
+          'urn:solid-server:default:variable:loggingLevel': 'error',
+        }},
+      );
+    });
+
+    it('runs ignoring .community-solid-server.config.json if no package.json present.', async(): Promise<void> => {
+      files = { '/var/cwd/.community-solid-server.config.json': alternateParameters };
+      defaultParameters = {};
+      defaultVariables = {};
+
+      await expect(new AppRunner().runCli()).resolves.toBeUndefined();
+      expect(manager.instantiate).toHaveBeenNthCalledWith(
+        2, 'urn:solid-server:default:App', { variables: {}},
+      );
+    });
+
+    it('runs ignoring .community-solid-server.config.js if no package.json present.', async(): Promise<void> => {
+      files = {
+        '/var/cwd/.community-solid-server.config.js': `module.exports = ${JSON.stringify(alternateParameters)}`,
+      };
+      defaultParameters = {};
+      defaultVariables = {};
+
+      await expect(new AppRunner().runCli()).resolves.toBeUndefined();
+      expect(manager.instantiate).toHaveBeenNthCalledWith(
+        2, 'urn:solid-server:default:App', { variables: {}},
+      );
     });
 
     it('throws an error if the server could not start.', async(): Promise<void> => {
