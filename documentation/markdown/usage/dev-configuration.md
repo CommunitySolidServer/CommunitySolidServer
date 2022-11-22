@@ -23,6 +23,11 @@ As an alternative using CLI arguments, or environment variables the CSS can be c
 }
 ```
 
+These parameters will then be used when the `community-solid-server`
+command is executed as an npm script (as shown in the example above).
+Or whenever the `community-solid-server` command is executed in the same
+folder as the `package.json`.
+
 Alternatively, the configuration parameters may be placed in a configuration file named
 `.community-solid-server.config.json` as follows:
 
