@@ -126,6 +126,12 @@ jest.mock('fs-extra', (): Partial<Record<string, jest.Mock>> => ({
   pathExists: jest.fn(async(pth: string): Promise<boolean> => typeof pth === 'string' && pth in files),
 }));
 
+jest.mock(
+  '/var/cwd/.community-solid-server.config.js',
+  (): any => alternateParameters,
+  { virtual: true },
+);
+
 jest.spyOn(process, 'cwd').mockReturnValue('/var/cwd');
 const write = jest.spyOn(process.stderr, 'write').mockImplementation(jest.fn());
 const exit = jest.spyOn(process, 'exit').mockImplementation(jest.fn() as any);
@@ -143,12 +149,6 @@ describe('AppRunner', (): void => {
       'urn:solid-server:default:variable:port': 3000,
       'urn:solid-server:default:variable:loggingLevel': 'info',
     };
-
-    jest.mock(
-      '/var/cwd/.community-solid-server.config.js',
-      (): any => alternateParameters,
-      { virtual: true },
-    );
   });
 
   afterEach((): void => {
