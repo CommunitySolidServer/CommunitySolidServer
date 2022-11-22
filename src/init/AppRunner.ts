@@ -1,6 +1,5 @@
 /* eslint-disable unicorn/no-process-exit */
 import { existsSync } from 'fs';
-import path from 'path';
 import type { WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
@@ -10,7 +9,7 @@ import { LOG_LEVELS } from '../logging/LogLevel';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage, isError } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
-import { resolveModulePath, resolveAssetPath } from '../util/PathUtil';
+import { resolveModulePath, resolveAssetPath, joinFilePath } from '../util/PathUtil';
 import type { App } from './App';
 import type { CliExtractor } from './cli/CliExtractor';
 import type { CliResolver } from './CliResolver';
@@ -147,17 +146,17 @@ export class AppRunner {
       .env(ENV_VAR_PREFIX);
 
     let settings: Record<string, unknown> | undefined;
-    const packageJSONPath = path.join(process.cwd(), 'package.json');
-    const cssConfigPath = path.join(process.cwd(), '.community-solid-server.config.json');
-    const cssConfigPathJs = path.join(process.cwd(), '.community-solid-server.config.js');
+    const packageJsonPath = joinFilePath(process.cwd(), 'package.json');
+    const cssConfigPath = joinFilePath(process.cwd(), '.community-solid-server.config.json');
+    const cssConfigPathJs = joinFilePath(process.cwd(), '.community-solid-server.config.js');
 
-    if (existsSync(packageJSONPath)) {
+    if (existsSync(packageJsonPath)) {
       if (existsSync(cssConfigPath)) {
         settings = await readJSON(cssConfigPath);
       } else if (existsSync(cssConfigPathJs)) {
         settings = await import(cssConfigPathJs);
       } else {
-        const pkg = await readJSON(packageJSONPath);
+        const pkg = await readJSON(packageJsonPath);
 
         if (typeof pkg.config?.['community-solid-server'] === 'object') {
           settings = pkg.config['community-solid-server'];
