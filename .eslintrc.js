@@ -138,7 +138,7 @@ module.exports = {
     'import/no-named-as-default': 'off',
     // Doesn't work with type imports
     'no-duplicate-imports': 'off',
-    'unused-imports/no-unused-imports-ts': 'error'
+    'unused-imports/no-unused-imports-ts': 'error',
   },
 
   overrides: [
