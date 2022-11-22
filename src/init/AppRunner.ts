@@ -4,7 +4,7 @@ import type { WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import { readJSON } from 'fs-extra';
-import yargs, { Argv } from 'yargs';
+import yargs from 'yargs';
 import { LOG_LEVELS } from '../logging/LogLevel';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage, isError } from '../util/errors/ErrorUtil';
@@ -130,6 +130,41 @@ export class AppRunner {
   }
 
   /**
+   * Retrieves settings from package.json or configuration file when
+   * part of an npm project
+   * @returns The settings defined  in the configuration file
+   */
+  public async getPackageSettings(): Promise<undefined | Record<string, unknown>> {
+    // Only try and retrieve config file settings if there is a package.json in the
+    // scope of the current directory
+    const packageJsonPath = joinFilePath(process.cwd(), 'package.json');
+    if (!existsSync(packageJsonPath)) {
+      return undefined;
+    }
+
+    // First see if there is a dedicated .json configuration file
+    const cssConfigPath = joinFilePath(process.cwd(), '.community-solid-server.config.json');
+    if (existsSync(cssConfigPath)) {
+      return readJSON(cssConfigPath);
+    }
+
+    // Next see if there is a dedicated .js file
+    const cssConfigPathJs = joinFilePath(process.cwd(), '.community-solid-server.config.js');
+    if (existsSync(cssConfigPathJs)) {
+      return import(cssConfigPathJs);
+    }
+
+    // Finally try and read from the config.community-solid-server
+    // field in the root package.json
+    const pkg = await readJSON(packageJsonPath);
+    if (typeof pkg.config?.['community-solid-server'] === 'object') {
+      return pkg.config['community-solid-server'];
+    }
+
+    return undefined;
+  }
+
+  /**
    * Returns an App object, created by parsing the Command line arguments, that can start and stop the Solid server.
    * Will exit the process on failure.
    *
@@ -145,27 +180,10 @@ export class AppRunner {
       // We also read from environment variables
       .env(ENV_VAR_PREFIX);
 
-    let settings: Record<string, unknown> | undefined;
-    const packageJsonPath = joinFilePath(process.cwd(), 'package.json');
-    const cssConfigPath = joinFilePath(process.cwd(), '.community-solid-server.config.json');
-    const cssConfigPathJs = joinFilePath(process.cwd(), '.community-solid-server.config.js');
+    const settings = await this.getPackageSettings();
 
-    if (existsSync(packageJsonPath)) {
-      if (existsSync(cssConfigPath)) {
-        settings = await readJSON(cssConfigPath);
-      } else if (existsSync(cssConfigPathJs)) {
-        settings = await import(cssConfigPathJs);
-      } else {
-        const pkg = await readJSON(packageJsonPath);
-
-        if (typeof pkg.config?.['community-solid-server'] === 'object') {
-          settings = pkg.config['community-solid-server'];
-        }
-      }
-
-      if (typeof settings !== 'undefined') {
-        yargv = yargv.default<{}>(settings);
-      }
+    if (typeof settings !== 'undefined') {
+      yargv = yargv.default<object>(settings);
     }
 
     const params = await yargv.parse();
