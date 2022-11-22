@@ -4,7 +4,7 @@ import type { WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import { readJSON } from 'fs-extra';
-import yargs from 'yargs';
+import yargs, { Argv } from 'yargs';
 import { LOG_LEVELS } from '../logging/LogLevel';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage, isError } from '../util/errors/ErrorUtil';
@@ -164,7 +164,7 @@ export class AppRunner {
       }
 
       if (typeof settings !== 'undefined') {
-        yargv = yargv.default(settings as any);
+        yargv = yargv.default<{}>(settings);
       }
     }
 
