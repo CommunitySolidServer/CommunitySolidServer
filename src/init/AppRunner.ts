@@ -184,7 +184,7 @@ export class AppRunner {
    * part of an npm project.
    * @returns The settings defined in the configuration file
    */
-   public async getPackageSettings(): Promise<undefined | Record<string, unknown>> {
+  public async getPackageSettings(): Promise<undefined | Record<string, unknown>> {
     // Only try and retrieve config file settings if there is a package.json in the
     // scope of the current directory
     const packageJsonPath = joinFilePath(process.cwd(), 'package.json');
