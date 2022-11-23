@@ -161,7 +161,7 @@ export class AppRunner {
       return pkg.config['community-solid-server'];
     }
 
-    return undefined;
+    return;
   }
 
   /**
