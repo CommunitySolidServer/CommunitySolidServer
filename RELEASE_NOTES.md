@@ -15,6 +15,7 @@
 - Regex-based configurations now have ordered entries and use the first match found.
 - When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
 - Support for Node v12 was dropped.
+- The server configuration settings can be set from the package.json or .community-solid-server.config.json/.js files.
 
 ### Data migration
 
