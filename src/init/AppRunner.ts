@@ -1,13 +1,15 @@
 /* eslint-disable unicorn/no-process-exit */
+import { existsSync } from 'fs';
 import type { WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
+import { readJSON } from 'fs-extra';
 import yargs from 'yargs';
 import { LOG_LEVELS } from '../logging/LogLevel';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage, isError } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
-import { resolveModulePath, resolveAssetPath } from '../util/PathUtil';
+import { resolveModulePath, resolveAssetPath, joinFilePath } from '../util/PathUtil';
 import type { App } from './App';
 import type { CliExtractor } from './cli/CliExtractor';
 import type { CliResolver } from './CliResolver';
@@ -135,13 +137,19 @@ export class AppRunner {
    */
   public async createCli(argv: CliArgv = process.argv): Promise<App> {
     // Parse only the core CLI arguments needed to load the configuration
-    const yargv = yargs(argv.slice(2))
+    let yargv = yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
       .options(CORE_CLI_PARAMETERS)
       // We disable help here as it would only show the core parameters
       .help(false)
       // We also read from environment variables
       .env(ENV_VAR_PREFIX);
+
+    const settings = await this.getPackageSettings();
+
+    if (typeof settings !== 'undefined') {
+      yargv = yargv.default<object>(settings);
+    }
 
     const params = await yargv.parse();
 
@@ -165,10 +173,43 @@ export class AppRunner {
     }
 
     // Build the CLI components and use them to generate values for the Components.js variables
-    const variables = await this.cliToVariables(componentsManager, argv);
+    const variables = await this.cliToVariables(componentsManager, argv, settings);
 
     // Build and start the actual server application using the generated variable values
     return await this.createApp(componentsManager, variables);
+  }
+
+  /**
+   * Retrieves settings from package.json or configuration file when
+   * part of an npm project.
+   * @returns The settings defined in the configuration file
+   */
+  public async getPackageSettings(): Promise<undefined | Record<string, unknown>> {
+    // Only try and retrieve config file settings if there is a package.json in the
+    // scope of the current directory
+    const packageJsonPath = joinFilePath(process.cwd(), 'package.json');
+    if (!existsSync(packageJsonPath)) {
+      return;
+    }
+
+    // First see if there is a dedicated .json configuration file
+    const cssConfigPath = joinFilePath(process.cwd(), '.community-solid-server.config.json');
+    if (existsSync(cssConfigPath)) {
+      return readJSON(cssConfigPath);
+    }
+
+    // Next see if there is a dedicated .js file
+    const cssConfigPathJs = joinFilePath(process.cwd(), '.community-solid-server.config.js');
+    if (existsSync(cssConfigPathJs)) {
+      return import(cssConfigPathJs);
+    }
+
+    // Finally try and read from the config.community-solid-server
+    // field in the root package.json
+    const pkg = await readJSON(packageJsonPath);
+    if (typeof pkg.config?.['community-solid-server'] === 'object') {
+      return pkg.config['community-solid-server'];
+    }
   }
 
   /**
@@ -189,11 +230,14 @@ export class AppRunner {
    * Handles the first Components.js instantiation.
    * Uses it to extract the CLI shorthand values and use those to create variable bindings.
    */
-  private async cliToVariables(componentsManager: ComponentsManager<CliResolver>, argv: CliArgv):
-  Promise<VariableBindings> {
+  private async cliToVariables(
+    componentsManager: ComponentsManager<CliResolver>,
+    argv: CliArgv,
+    settings?: Record<string, unknown>,
+  ): Promise<VariableBindings> {
     const cliResolver = await this.createCliResolver(componentsManager);
     const shorthand = await this.extractShorthand(cliResolver.cliExtractor, argv);
-    return await this.resolveShorthand(cliResolver.shorthandResolver, shorthand);
+    return await this.resolveShorthand(cliResolver.shorthandResolver, { ...settings, ...shorthand });
   }
 
   /**

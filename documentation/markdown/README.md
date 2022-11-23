@@ -34,6 +34,7 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 * [How to use the Identity Provider](usage/identity-provider.md)
 * [How to automate authentication](usage/client-credentials.md)
 * [How to automatically seed pods on startup](usage/seeding-pods.md)
+* [Using the CSS as a development server in another project](usage/dev-configuration.md)
 
 ## What the internals look like
 
