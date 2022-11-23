@@ -1,7 +1,7 @@
 # Configuring the CSS as a development server in another project
 
 It can be useful to use the CSS as local server to develop Solid applications against.
-As an alternative using CLI arguments, or environment variables the CSS can be configured in the `package.json` as follows:
+As an alternative to using CLI arguments, or environment variables, the CSS can be configured in the `package.json` as follows:
 
 ```json
 {
