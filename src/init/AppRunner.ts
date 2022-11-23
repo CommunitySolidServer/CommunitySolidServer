@@ -132,7 +132,7 @@ export class AppRunner {
   /**
    * Retrieves settings from package.json or configuration file when
    * part of an npm project.
-   * @returns The settings defined  in the configuration file
+   * @returns The settings defined in the configuration file
    */
   public async getPackageSettings(): Promise<undefined | Record<string, unknown>> {
     // Only try and retrieve config file settings if there is a package.json in the
