@@ -130,41 +130,6 @@ export class AppRunner {
   }
 
   /**
-   * Retrieves settings from package.json or configuration file when
-   * part of an npm project.
-   * @returns The settings defined in the configuration file
-   */
-  public async getPackageSettings(): Promise<undefined | Record<string, unknown>> {
-    // Only try and retrieve config file settings if there is a package.json in the
-    // scope of the current directory
-    const packageJsonPath = joinFilePath(process.cwd(), 'package.json');
-    if (!existsSync(packageJsonPath)) {
-      return;
-    }
-
-    // First see if there is a dedicated .json configuration file
-    const cssConfigPath = joinFilePath(process.cwd(), '.community-solid-server.config.json');
-    if (existsSync(cssConfigPath)) {
-      return readJSON(cssConfigPath);
-    }
-
-    // Next see if there is a dedicated .js file
-    const cssConfigPathJs = joinFilePath(process.cwd(), '.community-solid-server.config.js');
-    if (existsSync(cssConfigPathJs)) {
-      return import(cssConfigPathJs);
-    }
-
-    // Finally try and read from the config.community-solid-server
-    // field in the root package.json
-    const pkg = await readJSON(packageJsonPath);
-    if (typeof pkg.config?.['community-solid-server'] === 'object') {
-      return pkg.config['community-solid-server'];
-    }
-
-    return;
-  }
-
-  /**
    * Returns an App object, created by parsing the Command line arguments, that can start and stop the Solid server.
    * Will exit the process on failure.
    *
@@ -212,6 +177,39 @@ export class AppRunner {
 
     // Build and start the actual server application using the generated variable values
     return await this.createApp(componentsManager, variables);
+  }
+
+  /**
+   * Retrieves settings from package.json or configuration file when
+   * part of an npm project.
+   * @returns The settings defined in the configuration file
+   */
+   public async getPackageSettings(): Promise<undefined | Record<string, unknown>> {
+    // Only try and retrieve config file settings if there is a package.json in the
+    // scope of the current directory
+    const packageJsonPath = joinFilePath(process.cwd(), 'package.json');
+    if (!existsSync(packageJsonPath)) {
+      return;
+    }
+
+    // First see if there is a dedicated .json configuration file
+    const cssConfigPath = joinFilePath(process.cwd(), '.community-solid-server.config.json');
+    if (existsSync(cssConfigPath)) {
+      return readJSON(cssConfigPath);
+    }
+
+    // Next see if there is a dedicated .js file
+    const cssConfigPathJs = joinFilePath(process.cwd(), '.community-solid-server.config.js');
+    if (existsSync(cssConfigPathJs)) {
+      return import(cssConfigPathJs);
+    }
+
+    // Finally try and read from the config.community-solid-server
+    // field in the root package.json
+    const pkg = await readJSON(packageJsonPath);
+    if (typeof pkg.config?.['community-solid-server'] === 'object') {
+      return pkg.config['community-solid-server'];
+    }
   }
 
   /**
