@@ -139,7 +139,7 @@ export class AppRunner {
     // scope of the current directory
     const packageJsonPath = joinFilePath(process.cwd(), 'package.json');
     if (!existsSync(packageJsonPath)) {
-      return undefined;
+      return;
     }
 
     // First see if there is a dedicated .json configuration file
