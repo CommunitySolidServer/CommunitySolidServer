@@ -42,7 +42,21 @@ you can run a [Docker](https://www.docker.com/) version instead.
 ### 💻 Installing and running locally
 
 After installing Node.js,
-install the latest server version
+to run the server with in-memory storage, use:
+
+```shell
+npx @solid/community-server
+```
+
+To run the server with your current folder as storage, use:
+
+```shell
+npx @solid/community-server -c @css:config/file.json
+```
+
+### 📃 Installing and running locally with a global npm install
+
+After installing Node.js, install the latest server version
 from the [npm package repository](https://www.npmjs.com/):
 
 ```shell
