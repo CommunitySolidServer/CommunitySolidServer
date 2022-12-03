@@ -71,6 +71,18 @@ export class YargsCliExtractor extends CliExtractor {
    */
   private createYArgv(argv: readonly string[]): Argv {
     let yArgv = yargs(argv.slice(2));
+
+    // Error and show help message when multiple values were provided
+    // for a non Array type parameter
+    yArgv.check((args): any => {
+      for (const [ name, options ] of Object.entries(this.yargsArgOptions)) {
+        if (options.type !== 'array' && Array.isArray(args[name])) {
+          return `Multiple values for --${name} (-${options.alias}) were provided where only one is allowed`;
+        }
+      }
+      return true;
+    });
+
     if (this.yargvOptions.usage !== undefined) {
       yArgv = yArgv.usage(this.yargvOptions.usage);
     }

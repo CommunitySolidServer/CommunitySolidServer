@@ -52,6 +52,14 @@ describe('A YargsCliExtractor', (): void => {
     expect(error).toHaveBeenCalledWith('Unknown argument: unsupported');
   });
 
+  it('can error when multiple values are provided for a non array type parameter.', async(): Promise<void> => {
+    extractor = new YargsCliExtractor(parameters, { strictMode: true });
+    const argv = [ 'node', 'script', '-p', '3000', '-b', 'http://localhost:3000/', '-p', '3001' ];
+    await extractor.handle(argv);
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('Multiple values for --port (-p) were provided where only one is allowed');
+  });
+
   it('can parse environment variables.', async(): Promise<void> => {
     // While the code below does go into the corresponding values,
     // yargs does not see the new environment variable for some reason.
