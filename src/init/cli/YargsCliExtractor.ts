@@ -74,10 +74,10 @@ export class YargsCliExtractor extends CliExtractor {
 
     // Error and show help message when multiple values were provided
     // for a non Array type parameter
-    yArgv.check((args): any => {
+    yArgv.check((args): boolean => {
       for (const [ name, options ] of Object.entries(this.yargsArgOptions)) {
         if (options.type !== 'array' && Array.isArray(args[name])) {
-          return `Multiple values for --${name} (-${options.alias}) were provided where only one is allowed`;
+          throw new Error(`Multiple values for --${name} (-${options.alias}) were provided where only one is allowed`);
         }
       }
       return true;
