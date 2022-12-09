@@ -143,7 +143,7 @@ The Community Solid Server can be started in multithreaded mode with any config.
 that are threadsafe though. If a non-threadsafe component is used in multithreaded mode, the server will describe with
 an error which class is the culprit.
 
-```node
+```shell
 # Running multithreaded with autoscaling to number of logical cores minus 1
 npm start -- -c config/file.json -w -1
 ```
