@@ -29,7 +29,7 @@
       "aclStore": { "@id": "urn:solid-server:default:ResourceStore" },
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "accessChecker": {
-        "@type": "BooleanHandler",
+        "@type": "BooleanOrHandler",
         "handlers": [
           { "@id": "urn:solid-server:default:AgentAccessChecker" },
           { "@id": "urn:solid-server:default:AgentClassAccessChecker" },

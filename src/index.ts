@@ -418,7 +418,8 @@ export * from './util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Handlers
 export * from './util/handlers/AsyncHandler';
-export * from './util/handlers/BooleanHandler';
+export * from './util/handlers/BooleanOrHandler';
+export * from './util/handlers/BooleanAndHandler';
 export * from './util/handlers/ConditionalHandler';
 export * from './util/handlers/HandlerUtil';
 export * from './util/handlers/MethodFilterHandler';

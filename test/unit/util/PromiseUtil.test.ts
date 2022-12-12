@@ -1,6 +1,27 @@
-import { promiseSome } from '../../../src/util/PromiseUtil';
+import { promiseEvery, promiseSome } from '../../../src/util/PromiseUtil';
 
 describe('PromiseUtil', (): void => {
+  describe('#promiseEvery', (): void => {
+    const resultTrue = Promise.resolve(true);
+    const resultFalse = Promise.resolve(false);
+    const resultError = Promise.reject(new Error('generic error'));
+
+    it('returns true if no promise is provided.', async(): Promise<void> => {
+      await expect(promiseEvery([])).resolves.toBe(true);
+    });
+
+    it('returns true if no promise returns false.', async(): Promise<void> => {
+      await expect(promiseEvery([ resultTrue, resultTrue, resultTrue ])).resolves.toBe(true);
+    });
+
+    it('returns false if at least a promise returns false.', async(): Promise<void> => {
+      await expect(promiseEvery([ resultTrue, resultFalse, resultTrue ])).resolves.toBe(false);
+    });
+
+    it('counts errors as false.', async(): Promise<void> => {
+      await expect(promiseEvery([ resultError, resultTrue, resultTrue ])).resolves.toBe(false);
+    });
+  });
   describe('#promiseSome', (): void => {
     const resultTrue = Promise.resolve(true);
     const resultFalse = Promise.resolve(false);

@@ -28,6 +28,30 @@ PromiseOrValue<TOut> {
 function noop(): void {}
 
 /**
+ * A function that simulates the Array.every behaviour but on an array of Promises.
+ * Returns true if at all promises return true.
+ * Returns false if at least one promise returns false or error.
+ *
+ * @remarks
+ *
+ * Predicates provided as input must be implemented considering
+ * the following points:
+ * 1. if they throw an error, it won't be propagated;
+ * 2. throwing an error should be logically equivalent to returning false.
+ */
+export async function promiseEvery(predicates: Promise<boolean>[]): Promise<boolean> {
+  return new Promise((resolve): void => {
+    function resolveIfFalse(value: boolean): void {
+      if (!value) {
+        resolve(false);
+      }
+    }
+    Promise.all(predicates.map((predicate): Promise<void> => predicate.then(resolveIfFalse,
+      (): void => resolve(false)))).then((): void => resolve(true), noop);
+  });
+}
+
+/**
  * A function that simulates the Array.some behaviour but on an array of Promises.
  * Returns true if at least one promise returns true.
  * Returns false if all promises return false or error.

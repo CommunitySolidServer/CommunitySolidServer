@@ -8,13 +8,13 @@ import { filterHandlers } from './HandlerUtil';
  * A composite handler that returns true if any of its handlers can handle the input and return true.
  * Handler errors are interpreted as false results.
  */
-export class BooleanHandler<TIn> extends AsyncHandler<TIn, boolean> {
+export class BooleanOrHandler<TIn> extends AsyncHandler<TIn, boolean> {
   protected readonly logger = getLoggerFor(this);
 
   private readonly handlers: AsyncHandler<TIn, boolean>[];
 
   /**
-   * Creates a new BooleanHandler that stores the given handlers.
+   * Creates a new BooleanOrHandler that stores the given handlers.
    * @param handlers - Handlers over which it will run.
    */
   public constructor(handlers: AsyncHandler<TIn, boolean>[]) {
