@@ -14,8 +14,8 @@ on:
 
 jobs:
   mkdocs-prep:
-  # Runs the markdownlinter to ensure we don't release faulty markdown.
-  # Also gets the correct major version, wether the job is triggered by a version tag
+  # Runs the markdown linter to ensure we don't release faulty markdown.
+  # Also gets the correct major version, whether the job is triggered by a version tag
   #   or a push to main to update the latest documentation.
     runs-on: ubuntu-latest
     outputs:
@@ -54,4 +54,25 @@ jobs:
       - run: git fetch origin gh-pages --depth=1
       - run: |
           cd documentation && mike deploy --push --update-aliases \
-            ${{ needs.mkdocs-prep.outputs.major}}.x latest
+            ${{ needs.mkdocs-prep.outputs.major }}.x latest
+  
+
+  typedocs:
+    # Build typedocs and publish them to the GH page.
+    # `mike deploy` overwrites the entire folder for a version so these need to be (re)built afterwards.
+    needs: [mkdocs-prep, mkdocs]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.1.0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: npm ci --ignore-scripts
+      - name: Generate typedocs
+        run: npm run typedocs
+      - name: Deploy typedocs
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          destination_dir:  ${{ needs.mkdocs-prep.outputs.major }}.x/docs
