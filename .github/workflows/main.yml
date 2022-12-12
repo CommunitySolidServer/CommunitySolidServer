@@ -34,12 +34,7 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  typedocs-release:
-  # Release typedocs on version tag, but ignore pre-releases
-    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
-    uses: ./.github/workflows/typedocs.yml
-
   mkdocs-release:
-  # Release mkdocs on version tag, but ignore pre-releases
+  # Release documentation on version tag, but ignore pre-releases
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
     uses: ./.github/workflows/mkdocs.yml
