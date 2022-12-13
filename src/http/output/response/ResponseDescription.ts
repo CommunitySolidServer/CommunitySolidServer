@@ -6,9 +6,9 @@ import type { RepresentationMetadata } from '../../representation/Representation
  * The result of executing an operation.
  */
 export class ResponseDescription {
-  public readonly statusCode: number;
-  public readonly metadata?: RepresentationMetadata;
-  public readonly data?: Guarded<Readable>;
+  public statusCode: number;
+  public metadata?: RepresentationMetadata;
+  public data?: Guarded<Readable>;
 
   /**
    * @param statusCode - Status code to return.

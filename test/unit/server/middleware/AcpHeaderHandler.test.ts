@@ -1,4 +1,4 @@
-import { ACP } from '@solid/access-control-policy/dist/constant/acp';
+import { ACP } from '@solid/access-control-policy';
 import { createResponse } from 'node-mocks-http';
 import type { AuxiliaryIdentifierStrategy } from '../../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { TargetExtractor } from '../../../../src/http/input/identifier/TargetExtractor';

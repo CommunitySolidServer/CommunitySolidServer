@@ -96,6 +96,7 @@ nav:
             - Parsing: architecture/features/protocol/parsing.md
             - Authorization: architecture/features/protocol/authorization.md
             - Resource Store: architecture/features/protocol/resource-store.md
+        - Notifications: architecture/features/notifications.md
   - Contributing:
     - Pull requests: contributing/making-changes.md
     - Releases: contributing/release.md

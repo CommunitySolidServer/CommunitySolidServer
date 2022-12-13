@@ -1,0 +1,18 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:StorageDescriber",
+      "@type": "ArrayUnionHandler",
+      "handlers": [
+        {
+          "comment": "Handles the storage description triples used for discovery of a WebSocketSubscription2021 endpoint.",
+          "@type": "NotificationDescriber",
+          "route": { "@id": "urn:solid-server:default:WebSocket2021Route" },
+          "relative": "#websocketNotification",
+          "type": "http://www.w3.org/ns/solid/notifications#WebSocketSubscription2021"
+        }
+      ]
+    }
+  ]
+}

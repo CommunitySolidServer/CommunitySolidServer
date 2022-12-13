@@ -4,7 +4,13 @@
     {
       "comment": "Converts many RDF serialization to Quad objects.",
       "@id": "urn:solid-server:default:RdfToQuadConverter",
-      "@type": "RdfToQuadConverter"
+      "@type": "RdfToQuadConverter",
+      "contexts": [
+        {
+          "RdfToQuadConverter:_contexts_key": "https://www.w3.org/ns/solid/notification/v1",
+          "RdfToQuadConverter:_contexts_value": "@css:templates/contexts/notification.jsonld"
+        }
+      ]
     }
   ]
 }

@@ -1,3 +1,7 @@
+type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
+export type AsyncHandlerInput<T extends AsyncHandler<any, any>> = Parameters<T['handle']>[0];
+export type AsyncHandlerOutput<T extends AsyncHandler<any, any>> = Awaited<ReturnType<T['handle']>>;
+
 /**
  * Simple interface for classes that can potentially handle a specific kind of data asynchronously.
  */

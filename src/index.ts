@@ -15,7 +15,9 @@ export * from './authorization/access/ClassAccessChecker';
 export * from './authorization/access/GroupAccessChecker';
 
 // Authorization/Permissions
-export * from './authorization/permissions/AclPermission';
+export * from './authorization/permissions/AclPermissionSet';
+export * from './authorization/permissions/CreateModesExtractor';
+export * from './authorization/permissions/DeleteParentExtractor';
 export * from './authorization/permissions/IntermediateCreateExtractor';
 export * from './authorization/permissions/ModesExtractor';
 export * from './authorization/permissions/MethodModesExtractor';
@@ -80,10 +82,6 @@ export * from './http/input/preferences/PreferenceParser';
 export * from './http/input/BasicRequestParser';
 export * from './http/input/RequestParser';
 
-// HTTP/LDP/Metadata
-export * from './http/ldp/metadata/OperationMetadataCollector';
-export * from './http/ldp/metadata/WebAclMetadataCollector';
-
 // HTTP/LDP
 export * from './http/ldp/DeleteOperationHandler';
 export * from './http/ldp/GetOperationHandler';
@@ -108,6 +106,7 @@ export * from './http/output/metadata/LinkRelMetadataWriter';
 export * from './http/output/metadata/MappedMetadataWriter';
 export * from './http/output/metadata/MetadataWriter';
 export * from './http/output/metadata/ModifiedMetadataWriter';
+export * from './http/output/metadata/StorageDescriptionAdvertiser';
 export * from './http/output/metadata/WacAllowMetadataWriter';
 export * from './http/output/metadata/WwwAuthMetadataWriter';
 
@@ -135,7 +134,9 @@ export * from './http/Operation';
 export * from './http/UnsecureWebSocketsProtocol';
 
 // Identity/Configuration
+export * from './identity/configuration/CachedJwkGenerator';
 export * from './identity/configuration/IdentityProviderFactory';
+export * from './identity/configuration/JwkGenerator';
 export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Credentials
@@ -281,15 +282,22 @@ export * from './pods/PodManager';
 
 // Server
 export * from './server/AuthorizingHttpHandler';
-export * from './server/BaseHttpServerFactory';
+export * from './server/BaseServerFactory';
+export * from './server/HandlerServerConfigurator';
 export * from './server/HttpHandler';
 export * from './server/HttpRequest';
 export * from './server/HttpResponse';
 export * from './server/HttpServerFactory';
 export * from './server/OperationHttpHandler';
 export * from './server/ParsingHttpHandler';
-export * from './server/WebSocketHandler';
-export * from './server/WebSocketServerFactory';
+export * from './server/ServerConfigurator';
+export * from './server/WacAllowHttpHandler';
+export * from './server/WebSocketServerConfigurator';
+
+// Server/Description
+export * from './server/description/StaticStorageDescriber';
+export * from './server/description/StorageDescriber';
+export * from './server/description/StorageDescriptionHandler';
 
 // Server/Middleware
 export * from './server/middleware/AcpHeaderHandler';
@@ -298,7 +306,52 @@ export * from './server/middleware/HeaderHandler';
 export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
+// Server/Notifications/Generate
+export * from './server/notifications/generate/ActivityNotificationGenerator';
+export * from './server/notifications/generate/DeleteNotificationGenerator';
+export * from './server/notifications/generate/NotificationGenerator';
+export * from './server/notifications/generate/StateNotificationGenerator';
+
+// Server/Notifications/Serialize
+export * from './server/notifications/serialize/ConvertingNotificationSerializer';
+export * from './server/notifications/serialize/JsonLdNotificationSerializer';
+export * from './server/notifications/serialize/NotificationSerializer';
+
+// Server/Notifications/WebHookSubscription2021
+export * from './server/notifications/WebHookSubscription2021/WebHookDescriber';
+export * from './server/notifications/WebHookSubscription2021/WebHookEmitter';
+export * from './server/notifications/WebHookSubscription2021/WebHookSubscription2021';
+export * from './server/notifications/WebHookSubscription2021/WebHookUnsubscriber';
+export * from './server/notifications/WebHookSubscription2021/WebHookWebId';
+
+// Server/Notifications/WebSocketSubscription2021
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Emitter';
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Handler';
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Listener';
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Storer';
+export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Util';
+export * from './server/notifications/WebSocketSubscription2021/WebSocketMap';
+export * from './server/notifications/WebSocketSubscription2021/WebSocketSubscription2021';
+
+// Server/Notifications
+export * from './server/notifications/ActivityEmitter';
+export * from './server/notifications/BaseStateHandler';
+export * from './server/notifications/ComposedNotificationHandler';
+export * from './server/notifications/KeyValueSubscriptionStorage';
+export * from './server/notifications/ListeningActivityHandler';
+export * from './server/notifications/NotificationDescriber';
+export * from './server/notifications/NotificationEmitter';
+export * from './server/notifications/NotificationHandler';
+export * from './server/notifications/NotificationSubscriber';
+export * from './server/notifications/StateHandler';
+export * from './server/notifications/Subscription';
+export * from './server/notifications/SubscriptionStorage';
+export * from './server/notifications/SubscriptionType';
+export * from './server/notifications/TypedNotificationHandler';
+
 // Server/Util
+export * from './server/util/BaseRouterHandler';
+export * from './server/util/OperationRouterHandler';
 export * from './server/util/RedirectingHttpHandler';
 export * from './server/util/RouterHandler';
 
@@ -417,9 +470,11 @@ export * from './util/errors/UnauthorizedHttpError';
 export * from './util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Handlers
+export * from './util/handlers/ArrayUnionHandler';
 export * from './util/handlers/AsyncHandler';
 export * from './util/handlers/BooleanOrHandler';
 export * from './util/handlers/BooleanAndHandler';
+export * from './util/handlers/CachedHandler';
 export * from './util/handlers/ConditionalHandler';
 export * from './util/handlers/HandlerUtil';
 export * from './util/handlers/MethodFilterHandler';
@@ -469,6 +524,7 @@ export * from './util/templates/TemplateUtil';
 // Util
 export * from './util/ContentTypes';
 export * from './util/FetchUtil';
+export * from './util/GenericEventEmitter';
 export * from './util/GuardedStream';
 export * from './util/HeaderUtil';
 export * from './util/IterableUtil';

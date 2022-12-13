@@ -1,0 +1,47 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "The relative path appended to a storage container URL to find its description resource.",
+      "@id": "urn:solid-server:default:variable:storageDescriptionPath",
+      "valueRaw": ".well-known/solid"
+    },
+    {
+      "comment": "Generates the storage description.",
+      "@id": "urn:solid-server:default:StorageDescriptionHandler",
+      "@type": "RouterHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "allowedPathNames": [ "/\\.well-known/solid" ],
+      "handler": {
+        "@type": "ParsingHttpHandler",
+        "requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+        "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+        "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+        "operationHandler": {
+          "@type": "StorageDescriptionHandler",
+          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "path": { "@id": "urn:solid-server:default:variable:storageDescriptionPath" },
+          "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+          "describer": { "@id": "urn:solid-server:default:StorageDescriber" }
+        }
+      }
+    },
+    {
+      "comment": "Combines the output of all storage describers.",
+      "@id": "urn:solid-server:default:StorageDescriber",
+      "@type": "ArrayUnionHandler",
+      "handlers": [
+        {
+          "@type": "StaticStorageDescriber",
+          "terms": [
+            {
+              "StaticStorageDescriber:_terms_key": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "StaticStorageDescriber:_terms_value": "http://www.w3.org/ns/pim/space#Storage"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

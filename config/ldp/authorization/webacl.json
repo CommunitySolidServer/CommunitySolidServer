@@ -3,35 +3,9 @@
   "import": [
     "css:config/ldp/authorization/acl/wac-allow.json",
     "css:config/ldp/authorization/readers/acl.json",
-    "css:config/ldp/authorization/readers/ownership.json"
+    "css:config/ldp/authorization/readers/default.json"
   ],
   "@graph": [
-    {
-      "comment": "Requests permissions on subject resources for auxiliary resources.",
-      "@id": "urn:solid-server:default:PermissionReader",
-      "@type": "AuxiliaryReader",
-      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "reader": {
-        "@type": "UnionPermissionReader",
-        "readers": [
-          {
-            "comment": "This PermissionReader will be used to prevent external access to containers used for internal storage.",
-            "@id": "urn:solid-server:default:PathBasedReader",
-            "@type": "PathBasedReader",
-            "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
-          },
-          {
-            "@id": "urn:solid-server:default:OwnerPermissionReader",
-            "@type": "OwnerPermissionReader",
-            "authStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
-          },
-          {
-            "comment": "Uses Web Access Control for authorization.",
-            "@id": "urn:solid-server:default:WrappedWebAclReader"
-          }
-        ]
-      }
-    },
     {
       "comment": "The templates for WAC authorization documents are in the wac subfolder.",
       "@id": "urn:solid-server:default:TemplatedResourcesGenerator",
@@ -60,7 +34,6 @@
       "@type": "RouterHandler",
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
-      "args_allowedMethods": [ "*" ],
       "args_allowedPathNames": [ "^/.*\\.acl$" ],
       "args_handler": { "@id": "urn:solid-server:default:LdpHandler" }
     }

@@ -1,18 +1,15 @@
 import { allFulfilled } from '../PromiseUtil';
+import type { AsyncHandlerInput, AsyncHandlerOutput } from './AsyncHandler';
 import { AsyncHandler } from './AsyncHandler';
 import { filterHandlers, findHandler } from './HandlerUtil';
-
-// Helper types to make sure the UnionHandler has the same in/out types as the AsyncHandler type it wraps
-type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
-type InType<T extends AsyncHandler<any, any>> = Parameters<T['handle']>[0];
-type OutType<T extends AsyncHandler<any, any>> = Awaited<ReturnType<T['handle']>>;
 
 /**
  * Utility handler that allows combining the results of multiple handlers into one.
  * Will run the handlers and then call the abstract `combine` function with the results,
  * which then generates the handler's output.
  */
-export abstract class UnionHandler<T extends AsyncHandler<any, any>> extends AsyncHandler<InType<T>, OutType<T>> {
+export abstract class UnionHandler<T extends AsyncHandler<any, any>> extends
+  AsyncHandler<AsyncHandlerInput<T>, AsyncHandlerOutput<T>> {
   protected readonly handlers: T[];
   private readonly requireAll: boolean;
   private readonly ignoreErrors: boolean;
@@ -38,7 +35,7 @@ export abstract class UnionHandler<T extends AsyncHandler<any, any>> extends Asy
     this.ignoreErrors = ignoreErrors;
   }
 
-  public async canHandle(input: InType<T>): Promise<void> {
+  public async canHandle(input: AsyncHandlerInput<T>): Promise<void> {
     if (this.requireAll) {
       await this.allCanHandle(input);
     } else {
@@ -47,9 +44,9 @@ export abstract class UnionHandler<T extends AsyncHandler<any, any>> extends Asy
     }
   }
 
-  public async handle(input: InType<T>): Promise<OutType<T>> {
+  public async handle(input: AsyncHandlerInput<T>): Promise<AsyncHandlerOutput<T>> {
     const handlers = this.requireAll ? this.handlers : await filterHandlers(this.handlers, input);
-    const results = handlers.map((handler): Promise<OutType<T>> => handler.handle(input));
+    const results = handlers.map((handler): Promise<AsyncHandlerOutput<T>> => handler.handle(input));
     return this.combine(await allFulfilled(results, this.ignoreErrors));
   }
 
@@ -57,12 +54,12 @@ export abstract class UnionHandler<T extends AsyncHandler<any, any>> extends Asy
    * Checks if all handlers can handle the input.
    * If not, throw an error based on the errors of the failed handlers.
    */
-  protected async allCanHandle(input: InType<T>): Promise<void> {
+  protected async allCanHandle(input: AsyncHandlerInput<T>): Promise<void> {
     await allFulfilled(this.handlers.map((handler): Promise<void> => handler.canHandle(input)));
   }
 
   /**
    * Combines the results of the handlers into a single output.
    */
-  protected abstract combine(results: OutType<T>[]): Promise<OutType<T>>;
+  protected abstract combine(results: AsyncHandlerOutput<T>[]): Promise<AsyncHandlerOutput<T>>;
 }

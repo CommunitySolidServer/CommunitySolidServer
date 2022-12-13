@@ -101,6 +101,15 @@ const redis: jest.Mocked<Redis & RedisResourceLock & RedisReadWriteLock> = {
 jest.mock('ioredis', (): any => jest.fn().mockImplementation((): Redis => redis));
 
 describe('A RedisLocker', (): void => {
+  it('will generate keys with the given namespacePrefix.', async(): Promise<void> => {
+    const identifier = { path: 'http://test.com/resource' };
+    const lockerPrefixed = new RedisLocker('6379', {}, { namespacePrefix: 'MY_PREFIX' });
+    await lockerPrefixed.acquire(identifier);
+    const allLocksPrefixed = Object.keys(store.internal).every((key): boolean => key.startsWith('MY_PREFIX'));
+    await lockerPrefixed.release(identifier);
+    expect(allLocksPrefixed).toBeTruthy();
+  });
+
   describe('with Read-Write logic', (): void => {
     const resource1 = { path: 'http://test.com/resource' };
     const resource2 = { path: 'http://test.com/resource2' };
@@ -392,8 +401,8 @@ describe('A RedisLocker', (): void => {
       const emitter = new EventEmitter();
       const promise = locker.withWriteLock(resource1, (): any =>
         new Promise<void>((resolve): any => emitter.on('release', resolve)));
-      await redis.releaseWriteLock(`__RW__${resource1.path}`);
       await flushPromises();
+      await redis.releaseWriteLock(`__RW__${resource1.path}`);
       emitter.emit('release');
       await expect(promise).rejects.toThrow('Redis operation error detected (value was null).');
     });

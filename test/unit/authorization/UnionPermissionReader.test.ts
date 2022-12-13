@@ -30,45 +30,42 @@ describe('A UnionPermissionReader', (): void => {
   it('only uses the results of readers that can handle the input.', async(): Promise<void> => {
     readers[0].canHandle.mockRejectedValue(new Error('bad request'));
     readers[0].handle.mockResolvedValue(
-      new IdentifierMap([[ identifier, { agent: { read: true }}]]),
+      new IdentifierMap([[ identifier, { read: true }]]),
     );
     readers[1].handle.mockResolvedValue(
-      new IdentifierMap([[ identifier, { agent: { write: true }}]]),
+      new IdentifierMap([[ identifier, { write: true }]]),
     );
     compareMaps(await unionReader.handle(input),
-      new IdentifierMap([[ identifier, { agent: { write: true }}]]));
+      new IdentifierMap([[ identifier, { write: true }]]));
   });
 
   it('combines results.', async(): Promise<void> => {
     const identifier2 = { path: 'http://example.com/foo2' };
     const identifier3 = { path: 'http://example.com/foo3' };
     readers[0].handle.mockResolvedValue(new IdentifierMap([
-      [ identifier, { agent: { read: true }, public: undefined }],
-      [ identifier2, { agent: { write: true }}],
-      [ identifier3, { agent: { append: false }, public: { delete: true }}],
+      [ identifier, { read: true }],
+      [ identifier2, { write: true }],
+      [ identifier3, { append: false }],
     ]));
     readers[1].handle.mockResolvedValue(new IdentifierMap<PermissionSet>([
-      [ identifier, { agent: { write: true }, public: { read: false }}],
-      [ identifier2, { public: { read: false }}],
+      [ identifier, { write: true }],
     ]));
     compareMaps(await unionReader.handle(input), new IdentifierMap([
-      [ identifier, { agent: { read: true, write: true }, public: { read: false }}],
-      [ identifier2, { agent: { write: true }, public: { read: false }}],
-      [ identifier3, { agent: { append: false }, public: { delete: true }}],
+      [ identifier, { read: true, write: true }],
+      [ identifier2, { write: true }],
+      [ identifier3, { append: false }],
     ]));
   });
 
   it('merges same fields using false > true > undefined.', async(): Promise<void> => {
     readers[0].handle.mockResolvedValue(new IdentifierMap(
-      [[ identifier,
-        { agent: { read: true, write: false, append: undefined, create: true, delete: undefined }}]],
+      [[ identifier, { read: true, write: false, append: undefined, create: true, delete: undefined }]],
     ));
     readers[1].handle.mockResolvedValue(new IdentifierMap(
-      [[ identifier, { agent:
-          { read: false, write: true, append: true, create: true, delete: undefined }}]],
+      [[ identifier, { read: false, write: true, append: true, create: true, delete: undefined }]],
     ));
-    compareMaps(await unionReader.handle(input), new IdentifierMap([[ identifier, {
-      agent: { read: false, write: false, append: true, create: true },
-    }]]));
+    compareMaps(await unionReader.handle(input), new IdentifierMap(
+      [[ identifier, { read: false, write: false, append: true, create: true }]],
+    ));
   });
 });

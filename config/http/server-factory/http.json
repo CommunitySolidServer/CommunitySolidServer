@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/http/server-factory/configurator/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Creates an empty HTTP server listening to the provided port.",
+      "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "BaseServerFactory",
+      "configurator": { "@id": "urn:solid-server:default:ServerConfigurator" }
+    }
+  ]
+}

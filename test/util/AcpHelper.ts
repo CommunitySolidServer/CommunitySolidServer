@@ -1,7 +1,4 @@
-import type { IAccessControl } from '@solid/access-control-policy/dist/type/i_access_control';
-import type { IAccessControlledResource } from '@solid/access-control-policy/dist/type/i_access_controlled_resource';
-import type { IMatcher } from '@solid/access-control-policy/dist/type/i_matcher';
-import type { IPolicy } from '@solid/access-control-policy/dist/type/i_policy';
+import type { IAccessControl, IAccessControlledResource, IMatcher, IPolicy } from '@solid/access-control-policy';
 import { v4 } from 'uuid';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../src/http/representation/ResourceIdentifier';

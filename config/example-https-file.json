@@ -6,7 +6,8 @@
     "css:config/app/setup/required.json",
     "css:config/app/variables/default.json",
     "css:config/http/handler/default.json",
-    "css:config/http/middleware/websockets.json",
+    "css:config/http/middleware/default.json",
+    "css:config/http/notifications/websockets.json",
 
     "css:config/http/static/default.json",
     "css:config/identity/access/public.json",
@@ -30,7 +31,9 @@
     "css:config/util/logging/winston.json",
     "css:config/util/representation-conversion/default.json",
     "css:config/util/resource-locker/file.json",
-    "css:config/util/variables/default.json"
+    "css:config/util/variables/default.json",
+
+    "css:config/http/server-factory/configurator/default.json"
   ],
   "@graph": [
     {
@@ -39,23 +42,15 @@
         "The http/server-factory import above has been omitted since that feature is set below."
       ]
     },
+
     {
-      "comment": "The key/cert values should be replaces with paths to the correct files. The 'options' block can be removed if not needed.",
+      "comment": "The key/cert values should be replaced with paths to the correct files.",
       "@id": "urn:solid-server:default:ServerFactory",
-      "@type": "WebSocketServerFactory",
-      "baseServerFactory": {
-        "@id": "urn:solid-server:default:HttpServerFactory",
-        "@type": "BaseHttpServerFactory",
-        "handler": { "@id": "urn:solid-server:default:HttpHandler" },
-        "options_showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
-        "options_https": true,
-        "options_key": "/path/to/server.key",
-        "options_cert": "/path/to/server.cert"
-      },
-      "webSocketHandler": {
-        "@type": "UnsecureWebSocketsProtocol",
-        "source": { "@id": "urn:solid-server:default:ResourceStore" }
-      }
+      "@type": "BaseServerFactory",
+      "configurator": { "@id": "urn:solid-server:default:ServerConfigurator" },
+      "options_https": true,
+      "options_key": "/path/to/server.key",
+      "options_cert": "/path/to/server.cert"
     }
   ]
 }

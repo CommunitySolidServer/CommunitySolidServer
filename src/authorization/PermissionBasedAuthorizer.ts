@@ -40,12 +40,12 @@ export class PermissionBasedAuthorizer extends Authorizer {
       this.logger.debug(
         `Checking if ${JSON.stringify(credentials)} has ${modeString} permissions to ${identifier.path}`,
       );
-      const permissions = availablePermissions.get(identifier) ?? {};
+      const permissionSet = availablePermissions.get(identifier) ?? {};
       for (const mode of modes) {
         try {
-          this.requireModePermission(credentials, permissions, mode);
+          this.requireModePermission(credentials, permissionSet, mode);
         } catch (error: unknown) {
-          await this.reportAccessError(identifier, modes, permissions, error);
+          await this.reportAccessError(identifier, modes, permissionSet, error);
         }
       }
       this.logger.debug(`${JSON.stringify(credentials)} has ${modeString} permissions for ${identifier.path}`);
@@ -60,8 +60,8 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * Otherwise, deny access based on existing grounds.
    */
   private async reportAccessError(identifier: ResourceIdentifier, modes: ReadonlySet<AccessMode>,
-    permissions: PermissionSet, cause: unknown): Promise<never> {
-    const exposeExistence = this.hasModePermission(permissions, AccessMode.read);
+    permissionSet: PermissionSet, cause: unknown): Promise<never> {
+    const exposeExistence = permissionSet[AccessMode.read];
     if (exposeExistence && !modes.has(AccessMode.create) && !await this.resourceSet.hasResource(identifier)) {
       throw new NotFoundHttpError();
     }
@@ -78,7 +78,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * @param mode - Which mode is requested.
    */
   private requireModePermission(credentials: Credentials, permissionSet: PermissionSet, mode: AccessMode): void {
-    if (!this.hasModePermission(permissionSet, mode)) {
+    if (!permissionSet[mode]) {
       if (this.isAuthenticated(credentials)) {
         this.logger.warn(`Credentials ${JSON.stringify(credentials)} have no ${mode} permissions`);
         throw new ForbiddenHttpError();
@@ -90,18 +90,6 @@ export class PermissionBasedAuthorizer extends Authorizer {
         throw new UnauthorizedHttpError();
       }
     }
-  }
-
-  /**
-   * Checks if one of the Permissions in the PermissionSet grants permission to use the given mode.
-   */
-  private hasModePermission(permissionSet: PermissionSet, mode: AccessMode): boolean {
-    for (const permissions of Object.values(permissionSet)) {
-      if (permissions[mode]) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**

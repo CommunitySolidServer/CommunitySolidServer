@@ -1,4 +1,3 @@
-import type { PermissionMap } from '../authorization/permissions/Permissions';
 import type { Conditions } from '../storage/Conditions';
 import type { Representation } from './representation/Representation';
 import type { RepresentationPreferences } from './representation/RepresentationPreferences';
@@ -24,10 +23,6 @@ export interface Operation {
    * Conditions the resource must fulfill for a valid operation.
    */
   conditions?: Conditions;
-  /**
-   * The permissions available for the current operation.
-   */
-  availablePermissions?: PermissionMap;
   /**
    * Representation of the body and metadata headers.
    */

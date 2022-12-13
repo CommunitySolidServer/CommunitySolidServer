@@ -2,10 +2,9 @@
 // import/no-unresolved can't handle jose imports
 // tsdoc/syntax can't handle {json} parameter
 import { randomBytes } from 'crypto';
-import type { JWK } from 'jose';
-import { exportJWK, generateKeyPair } from 'jose';
 import type { Account,
   Adapter,
+  AsymmetricSigningAlgorithm,
   Configuration,
   ErrorOut,
   KoaContextWithOIDC,
@@ -26,6 +25,7 @@ import { joinUrl } from '../../util/PathUtil';
 import type { ClientCredentials } from '../interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { InteractionHandler } from '../interaction/InteractionHandler';
 import type { AdapterFactory } from '../storage/AdapterFactory';
+import type { AlgJwk, JwkGenerator } from './JwkGenerator';
 import type { ProviderFactory } from './ProviderFactory';
 
 export interface IdentityProviderFactoryArgs {
@@ -50,9 +50,13 @@ export interface IdentityProviderFactoryArgs {
    */
   credentialStorage: KeyValueStorage<string, ClientCredentials>;
   /**
-   * Storage used to store cookie and JWT keys so they can be re-used in case of multithreading.
+   * Storage used to store cookie keys so they can be re-used in case of multithreading.
    */
   storage: KeyValueStorage<string, unknown>;
+  /**
+   * Generates the JWK used for signing and decryption.
+   */
+  jwkGenerator: JwkGenerator;
   /**
    * Extra information will be added to the error output if this is true.
    */
@@ -67,7 +71,6 @@ export interface IdentityProviderFactoryArgs {
   responseWriter: ResponseWriter;
 }
 
-const JWKS_KEY = 'jwks';
 const COOKIES_KEY = 'cookie-secret';
 
 /**
@@ -87,11 +90,11 @@ export class IdentityProviderFactory implements ProviderFactory {
   private readonly interactionHandler: InteractionHandler;
   private readonly credentialStorage: KeyValueStorage<string, ClientCredentials>;
   private readonly storage: KeyValueStorage<string, unknown>;
+  private readonly jwkGenerator: JwkGenerator;
   private readonly showStackTrace: boolean;
   private readonly errorHandler: ErrorHandler;
   private readonly responseWriter: ResponseWriter;
 
-  private readonly jwtAlg = 'ES256';
   private provider?: Provider;
 
   /**
@@ -107,6 +110,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     this.interactionHandler = args.interactionHandler;
     this.credentialStorage = args.credentialStorage;
     this.storage = args.storage;
+    this.jwkGenerator = args.jwkGenerator;
     this.showStackTrace = args.showStackTrace;
     this.errorHandler = args.errorHandler;
     this.responseWriter = args.responseWriter;
@@ -124,10 +128,12 @@ export class IdentityProviderFactory implements ProviderFactory {
    * Creates a Provider by building a Configuration using all the stored parameters.
    */
   private async createProvider(): Promise<Provider> {
-    const config = await this.initConfig();
+    const key = await this.jwkGenerator.getPrivateKey();
+
+    const config = await this.initConfig(key);
 
     // Add correct claims to IdToken/AccessToken responses
-    this.configureClaims(config);
+    this.configureClaims(config, key.alg);
 
     // Make sure routes are contained in the IDP space
     this.configureRoutes(config);
@@ -148,7 +154,7 @@ export class IdentityProviderFactory implements ProviderFactory {
    * In the `configureErrors` function below, we configure the `renderError` function of the provider configuration.
    * This function is called by the OIDC provider library to render errors,
    * but only does this if the accept header is HTML.
-   * Otherwise, it just returns the error object iself as a JSON object.
+   * Otherwise, it just returns the error object itself as a JSON object.
    * See https://github.com/panva/node-oidc-provider/blob/0fcc112e0a95b3b2dae4eba6da812253277567c9/lib/shared/error_handler.js#L48-L52.
    *
    * In this function we override the `ctx.accepts` function
@@ -181,7 +187,7 @@ export class IdentityProviderFactory implements ProviderFactory {
    * Creates a configuration by copying the internal configuration
    * and adding the adapter, default audience and jwks/cookie keys.
    */
-  private async initConfig(): Promise<Configuration> {
+  private async initConfig(key: AlgJwk): Promise<Configuration> {
     // Create a deep copy
     const config: Configuration = JSON.parse(JSON.stringify(this.config));
 
@@ -193,8 +199,7 @@ export class IdentityProviderFactory implements ProviderFactory {
       return factory.createStorageAdapter(name);
     };
 
-    // Cast necessary due to typing conflict between jose 2.x and 3.x
-    config.jwks = await this.generateJwks() as any;
+    config.jwks = { keys: [ key ]};
     config.cookies = {
       ...config.cookies,
       keys: await this.generateCookieKeys(),
@@ -209,33 +214,10 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Default client settings that might not be defined.
     // Mostly relevant for WebID clients.
     config.clientDefaults = {
-      id_token_signed_response_alg: this.jwtAlg,
+      id_token_signed_response_alg: key.alg,
     };
 
     return config;
-  }
-
-  /**
-   * Generates a JWKS using a single JWK.
-   * The JWKS will be cached so subsequent calls return the same key.
-   */
-  private async generateJwks(): Promise<{ keys: JWK[] }> {
-    // Check to see if the keys are already saved
-    const jwks = await this.storage.get(JWKS_KEY) as { keys: JWK[] } | undefined;
-    if (jwks) {
-      return jwks;
-    }
-    // If they are not, generate and save them
-    const { privateKey } = await generateKeyPair(this.jwtAlg);
-    const jwk = await exportJWK(privateKey);
-    // Required for Solid authn client
-    jwk.alg = this.jwtAlg;
-    // In node v15.12.0 the JWKS does not get accepted because the JWK is not a plain object,
-    // which is why we convert it into a plain object here.
-    // Potentially this can be changed at a later point in time to `{ keys: [ jwk ]}`.
-    const newJwks = { keys: [{ ...jwk }]};
-    await this.storage.set(JWKS_KEY, newJwks);
-    return newJwks;
   }
 
   /**
@@ -263,9 +245,9 @@ export class IdentityProviderFactory implements ProviderFactory {
   }
 
   /**
-   * Adds the necessary claims the to id and access tokens based on the Solid OIDC spec.
+   * Adds the necessary claims to the id and access tokens based on the Solid OIDC spec.
    */
-  private configureClaims(config: Configuration): void {
+  private configureClaims(config: Configuration, jwtAlg: AsymmetricSigningAlgorithm): void {
     // Returns the id_token
     // See https://solid.github.io/authentication-panel/solid-oidc/#tokens-id
     // Some fields are still missing, see https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1154#issuecomment-1040233385
@@ -303,7 +285,7 @@ export class IdentityProviderFactory implements ProviderFactory {
           audience: 'solid',
           accessTokenFormat: 'jwt',
           jwt: {
-            sign: { alg: this.jwtAlg },
+            sign: { alg: jwtAlg },
           },
         }),
       },

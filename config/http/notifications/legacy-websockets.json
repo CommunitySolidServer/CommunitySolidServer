@@ -1,0 +1,27 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:ServerConfigurator",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "comment": "Catches the server upgrade events and handles the WebSocket connections.",
+          "@type": "UnsecureWebSocketsProtocol",
+          "source": { "@id": "urn:solid-server:default:ResourceStore" }
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:ParallelMiddleware",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "comment": "Advertises the websocket connection.",
+          "@type": "WebSocketAdvertiser",
+          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        }
+      ]
+    }
+  ]
+}

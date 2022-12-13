@@ -8,6 +8,7 @@ describe('A YargsCliExtractor', (): void => {
   const parameters: YargsParameter[] = [
     new YargsParameter('baseUrl', { alias: 'b', requiresArg: true, type: 'string' }),
     new YargsParameter('port', { alias: 'p', requiresArg: true, type: 'number' }),
+    new YargsParameter('config', { alias: 'c', requiresArg: false, type: 'array' }),
   ];
   let extractor: YargsCliExtractor;
 
@@ -50,6 +51,21 @@ describe('A YargsCliExtractor', (): void => {
     await extractor.handle(argv);
     expect(exit).toHaveBeenCalledTimes(1);
     expect(error).toHaveBeenCalledWith('Unknown argument: unsupported');
+  });
+
+  it('can error when multiple values are provided for a non array type parameter.', async(): Promise<void> => {
+    extractor = new YargsCliExtractor(parameters, { strictMode: true });
+    const argv = [ 'node', 'script', '-p', '3000', '-b', 'http://localhost:3000/', '-p', '3001' ];
+    await extractor.handle(argv);
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('Multiple values for --port (-p) were provided where only one is allowed');
+  });
+
+  it('accepts multiple values for array type parameters.', async(): Promise<void> => {
+    const argv = [ 'node', 'script', '-c', './config/a.json', '-c', './config/b.json', '-b', 'http://localhost:3000/', '-p', '3000' ];
+    await expect(extractor.handle(argv)).resolves.toEqual(expect.objectContaining({
+      config: [ './config/a.json', './config/b.json' ],
+    }));
   });
 
   it('can parse environment variables.', async(): Promise<void> => {

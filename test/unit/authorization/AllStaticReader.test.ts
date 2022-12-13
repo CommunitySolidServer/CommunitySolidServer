@@ -1,10 +1,10 @@
 import { AllStaticReader } from '../../../src/authorization/AllStaticReader';
-import type { Permission } from '../../../src/authorization/permissions/Permissions';
+import type { PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 import { compareMaps } from '../../util/Util';
 
-function getPermissions(allow: boolean): Permission {
+function getPermissions(allow: boolean): PermissionSet {
   return {
     read: allow,
     write: allow,
@@ -27,13 +27,11 @@ describe('An AllStaticReader', (): void => {
     let authorizer = new AllStaticReader(true);
     const requestedModes = new IdentifierSetMultiMap<AccessMode>([[ identifier, AccessMode.read ]]);
     let result = await authorizer.handle({ credentials, requestedModes });
-    compareMaps(result, new IdentifierMap([[ identifier, { public: getPermissions(true),
-      agent: getPermissions(true) }]]));
+    compareMaps(result, new IdentifierMap([[ identifier, getPermissions(true) ]]));
 
     authorizer = new AllStaticReader(false);
 
     result = await authorizer.handle({ credentials, requestedModes });
-    compareMaps(result, new IdentifierMap([[ identifier, { public: getPermissions(false),
-      agent: getPermissions(false) }]]));
+    compareMaps(result, new IdentifierMap([[ identifier, getPermissions(false) ]]));
   });
 });

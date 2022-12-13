@@ -1,0 +1,35 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Generates the Notification objects and caches them based on the topic.",
+      "@id": "urn:solid-server:default:BaseNotificationGenerator",
+      "@type": "CachedHandler",
+      "fields": [ "topic" ],
+      "source": {
+        "@type": "StateNotificationGenerator",
+        "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
+        "source": {
+          "@type": "WaterfallHandler",
+          "handlers": [
+            { "@type": "DeleteNotificationGenerator" },
+            {
+              "@type": "ActivityNotificationGenerator",
+              "store": {
+                "@id": "urn:solid-server:default:ResourceStore"
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    {
+      "comment": "Serializes the notification objects.",
+      "@id": "urn:solid-server:default:BaseNotificationSerializer",
+      "@type": "ConvertingNotificationSerializer",
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+      "source": { "@type": "JsonLdNotificationSerializer" }
+    }
+  ]
+}

@@ -1,9 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/util/auxiliary/strategies/meta.json"
+    "css:config/util/auxiliary/strategies/meta.json"
   ],
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "This will contain references to all the auxiliary strategies (such as the acl one) if they are needed.",

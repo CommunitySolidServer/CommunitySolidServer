@@ -16,13 +16,13 @@ import { ACL, RDF } from '../util/Vocabularies';
 import type { AccessChecker } from './access/AccessChecker';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { AclPermission } from './permissions/AclPermission';
-import { AclMode } from './permissions/AclPermission';
+import type { AclPermissionSet } from './permissions/AclPermissionSet';
+import { AclMode } from './permissions/AclPermissionSet';
 import type { PermissionMap } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 // Maps WebACL-specific modes to generic access modes.
-const modesMap: Record<string, Readonly<(keyof AclPermission)[]>> = {
+const modesMap: Record<string, Readonly<(keyof AclPermissionSet)[]>> = {
   [ACL.Read]: [ AccessMode.read ],
   [ACL.Write]: [ AccessMode.append, AccessMode.write ],
   [ACL.Append]: [ AccessMode.append ],
@@ -81,14 +81,9 @@ export class WebAclReader extends PermissionReader {
   Promise<PermissionMap> {
     const result: PermissionMap = new IdentifierMap();
     for (const [ store, aclIdentifiers ] of aclMap) {
-      // WebACL requires knowledge of both the public and agent-specific permissions for the WAC-Allow header.
-      const publicPermissions = await this.determinePermissions(store, {});
-      const agentPermissions = credentials.agent ? await this.determinePermissions(store, credentials) : {};
+      const permissionSet = await this.determinePermissions(store, credentials);
       for (const identifier of aclIdentifiers) {
-        result.set(identifier, {
-          public: publicPermissions,
-          agent: agentPermissions,
-        });
+        result.set(identifier, permissionSet);
       }
     }
 
@@ -100,8 +95,8 @@ export class WebAclReader extends PermissionReader {
    * @param acl - Store containing all relevant authorization triples.
    * @param credentials - Credentials to find the permissions for.
    */
-  private async determinePermissions(acl: Store, credentials: Credentials): Promise<AclPermission> {
-    const aclPermissions: AclPermission = {};
+  private async determinePermissions(acl: Store, credentials: Credentials): Promise<AclPermissionSet> {
+    const aclPermissions: AclPermissionSet = {};
 
     // Apply all ACL rules
     const aclRules = acl.getSubjects(RDF.type, ACL.Authorization, null);

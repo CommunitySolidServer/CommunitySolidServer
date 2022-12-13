@@ -1,0 +1,33 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the generation and serialization of notifications for WebHookSubscription2021.",
+      "@id": "urn:solid-server:default:WebHookNotificationHandler",
+      "@type": "TypedNotificationHandler",
+      "type": "WebHookSubscription2021",
+      "source": {
+        "@type": "ComposedNotificationHandler",
+        "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
+        "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
+        "emitter": { "@id": "urn:solid-server:default:WebHookEmitter" }
+      }
+    },
+    {
+      "comment": "Emits serialized notifications through HTTP requests to the WebHook.",
+      "@id": "urn:solid-server:default:WebHookEmitter",
+      "@type": "WebHookEmitter",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "webIdRoute": { "@id": "urn:solid-server:default:WebHookWebIdRoute" },
+      "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" }
+    },
+
+    {
+      "@id": "urn:solid-server:default:NotificationHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:WebHookNotificationHandler" }
+      ]
+    },
+  ]
+}

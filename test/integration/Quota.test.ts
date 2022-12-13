@@ -2,7 +2,7 @@ import { promises as fsPromises } from 'fs';
 import type { Stats } from 'fs';
 import fetch from 'cross-fetch';
 import type { Response } from 'cross-fetch';
-import { pathExists } from 'fs-extra';
+import { ensureDir, pathExists } from 'fs-extra';
 import { joinFilePath, joinUrl } from '../../src';
 import type { App } from '../../src';
 import { getPort } from '../util/Util';
@@ -73,7 +73,7 @@ describe('A quota server', (): void => {
   beforeAll(async(): Promise<void> => {
     // We want to use an empty folder as on APFS/Mac folder sizes vary a lot
     const tempFolder = getTestFolder('quota-temp');
-    await fsPromises.mkdir(tempFolder);
+    await ensureDir(tempFolder);
     folderSizeTest = await fsPromises.stat(tempFolder);
     await removeFolder(tempFolder);
   });

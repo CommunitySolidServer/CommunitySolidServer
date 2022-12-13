@@ -203,6 +203,20 @@ export const MA = createVocabulary('http://www.w3.org/ns/ma-ont#',
   'format',
 );
 
+export const NOTIFY = createVocabulary('http://www.w3.org/ns/solid/notifications#',
+  'accept',
+  'expiration',
+  'feature',
+  'notificationChannel',
+  'rate',
+  'state',
+  'subscription',
+  'webhookAuth',
+  'webid',
+
+  'WebHookSubscription2021',
+);
+
 export const OIDC = createVocabulary('http://www.w3.org/ns/solid/oidc#',
   'redirect_uris',
 );
@@ -230,6 +244,7 @@ export const SOLID = createVocabulary('http://www.w3.org/ns/solid/terms#',
   'oidcIssuer',
   'oidcIssuerRegistrationToken',
   'oidcRegistration',
+  'storageDescription',
   'where',
 
   'InsertDeletePatch',

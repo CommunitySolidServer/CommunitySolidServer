@@ -15,7 +15,7 @@ export interface OriginalUrlExtractorArgs {
   identifierStrategy: IdentifierStrategy;
 
   /**
-   * Specify wether the OriginalUrlExtractor should include the request query string.
+   * Specify whether the OriginalUrlExtractor should include the request query string.
    */
   includeQueryString?: boolean;
 }

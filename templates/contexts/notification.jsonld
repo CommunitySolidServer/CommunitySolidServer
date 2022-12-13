@@ -1,0 +1,21 @@
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "notify": "http://www.w3.org/ns/solid/notifications#",
+    "WebSocketSubscription2021": "notify:WebSocketSubscription2021",
+    "features": {
+      "@id": "notify:features",
+      "@type": "@id"
+    },
+    "notificationChannel": {
+      "@id": "notify:notificationChannel",
+      "@type": "@id"
+    },
+    "state": "notify:state",
+    "subscription": {
+      "@id": "notify:subscription",
+      "@type": "@id"
+    }
+  }
+}

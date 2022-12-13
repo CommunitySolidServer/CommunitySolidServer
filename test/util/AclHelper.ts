@@ -1,9 +1,9 @@
 import type { ResourceStore } from '../../src/';
 import { BasicRepresentation } from '../../src/';
-import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
+import type { AclPermissionSet } from '../../src/authorization/permissions/AclPermissionSet';
 
 export type AclHelperInput = {
-  permissions: AclPermission;
+  permissions: AclPermissionSet;
   agentClass?: 'agent' | 'authenticated';
   agent?: string;
   accessTo?: boolean;
@@ -39,7 +39,7 @@ export class AclHelper {
       }
 
       for (const perm of [ 'Read', 'Append', 'Write', 'Control' ]) {
-        if (option.permissions[perm.toLowerCase() as keyof AclPermission]) {
+        if (option.permissions[perm.toLowerCase() as keyof AclPermissionSet]) {
           acl.push(`;\n acl:mode acl:${perm}`);
         }
       }

@@ -4,6 +4,7 @@
     "css:config/identity/handler/account-store/default.json",
     "css:config/identity/handler/adapter-factory/webid.json",
     "css:config/identity/handler/interaction/routes.json",
+    "css:config/identity/handler/jwks/default.json",
     "css:config/identity/handler/provider-factory/identity.json"
   ],
   "@graph": [
@@ -13,7 +14,6 @@
       "@type": "RouterHandler",
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
-      "args_allowedMethods": [ "*" ],
       "args_allowedPathNames": [ "^/idp/.*" ],
       "args_handler": { "@id": "urn:solid-server:default:IdentityProviderParsingHandler" }
     },
@@ -22,7 +22,6 @@
       "@id": "urn:solid-server:default:IdentityProviderParsingHandler",
       "@type": "ParsingHttpHandler",
       "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
-      "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "args_operationHandler": {

@@ -15,10 +15,10 @@ import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/Iden
 
 describe('An AuthorizingHttpHandler', (): void => {
   const credentials = { };
-  const target = { path: 'http://test.com/foo' };
+  const target = { path: 'http://example.com/foo' };
   const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>([[ target, AccessMode.read ]]);
   const availablePermissions: PermissionMap = new IdentifierMap(
-    [[ target, { public: { read: true }}]],
+    [[ target, { read: true }]],
   );
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
@@ -71,7 +71,6 @@ describe('An AuthorizingHttpHandler', (): void => {
     expect(authorizer.handleSafe).toHaveBeenLastCalledWith({ credentials, requestedModes, availablePermissions });
     expect(source.handleSafe).toHaveBeenCalledTimes(1);
     expect(source.handleSafe).toHaveBeenLastCalledWith({ request, response, operation });
-    expect(operation.availablePermissions).toBe(availablePermissions);
   });
 
   it('errors if authorization fails.', async(): Promise<void> => {

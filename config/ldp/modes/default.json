@@ -2,12 +2,16 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Checks if an operation on a resource requires permissions on intermediate resources (such as newly created parent containers).",
+      "comment": "Caches the requested modes based on the incoming operation.",
       "@id": "urn:solid-server:default:ModesExtractor",
-      "@type": "IntermediateCreateExtractor",
-      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
-      "strategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-      "source": { "@id": "urn:solid-server:default:HttpModesExtractor" }
+      "@type": "CachedHandler",
+      "source" : {
+        "comment": "Checks if an operation on a resource requires permissions on intermediate resources (such as newly created parent containers).",
+        "@type": "IntermediateCreateExtractor",
+        "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
+        "strategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+        "source": { "@id": "urn:solid-server:default:HttpModesExtractor" },
+      }
     },
     {
       "comment": "Determines required modes based on HTTP methods.",
@@ -19,9 +23,15 @@
           "@id": "urn:solid-server:default:PatchModesExtractor"
         },
         {
-          "comment": "Extract access modes based on the HTTP method.",
-          "@type": "MethodModesExtractor",
-          "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+          "comment": "Requires read permissions on parent container when deleting non-existent resource for correct status code.",
+          "@type": "DeleteParentExtractor",
+          "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
+          "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+          "source": {
+            "comment": "Extract access modes based on the HTTP method.",
+            "@type": "MethodModesExtractor",
+            "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+          }
         },
         {
           "@type": "StaticThrowHandler",
@@ -31,24 +41,28 @@
     },
     {
       "@id": "urn:solid-server:default:PatchModesExtractor",
-      "@type": "MethodFilterHandler",
-      "methods": [ "PATCH" ],
+      "@type": "CreateModesExtractor",
+      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
       "source": {
-        "@type": "WaterfallHandler",
-        "handlers": [
-          {
-            "@type": "N3PatchModesExtractor",
-            "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
-          },
-          {
-            "@type": "SparqlUpdateModesExtractor",
-            "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
-          },
-          {
-            "@type": "StaticThrowHandler",
-            "error": { "@type": "UnsupportedMediaTypeHttpError" }
-          }
-        ]
+        "@type": "MethodFilterHandler",
+        "methods": [ "PATCH" ],
+        "source": {
+          "@type": "WaterfallHandler",
+          "handlers": [
+            {
+              "@type": "N3PatchModesExtractor",
+              "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+            },
+            {
+              "@type": "SparqlUpdateModesExtractor",
+              "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+            },
+            {
+              "@type": "StaticThrowHandler",
+              "error": { "@type": "UnsupportedMediaTypeHttpError" }
+            }
+          ]
+        }
       }
     }
   ]

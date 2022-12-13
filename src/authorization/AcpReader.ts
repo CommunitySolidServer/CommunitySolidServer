@@ -1,8 +1,6 @@
 import { Readable } from 'stream';
-import { allowAccessModes } from '@solid/access-control-policy/dist/algorithm/allow_access_modes';
-import type { IAccessControlledResource } from '@solid/access-control-policy/dist/type/i_access_controlled_resource';
-import type { IContext } from '@solid/access-control-policy/dist/type/i_context';
-import type { IPolicy } from '@solid/access-control-policy/dist/type/i_policy';
+import type { IAccessControlledResource, IContext, IPolicy } from '@solid/access-control-policy';
+import { allowAccessModes } from '@solid/access-control-policy';
 import type { Store } from 'n3';
 import type { Credentials } from '../authentication/Credentials';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
@@ -21,12 +19,12 @@ import { ACL } from '../util/Vocabularies';
 import { getAccessControlledResources } from './AcpUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { AclPermission } from './permissions/AclPermission';
-import { AclMode } from './permissions/AclPermission';
+import type { AclPermissionSet } from './permissions/AclPermissionSet';
+import { AclMode } from './permissions/AclPermissionSet';
 import { AccessMode } from './permissions/Permissions';
 import type { PermissionMap, PermissionSet } from './permissions/Permissions';
 
-const modesMap: Record<string, Readonly<(keyof AclPermission)[]>> = {
+const modesMap: Record<string, Readonly<(keyof AclPermissionSet)[]>> = {
   [ACL.Read]: [ AccessMode.read ],
   [ACL.Write]: [ AccessMode.append, AccessMode.write ],
   [ACL.Append]: [ AccessMode.append ],
@@ -87,15 +85,11 @@ export class AcpReader extends PermissionReader {
     }
     const modes = allowAccessModes(policies, context);
 
-    // We don't do a separate ACP run for public and agent credentials
-    // as that is only relevant for the WAC-Allow header.
-    // All permissions are put in the `agent` field of the PermissionSet,
-    // as the actual field used does not matter for authorization.
-    const permissionSet: PermissionSet = { agent: {}};
-    for (const mode of modes) {
-      if (mode in modesMap) {
-        for (const permission of modesMap[mode]) {
-          permissionSet.agent![permission as AccessMode] = true;
+    const permissionSet: PermissionSet = { };
+    for (const aclMode of modes) {
+      if (aclMode in modesMap) {
+        for (const mode of modesMap[aclMode]) {
+          permissionSet[mode as AccessMode] = true;
         }
       }
     }

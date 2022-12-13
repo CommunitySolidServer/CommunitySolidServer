@@ -1,10 +1,12 @@
 import { Readable } from 'stream';
+import { exportJWK, generateKeyPair } from 'jose';
 import type * as Koa from 'koa';
 import type { errors, Configuration, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
+import type { JwkGenerator } from '../../../../src/identity/configuration/JwkGenerator';
 import type {
   ClientCredentials,
 } from '../../../../src/identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
@@ -45,6 +47,7 @@ describe('An IdentityProviderFactory', (): void => {
   let interactionHandler: jest.Mocked<InteractionHandler>;
   let adapterFactory: jest.Mocked<AdapterFactory>;
   let storage: jest.Mocked<KeyValueStorage<string, any>>;
+  let jwkGenerator: jest.Mocked<JwkGenerator>;
   let credentialStorage: jest.Mocked<KeyValueStorage<string, ClientCredentials>>;
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
@@ -77,6 +80,13 @@ describe('An IdentityProviderFactory', (): void => {
       set: jest.fn((id: string, value: any): any => map.set(id, value)),
     } as any;
 
+    const { privateKey, publicKey } = await generateKeyPair('ES256');
+    jwkGenerator = {
+      alg: 'ES256',
+      getPrivateKey: jest.fn().mockResolvedValue({ ...await exportJWK(privateKey), alg: 'ES256' }),
+      getPublicKey: jest.fn().mockResolvedValue({ ...await exportJWK(publicKey), alg: 'ES256' }),
+    };
+
     credentialStorage = {
       get: jest.fn((id: string): any => map.get(id)),
       set: jest.fn((id: string, value: any): any => map.set(id, value)),
@@ -94,6 +104,7 @@ describe('An IdentityProviderFactory', (): void => {
       oidcPath,
       interactionHandler,
       storage,
+      jwkGenerator,
       credentialStorage,
       showStackTrace: true,
       errorHandler,
@@ -179,6 +190,7 @@ describe('An IdentityProviderFactory', (): void => {
       oidcPath,
       interactionHandler,
       storage,
+      jwkGenerator,
       credentialStorage,
       showStackTrace: true,
       errorHandler,
@@ -203,6 +215,7 @@ describe('An IdentityProviderFactory', (): void => {
       oidcPath,
       interactionHandler,
       storage,
+      jwkGenerator,
       credentialStorage,
       showStackTrace: true,
       errorHandler,
@@ -210,10 +223,8 @@ describe('An IdentityProviderFactory', (): void => {
     });
     const result2 = await factory2.getProvider() as unknown as { issuer: string; config: Configuration };
     expect(result1.config.cookies).toEqual(result2.config.cookies);
-    expect(result1.config.jwks).toEqual(result2.config.jwks);
-    expect(storage.get).toHaveBeenCalledTimes(4);
-    expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith('jwks', result1.config.jwks);
+    expect(storage.get).toHaveBeenCalledTimes(2);
+    expect(storage.set).toHaveBeenCalledTimes(1);
     expect(storage.set).toHaveBeenCalledWith('cookie-secret', result1.config.cookies?.keys);
   });
 

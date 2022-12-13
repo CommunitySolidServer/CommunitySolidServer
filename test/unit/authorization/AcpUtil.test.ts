@@ -1,4 +1,4 @@
-import { ACL } from '@solid/access-control-policy/dist/constant/acl';
+import { ACL } from '@solid/access-control-policy';
 import { DataFactory, Parser, Store } from 'n3';
 import {
   getAccessControl,

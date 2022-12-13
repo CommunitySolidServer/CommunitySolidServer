@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import { v4 } from 'uuid';
-import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
+import type { AclPermissionSet } from '../../src/authorization/permissions/AclPermissionSet';
 import { AccessMode as AM } from '../../src/authorization/permissions/Permissions';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
@@ -86,17 +86,20 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   [ 'PUT',     'C/R', [ AM.write ],           undefined,              '',     TXT, 205, 201 ],
   [ 'PUT',     'C/R', [ AM.append ],          [ AM.write ],           '',     TXT, 205, 201 ],
 
+  // All PATCH operations with read permissions return 401 instead of 404 if the target does not exist.
+  // This is a consequence of PATCH always creating a resource in case it does not exist.
+  // https://solidproject.org/TR/2021/protocol-20211217#n3-patch
+  // "Start from the RDF dataset in the target document,
+  // or an empty RDF dataset if the target resource does not exist yet."
   [ 'PATCH',   'C/R', [],                     undefined,              DELETE, N3,  401, 401 ],
-  [ 'PATCH',   'C/R', [],                     [ AM.read ],            DELETE, N3,  401, 404 ],
+  [ 'PATCH',   'C/R', [],                     [ AM.read ],            DELETE, N3,  401, 401 ],
   [ 'PATCH',   'C/R', [],                     [ AM.append ],          INSERT, N3,  205, 401 ],
   [ 'PATCH',   'C/R', [],                     [ AM.append ],          DELETE, N3,  401, 401 ],
   [ 'PATCH',   'C/R', [],                     [ AM.write ],           INSERT, N3,  205, 401 ],
   [ 'PATCH',   'C/R', [],                     [ AM.write ],           DELETE, N3,  401, 401 ],
   [ 'PATCH',   'C/R', [ AM.append ],          [ AM.write ],           INSERT, N3,  205, 201 ],
   [ 'PATCH',   'C/R', [ AM.append ],          [ AM.write ],           DELETE, N3,  401, 401 ],
-  // We currently return 409 instead of 404 in case a PATCH has no inserts and C/R does not exist.
-  // This is an agreed upon deviation from the original table
-  [ 'PATCH',   'C/R', [],                     [ AM.read, AM.write ],  DELETE, N3,  205, 409 ],
+  [ 'PATCH',   'C/R', [],                     [ AM.read, AM.write ],  DELETE, N3,  205, 401 ],
 
   [ 'DELETE',  'C/R', [],                     undefined,              '',     '',  401, 401 ],
   [ 'DELETE',  'C/R', [],                     [ AM.read ],            '',     '',  401, 404 ],
@@ -105,8 +108,7 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   [ 'DELETE',  'C/R', [ AM.read ],            undefined,              '',     '',  401, 404 ],
   [ 'DELETE',  'C/R', [ AM.append ],          undefined,              '',     '',  401, 401 ],
   [ 'DELETE',  'C/R', [ AM.append ],          [ AM.read ],            '',     '',  401, 404 ],
-  // We throw a 404 instead of 401 since we don't yet check if the parent container has read permissions
-  // [ 'DELETE',  'C/R', [ AM.write ],           undefined,              '',     '',  205, 401 ],
+  [ 'DELETE',  'C/R', [ AM.write ],           undefined,              '',     '',  205, 401 ],
   [ 'DELETE',  'C/R', [ AM.write ],           [ AM.read ],            '',     '',  401, 404 ],
   [ 'DELETE',  'C/R', [ AM.write ],           [ AM.append ],          '',     '',  401, 401 ],
 
@@ -118,12 +120,12 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
 ];
 /* eslint-enable no-multi-spaces */
 
-function toPermission(modes: AM[]): AclPermission {
+function toPermission(modes: AM[]): AclPermissionSet {
   return Object.fromEntries(modes.map((mode): [AM, boolean] => [ mode, true ]));
 }
 
-async function setWebAclPermissions(store: ResourceStore, target: string, permissions: AclPermission,
-  childPermissions: AclPermission): Promise<void> {
+async function setWebAclPermissions(store: ResourceStore, target: string, permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet): Promise<void> {
   const aclHelper = new AclHelper(store);
   await aclHelper.setSimpleAcl(target, [
     { permissions, agentClass: 'agent', accessTo: true },
@@ -131,8 +133,8 @@ async function setWebAclPermissions(store: ResourceStore, target: string, permis
   ]);
 }
 
-async function setAcpPermissions(store: ResourceStore, target: string, permissions: AclPermission,
-  childPermissions: AclPermission): Promise<void> {
+async function setAcpPermissions(store: ResourceStore, target: string, permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet): Promise<void> {
   const acpHelper = new AcpHelper(store);
   const publicMatcher = acpHelper.createMatcher({ publicAgent: true });
   const policies = [ acpHelper.createPolicy({
@@ -155,7 +157,7 @@ const port = getPort('PermissionTable');
 const baseUrl = `http://localhost:${port}/`;
 
 type AuthFunctionType = (store: ResourceStore, target: string,
-  permissions: AclPermission, childPermissions: AclPermission) => Promise<void>;
+  permissions: AclPermissionSet, childPermissions: AclPermissionSet) => Promise<void>;
 
 const rootFilePath = getTestFolder('permissionTable');
 const stores: [string, string, { configs: string[]; authFunction: AuthFunctionType; teardown: () => Promise<void> }][] =

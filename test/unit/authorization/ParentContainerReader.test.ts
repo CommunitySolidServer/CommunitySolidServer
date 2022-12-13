@@ -26,7 +26,7 @@ describe('A ParentContainerReader', (): void => {
   beforeEach(async(): Promise<void> => {
     requestedModes = new IdentifierSetMultiMap();
 
-    sourceResult = new IdentifierMap([[{ path: joinUrl(baseUrl, 'test') }, { public: { read: true }}]]);
+    sourceResult = new IdentifierMap([[{ path: joinUrl(baseUrl, 'test') }, { read: true }]]);
 
     source = { handleSafe: jest.fn().mockResolvedValue(sourceResult) } as any;
     reader = new ParentContainerReader(source, identifierStrategy);
@@ -35,10 +35,10 @@ describe('A ParentContainerReader', (): void => {
   it('requires parent append permissions to create resources.', async(): Promise<void> => {
     requestedModes.set(target1, new Set([ AccessMode.create ]));
     requestedModes.set(target2, new Set([ AccessMode.create ]));
-    sourceResult.set(parent1, { public: { append: true }});
+    sourceResult.set(parent1, { append: true });
 
     const result = await reader.handle({ requestedModes, credentials });
-    expect(result.get(target1)).toEqual({ public: { create: true }});
+    expect(result.get(target1)).toEqual({ create: true });
     expect(result.get(target2)).toEqual({ });
 
     const updatedMap = new IdentifierSetMultiMap(requestedModes);
@@ -54,15 +54,15 @@ describe('A ParentContainerReader', (): void => {
     requestedModes.set(target1, new Set([ AccessMode.delete ]));
     requestedModes.set(target2, new Set([ AccessMode.delete ]));
     requestedModes.set(target3, new Set([ AccessMode.delete ]));
-    sourceResult.set(parent1, { public: { write: true }});
-    sourceResult.set(parent2, { public: { write: true }});
-    sourceResult.set(target1, { public: { write: true }});
-    sourceResult.set(target3, { public: { write: true }});
+    sourceResult.set(parent1, { write: true });
+    sourceResult.set(parent2, { write: true });
+    sourceResult.set(target1, { write: true });
+    sourceResult.set(target3, { write: true });
 
     const result = await reader.handle({ requestedModes, credentials });
-    expect(result.get(target1)).toEqual({ public: { delete: true, write: true }});
-    expect(result.get(target2)).toEqual({ public: {}});
-    expect(result.get(target3)).toEqual({ public: { write: true }});
+    expect(result.get(target1)).toEqual({ delete: true, write: true });
+    expect(result.get(target2)).toEqual({ });
+    expect(result.get(target3)).toEqual({ write: true });
 
     const updatedMap = new IdentifierSetMultiMap(requestedModes);
     updatedMap.set(parent1, AccessMode.write);
@@ -76,14 +76,14 @@ describe('A ParentContainerReader', (): void => {
   it('does not allow create/delete if the source explicitly forbids it.', async(): Promise<void> => {
     requestedModes.set(target1, new Set([ AccessMode.create, AccessMode.delete ]));
     requestedModes.set(target2, new Set([ AccessMode.create, AccessMode.delete ]));
-    sourceResult.set(parent1, { public: { write: true, append: true }});
-    sourceResult.set(parent2, { public: { write: true, append: true }});
-    sourceResult.set(target1, { public: { write: true }});
-    sourceResult.set(target2, { public: { write: true, create: false, delete: false }});
+    sourceResult.set(parent1, { write: true, append: true });
+    sourceResult.set(parent2, { write: true, append: true });
+    sourceResult.set(target1, { write: true });
+    sourceResult.set(target2, { write: true, create: false, delete: false });
 
     const result = await reader.handle({ requestedModes, credentials });
-    expect(result.get(target1)).toEqual({ public: { write: true, create: true, delete: true }});
-    expect(result.get(target2)).toEqual({ public: { write: true, create: false, delete: false }});
+    expect(result.get(target1)).toEqual({ write: true, create: true, delete: true });
+    expect(result.get(target2)).toEqual({ write: true, create: false, delete: false });
 
     const updatedMap = new IdentifierSetMultiMap(requestedModes);
     updatedMap.set(parent1, new Set([ AccessMode.write, AccessMode.append ]));
@@ -96,12 +96,12 @@ describe('A ParentContainerReader', (): void => {
   it('combines the modes with the parent resource if it is also being requested.', async(): Promise<void> => {
     requestedModes.set(target1, AccessMode.create);
     requestedModes.set(parent1, AccessMode.write);
-    sourceResult.set(parent1, { public: { write: true, append: true }});
-    sourceResult.set(target1, { public: { write: true }});
+    sourceResult.set(parent1, { write: true, append: true });
+    sourceResult.set(target1, { write: true });
 
     const result = await reader.handle({ requestedModes, credentials });
-    expect(result.get(target1)).toEqual({ public: { write: true, create: true, delete: true }});
-    expect(result.get(parent1)).toEqual({ public: { write: true, append: true }});
+    expect(result.get(target1)).toEqual({ write: true, create: true, delete: true });
+    expect(result.get(parent1)).toEqual({ write: true, append: true });
 
     const updatedMap = new IdentifierSetMultiMap(requestedModes);
     updatedMap.set(parent1, new Set([ AccessMode.write, AccessMode.append ]));

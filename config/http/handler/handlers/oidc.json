@@ -7,7 +7,6 @@
       "@type": "RouterHandler",
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
-      "args_allowedMethods": [ "*" ],
       "args_allowedPathNames": [ "^/.oidc/.*", "^/\\.well-known/openid-configuration" ],
       "args_handler": {
         "@type": "OidcHttpHandler",

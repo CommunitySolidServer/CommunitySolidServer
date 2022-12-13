@@ -10,7 +10,7 @@ import { compareMaps } from '../../util/Util';
 
 describe('A PathBasedReader', (): void => {
   const baseUrl = 'http://test.com/foo/';
-  const permissionSet: PermissionSet = { agent: { read: true }};
+  const permissionSet: PermissionSet = { read: true };
   let readers: jest.Mocked<PermissionReader>[];
   let reader: PathBasedReader;
 
