@@ -9,6 +9,10 @@
 - Support for the new [WebSocket Notification protocol](https://solidproject.org/TR/websocket-subscription-2021)
   and the [WebHook Notification protocol draft](https://github.com/solid/notifications/blob/main/webhook-subscription-2021.md)
   was added.
+- Support for client- and issuer-based rules in WAC ACLs.
+  `config/ldp/authorization/readers/acl-plus.json` provides an example,
+  and can be used by substituting it for the normal `acl.json`
+  in `config/ldp/authorization/webacl.json`.
 
 ### Data migration
 
@@ -36,7 +40,7 @@ The following changes are relevant for v5 custom configs that replaced certain f
     - `/app/main/general/templates.json` was added to configure a generic template engine handler.
     - `/app/main/default.json` now imports the above config file.
     - All files configuring template engines.
-- Several minor changes due to support ACP.
+- Several minor changes due to support ACP and WAC client/issuer rules.
     - `/ldp/authorization/*`
 - Resource generation was changed to there is 1 reusable resource generator.
     - `/init/initializers/*`
