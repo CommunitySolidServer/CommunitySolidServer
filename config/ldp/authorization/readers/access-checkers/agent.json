@@ -1,0 +1,20 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/ldp/authorization/readers/access-checkers/agent/agent-identity.json",
+    "css:config/ldp/authorization/readers/access-checkers/agent/agent-class.json",
+    "css:config/ldp/authorization/readers/access-checkers/agent/agent-group.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Checks access based on the identity, class and group of the agent.",
+      "@id": "urn:solid-server:default:AgentAccessCheckers",
+      "@type": "BooleanOrHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:AgentIdentityAccessChecker" },
+        { "@id": "urn:solid-server:default:AgentClassAccessChecker" },
+        { "@id": "urn:solid-server:default:AgentGroupAccessChecker" }
+      ]
+    }
+  ]
+}

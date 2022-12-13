@@ -1,0 +1,20 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/ldp/authorization/readers/access-checkers/client/client-identity.json",
+    "css:config/ldp/authorization/readers/access-checkers/client/client-class.json",
+    "css:config/ldp/authorization/readers/access-checkers/client/client-group.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Checks access based on the identity, class and group of the client.",
+      "@id": "urn:solid-server:default:ClientAccessCheckers",
+      "@type": "BooleanOrHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:ClientIdentityAccessChecker" },
+        { "@id": "urn:solid-server:default:ClientClassAccessChecker" },
+        { "@id": "urn:solid-server:default:ClientGroupAccessChecker" }
+      ]
+    }
+  ]
+}

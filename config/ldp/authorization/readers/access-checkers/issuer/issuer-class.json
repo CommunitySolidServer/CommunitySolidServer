@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Checks access based on the agent being authenticated using a specified issuer or not.",
+      "@id": "urn:solid-server:default:IssuerClassAccessChecker",
+      "@type": "ClassAccessChecker",
+      "type": "issuer"
+    }
+  ]
+}

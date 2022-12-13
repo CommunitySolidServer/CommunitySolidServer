@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Checks if the agent uses a client that belongs to a group that has access.",
+      "@id": "urn:solid-server:default:ClientGroupAccessChecker",
+      "@type": "GroupAccessChecker",
+      "type": "client"
+    }
+  ]
+}
