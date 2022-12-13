@@ -10,9 +10,9 @@ export * from './authentication/UnsecureWebIdExtractor';
 
 // Authorization/Access
 export * from './authorization/access/AccessChecker';
-export * from './authorization/access/AgentAccessChecker';
-export * from './authorization/access/AgentClassAccessChecker';
-export * from './authorization/access/AgentGroupAccessChecker';
+export * from './authorization/access/IdentityAccessChecker';
+export * from './authorization/access/ClassAccessChecker';
+export * from './authorization/access/GroupAccessChecker';
 
 // Authorization/Permissions
 export * from './authorization/permissions/AclPermission';

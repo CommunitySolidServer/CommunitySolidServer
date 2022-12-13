@@ -4,7 +4,8 @@
     {
       "comment": "Checks if the agent belongs to a group that has access.",
       "@id": "urn:solid-server:default:AgentGroupAccessChecker",
-      "@type": "AgentGroupAccessChecker"
+      "@type": "GroupAccessChecker",
+      "type": "agent"
     }
   ]
 }

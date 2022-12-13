@@ -4,7 +4,8 @@
     {
       "comment": "Checks access based on the agent being authenticated or not.",
       "@id": "urn:solid-server:default:AgentClassAccessChecker",
-      "@type": "AgentClassAccessChecker"
+      "@type": "ClassAccessChecker",
+      "type": "agent"
     }
   ]
 }

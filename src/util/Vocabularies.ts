@@ -106,7 +106,15 @@ export const ACL = createVocabulary('http://www.w3.org/ns/auth/acl#',
   'agent',
   'agentClass',
   'agentGroup',
+  'client',
+  'clientClass',
+  'clientGroup',
+  'issuer',
+  'issuerClass',
+  'issuerGroup',
   'AuthenticatedAgent',
+  'SpecifiedClient',
+  'SpecifiedIssuer',
   'Authorization',
   'default',
   'mode',
@@ -175,6 +183,10 @@ export const HTTP = createVocabulary('http://www.w3.org/2011/http#',
 
 export const IANA = createVocabulary('http://www.w3.org/ns/iana/media-types/');
 
+export const INTEROP = createVocabulary('http://www.w3.org/ns/solid/interop#',
+  'Application',
+);
+
 export const JSON_LD = createVocabulary('http://www.w3.org/ns/json-ld#',
   'context',
 );
@@ -221,6 +233,7 @@ export const SOLID = createVocabulary('http://www.w3.org/ns/solid/terms#',
   'where',
 
   'InsertDeletePatch',
+  'OidcIssuer',
 );
 
 export const SOLID_AS = createVocabulary('http://www.w3.org/ns/solid/activitystreams#',

@@ -3,8 +3,9 @@
   "@graph": [
     {
       "comment": "Checks if a specific WebID has access.",
-      "@id": "urn:solid-server:default:AgentAccessChecker",
-      "@type": "AgentAccessChecker"
+      "@id": "urn:solid-server:default:AgentIdentityAccessChecker",
+      "@type": "IdentityAccessChecker",
+      "type": "agent"
     }
   ]
 }
