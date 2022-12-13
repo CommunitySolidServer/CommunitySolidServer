@@ -62,7 +62,7 @@ export class WebAclReader extends PermissionReader {
    */
   public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
     // Determine the required access modes
-    this.logger.debug(`Retrieving permissions of ${credentials.agent?.webId ?? 'an unknown agent'}`);
+    this.logger.debug(`Retrieving permissions of ${JSON.stringify(credentials)}`);
     const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
     const storeMap = await this.findAuthorizationStatements(aclMap);
     return await this.findPermissions(storeMap, credentials);

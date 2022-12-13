@@ -34,10 +34,12 @@ export class PermissionBasedAuthorizer extends Authorizer {
   public async handle(input: AuthorizerInput): Promise<void> {
     const { credentials, requestedModes, availablePermissions } = input;
 
-    // Ensure all required modes are within the agent's permissions.
+    // Ensure all required modes are within the credential's permissions.
     for (const [ identifier, modes ] of requestedModes.entrySets()) {
       const modeString = [ ...modes ].join(',');
-      this.logger.debug(`Checking if ${credentials.agent?.webId} has ${modeString} permissions for ${identifier.path}`);
+      this.logger.debug(
+        `Checking if ${JSON.stringify(credentials)} has ${modeString} permissions to ${identifier.path}`,
+      );
       const permissions = availablePermissions.get(identifier) ?? {};
       for (const mode of modes) {
         try {
@@ -78,7 +80,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
   private requireModePermission(credentials: Credentials, permissionSet: PermissionSet, mode: AccessMode): void {
     if (!this.hasModePermission(permissionSet, mode)) {
       if (this.isAuthenticated(credentials)) {
-        this.logger.warn(`Agent ${credentials.agent!.webId} has no ${mode} permissions`);
+        this.logger.warn(`Credentials ${JSON.stringify(credentials)} have no ${mode} permissions`);
         throw new ForbiddenHttpError();
       } else {
         // Solid, §2.1: "When a client does not provide valid credentials when requesting a resource that requires it,
