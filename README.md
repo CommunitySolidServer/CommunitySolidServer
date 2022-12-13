@@ -115,27 +115,27 @@ testing applications in different setups,
 or developing new parts for the server
 without needing to change its base code.
 
-### ⏱️ Parameters
+### ⏱ Parameters
 
 An easy way to customize the server is
 by passing parameters to the server command.
 These parameters give you direct access
 to some commonly used settings:
 
-| parameter name         | default value              | description                                                                                                                                   |
-|------------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `--port, -p`           | `3000`                     | The TCP port on which the server should listen.                                                                                               |
-| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The base URL used internally to generate URLs. Change this if your server does not run on `http://localhost:$PORT/`.
-| `--socket`           |                     | The Unix Domain Socket on which the server should listen. `--baseUrl` must be set if this option is provided |
-| `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems. Use `debug` for full information.                                                 |
-| `--config, -c`         | `@css:config/default.json` | The configuration(s) for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json`       |
-| `--rootFilePath, -f`   | `./`                       | Root folder where the server stores data, when using a file-based configuration.                                                              |
-| `--sparqlEndpoint, -s` |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                                       |
-| `--showStackTrace, -t` | false                      | Enables detailed logging on error output.                                                                                                     |
-| `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                         |
-| `--seededPodConfigJson`|                            | Path to the file that keeps track of seeded Pod configurations.                                                                               |
-| `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.                                                         |
-| `--workers, -w`        | `1`                        | Run in multithreaded mode using workers. Special values are `-1` (scale to `num_cores-1`), `0` (scale to `num_cores`) and 1 (singlethreaded). |
+| parameter name          | default value              | description                                                                                                                                   |
+|-------------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `--port, -p`            | `3000`                     | The TCP port on which the server should listen.                                                                                               |
+| `--baseUrl, -b`         | `http://localhost:$PORT/`  | The base URL used internally to generate URLs. Change this if your server does not run on `http://localhost:$PORT/`.                          |
+| `--socket`              |                            | The Unix Domain Socket on which the server should listen. `--baseUrl` must be set if this option is provided                                  |
+| `--loggingLevel, -l`    | `info`                     | The detail level of logging; useful for debugging problems. Use `debug` for full information.                                                 |
+| `--config, -c`          | `@css:config/default.json` | The configuration(s) for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json`       |
+| `--rootFilePath, -f`    | `./`                       | Root folder where the server stores data, when using a file-based configuration.                                                              |
+| `--sparqlEndpoint, -s`  |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                                       |
+| `--showStackTrace, -t`  | false                      | Enables detailed logging on error output.                                                                                                     |
+| `--podConfigJson`       | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                         |
+| `--seededPodConfigJson` |                            | Path to the file that keeps track of seeded Pod configurations.                                                                               |
+| `--mainModulePath, -m`  |                            | Path from where Components.js will start its lookup when initializing configurations.                                                         |
+| `--workers, -w`         | `1`                        | Run in multithreaded mode using workers. Special values are `-1` (scale to `num_cores-1`), `0` (scale to `num_cores`) and 1 (singlethreaded). |
 
 ### 🔀 Multithreading
 
@@ -176,12 +176,9 @@ The server allows writing and plugging in custom modules
 without altering its base source code.
 
 The [📗 API documentation](https://communitysolidserver.github.io/CommunitySolidServer/latest/docs) and
-the [📐 architectural diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
+the [📓 user documentation](https://communitysolidserver.github.io/CommunitySolidServer/)
 can help you find your way.
-
-If you want to help out with server development,
-have a look at the [📓 user documentation](https://communitysolidserver.github.io/CommunitySolidServer/) and
-[🛠️ good first issues](https://github.com/CommunitySolidServer/CommunitySolidServer/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+There is also a repository of [📚 comprehensive tutorials](https://github.com/CommunitySolidServer/tutorials/)
 
 ## 📜 License
 
@@ -189,13 +186,6 @@ The Solid Community Server code
 is copyrighted by [Inrupt Inc.](https://inrupt.com/)
 and [imec](https://www.imec-int.com/)
 and available under the [MIT License](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/LICENSE.md).
-
-Core contributors are
-[Joachim Van Herwegen](https://github.com/joachimvh),
-[Ruben Verborgh](https://github.com/RubenVerborgh),
-[Ruben Taelman](https://github.com/rubensworks),
-and
-[Matthieu Bosquet](https://github.com/matthieubosquet).
 
 ## 🎤 Feedback and questions
 

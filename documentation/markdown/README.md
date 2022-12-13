@@ -41,6 +41,10 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 * [How the server uses dependency injection](architecture/dependency-injection.md)
 * [What the architecture looks like](architecture/overview.md)
 
+## Comprehensive guides and tutorials
+
+* [The CSS tutorial repository](https://github.com/CommunitySolidServer/tutorials/)
+
 ## Making changes
 
 * [How to make changes to the repository](contributing/making-changes.md)
