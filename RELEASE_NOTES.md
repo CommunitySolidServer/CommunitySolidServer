@@ -40,7 +40,7 @@ The following changes are relevant for v5 custom configs that replaced certain f
     - `/app/main/general/templates.json` was added to configure a generic template engine handler.
     - `/app/main/default.json` now imports the above config file.
     - All files configuring template engines.
-- Several minor changes due to support ACP and WAC client/issuer rules.
+- Several minor changes to support ACP and WAC client/issuer rules.
     - `/ldp/authorization/*`
 - Resource generation was changed to there is 1 reusable resource generator.
     - `/init/initializers/*`
