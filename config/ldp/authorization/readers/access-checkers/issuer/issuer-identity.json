@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Checks if WebIDs authenticated with a specific issuer have access.",
+      "comment": "Checks whether WebIDs authenticated with a specific issuer have access.",
       "@id": "urn:solid-server:default:IssuerIdentityAccessChecker",
       "@type": "IdentityAccessChecker",
       "type": "issuer"

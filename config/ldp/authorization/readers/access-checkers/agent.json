@@ -7,7 +7,7 @@
   ],
   "@graph": [
     {
-      "comment": "Checks access based on the identity, class and group of the agent.",
+      "comment": "Checks access based on the identity, class, and group of the agent.",
       "@id": "urn:solid-server:default:AgentAccessCheckers",
       "@type": "BooleanOrHandler",
       "handlers": [

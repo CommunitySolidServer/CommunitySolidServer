@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Checks if the agent belongs to a group that has access.",
+      "comment": "Checks whether the agent belongs to a group that has access.",
       "@id": "urn:solid-server:default:AgentGroupAccessChecker",
       "@type": "GroupAccessChecker",
       "type": "agent"

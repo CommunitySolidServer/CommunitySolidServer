@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Checks access based on the agent being authenticated or not.",
+      "comment": "Checks access based on agent authentication success or failure.",
       "@id": "urn:solid-server:default:AgentClassAccessChecker",
       "@type": "ClassAccessChecker",
       "type": "agent"

@@ -7,7 +7,7 @@
   ],
   "@graph": [
     {
-      "comment": "Checks access based on the identity, class and group of the client.",
+      "comment": "Checks access based on the identity, class, and group of the client.",
       "@id": "urn:solid-server:default:ClientAccessCheckers",
       "@type": "BooleanOrHandler",
       "handlers": [

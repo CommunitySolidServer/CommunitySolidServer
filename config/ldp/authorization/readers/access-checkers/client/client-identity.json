@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Checks if WebIDs have access using a specific client.",
+      "comment": "Checks whether WebIDs have access using a specific client.",
       "@id": "urn:solid-server:default:ClientIdentityAccessChecker",
       "@type": "IdentityAccessChecker",
       "type": "client"

@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Checks access based on the agent using a specified client or not.",
+      "comment": "Checks access based on whether agent is using a specified client.",
       "@id": "urn:solid-server:default:ClientClassAccessChecker",
       "@type": "ClassAccessChecker",
       "type": "client"
