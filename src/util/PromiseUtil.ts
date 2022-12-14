@@ -29,7 +29,7 @@ function noop(): void {}
 
 /**
  * A function that simulates the Array.every behaviour but on an array of Promises.
- * Returns true if at all promises return true.
+ * Returns true if all promises return true.
  * Returns false if at least one promise returns false or error.
  *
  * @remarks

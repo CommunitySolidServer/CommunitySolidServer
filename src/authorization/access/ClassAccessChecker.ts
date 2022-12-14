@@ -26,12 +26,12 @@ export class ClassAccessChecker extends AccessChecker {
   public async handle({ acl, rule, credentials }: AccessCheckerArgs): Promise<boolean> {
     const identity = this.getIdentity(credentials);
 
-    // Check if unauthenticated entities have access
+    // Check whether unauthenticated entities have access
     if (acl.countQuads(rule, this.predicate, this.publicClass, null) !== 0) {
       return true;
     }
 
-    // Check if the entity is authenticated and if authenticated entities have access
+    // Check whether the entity is authenticated and whether authenticated entities have access
     if (typeof identity === 'string') {
       return acl.countQuads(rule, this.predicate, this.privateClass, null) !== 0;
     }

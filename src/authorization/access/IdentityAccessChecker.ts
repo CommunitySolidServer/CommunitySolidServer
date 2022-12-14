@@ -3,7 +3,7 @@ import type { AccessCheckerArgs, AccessChecks } from './AccessChecker';
 import { accessCheckerIdentityPredicates, AccessChecker } from './AccessChecker';
 
 /**
- * Checks if the given identity has been given access.
+ * Checks whether the given identity has been given access.
  */
 export class IdentityAccessChecker extends AccessChecker {
   private readonly predicate: NamedNode;

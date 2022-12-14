@@ -24,22 +24,22 @@ describe('A BooleanAndHandler', (): void => {
     await expect(handler.canHandle(null)).resolves.toBeUndefined();
   });
 
-  it('errors if some of its handlers do not supports the input.', async(): Promise<void> => {
+  it('errors if some of its handlers do not support the input.', async(): Promise<void> => {
     const handler = new BooleanAndHandler([ handlerTrue, handlerCanNotHandle ]);
     await expect(handler.canHandle(null)).rejects.toThrow('Not all handlers support this input.');
   });
 
-  it('returns true if all of its handlers returns true.', async(): Promise<void> => {
+  it('returns true if all of its handlers return true.', async(): Promise<void> => {
     const handler = new BooleanAndHandler([ handlerTrue, handlerTrue ]);
     await expect(handler.handle(null)).resolves.toBe(true);
   });
 
-  it('returns false if some of its handlers returns false.', async(): Promise<void> => {
+  it('returns false if some of its handlers return false.', async(): Promise<void> => {
     const handler = new BooleanAndHandler([ handlerTrue, handlerFalse ]);
     await expect(handler.handle(null)).resolves.toBe(false);
   });
 
-  it('throw an internal error when calling handle with unsupported input.', async(): Promise<void> => {
+  it('throws an internal error when calling handle with unsupported input.', async(): Promise<void> => {
     const handler = new BooleanAndHandler([ handlerCanNotHandle ]);
     await expect(handler.handle(null)).rejects.toThrow(InternalServerError);
   });

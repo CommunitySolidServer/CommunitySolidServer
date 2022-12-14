@@ -9,7 +9,7 @@ import type { AccessCheckerArgs, AccessChecks } from './AccessChecker';
 import { accessCheckerGroupPredicates, AccessChecker } from './AccessChecker';
 
 /**
- * Checks if the given identity belongs to a group that has access.
+ * Checks whether the given identity belongs to a group that has access.
  * Implements the behaviour of groups from the WAC specification.
  */
 export class GroupAccessChecker extends AccessChecker {
@@ -35,11 +35,11 @@ export class GroupAccessChecker extends AccessChecker {
   }
 
   /**
-   * Checks if the given identity is member of a given vCard group.
+   * Checks whether the given identity is member of a given vCard group.
    * @param identity - identity of the entity that needs access.
    * @param group - URL of the vCard group that needs to be checked.
    *
-   * @returns If the identity is member of the given vCard group.
+   * @returns whether the identity is a member of the given vCard group.
    */
   private async isMemberOfGroup(identity: string, group: Term): Promise<boolean> {
     const groupDocument: ResourceIdentifier = { path: /^[^#]*/u.exec(group.value)![0] };

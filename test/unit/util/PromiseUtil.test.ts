@@ -14,7 +14,7 @@ describe('PromiseUtil', (): void => {
       await expect(promiseEvery([ resultTrue, resultTrue, resultTrue ])).resolves.toBe(true);
     });
 
-    it('returns false if at least a promise returns false.', async(): Promise<void> => {
+    it('returns false if at least one promise returns false.', async(): Promise<void> => {
       await expect(promiseEvery([ resultTrue, resultFalse, resultTrue ])).resolves.toBe(false);
     });
 

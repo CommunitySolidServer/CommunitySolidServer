@@ -39,7 +39,7 @@ describe('A BooleanOrHandler', (): void => {
     await expect(handler.handle(null)).resolves.toBe(false);
   });
 
-  it('throw an internal error when calling handle with unsupported input.', async(): Promise<void> => {
+  it('throws an internal error when calling handle with unsupported input.', async(): Promise<void> => {
     const handler = new BooleanOrHandler([ handlerCanNotHandle, handlerCanNotHandle ]);
     await expect(handler.handle(null)).rejects.toThrow(InternalServerError);
   });
