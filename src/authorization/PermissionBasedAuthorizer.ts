@@ -38,7 +38,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
     for (const [ identifier, modes ] of requestedModes.entrySets()) {
       const modeString = [ ...modes ].join(',');
       this.logger.debug(
-        `Checking if ${JSON.stringify(credentials)} has ${modeString} permissions to ${identifier.path}`,
+        `Checking whether ${JSON.stringify(credentials)} has ${modeString} permissions to ${identifier.path}`,
       );
       const permissionSet = availablePermissions.get(identifier) ?? {};
       for (const mode of modes) {
