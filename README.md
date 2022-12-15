@@ -175,7 +175,7 @@ Recipes for configuring the server can be found at [CommunitySolidServer/recipes
 The server allows writing and plugging in custom modules
 without altering its base source code.
 
-The [📗 API documentation](https://communitysolidserver.github.io/CommunitySolidServer/latest/docs) and
+The [📗 API documentation](https://communitysolidserver.github.io/CommunitySolidServer/latest/5.x/docs) and
 the [📓 user documentation](https://communitysolidserver.github.io/CommunitySolidServer/)
 can help you find your way.
 There is also a repository of [📚 comprehensive tutorials](https://github.com/CommunitySolidServer/tutorials/)
