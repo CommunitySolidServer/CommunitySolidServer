@@ -1,0 +1,85 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/app/main/default.json",
+    "css:config/app/init/initialize-root.json",
+    "css:config/app/setup/disabled.json",
+    "css:config/app/variables/default.json",
+    "css:config/http/handler/default.json",
+    "css:config/http/middleware/websockets.json",
+    "css:config/http/server-factory/websockets.json",
+    "css:config/http/static/default.json",
+    "css:config/identity/access/public.json",
+    "css:config/identity/email/default.json",
+    "css:config/identity/handler/default.json",
+    "css:config/identity/ownership/token.json",
+    "css:config/identity/pod/static.json",
+    "css:config/identity/registration/enabled.json",
+    "css:config/ldp/authentication/dpop-bearer.json",
+    "css:config/ldp/authorization/webacl.json",
+    "css:config/ldp/handler/default.json",
+    "css:config/ldp/metadata-parser/default.json",
+    "css:config/ldp/metadata-writer/default.json",
+    "css:config/ldp/modes/default.json",
+    "css:config/storage/backend/data-accessors/file.json",
+    "css:config/storage/backend/data-accessors/s3.json",
+    "css:config/storage/key-value/memory.json",
+    "css:config/storage/middleware/default.json",
+    "css:config/util/auxiliary/acl.json",
+    "css:config/util/identifiers/suffix.json",
+    "css:config/util/index/default.json",
+    "css:config/util/logging/winston.json",
+    "css:config/util/representation-conversion/default.json",
+    "css:config/util/resource-locker/debug-void.json",
+    "css:config/util/variables/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": "A single-pod server that stores its resources on disk."
+    },
+    {
+      "comment": "A more complex example with 3 different stores being routed to.",
+      "@id": "urn:solid-server:default:ResourceStore_Backend",
+      "@type": "RoutingResourceStore",
+      "rule": { "@id": "urn:solid-server:default:RouterRule" }
+    },
+
+    {
+      "comment": [
+        "Configure routing to send all requests containing /file/ to the file store, containing /memory/ to the memory store and /sparql/ to the sparql endpoint store.",
+        "The root ACL and metadata resources will be stored in the sparql endpoint store."
+      ],
+      "@id": "urn:solid-server:default:RouterRule",
+      "@type": "RegexRouterRule",
+      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "rules": [
+        {
+          "@type": "RegexRule",
+          "regex": "^/.*\\.acl$",
+          "store": { "@id": "urn:solid-server:default:FileResourceStore" }
+        },
+        {
+          "@type": "RegexRule",
+          "regex": "/.*",
+          "store": { "@id": "urn:solid-server:default:S3ResourceStore" }
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:FileResourceStore",
+      "@type": "DataAccessorBasedStore",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+    },
+    {
+      "@id": "urn:solid-server:default:S3ResourceStore",
+      "@type": "DataAccessorBasedStore",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "accessor": { "@id": "urn:solid-server:default:S3DataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+    }
+  ]
+}

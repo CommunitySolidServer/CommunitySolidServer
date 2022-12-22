@@ -308,6 +308,7 @@ export * from './storage/accessors/InMemoryDataAccessor';
 export * from './storage/accessors/PassthroughDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
 export * from './storage/accessors/ValidatingDataAccessor';
+export * from './storage/accessors/S3DataAccessor';
 
 // Storage/Conversion
 export * from './storage/conversion/BaseTypedRepresentationConverter';

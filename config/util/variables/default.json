@@ -51,6 +51,16 @@
       "comment": "Run the server in multithreaded mode with the set amount of workers.",
       "@id": "urn:solid-server:default:variable:workers",
       "@type": "Variable"
+    },
+    {
+      "comment": "AWS Access Key ID, when using a configuration with an S3 backend.",
+      "@id": "urn:solid-server:default:variable:s3AccessKeyId",
+      "@type": "Variable"
+    },
+    {
+      "comment": "AWS Secret Access Key, when using a configuration with an S3 backend.",
+      "@id": "urn:solid-server:default:variable:s3SecretAccessKey",
+      "@type": "Variable"
     }
   ]
 }

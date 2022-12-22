@@ -99,6 +99,8 @@
     "templates"
   ],
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.235.0",
+    "@aws-sdk/lib-storage": "^3.245.0",
     "@comunica/context-entries": "^2.2.0",
     "@comunica/query-sparql": "^2.2.1",
     "@rdfjs/types": "^1.1.0",

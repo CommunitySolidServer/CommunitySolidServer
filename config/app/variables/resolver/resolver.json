@@ -81,6 +81,22 @@
             "key": "workers",
             "defaultValue": 1
           }
+        },
+        {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:s3AccessKeyId",
+          "CombinedShorthandResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "s3AccessKeyId",
+            "defaultValue": ""
+          }
+        },
+        {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:s3SecretAccessKey",
+          "CombinedShorthandResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "s3SecretAccessKey",
+            "defaultValue": ""
+          }
         }
       ]
     }

@@ -121,6 +121,24 @@
             "type": "number",
             "describe": "Run the server in multithreaded mode using workers. (special values: -1: num_cores-1, 0: num_cores). Defaults to 1 (singlethreaded)"
           }
+        },
+        {
+          "@type": "YargsParameter",
+          "name": "s3AccessKeyId",
+          "options": {
+            "requiresArg": true,
+            "type": "string",
+            "describe": "AWS Access Key ID, when using a configuration with an S3 backend."
+          }
+        },
+        {
+          "@type": "YargsParameter",
+          "name": "s3SecretAccessKey",
+          "options": {
+            "requiresArg": true,
+            "type": "string",
+            "describe": "AWS Secret Access Key, when using a configuration with an S3 backend."
+          }
         }
       ],
       "options": {

@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Stores data on a Simple Storage Service (S3) backend.",
+      "@id": "urn:solid-server:default:S3DataAccessor",
+      "@type": "S3DataAccessor",
+      "args_region": "eu-central-1",
+      "args_bucket": "dgt-demo-bucket",
+      "args_credentials_accessKeyId": { "@id": "urn:solid-server:default:variable:s3AccessKeyId" },
+      "args_credentials_secretAccessKey": { "@id": "urn:solid-server:default:variable:s3SecretAccessKey" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    }
+  ]
+}
