@@ -388,6 +388,7 @@ export * from './storage/conversion/TypedRepresentationConverter';
 // Storage/KeyValue
 export * from './storage/keyvalue/EncodingPathStorage';
 export * from './storage/keyvalue/ExpiringStorage';
+export * from './storage/keyvalue/HashEncodingPathStorage';
 export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
 export * from './storage/keyvalue/KeyValueStorage';
