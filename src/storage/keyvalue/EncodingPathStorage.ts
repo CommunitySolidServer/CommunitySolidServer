@@ -10,8 +10,8 @@ import type { KeyValueStorage } from './KeyValueStorage';
  * without having to worry about cleaning the input keys.
  */
 export class EncodingPathStorage<T> implements KeyValueStorage<string, T> {
-  private readonly basePath: string;
-  private readonly source: KeyValueStorage<string, T>;
+  protected readonly basePath: string;
+  protected readonly source: KeyValueStorage<string, T>;
 
   public constructor(relativePath: string, source: KeyValueStorage<string, T>) {
     this.source = source;
@@ -53,7 +53,7 @@ export class EncodingPathStorage<T> implements KeyValueStorage<string, T> {
   /**
    * Converts a key into a path for internal storage.
    */
-  private keyToPath(key: string): string {
+  protected keyToPath(key: string): string {
     const encodedKey = Buffer.from(key).toString('base64');
     return joinUrl(this.basePath, encodedKey);
   }
@@ -61,7 +61,7 @@ export class EncodingPathStorage<T> implements KeyValueStorage<string, T> {
   /**
    * Converts an internal storage path string into the original path key.
    */
-  private pathToKey(path: string): string {
+  protected pathToKey(path: string): string {
     const buffer = Buffer.from(path.slice(this.basePath.length), 'base64');
     return buffer.toString('utf-8');
   }
