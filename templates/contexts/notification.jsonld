@@ -1,21 +1,58 @@
 {
   "@context": {
+    "@version": 1.1,
+    "@protected": true,
     "id": "@id",
     "type": "@type",
     "notify": "http://www.w3.org/ns/solid/notifications#",
-    "WebSocketSubscription2021": "notify:WebSocketSubscription2021",
-    "features": {
-      "@id": "notify:features",
-      "@type": "@id"
-    },
-    "notificationChannel": {
-      "@id": "notify:notificationChannel",
-      "@type": "@id"
-    },
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "accept": "notify:accept",
+
+    "channel": {
+      "@id": "notify:channel",
+      "@type": "@id" },
+
+    "channelType": {
+      "@id": "notify:channelType",
+      "@type": "@vocab" },
+
+    "endAt": {
+      "@id": "notify:endAt",
+      "@type": "xsd:dateTime" },
+
+    "feature": {
+      "@id": "notify:feature",
+      "@type": "@vocab" },
+
+    "rate": {
+      "@id": "notify:rate",
+      "@type": "xsd:duration" },
+
+    "receiveFrom": {
+      "@id": "notify:receiveFrom",
+      "@type": "@id" },
+
+    "sender": {
+      "@id": "notify:sender",
+      "@type": "@id" },
+
+    "sendTo": {
+      "@id": "notify:sendTo",
+      "@type": "@id" },
+
     "state": "notify:state",
+
+    "startAt": {
+      "@id": "notify:startAt",
+      "@type": "xsd:dateTime" },
+
     "subscription": {
       "@id": "notify:subscription",
-      "@type": "@id"
-    }
+      "@type": "@id" },
+
+    "topic": {
+      "@id": "notify:topic",
+      "@type": "@id" }
   }
 }

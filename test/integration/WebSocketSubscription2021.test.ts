@@ -6,7 +6,7 @@ import { BasicRepresentation } from '../../src/http/representation/BasicRepresen
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { joinUrl } from '../../src/util/PathUtil';
-import { NOTIFY, RDF } from '../../src/util/Vocabularies';
+import { NOTIFY } from '../../src/util/Vocabularies';
 import { expectNotification, subscribe } from '../util/NotificationUtil';
 import { getPort } from '../util/Util';
 import {
@@ -86,14 +86,12 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     const quads = new Store(new Parser().parse(await response.text()));
 
     // Find the notification channel for websockets
-    const channels = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.notificationChannel, null);
-    const websocketChannels = channels.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, RDF.terms.type, namedNode(`${NOTIFY.namespace}WebSocketSubscription2021`)),
+    const subscriptions = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.subscription, null);
+    const websocketSubscriptions = subscriptions.filter((channel): boolean => quads.has(
+      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebSocketSubscription2021`)),
     ));
-    expect(websocketChannels).toHaveLength(1);
-    const subscriptionUrls = quads.getObjects(websocketChannels[0], NOTIFY.terms.subscription, null);
-    expect(subscriptionUrls).toHaveLength(1);
-    subscriptionUrl = subscriptionUrls[0].value;
+    expect(websocketSubscriptions).toHaveLength(1);
+    subscriptionUrl = websocketSubscriptions[0].value;
   });
 
   it('supports subscribing.', async(): Promise<void> => {

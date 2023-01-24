@@ -9,7 +9,6 @@
           "comment": "Handles the storage description triples used for discovery of a WebHookSubscription2021 endpoint.",
           "@type": "WebHookDescriber",
           "route": { "@id": "urn:solid-server:default:WebHookRoute" },
-          "relative": "#webhookNotification",
           "webIdRoute": { "@id": "urn:solid-server:default:WebHookWebIdRoute" }
         }
       ]
