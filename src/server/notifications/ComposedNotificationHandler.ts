@@ -14,7 +14,7 @@ export interface ComposedNotificationHandlerArgs {
  * Generates, serializes and emits a {@link Notification} using a {@link NotificationGenerator},
  * {@link NotificationSerializer} and {@link NotificationEmitter}.
  *
- * Will not emit an event in case it has the same state as the subscription info.
+ * Will not emit an event in case it has the same state as the notification channel info.
  */
 export class ComposedNotificationHandler extends NotificationHandler {
   private readonly generator: NotificationGenerator;

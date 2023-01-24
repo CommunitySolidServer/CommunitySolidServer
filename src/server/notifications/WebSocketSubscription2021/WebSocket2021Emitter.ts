@@ -8,7 +8,7 @@ import type { NotificationEmitterInput } from '../NotificationEmitter';
 /**
  * Emits notifications on WebSocketSubscription2021 subscription.
  * Uses the WebSockets found in the provided map.
- * The key should be the identifier of the matching subscription.
+ * The key should be the identifier of the matching channel.
  */
 export class WebSocket2021Emitter extends NotificationEmitter {
   protected readonly logger = getLoggerFor(this);

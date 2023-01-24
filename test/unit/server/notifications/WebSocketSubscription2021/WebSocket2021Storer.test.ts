@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
 import type { WebSocket } from 'ws';
 import type {
-  SubscriptionInfo,
-  SubscriptionStorage,
-} from '../../../../../src/server/notifications/SubscriptionStorage';
+  NotificationChannelInfo,
+  NotificationChannelStorage,
+} from '../../../../../src/server/notifications/NotificationChannelStorage';
 
 import {
   WebSocket2021Storer,
@@ -13,7 +13,7 @@ import { WrappedSetMultiMap } from '../../../../../src/util/map/WrappedSetMultiM
 import { flushPromises } from '../../../../util/Util';
 
 describe('A WebSocket2021Storer', (): void => {
-  const info: SubscriptionInfo = {
+  const info: NotificationChannelInfo = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
@@ -21,7 +21,7 @@ describe('A WebSocket2021Storer', (): void => {
     lastEmit: 0,
   };
   let webSocket: jest.Mocked<WebSocket>;
-  let storage: jest.Mocked<SubscriptionStorage>;
+  let storage: jest.Mocked<NotificationChannelStorage>;
   let socketMap: SetMultiMap<string, WebSocket>;
   let storer: WebSocket2021Storer;
 
@@ -68,7 +68,7 @@ describe('A WebSocket2021Storer', (): void => {
     webSocket2.close = jest.fn();
     const webSocketOther: jest.Mocked<WebSocket> = new EventEmitter() as any;
     webSocketOther.close = jest.fn();
-    const infoOther: SubscriptionInfo = {
+    const infoOther: NotificationChannelInfo = {
       ...info,
       id: 'other',
     };

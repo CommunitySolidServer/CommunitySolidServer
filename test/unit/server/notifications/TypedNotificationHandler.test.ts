@@ -1,15 +1,15 @@
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
+import type { NotificationChannelInfo } from '../../../../src/server/notifications/NotificationChannelStorage';
 import type { NotificationHandler } from '../../../../src/server/notifications/NotificationHandler';
-import type { SubscriptionInfo } from '../../../../src/server/notifications/SubscriptionStorage';
 import { TypedNotificationHandler } from '../../../../src/server/notifications/TypedNotificationHandler';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A TypedNotificationHandler', (): void => {
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const info: SubscriptionInfo = {
+  const info: NotificationChannelInfo = {
     id: 'id',
     topic: topic.path,
-    type: 'SubscriptionType',
+    type: 'NotificationChannelType',
     features: {},
     lastEmit: 0,
   };

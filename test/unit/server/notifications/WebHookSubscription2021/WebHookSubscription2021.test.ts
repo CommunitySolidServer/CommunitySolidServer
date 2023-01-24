@@ -6,11 +6,11 @@ import {
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
 import type { Logger } from '../../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../../src/logging/LogUtil';
-import type { StateHandler } from '../../../../../src/server/notifications/StateHandler';
 import type {
-  SubscriptionInfo,
-  SubscriptionStorage,
-} from '../../../../../src/server/notifications/SubscriptionStorage';
+  NotificationChannelInfo,
+  NotificationChannelStorage,
+} from '../../../../../src/server/notifications/NotificationChannelStorage';
+import type { StateHandler } from '../../../../../src/server/notifications/StateHandler';
 import type {
   WebHookFeatures,
 } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
@@ -31,14 +31,14 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
 describe('A WebHookSubscription2021', (): void => {
   const credentials: Credentials = { agent: { webId: 'http://example.org/alice' }};
   const target = 'http://example.org/somewhere-else';
-  let subscription: InferType<WebHookSubscription2021['schema']>;
+  let channel: InferType<WebHookSubscription2021['schema']>;
   const unsubscribeRoute = new AbsolutePathInteractionRoute('http://example.com/unsubscribe');
-  let storage: jest.Mocked<SubscriptionStorage<WebHookFeatures>>;
+  let storage: jest.Mocked<NotificationChannelStorage<WebHookFeatures>>;
   let stateHandler: jest.Mocked<StateHandler>;
-  let subscriptionType: WebHookSubscription2021;
+  let channelType: WebHookSubscription2021;
 
   beforeEach(async(): Promise<void> => {
-    subscription = {
+    channel = {
       '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
       type: 'WebHookSubscription2021',
       topic: 'https://storage.example/resource',
@@ -51,7 +51,7 @@ describe('A WebHookSubscription2021', (): void => {
     };
 
     storage = {
-      create: jest.fn((features: WebHookFeatures): SubscriptionInfo<WebHookFeatures> => ({
+      create: jest.fn((features: WebHookFeatures): NotificationChannelInfo<WebHookFeatures> => ({
         id: '123',
         topic: 'http://example.com/foo',
         type: 'WebHookSubscription2021',
@@ -65,27 +65,27 @@ describe('A WebHookSubscription2021', (): void => {
       handleSafe: jest.fn(),
     } as any;
 
-    subscriptionType = new WebHookSubscription2021(storage, unsubscribeRoute, stateHandler);
+    channelType = new WebHookSubscription2021(storage, unsubscribeRoute, stateHandler);
   });
 
   it('has the correct type.', async(): Promise<void> => {
-    expect(subscriptionType.type).toBe('WebHookSubscription2021');
+    expect(channelType.type).toBe('WebHookSubscription2021');
   });
 
-  it('correctly parses subscriptions.', async(): Promise<void> => {
-    await expect(subscriptionType.schema.isValid(subscription)).resolves.toBe(true);
+  it('correctly parses notification channel bodies.', async(): Promise<void> => {
+    await expect(channelType.schema.isValid(channel)).resolves.toBe(true);
 
-    subscription.type = 'something else';
-    await expect(subscriptionType.schema.isValid(subscription)).resolves.toBe(false);
+    channel.type = 'something else';
+    await expect(channelType.schema.isValid(channel)).resolves.toBe(false);
   });
 
   it('requires Read permissions on the topic.', async(): Promise<void> => {
-    await expect(subscriptionType.extractModes(subscription)).resolves
-      .toEqual(new IdentifierSetMultiMap([[{ path: subscription.topic }, AccessMode.read ]]));
+    await expect(channelType.extractModes(channel)).resolves
+      .toEqual(new IdentifierSetMultiMap([[{ path: channel.topic }, AccessMode.read ]]));
   });
 
   it('stores the info and returns a valid response when subscribing.', async(): Promise<void> => {
-    const { response } = await subscriptionType.subscribe(subscription, credentials);
+    const { response } = await channelType.subscribe(channel, credentials);
     expect(response.metadata.contentType).toBe('application/ld+json');
     await expect(readJsonStream(response.data)).resolves.toEqual({
       '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
@@ -97,12 +97,12 @@ describe('A WebHookSubscription2021', (): void => {
   });
 
   it('errors if the credentials do not contain a WebID.', async(): Promise<void> => {
-    await expect(subscriptionType.subscribe(subscription, {})).rejects
+    await expect(channelType.subscribe(channel, {})).rejects
       .toThrow('A WebHookSubscription2021 subscription request needs to be authenticated with a WebID.');
   });
 
   it('calls the state handler once the response has been read.', async(): Promise<void> => {
-    const { response, info } = await subscriptionType.subscribe(subscription, credentials);
+    const { response, info } = await channelType.subscribe(channel, credentials);
     expect(stateHandler.handleSafe).toHaveBeenCalledTimes(0);
 
     // Read out data to end stream correctly
@@ -116,7 +116,7 @@ describe('A WebHookSubscription2021', (): void => {
     const logger = getLoggerFor('mock');
     stateHandler.handleSafe.mockRejectedValue(new Error('notification error'));
 
-    const { response } = await subscriptionType.subscribe(subscription, credentials);
+    const { response } = await channelType.subscribe(channel, credentials);
     expect(logger.error).toHaveBeenCalledTimes(0);
 
     // Read out data to end stream correctly

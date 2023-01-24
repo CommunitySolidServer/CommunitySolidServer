@@ -3,7 +3,7 @@ import type { WebSocket } from 'ws';
 import type { InteractionRoute } from '../../../identity/interaction/routing/InteractionRoute';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { WebSocketServerConfigurator } from '../../WebSocketServerConfigurator';
-import type { SubscriptionStorage } from '../SubscriptionStorage';
+import type { NotificationChannelStorage } from '../NotificationChannelStorage';
 import type { WebSocket2021Handler } from './WebSocket2021Handler';
 import { parseWebSocketRequest } from './WebSocket2021Util';
 
@@ -14,11 +14,11 @@ import { parseWebSocketRequest } from './WebSocket2021Util';
 export class WebSocket2021Listener extends WebSocketServerConfigurator {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly storage: SubscriptionStorage;
+  private readonly storage: NotificationChannelStorage;
   private readonly handler: WebSocket2021Handler;
   private readonly path: string;
 
-  public constructor(storage: SubscriptionStorage, handler: WebSocket2021Handler, route: InteractionRoute) {
+  public constructor(storage: NotificationChannelStorage, handler: WebSocket2021Handler, route: InteractionRoute) {
     super();
     this.storage = storage;
     this.handler = handler;
@@ -42,7 +42,7 @@ export class WebSocket2021Listener extends WebSocketServerConfigurator {
 
     if (!info) {
       // Info not being there implies it has expired
-      webSocket.send(`Subscription has expired`);
+      webSocket.send(`Notification channel has expired`);
       return webSocket.close();
     }
 

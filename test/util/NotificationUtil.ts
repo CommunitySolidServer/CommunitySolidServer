@@ -4,13 +4,13 @@ import { fetch } from 'cross-fetch';
  * Subscribes to a notification channel.
  * @param type - The type of the notification channel. E.g. "WebSocketSubscription2021".
  * @param webId - The WebID to spoof in the authorization header. This assumes the config uses the debug auth import.
- * @param subscriptionUrl - The URL where the subscription request needs to be sent to.
+ * @param subscriptionUrl - The subscription resource URL where the request needs to be sent to.
  * @param topic - The topic to subscribe to.
  * @param features - Any extra fields that need to be added to the subscription body.
  */
 export async function subscribe(type: string, webId: string, subscriptionUrl: string, topic: string,
   features: Record<string, unknown> = {}): Promise<unknown> {
-  const subscription = {
+  const channel = {
     '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
     type,
     topic,
@@ -20,7 +20,7 @@ export async function subscribe(type: string, webId: string, subscriptionUrl: st
   const response = await fetch(subscriptionUrl, {
     method: 'POST',
     headers: { authorization: `WebID ${webId}`, 'content-type': 'application/ld+json' },
-    body: JSON.stringify(subscription),
+    body: JSON.stringify(channel),
   });
   expect(response.status).toBe(200);
   expect(response.headers.get('content-type')).toBe('application/ld+json');

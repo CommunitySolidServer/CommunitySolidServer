@@ -4,13 +4,13 @@ import type { ResourceIdentifier } from '../../../../../src/http/representation/
 import {
   ActivityNotificationGenerator,
 } from '../../../../../src/server/notifications/generate/ActivityNotificationGenerator';
-import type { SubscriptionInfo } from '../../../../../src/server/notifications/SubscriptionStorage';
+import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import type { ResourceStore } from '../../../../../src/storage/ResourceStore';
 import { AS, DC, LDP, RDF } from '../../../../../src/util/Vocabularies';
 
 describe('An ActivityNotificationGenerator', (): void => {
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const info: SubscriptionInfo = {
+  const info: NotificationChannelInfo = {
     id: 'id',
     topic: topic.path,
     type: 'type',

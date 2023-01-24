@@ -1,12 +1,12 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
+import type { NotificationChannelInfo, NotificationChannelStorage } from './NotificationChannelStorage';
 import type { NotificationHandler } from './NotificationHandler';
 import { StateHandler } from './StateHandler';
-import type { SubscriptionInfo, SubscriptionStorage } from './SubscriptionStorage';
 
 /**
  * Handles the `state` feature by calling a {@link NotificationHandler}
- * in case the {@link SubscriptionInfo} has a `state` value.
+ * in case the {@link NotificationChannelInfo} has a `state` value.
  *
  * Deletes the `state` parameter from the info afterwards.
  */
@@ -14,15 +14,15 @@ export class BaseStateHandler extends StateHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly handler: NotificationHandler;
-  private readonly storage: SubscriptionStorage;
+  private readonly storage: NotificationChannelStorage;
 
-  public constructor(handler: NotificationHandler, storage: SubscriptionStorage) {
+  public constructor(handler: NotificationHandler, storage: NotificationChannelStorage) {
     super();
     this.handler = handler;
     this.storage = storage;
   }
 
-  public async handle({ info }: { info: SubscriptionInfo }): Promise<void> {
+  public async handle({ info }: { info: NotificationChannelInfo }): Promise<void> {
     if (info.state) {
       const topic = { path: info.topic };
       try {

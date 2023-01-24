@@ -1,12 +1,12 @@
 import type { Notification } from '../../../../../src/server/notifications/Notification';
+import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import {
   JsonLdNotificationSerializer,
 } from '../../../../../src/server/notifications/serialize/JsonLdNotificationSerializer';
-import type { SubscriptionInfo } from '../../../../../src/server/notifications/SubscriptionStorage';
 import { readableToString } from '../../../../../src/util/StreamUtil';
 
 describe('A JsonLdNotificationSerializer', (): void => {
-  const info: SubscriptionInfo = {
+  const info: NotificationChannelInfo = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',

@@ -2,9 +2,9 @@ import { v4 } from 'uuid';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { Logger } from '../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../src/logging/LogUtil';
-import { KeyValueSubscriptionStorage } from '../../../../src/server/notifications/KeyValueSubscriptionStorage';
-import type { Subscription } from '../../../../src/server/notifications/Subscription';
-import type { SubscriptionInfo } from '../../../../src/server/notifications/SubscriptionStorage';
+import { KeyValueChannelStorage } from '../../../../src/server/notifications/KeyValueChannelStorage';
+import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
+import type { NotificationChannelInfo } from '../../../../src/server/notifications/NotificationChannelStorage';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import resetAllMocks = jest.resetAllMocks;
@@ -15,21 +15,21 @@ jest.mock('../../../../src/logging/LogUtil', (): any => {
   return { getLoggerFor: (): Logger => logger };
 });
 
-describe('A KeyValueSubscriptionStorage', (): void => {
+describe('A KeyValueChannelStorage', (): void => {
   const logger = getLoggerFor('mock');
   const topic = 'http://example.com/foo';
   const identifier = { path: topic };
-  const subscription = {
+  const channel = {
     '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
     type: 'WebSocketSubscription2021',
     topic,
-  } as Subscription;
+  } as NotificationChannel;
   const features = { aa: 'bb' };
-  let info: SubscriptionInfo<Record<string, string>>;
+  let info: NotificationChannelInfo<Record<string, string>>;
   let internalMap: Map<string, any>;
   let internalStorage: KeyValueStorage<string, any>;
   let locker: ReadWriteLocker;
-  let storage: KeyValueSubscriptionStorage<Record<string, string>>;
+  let storage: KeyValueChannelStorage<Record<string, string>>;
 
   beforeEach(async(): Promise<void> => {
     resetAllMocks();
@@ -50,12 +50,12 @@ describe('A KeyValueSubscriptionStorage', (): void => {
       withReadLock: jest.fn(),
     };
 
-    storage = new KeyValueSubscriptionStorage(internalStorage, locker);
+    storage = new KeyValueChannelStorage(internalStorage, locker);
   });
 
   describe('#create', (): void => {
-    it('creates info based on a subscription.', async(): Promise<void> => {
-      expect(storage.create(subscription, features)).toEqual(info);
+    it('creates info based on a notification channel.', async(): Promise<void> => {
+      expect(storage.create(channel, features)).toEqual(info);
     });
   });
 
@@ -119,7 +119,8 @@ describe('A KeyValueSubscriptionStorage', (): void => {
         ...info,
         topic: 'http://example.com/other',
       };
-      await expect(storage.update(newInfo)).rejects.toThrow(`Trying to change the topic of subscription ${info.id}`);
+      await expect(storage.update(newInfo)).rejects
+        .toThrow(`Trying to change the topic of a notification channel ${info.id}`);
     });
 
     it('rejects update request targeting a non-info value.', async(): Promise<void> => {
@@ -130,7 +131,8 @@ describe('A KeyValueSubscriptionStorage', (): void => {
         ...info,
         id,
       };
-      await expect(storage.update(newInfo)).rejects.toThrow(`Trying to update ${id} which is not a SubscriptionInfo.`);
+      await expect(storage.update(newInfo)).rejects
+        .toThrow(`Trying to update ${id} which is not a NotificationChannelInfo.`);
     });
   });
 

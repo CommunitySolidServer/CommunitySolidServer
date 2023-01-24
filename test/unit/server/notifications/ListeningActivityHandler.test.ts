@@ -4,8 +4,11 @@ import type { Logger } from '../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../src/logging/LogUtil';
 import type { ActivityEmitter } from '../../../../src/server/notifications/ActivityEmitter';
 import { ListeningActivityHandler } from '../../../../src/server/notifications/ListeningActivityHandler';
+import type {
+  NotificationChannelInfo,
+  NotificationChannelStorage,
+} from '../../../../src/server/notifications/NotificationChannelStorage';
 import type { NotificationHandler } from '../../../../src/server/notifications/NotificationHandler';
-import type { SubscriptionInfo, SubscriptionStorage } from '../../../../src/server/notifications/SubscriptionStorage';
 import { AS } from '../../../../src/util/Vocabularies';
 import { flushPromises } from '../../../util/Util';
 
@@ -18,8 +21,8 @@ describe('A ListeningActivityHandler', (): void => {
   const logger: jest.Mocked<Logger> = getLoggerFor('mock') as any;
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
   const activity = AS.terms.Update;
-  let info: SubscriptionInfo;
-  let storage: jest.Mocked<SubscriptionStorage>;
+  let info: NotificationChannelInfo;
+  let storage: jest.Mocked<NotificationChannelStorage>;
   let emitter: ActivityEmitter;
   let notificationHandler: jest.Mocked<NotificationHandler>;
   let handler: ListeningActivityHandler;
@@ -59,7 +62,7 @@ describe('A ListeningActivityHandler', (): void => {
     expect(logger.error).toHaveBeenCalledTimes(0);
   });
 
-  it('does not emit an event on subscriptions if their rate does not yet allow it.', async(): Promise<void> => {
+  it('does not emit an event on channels if their rate does not yet allow it.', async(): Promise<void> => {
     info.rate = 100000;
     info.lastEmit = Date.now();
 
@@ -71,7 +74,7 @@ describe('A ListeningActivityHandler', (): void => {
     expect(logger.error).toHaveBeenCalledTimes(0);
   });
 
-  it('does not emit an event on subscriptions if their start time has not been reached.', async(): Promise<void> => {
+  it('does not emit an event on channels if their start time has not been reached.', async(): Promise<void> => {
     info.startAt = Date.now() + 100000;
 
     emitter.emit('changed', topic, activity);
@@ -82,7 +85,7 @@ describe('A ListeningActivityHandler', (): void => {
     expect(logger.error).toHaveBeenCalledTimes(0);
   });
 
-  it('does not stop if one subscription causes an error.', async(): Promise<void> => {
+  it('does not stop if one channel causes an error.', async(): Promise<void> => {
     storage.getAll.mockResolvedValue([ info.id, info.id ]);
     notificationHandler.handleSafe.mockRejectedValueOnce(new Error('bad input'));
 
@@ -106,7 +109,7 @@ describe('A ListeningActivityHandler', (): void => {
     expect(logger.error).toHaveBeenLastCalledWith(`Something went wrong emitting notifications: bad event`);
   });
 
-  it('ignores undefined subscriptions.', async(): Promise<void> => {
+  it('ignores undefined channels.', async(): Promise<void> => {
     storage.get.mockResolvedValue(undefined);
 
     emitter.emit('changed', topic, activity);

@@ -340,16 +340,16 @@ export * from './server/notifications/WebSocketSubscription2021/WebSocketSubscri
 export * from './server/notifications/ActivityEmitter';
 export * from './server/notifications/BaseStateHandler';
 export * from './server/notifications/ComposedNotificationHandler';
-export * from './server/notifications/KeyValueSubscriptionStorage';
+export * from './server/notifications/KeyValueChannelStorage';
 export * from './server/notifications/ListeningActivityHandler';
+export * from './server/notifications/NotificationChannel';
+export * from './server/notifications/NotificationChannelStorage';
+export * from './server/notifications/NotificationChannelType';
 export * from './server/notifications/NotificationDescriber';
 export * from './server/notifications/NotificationEmitter';
 export * from './server/notifications/NotificationHandler';
 export * from './server/notifications/NotificationSubscriber';
 export * from './server/notifications/StateHandler';
-export * from './server/notifications/Subscription';
-export * from './server/notifications/SubscriptionStorage';
-export * from './server/notifications/SubscriptionType';
 export * from './server/notifications/TypedNotificationHandler';
 
 // Server/Util

@@ -164,7 +164,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     acl:accessTo    <./restricted>.`;
     await store.setRepresentation({ path: `${restricted}.acl` }, new BasicRepresentation(restrictedAcl, 'text/turtle'));
 
-    const subscription = {
+    const channel = {
       '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
       type: 'WebSocketSubscription2021',
       topic: restricted,
@@ -174,7 +174,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     let response = await fetch(subscriptionUrl, {
       method: 'POST',
       headers: { 'content-type': 'application/ld+json' },
-      body: JSON.stringify(subscription),
+      body: JSON.stringify(channel),
     });
     expect(response.status).toBe(401);
 
@@ -185,7 +185,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
         authorization: `WebID ${webId}`,
         'content-type': 'application/ld+json',
       },
-      body: JSON.stringify(subscription),
+      body: JSON.stringify(channel),
     });
     expect(response.status).toBe(200);
   });
@@ -211,7 +211,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     expectNotification(notification, topic, 'Update');
   });
 
-  it('removes expired subscriptions.', async(): Promise<void> => {
+  it('removes expired channels.', async(): Promise<void> => {
     const { source } = await subscribe(notificationType, webId, subscriptionUrl, topic, { endAt: 1 }) as any;
 
     const socket = new WebSocket(source);
@@ -219,6 +219,6 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     await new Promise<void>((resolve): any => socket.on('close', resolve));
 
     const message = (await messagePromise).toString();
-    expect(message).toBe('Subscription has expired');
+    expect(message).toBe('Notification channel has expired');
   });
 });

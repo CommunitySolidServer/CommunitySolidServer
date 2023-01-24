@@ -2,26 +2,27 @@ import type { WebSocket } from 'ws';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { SetMultiMap } from '../../../util/map/SetMultiMap';
 import { setSafeInterval } from '../../../util/TimerUtil';
-import type { SubscriptionStorage } from '../SubscriptionStorage';
+import type { NotificationChannelStorage } from '../NotificationChannelStorage';
 import type { WebSocket2021HandlerInput } from './WebSocket2021Handler';
 import { WebSocket2021Handler } from './WebSocket2021Handler';
 
 /**
- * Keeps track of the WebSockets that were opened for a WebSocketSubscription2021 subscription.
- * The WebSockets are stored in the map using the identifier of the matching subscription.
+ * Keeps track of the WebSockets that were opened for a WebSocketSubscription2021 channel.
+ * The WebSockets are stored in the map using the identifier of the matching channel.
  *
  * `cleanupTimer` defines in minutes how often the stored WebSockets are closed
- * if their corresponding subscription has expired.
+ * if their corresponding channel has expired.
  * Defaults to 60 minutes.
- * Open WebSockets will not receive notifications if their subscription expired.
+ * Open WebSockets will not receive notifications if their channel expired.
  */
 export class WebSocket2021Storer extends WebSocket2021Handler {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly storage: SubscriptionStorage;
+  private readonly storage: NotificationChannelStorage;
   private readonly socketMap: SetMultiMap<string, WebSocket>;
 
-  public constructor(storage: SubscriptionStorage, socketMap: SetMultiMap<string, WebSocket>, cleanupTimer = 60) {
+  public constructor(storage: NotificationChannelStorage, socketMap: SetMultiMap<string, WebSocket>,
+    cleanupTimer = 60) {
     super();
     this.socketMap = socketMap;
     this.storage = storage;
@@ -40,7 +41,7 @@ export class WebSocket2021Storer extends WebSocket2021Handler {
   }
 
   /**
-   * Close all WebSockets that are attached to a subscription that no longer exists.
+   * Close all WebSockets that are attached to a channel that no longer exists.
    */
   private async closeExpiredSockets(): Promise<void> {
     this.logger.debug('Closing expired WebSockets');

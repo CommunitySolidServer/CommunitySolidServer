@@ -3,7 +3,7 @@ import type { NotificationHandlerInput } from './NotificationHandler';
 import { NotificationHandler } from './NotificationHandler';
 
 /**
- * A {@link NotificationHandler} that only accepts input for a specific subscription type.
+ * A {@link NotificationHandler} that only accepts input for a specific notification channel type.
  */
 export class TypedNotificationHandler extends NotificationHandler {
   private readonly type: string;
@@ -17,7 +17,7 @@ export class TypedNotificationHandler extends NotificationHandler {
 
   public async canHandle(input: NotificationHandlerInput): Promise<void> {
     if (input.info.type !== this.type) {
-      throw new NotImplementedHttpError(`Only ${this.type} subscriptions are supported.`);
+      throw new NotImplementedHttpError(`Only ${this.type} notification channels are supported.`);
     }
     await this.source.canHandle(input);
   }

@@ -12,14 +12,14 @@ import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import { IdentifierSetMultiMap } from '../../../util/map/IdentifierMap';
 import { endOfStream } from '../../../util/StreamUtil';
 import { CONTEXT_NOTIFICATION } from '../Notification';
+import { NOTIFICATION_CHANNEL_SCHEMA } from '../NotificationChannel';
+import type { NotificationChannelStorage } from '../NotificationChannelStorage';
+import type { NotificationChannelResponse, NotificationChannelType } from '../NotificationChannelType';
 import type { StateHandler } from '../StateHandler';
-import { SUBSCRIBE_SCHEMA } from '../Subscription';
-import type { SubscriptionStorage } from '../SubscriptionStorage';
-import type { SubscriptionResponse, SubscriptionType } from '../SubscriptionType';
 import { generateWebHookUnsubscribeUrl } from './WebHook2021Util';
 
 const type = 'WebHookSubscription2021';
-const schema = SUBSCRIBE_SCHEMA.shape({
+const schema = NOTIFICATION_CHANNEL_SCHEMA.shape({
   type: string().required().oneOf([ type ]),
   // Not using `.url()` validator since it does not support localhost URLs
   target: string().required(),
@@ -28,36 +28,36 @@ const schema = SUBSCRIBE_SCHEMA.shape({
 export type WebHookFeatures = { target: string; webId: string };
 
 /**
- * The notification subscription type WebHookSubscription2021 as described in
+ * The notification channel type WebHookSubscription2021 as described in
  * https://github.com/solid/notifications/blob/main/webhook-subscription-2021.md
  *
  * Requires read permissions on a resource to be able to receive notifications.
  *
  * Also handles the `state` feature if present.
  */
-export class WebHookSubscription2021 implements SubscriptionType<typeof schema, WebHookFeatures> {
+export class WebHookSubscription2021 implements NotificationChannelType<typeof schema, WebHookFeatures> {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly storage: SubscriptionStorage<WebHookFeatures>;
+  private readonly storage: NotificationChannelStorage<WebHookFeatures>;
   private readonly unsubscribePath: string;
   private readonly stateHandler: StateHandler;
 
   public readonly type = type;
   public readonly schema = schema;
 
-  public constructor(storage: SubscriptionStorage<WebHookFeatures>, unsubscribeRoute: InteractionRoute,
+  public constructor(storage: NotificationChannelStorage<WebHookFeatures>, unsubscribeRoute: InteractionRoute,
     stateHandler: StateHandler) {
     this.storage = storage;
     this.unsubscribePath = unsubscribeRoute.getPath();
     this.stateHandler = stateHandler;
   }
 
-  public async extractModes(subscription: InferType<typeof schema>): Promise<AccessMap> {
-    return new IdentifierSetMultiMap<AccessMode>([[{ path: subscription.topic }, AccessMode.read ]]);
+  public async extractModes(channel: InferType<typeof schema>): Promise<AccessMap> {
+    return new IdentifierSetMultiMap<AccessMode>([[{ path: channel.topic }, AccessMode.read ]]);
   }
 
-  public async subscribe(subscription: InferType<typeof schema>, credentials: Credentials):
-  Promise<SubscriptionResponse<WebHookFeatures>> {
+  public async subscribe(channel: InferType<typeof schema>, credentials: Credentials):
+  Promise<NotificationChannelResponse<WebHookFeatures>> {
     const webId = credentials.agent?.webId;
 
     if (!webId) {
@@ -66,13 +66,13 @@ export class WebHookSubscription2021 implements SubscriptionType<typeof schema, 
       );
     }
 
-    const info = this.storage.create(subscription, { target: subscription.target, webId });
+    const info = this.storage.create(channel, { target: channel.target, webId });
     await this.storage.add(info);
 
     const jsonld = {
       '@context': [ CONTEXT_NOTIFICATION ],
       type: this.type,
-      target: subscription.target,
+      target: channel.target,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       unsubscribe_endpoint: generateWebHookUnsubscribeUrl(this.unsubscribePath, info.id),
     };

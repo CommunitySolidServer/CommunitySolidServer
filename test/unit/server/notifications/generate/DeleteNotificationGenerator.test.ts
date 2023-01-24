@@ -2,12 +2,12 @@ import type { ResourceIdentifier } from '../../../../../src/http/representation/
 import {
   DeleteNotificationGenerator,
 } from '../../../../../src/server/notifications/generate/DeleteNotificationGenerator';
-import type { SubscriptionInfo } from '../../../../../src/server/notifications/SubscriptionStorage';
+import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import { AS } from '../../../../../src/util/Vocabularies';
 
 describe('A DeleteNotificationGenerator', (): void => {
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const info: SubscriptionInfo = {
+  const info: NotificationChannelInfo = {
     id: 'id',
     topic: topic.path,
     type: 'type',
