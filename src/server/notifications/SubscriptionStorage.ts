@@ -9,7 +9,8 @@ export type SubscriptionInfo<T = Record<string, unknown>> = {
   id: string;
   topic: string;
   type: string;
-  expiration?: number;
+  startAt?: number;
+  endAt?: number;
   accept?: string;
   rate?: number;
   state?: string;

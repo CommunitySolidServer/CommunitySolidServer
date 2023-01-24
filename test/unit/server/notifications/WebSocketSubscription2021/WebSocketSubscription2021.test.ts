@@ -22,7 +22,8 @@ describe('A WebSocketSubscription2021', (): void => {
       type: 'WebSocketSubscription2021',
       topic: 'https://storage.example/resource',
       state: undefined,
-      expiration: undefined,
+      startAt: undefined,
+      endAt: undefined,
       accept: undefined,
       rate: undefined,
     };

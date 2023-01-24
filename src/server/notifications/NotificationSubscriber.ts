@@ -79,9 +79,9 @@ export class NotificationSubscriber extends OperationHttpHandler {
     }
 
     if (this.maxDuration) {
-      const duration = (subscription.expiration ?? Number.POSITIVE_INFINITY) - Date.now();
+      const duration = (subscription.endAt ?? Number.POSITIVE_INFINITY) - Date.now();
       if (duration > this.maxDuration) {
-        subscription.expiration = Date.now() + this.maxDuration;
+        subscription.endAt = Date.now() + this.maxDuration;
       }
     }
 

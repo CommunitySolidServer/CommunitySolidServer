@@ -40,16 +40,29 @@ describe('A Subscription', (): void => {
     await expect(SUBSCRIBE_SCHEMA.isValid(subscription)).resolves.toBe(true);
   });
 
-  it('converts the expiration date to a number.', async(): Promise<void> => {
+  it('converts the start date to a number.', async(): Promise<void> => {
     const date = '1988-03-09T14:48:00.000Z';
     const ms = Date.parse(date);
 
     const subscription: unknown = {
       ...validSubscription,
-      expiration: date,
+      startAt: date,
     };
     await expect(SUBSCRIBE_SCHEMA.validate(subscription)).resolves.toEqual(expect.objectContaining({
-      expiration: ms,
+      startAt: ms,
+    }));
+  });
+
+  it('converts the end date to a number.', async(): Promise<void> => {
+    const date = '1988-03-09T14:48:00.000Z';
+    const ms = Date.parse(date);
+
+    const subscription: unknown = {
+      ...validSubscription,
+      endAt: date,
+    };
+    await expect(SUBSCRIBE_SCHEMA.validate(subscription)).resolves.toEqual(expect.objectContaining({
+      endAt: ms,
     }));
   });
 

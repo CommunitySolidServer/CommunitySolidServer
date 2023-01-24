@@ -31,7 +31,8 @@ export class KeyValueSubscriptionStorage<T extends Record<string, unknown>> impl
       topic: subscription.topic,
       type: subscription.type,
       lastEmit: 0,
-      expiration: subscription.expiration,
+      startAt: subscription.startAt,
+      endAt: subscription.endAt,
       accept: subscription.accept,
       rate: subscription.rate,
       state: subscription.state,
@@ -42,7 +43,7 @@ export class KeyValueSubscriptionStorage<T extends Record<string, unknown>> impl
   public async get(id: string): Promise<SubscriptionInfo<T> | undefined> {
     const info = await this.storage.get(id);
     if (info && this.isSubscriptionInfo(info)) {
-      if (typeof info.expiration === 'number' && info.expiration < Date.now()) {
+      if (typeof info.endAt === 'number' && info.endAt < Date.now()) {
         this.logger.info(`Subscription ${id} has expired.`);
         await this.locker.withWriteLock(this.getLockKey(id), async(): Promise<void> => {
           await this.deleteInfo(info);
