@@ -71,6 +71,17 @@ describe('A ListeningActivityHandler', (): void => {
     expect(logger.error).toHaveBeenCalledTimes(0);
   });
 
+  it('does not emit an event on subscriptions if their start time has not been reached.', async(): Promise<void> => {
+    info.startAt = Date.now() + 100000;
+
+    emitter.emit('changed', topic, activity);
+
+    await flushPromises();
+
+    expect(notificationHandler.handleSafe).toHaveBeenCalledTimes(0);
+    expect(logger.error).toHaveBeenCalledTimes(0);
+  });
+
   it('does not stop if one subscription causes an error.', async(): Promise<void> => {
     storage.getAll.mockResolvedValue([ info.id, info.id ]);
     notificationHandler.handleSafe.mockRejectedValueOnce(new Error('bad input'));

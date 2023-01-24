@@ -45,7 +45,13 @@ export class ListeningActivityHandler extends StaticHandler {
         continue;
       }
 
+      // Don't emit if the previous notification was too recent according to the requested rate
       if (info.rate && info.rate > Date.now() - info.lastEmit) {
+        continue;
+      }
+
+      // Don't emit if we have not yet reached the requested starting time
+      if (info.startAt && info.startAt > Date.now()) {
         continue;
       }
 

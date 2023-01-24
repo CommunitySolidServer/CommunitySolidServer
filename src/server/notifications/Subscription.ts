@@ -16,7 +16,10 @@ export const SUBSCRIBE_SCHEMA = object({
   type: string().required(),
   topic: string().required(),
   state: string().optional(),
-  expiration: number().transform((value, original): number | undefined =>
+  startAt: number().transform((value, original): number | undefined =>
+    // Convert the date string to milliseconds
+    Date.parse(original)).optional(),
+  endAt: number().transform((value, original): number | undefined =>
     // Convert the date string to milliseconds
     Date.parse(original)).optional(),
   rate: number().transform((value, original): number | undefined =>

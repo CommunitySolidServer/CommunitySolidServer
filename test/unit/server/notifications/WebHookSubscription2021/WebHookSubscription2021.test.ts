@@ -44,7 +44,8 @@ describe('A WebHookSubscription2021', (): void => {
       topic: 'https://storage.example/resource',
       target,
       state: undefined,
-      expiration: undefined,
+      startAt: undefined,
+      endAt: undefined,
       accept: undefined,
       rate: undefined,
     };

@@ -70,7 +70,7 @@ describe('A KeyValueSubscriptionStorage', (): void => {
     });
 
     it('deletes expired info.', async(): Promise<void> => {
-      info.expiration = 0;
+      info.endAt = 0;
       await storage.add(info);
       await expect(storage.get(info.id)).resolves.toBeUndefined();
       expect(internalMap.size).toBe(0);
