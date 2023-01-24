@@ -212,7 +212,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
   });
 
   it('removes expired subscriptions.', async(): Promise<void> => {
-    const { source } = await subscribe(notificationType, webId, subscriptionUrl, topic, { expiration: 1 }) as any;
+    const { source } = await subscribe(notificationType, webId, subscriptionUrl, topic, { endAt: 1 }) as any;
 
     const socket = new WebSocket(source);
     const messagePromise = new Promise<Buffer>((resolve): any => socket.on('message', resolve));

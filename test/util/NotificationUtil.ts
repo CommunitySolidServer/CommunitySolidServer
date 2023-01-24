@@ -42,16 +42,12 @@ export function expectNotification(notification: unknown, topic: string, type: '
       'https://www.w3.org/ns/solid/notification/v1',
     ],
     id: expect.stringContaining(topic),
-    type: [ type ],
-    object: {
-      id: topic,
-      type: [],
-    },
+    type,
+    object: topic,
     published: expect.anything(),
   };
   if (type !== 'Delete') {
     expected.state = expect.anything();
-    expected.object.type.push('http://www.w3.org/ns/ldp#Resource');
   }
   expect(notification).toEqual(expected);
 }

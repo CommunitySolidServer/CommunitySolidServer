@@ -15,11 +15,8 @@ describe('A ComposedNotificationHandler', (): void => {
       'https://www.w3.org/ns/solid/notification/v1',
     ],
     id: `urn:123:http://example.com/foo`,
-    type: [ 'Update' ],
-    object: {
-      id: 'http://example.com/foo',
-      type: [],
-    },
+    type: 'Update',
+    object: 'http://example.com/foo',
     published: '123',
     state: '123',
   };

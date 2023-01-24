@@ -1,7 +1,7 @@
 import { getETag } from '../../../storage/Conditions';
 import type { ResourceStore } from '../../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';
-import { AS, RDF } from '../../../util/Vocabularies';
+import { AS } from '../../../util/Vocabularies';
 import type { Notification } from '../Notification';
 import { CONTEXT_ACTIVITYSTREAMS, CONTEXT_NOTIFICATION } from '../Notification';
 import type { NotificationHandlerInput } from '../NotificationHandler';
@@ -37,11 +37,8 @@ export class ActivityNotificationGenerator extends NotificationGenerator {
         CONTEXT_NOTIFICATION,
       ],
       id: `urn:${Date.now()}:${topic.path}`,
-      type: [ activity!.value.slice(AS.namespace.length) ],
-      object: {
-        id: topic.path,
-        type: representation.metadata.getAll(RDF.terms.type).map((term): string => term.value),
-      },
+      type: activity!.value.slice(AS.namespace.length),
+      object: topic.path,
       state,
       published: new Date().toISOString(),
     };

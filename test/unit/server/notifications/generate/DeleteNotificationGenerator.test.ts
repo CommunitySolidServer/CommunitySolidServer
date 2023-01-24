@@ -36,11 +36,8 @@ describe('A DeleteNotificationGenerator', (): void => {
         'https://www.w3.org/ns/solid/notification/v1',
       ],
       id: `urn:${ms}:http://example.com/foo`,
-      type: [ 'Delete' ],
-      object: {
-        id: 'http://example.com/foo',
-        type: [],
-      },
+      type: 'Delete',
+      object: 'http://example.com/foo',
       published: date,
     });
 

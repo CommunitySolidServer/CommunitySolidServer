@@ -24,11 +24,8 @@ export class DeleteNotificationGenerator extends NotificationGenerator {
         CONTEXT_NOTIFICATION,
       ],
       id: `urn:${Date.now()}:${topic.path}`,
-      type: [ 'Delete' ],
-      object: {
-        id: topic.path,
-        type: [],
-      },
+      type: 'Delete',
+      object: topic.path,
       published: new Date().toISOString(),
     };
   }
