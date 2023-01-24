@@ -4,7 +4,7 @@
     {
       "comment": "Storage to be used to keep track of subscriptions.",
       "@id": "urn:solid-server:default:SubscriptionStorage",
-      "@type": "KeyValueSubscriptionStorage",
+      "@type": "KeyValueChannelStorage",
       "locker": { "@id": "urn:solid-server:default:ResourceLocker" },
       "storage": {
         "@type": "EncodingPathStorage",

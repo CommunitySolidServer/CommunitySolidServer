@@ -1,15 +1,15 @@
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../../src/http/representation/Representation';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
+import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import {
   ConvertingNotificationSerializer,
 } from '../../../../../src/server/notifications/serialize/ConvertingNotificationSerializer';
 import type { NotificationSerializer } from '../../../../../src/server/notifications/serialize/NotificationSerializer';
-import type { SubscriptionInfo } from '../../../../../src/server/notifications/SubscriptionStorage';
 import type { RepresentationConverter } from '../../../../../src/storage/conversion/RepresentationConverter';
 
 describe('A ConvertingNotificationSerializer', (): void => {
-  let info: SubscriptionInfo;
+  let info: NotificationChannelInfo;
   const notification: Notification = {
     '@context': [
       'https://www.w3.org/ns/activitystreams',

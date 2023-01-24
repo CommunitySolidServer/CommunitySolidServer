@@ -4,7 +4,7 @@ import { ResetResponseDescription } from '../../../../../src/http/output/respons
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
-import type { SubscriptionStorage } from '../../../../../src/server/notifications/SubscriptionStorage';
+import type { NotificationChannelStorage } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import type {
   WebHookFeatures,
 } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
@@ -20,7 +20,7 @@ describe('A WebHookUnsubscriber', (): void => {
   let operation: Operation;
   const webId = 'http://example.com/alice';
   let credentialsExtractor: jest.Mocked<CredentialsExtractor>;
-  let storage: jest.Mocked<SubscriptionStorage<WebHookFeatures>>;
+  let storage: jest.Mocked<NotificationChannelStorage<WebHookFeatures>>;
   let unsubscriber: WebHookUnsubscriber;
 
   beforeEach(async(): Promise<void> => {

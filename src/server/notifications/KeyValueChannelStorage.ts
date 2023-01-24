@@ -4,17 +4,17 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
-import type { Subscription } from './Subscription';
-import type { SubscriptionInfo, SubscriptionStorage } from './SubscriptionStorage';
+import type { NotificationChannel } from './NotificationChannel';
+import type { NotificationChannelInfo, NotificationChannelStorage } from './NotificationChannelStorage';
 
-type StorageValue<T> = string | string[] | SubscriptionInfo<T>;
+type StorageValue<T> = string | string[] | NotificationChannelInfo<T>;
 
 /**
- * Stores all the {@link SubscriptionInfo} in a {@link KeyValueStorage}.
+ * Stores all the {@link NotificationChannelInfo} in a {@link KeyValueStorage}.
  *
  * Uses a {@link ReadWriteLocker} to prevent internal race conditions.
  */
-export class KeyValueSubscriptionStorage<T extends Record<string, unknown>> implements SubscriptionStorage<T> {
+export class KeyValueChannelStorage<T extends Record<string, unknown>> implements NotificationChannelStorage<T> {
   protected logger = getLoggerFor(this);
 
   private readonly storage: KeyValueStorage<string, StorageValue<T>>;
@@ -25,26 +25,26 @@ export class KeyValueSubscriptionStorage<T extends Record<string, unknown>> impl
     this.locker = locker;
   }
 
-  public create(subscription: Subscription, features: T): SubscriptionInfo<T> {
+  public create(channel: NotificationChannel, features: T): NotificationChannelInfo<T> {
     return {
-      id: `${subscription.type}:${v4()}:${subscription.topic}`,
-      topic: subscription.topic,
-      type: subscription.type,
+      id: `${channel.type}:${v4()}:${channel.topic}`,
+      topic: channel.topic,
+      type: channel.type,
       lastEmit: 0,
-      startAt: subscription.startAt,
-      endAt: subscription.endAt,
-      accept: subscription.accept,
-      rate: subscription.rate,
-      state: subscription.state,
+      startAt: channel.startAt,
+      endAt: channel.endAt,
+      accept: channel.accept,
+      rate: channel.rate,
+      state: channel.state,
       features,
     };
   }
 
-  public async get(id: string): Promise<SubscriptionInfo<T> | undefined> {
+  public async get(id: string): Promise<NotificationChannelInfo<T> | undefined> {
     const info = await this.storage.get(id);
-    if (info && this.isSubscriptionInfo(info)) {
+    if (info && this.isChannelInfo(info)) {
       if (typeof info.endAt === 'number' && info.endAt < Date.now()) {
-        this.logger.info(`Subscription ${id} has expired.`);
+        this.logger.info(`Notification channel ${id} has expired.`);
         await this.locker.withWriteLock(this.getLockKey(id), async(): Promise<void> => {
           await this.deleteInfo(info);
         });
@@ -63,7 +63,7 @@ export class KeyValueSubscriptionStorage<T extends Record<string, unknown>> impl
     return [];
   }
 
-  public async add(info: SubscriptionInfo<T>): Promise<void> {
+  public async add(info: NotificationChannelInfo<T>): Promise<void> {
     const target = { path: info.topic };
     return this.locker.withWriteLock(this.getLockKey(target), async(): Promise<void> => {
       const infos = await this.getAll(target);
@@ -73,16 +73,16 @@ export class KeyValueSubscriptionStorage<T extends Record<string, unknown>> impl
     });
   }
 
-  public async update(info: SubscriptionInfo<T>): Promise<void> {
+  public async update(info: NotificationChannelInfo<T>): Promise<void> {
     return this.locker.withWriteLock(this.getLockKey(info.id), async(): Promise<void> => {
       const oldInfo = await this.storage.get(info.id);
 
       if (oldInfo) {
-        if (!this.isSubscriptionInfo(oldInfo)) {
-          throw new InternalServerError(`Trying to update ${info.id} which is not a SubscriptionInfo.`);
+        if (!this.isChannelInfo(oldInfo)) {
+          throw new InternalServerError(`Trying to update ${info.id} which is not a NotificationChannelInfo.`);
         }
         if (info.topic !== oldInfo.topic) {
-          throw new InternalServerError(`Trying to change the topic of subscription ${info.id}`);
+          throw new InternalServerError(`Trying to change the topic of a notification channel ${info.id}`);
         }
       }
 
@@ -101,16 +101,16 @@ export class KeyValueSubscriptionStorage<T extends Record<string, unknown>> impl
   }
 
   /**
-   * Utility function for deleting a specific {@link SubscriptionInfo} object.
-   * Does not create a lock on the subscription ID so should be wrapped in such a lock.
+   * Utility function for deleting a specific {@link NotificationChannelInfo} object.
+   * Does not create a lock on the info ID so should be wrapped in such a lock.
    */
-  private async deleteInfo(info: SubscriptionInfo): Promise<void> {
+  private async deleteInfo(info: NotificationChannelInfo): Promise<void> {
     await this.locker.withWriteLock(this.getLockKey(info.topic), async(): Promise<void> => {
       const infos = await this.getAll({ path: info.topic });
       const idx = infos.indexOf(info.id);
       // If idx < 0 we have an inconsistency
       if (idx < 0) {
-        this.logger.error(`Subscription info ${info.id} was not found in the list of info targeting ${info.topic}.`);
+        this.logger.error(`Channel info ${info.id} was not found in the list of info targeting ${info.topic}.`);
         this.logger.error('This should not happen and indicates a data consistency issue.');
       } else {
         infos.splice(idx, 1);
@@ -124,8 +124,8 @@ export class KeyValueSubscriptionStorage<T extends Record<string, unknown>> impl
     });
   }
 
-  private isSubscriptionInfo(value: StorageValue<T>): value is SubscriptionInfo<T> {
-    return Boolean((value as SubscriptionInfo).id);
+  private isChannelInfo(value: StorageValue<T>): value is NotificationChannelInfo<T> {
+    return Boolean((value as NotificationChannelInfo).id);
   }
 
   private getLockKey(identifier: ResourceIdentifier | string): ResourceIdentifier {

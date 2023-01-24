@@ -10,7 +10,7 @@
       "allowedPathNames": [ "/WebHookSubscription2021/$" ],
       "handler": {
         "@type": "NotificationSubscriber",
-        "subscriptionType": { "@id": "urn:solid-server:default:WebHookSubscription2021" },
+        "channelType": { "@id": "urn:solid-server:default:WebHookSubscription2021" },
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
         "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
         "authorizer": { "@id": "urn:solid-server:default:Authorizer" }

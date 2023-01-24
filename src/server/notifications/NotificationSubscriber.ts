@@ -13,14 +13,14 @@ import { readableToString } from '../../util/StreamUtil';
 import type { HttpRequest } from '../HttpRequest';
 import type { OperationHttpHandlerInput } from '../OperationHttpHandler';
 import { OperationHttpHandler } from '../OperationHttpHandler';
-import type { Subscription } from './Subscription';
-import type { SubscriptionType } from './SubscriptionType';
+import type { NotificationChannel } from './NotificationChannel';
+import type { NotificationChannelType } from './NotificationChannelType';
 
 export interface NotificationSubscriberArgs {
   /**
-   * The {@link SubscriptionType} with all the necessary information.
+   * The {@link NotificationChannelType} with all the necessary information.
    */
-  subscriptionType: SubscriptionType;
+  channelType: NotificationChannelType;
   /**
    * Used to extract the credentials from the request.
    */
@@ -34,23 +34,23 @@ export interface NotificationSubscriberArgs {
    */
   authorizer: Authorizer;
   /**
-   * Overrides the expiration feature of subscriptions by making sure they always expire after the `maxDuration` value.
-   * In case the expiration of the subscription is shorter than `maxDuration` the original value will be kept.
+   * Overrides the expiration feature of channels by making sure they always expire after the `maxDuration` value.
+   * In case the expiration of the channel is shorter than `maxDuration` the original value will be kept.
    * Value is set in minutes. 0 is infinite.
    */
   maxDuration?: number;
 }
 
 /**
- * Handles notification subscriptions.
+ * Handles notification subscriptions by creating a notification channel.
  *
- * Uses the information from the provided {@link SubscriptionType} to validate the input
+ * Uses the information from the provided {@link NotificationChannelType} to validate the input
  * and verify the request has the required permissions available.
  */
 export class NotificationSubscriber extends OperationHttpHandler {
   protected logger = getLoggerFor(this);
 
-  private readonly subscriptionType: SubscriptionType;
+  private readonly channelType: NotificationChannelType;
   private readonly credentialsExtractor: CredentialsExtractor;
   private readonly permissionReader: PermissionReader;
   private readonly authorizer: Authorizer;
@@ -58,7 +58,7 @@ export class NotificationSubscriber extends OperationHttpHandler {
 
   public constructor(args: NotificationSubscriberArgs) {
     super();
-    this.subscriptionType = args.subscriptionType;
+    this.channelType = args.channelType;
     this.credentialsExtractor = args.credentialsExtractor;
     this.permissionReader = args.permissionReader;
     this.authorizer = args.authorizer;
@@ -70,41 +70,41 @@ export class NotificationSubscriber extends OperationHttpHandler {
       throw new UnsupportedMediaTypeHttpError('Subscribe bodies need to be application/ld+json.');
     }
 
-    let subscription: Subscription;
+    let channel: NotificationChannel;
     try {
       const json = JSON.parse(await readableToString(operation.body.data));
-      subscription = await this.subscriptionType.schema.validate(json);
+      channel = await this.channelType.schema.validate(json);
     } catch (error: unknown) {
-      throw new UnprocessableEntityHttpError(`Unable to process subscription: ${createErrorMessage(error)}`);
+      throw new UnprocessableEntityHttpError(`Unable to process notification channel: ${createErrorMessage(error)}`);
     }
 
     if (this.maxDuration) {
-      const duration = (subscription.endAt ?? Number.POSITIVE_INFINITY) - Date.now();
+      const duration = (channel.endAt ?? Number.POSITIVE_INFINITY) - Date.now();
       if (duration > this.maxDuration) {
-        subscription.endAt = Date.now() + this.maxDuration;
+        channel.endAt = Date.now() + this.maxDuration;
       }
     }
 
     // Verify if the client is allowed to subscribe
-    const credentials = await this.authorize(request, subscription);
+    const credentials = await this.authorize(request, channel);
 
-    const { response } = await this.subscriptionType.subscribe(subscription, credentials);
+    const { response } = await this.channelType.subscribe(channel, credentials);
 
     return new OkResponseDescription(response.metadata, response.data);
   }
 
-  private async authorize(request: HttpRequest, subscription: Subscription): Promise<Credentials> {
+  private async authorize(request: HttpRequest, channel: NotificationChannel): Promise<Credentials> {
     const credentials = await this.credentialsExtractor.handleSafe(request);
     this.logger.debug(`Extracted credentials: ${JSON.stringify(credentials)}`);
 
-    const requestedModes = await this.subscriptionType.extractModes(subscription);
+    const requestedModes = await this.channelType.extractModes(channel);
     this.logger.debug(`Retrieved required modes: ${[ ...requestedModes.entrySets() ]}`);
 
     const availablePermissions = await this.permissionReader.handleSafe({ credentials, requestedModes });
     this.logger.debug(`Available permissions are ${[ ...availablePermissions.entries() ]}`);
 
     await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });
-    this.logger.verbose(`Authorization succeeded, creating subscription`);
+    this.logger.verbose(`Authorization succeeded, creating notification channel`);
 
     return credentials;
   }

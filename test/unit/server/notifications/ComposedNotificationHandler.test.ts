@@ -3,9 +3,9 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { ComposedNotificationHandler } from '../../../../src/server/notifications/ComposedNotificationHandler';
 import type { NotificationGenerator } from '../../../../src/server/notifications/generate/NotificationGenerator';
 import type { Notification } from '../../../../src/server/notifications/Notification';
+import type { NotificationChannelInfo } from '../../../../src/server/notifications/NotificationChannelStorage';
 import type { NotificationEmitter } from '../../../../src/server/notifications/NotificationEmitter';
 import type { NotificationSerializer } from '../../../../src/server/notifications/serialize/NotificationSerializer';
-import type { SubscriptionInfo } from '../../../../src/server/notifications/SubscriptionStorage';
 
 describe('A ComposedNotificationHandler', (): void => {
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
@@ -20,7 +20,7 @@ describe('A ComposedNotificationHandler', (): void => {
     published: '123',
     state: '123',
   };
-  let info: SubscriptionInfo;
+  let info: NotificationChannelInfo;
   const representation = new BasicRepresentation();
   let generator: jest.Mocked<NotificationGenerator>;
   let serializer: jest.Mocked<NotificationSerializer>;

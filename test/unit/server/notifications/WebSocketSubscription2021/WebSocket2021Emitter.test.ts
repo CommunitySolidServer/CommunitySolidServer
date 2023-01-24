@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 import type { WebSocket } from 'ws';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type {
-  SubscriptionInfo,
-} from '../../../../../src/server/notifications/SubscriptionStorage';
+  NotificationChannelInfo,
+} from '../../../../../src/server/notifications/NotificationChannelStorage';
 import {
   WebSocket2021Emitter,
 } from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocket2021Emitter';
@@ -11,7 +11,7 @@ import type { SetMultiMap } from '../../../../../src/util/map/SetMultiMap';
 import { WrappedSetMultiMap } from '../../../../../src/util/map/WrappedSetMultiMap';
 
 describe('A WebSocket2021Emitter', (): void => {
-  const info: SubscriptionInfo = {
+  const info: NotificationChannelInfo = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
@@ -67,7 +67,7 @@ describe('A WebSocket2021Emitter', (): void => {
   it('only sends to the matching WebSockets.', async(): Promise<void> => {
     const webSocket2: jest.Mocked<WebSocket> = new EventEmitter() as any;
     webSocket2.send = jest.fn();
-    const info2: SubscriptionInfo = {
+    const info2: NotificationChannelInfo = {
       ...info,
       id: 'other',
     };

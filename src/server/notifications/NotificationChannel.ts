@@ -4,13 +4,13 @@ import { array, number, object, string } from 'yup';
 import { CONTEXT_NOTIFICATION } from './Notification';
 
 /**
- * A JSON parsing schema that can be used to parse subscription input.
- * Specific subscription types can extend this schema with their own custom keys.
+ * A JSON parsing schema that can be used to parse a notification channel sent during subscription.
+ * Specific notification channels can extend this schema with their own custom keys.
  */
-export const SUBSCRIBE_SCHEMA = object({
+export const NOTIFICATION_CHANNEL_SCHEMA = object({
   '@context': array(string()).ensure().required().test({
     name: 'RequireNotificationContext',
-    message: `The ${CONTEXT_NOTIFICATION} context is required in the subscription JSON-LD body.`,
+    message: `The ${CONTEXT_NOTIFICATION} context is required in the notification channel JSON-LD body.`,
     test: (context): boolean => Boolean(context?.includes(CONTEXT_NOTIFICATION)),
   }),
   type: string().required(),
@@ -27,4 +27,4 @@ export const SUBSCRIBE_SCHEMA = object({
     toSeconds(parse(original)) * 1000).optional(),
   accept: string().optional(),
 });
-export type Subscription = InferType<typeof SUBSCRIBE_SCHEMA>;
+export type NotificationChannel = InferType<typeof NOTIFICATION_CHANNEL_SCHEMA>;

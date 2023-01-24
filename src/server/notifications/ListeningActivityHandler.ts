@@ -4,14 +4,14 @@ import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { StaticHandler } from '../../util/handlers/StaticHandler';
 import type { AS, VocabularyTerm } from '../../util/Vocabularies';
 import type { ActivityEmitter } from './ActivityEmitter';
+import type { NotificationChannelStorage } from './NotificationChannelStorage';
 import type { NotificationHandler } from './NotificationHandler';
-import type { SubscriptionStorage } from './SubscriptionStorage';
 
 /**
  * Listens to an {@link ActivityEmitter} and calls the stored {@link NotificationHandler}s in case of an event
- * for every matching Subscription found.
+ * for every matching notification channel found.
  *
- * Takes the `rate` feature into account so only subscriptions that want a new notification will receive one.
+ * Takes the `rate` feature into account so only channels that want a new notification will receive one.
  *
  * Extends {@link StaticHandler} so it can be more easily injected into a Components.js configuration.
  * No class takes this one as input, so to make sure Components.js instantiates it,
@@ -20,10 +20,10 @@ import type { SubscriptionStorage } from './SubscriptionStorage';
 export class ListeningActivityHandler extends StaticHandler {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly storage: SubscriptionStorage;
+  private readonly storage: NotificationChannelStorage;
   private readonly handler: NotificationHandler;
 
-  public constructor(storage: SubscriptionStorage, emitter: ActivityEmitter, handler: NotificationHandler) {
+  public constructor(storage: NotificationChannelStorage, emitter: ActivityEmitter, handler: NotificationHandler) {
     super();
     this.storage = storage;
     this.handler = handler;
@@ -36,12 +36,12 @@ export class ListeningActivityHandler extends StaticHandler {
   }
 
   private async emit(topic: ResourceIdentifier, activity: VocabularyTerm<typeof AS>): Promise<void> {
-    const subscriptionIds = await this.storage.getAll(topic);
+    const channelIds = await this.storage.getAll(topic);
 
-    for (const id of subscriptionIds) {
+    for (const id of channelIds) {
       const info = await this.storage.get(id);
       if (!info) {
-        // Subscription has expired
+        // Notification channel has expired
         continue;
       }
 
@@ -55,7 +55,7 @@ export class ListeningActivityHandler extends StaticHandler {
         continue;
       }
 
-      // No need to wait on this to resolve before going to the next subscription.
+      // No need to wait on this to resolve before going to the next channel.
       // Prevent failed notification from blocking other notifications.
       this.handler.handleSafe({ info, activity, topic }).catch((error): void => {
         this.logger.error(`Error trying to handle notification for ${id}: ${createErrorMessage(error)}`);

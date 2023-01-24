@@ -1,11 +1,14 @@
 import { BaseStateHandler } from '../../../../src/server/notifications/BaseStateHandler';
+import type {
+  NotificationChannelInfo,
+  NotificationChannelStorage,
+} from '../../../../src/server/notifications/NotificationChannelStorage';
 import type { NotificationHandler } from '../../../../src/server/notifications/NotificationHandler';
-import type { SubscriptionInfo, SubscriptionStorage } from '../../../../src/server/notifications/SubscriptionStorage';
 
 describe('A BaseStateHandler', (): void => {
-  let info: SubscriptionInfo;
+  let info: NotificationChannelInfo;
   let notificationHandler: jest.Mocked<NotificationHandler>;
-  let storage: jest.Mocked<SubscriptionStorage>;
+  let storage: jest.Mocked<NotificationChannelStorage>;
   let handler: BaseStateHandler;
 
   beforeEach(async(): Promise<void> => {

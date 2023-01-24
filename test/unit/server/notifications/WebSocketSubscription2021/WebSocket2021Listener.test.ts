@@ -6,9 +6,9 @@ import {
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type {
-  SubscriptionInfo,
-  SubscriptionStorage,
-} from '../../../../../src/server/notifications/SubscriptionStorage';
+  NotificationChannelInfo,
+  NotificationChannelStorage,
+} from '../../../../../src/server/notifications/NotificationChannelStorage';
 import type {
   WebSocket2021Handler,
 } from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocket2021Handler';
@@ -27,7 +27,7 @@ jest.mock('ws', (): any => ({
 }));
 
 describe('A WebSocket2021Listener', (): void => {
-  const info: SubscriptionInfo = {
+  const info: NotificationChannelInfo = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
@@ -38,7 +38,7 @@ describe('A WebSocket2021Listener', (): void => {
   let server: Server;
   let webSocket: WebSocket;
   let upgradeRequest: HttpRequest;
-  let storage: jest.Mocked<SubscriptionStorage>;
+  let storage: jest.Mocked<NotificationChannelStorage>;
   let handler: jest.Mocked<WebSocket2021Handler>;
   const route = new AbsolutePathInteractionRoute('http://example.com/foo');
   let listener: WebSocket2021Listener;
@@ -106,7 +106,7 @@ describe('A WebSocket2021Listener', (): void => {
     await flushPromises();
 
     expect(webSocket.send).toHaveBeenCalledTimes(1);
-    expect(webSocket.send).toHaveBeenLastCalledWith(`Subscription has expired`);
+    expect(webSocket.send).toHaveBeenLastCalledWith(`Notification channel has expired`);
     expect(webSocket.close).toHaveBeenCalledTimes(1);
     expect(handler.handleSafe).toHaveBeenCalledTimes(0);
   });

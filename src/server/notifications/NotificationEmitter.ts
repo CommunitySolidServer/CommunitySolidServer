@@ -1,14 +1,14 @@
 import type { Representation } from '../../http/representation/Representation';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
-import type { SubscriptionInfo } from './SubscriptionStorage';
+import type { NotificationChannelInfo } from './NotificationChannelStorage';
 
 export interface NotificationEmitterInput<T = Record<string, unknown>> {
   representation: Representation;
-  info: SubscriptionInfo<T>;
+  info: NotificationChannelInfo<T>;
 }
 
 /**
- * Emits a serialized Notification to the subscription defined by the info.
+ * Emits a serialized Notification to the channel defined by the info.
  */
 export abstract class NotificationEmitter<T = Record<string, unknown>>
   extends AsyncHandler<NotificationEmitterInput<T>> {}

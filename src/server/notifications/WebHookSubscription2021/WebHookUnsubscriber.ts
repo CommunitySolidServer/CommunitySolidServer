@@ -6,7 +6,7 @@ import { ForbiddenHttpError } from '../../../util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../../../util/errors/NotFoundHttpError';
 import type { OperationHttpHandlerInput } from '../../OperationHttpHandler';
 import { OperationHttpHandler } from '../../OperationHttpHandler';
-import type { SubscriptionStorage } from '../SubscriptionStorage';
+import type { NotificationChannelStorage } from '../NotificationChannelStorage';
 import { parseWebHookUnsubscribeUrl } from './WebHook2021Util';
 import type { WebHookFeatures } from './WebHookSubscription2021';
 
@@ -18,9 +18,9 @@ export class WebHookUnsubscriber extends OperationHttpHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly credentialsExtractor: CredentialsExtractor;
-  private readonly storage: SubscriptionStorage<WebHookFeatures>;
+  private readonly storage: NotificationChannelStorage<WebHookFeatures>;
 
-  public constructor(credentialsExtractor: CredentialsExtractor, storage: SubscriptionStorage<WebHookFeatures>) {
+  public constructor(credentialsExtractor: CredentialsExtractor, storage: NotificationChannelStorage<WebHookFeatures>) {
     super();
     this.credentialsExtractor = credentialsExtractor;
     this.storage = storage;
@@ -38,7 +38,7 @@ export class WebHookUnsubscriber extends OperationHttpHandler {
       throw new ForbiddenHttpError();
     }
 
-    this.logger.debug(`Deleting WebHook subscription ${id}`);
+    this.logger.debug(`Deleting WebHook notification channel ${id}`);
     await this.storage.delete(id);
 
     return new ResetResponseDescription();

@@ -38,7 +38,7 @@ that contains all the necessary presets to describe a notification subscription 
 When adding a new subscription type,
 a new instance of such a class should be added to the `urn:solid-server:default:StorageDescriber`.
 
-## Subscription
+## NotificationChannel
 
 To subscribe, a client has to send a specific JSON-LD request to the URl found during discovery.
 
@@ -61,7 +61,7 @@ which in our configs is set to `/.notifications/`.
 For every type there is then a `OperationRouterHandler` that accepts requests to that specific URL,
 after which a `NotificationSubscriber` handles all checks related to subscribing,
 for which it uses a `SubscriptionType` that contains all the information necessary for a specific type.
-If the subscription is valid and has authorization, the results will be saved in a `SubscriptionStorage`.
+If the subscription is valid and has authorization, the results will be saved in a `NotificationChannelStorage`.
 
 ## Activity
 
@@ -71,7 +71,7 @@ flowchart TB
   ListeningActivityHandler --> ListeningActivityHandlerArgs
 
   subgraph ListeningActivityHandlerArgs[" "]
-    SubscriptionStorage("<strong>SubscriptionStorage</strong><br><i>SubscriptionStorage</i>")
+    NotificationChannelStorage("<strong>NotificationChannelStorage</strong><br><i>NotificationChannelStorage</i>")
     ResourceStore("<strong>ResourceStore</strong><br><i>ActivityEmitter</i>")
     NotificationHandler("<strong>NotificationHandler</strong><br>WaterfallHandler")
   end
@@ -149,7 +149,7 @@ flowchart TB
 
   subgraph WebSocket2021ListenerArgs[" "]
     direction LR
-    SubscriptionStorage("<strong>SubscriptionStorage</strong><br>SubscriptionStorage")
+    NotificationChannelStorage("<strong>NotificationChannelStorage</strong><br>NotificationChannelStorage")
     SequenceHandler("<br>SequenceHandler")
   end
   

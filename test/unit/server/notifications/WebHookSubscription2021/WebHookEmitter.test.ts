@@ -9,7 +9,7 @@ import {
 import type { Logger } from '../../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
-import type { SubscriptionInfo } from '../../../../../src/server/notifications/SubscriptionStorage';
+import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import { WebHookEmitter } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookEmitter';
 import type {
   WebHookFeatures,
@@ -40,7 +40,7 @@ describe('A WebHookEmitter', (): void => {
     published: '123',
   };
   let representation: Representation;
-  const info: SubscriptionInfo<WebHookFeatures> = {
+  const info: NotificationChannelInfo<WebHookFeatures> = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',

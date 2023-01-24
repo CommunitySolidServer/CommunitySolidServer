@@ -4,13 +4,13 @@ import {
   StateNotificationGenerator,
 } from '../../../../../src/server/notifications/generate/StateNotificationGenerator';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
-import type { SubscriptionInfo } from '../../../../../src/server/notifications/SubscriptionStorage';
+import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import type { ResourceSet } from '../../../../../src/storage/ResourceSet';
 import { AS } from '../../../../../src/util/Vocabularies';
 
 describe('A StateNotificationGenerator', (): void => {
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const info: SubscriptionInfo = {
+  const info: NotificationChannelInfo = {
     id: 'id',
     topic: topic.path,
     type: 'type',
