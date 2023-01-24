@@ -51,13 +51,8 @@ describe('An ActivityNotificationGenerator', (): void => {
         'https://www.w3.org/ns/solid/notification/v1',
       ],
       id: `urn:${ms}:http://example.com/foo`,
-      type: [ 'Update' ],
-      object: {
-        id: 'http://example.com/foo',
-        type: [
-          LDP.Resource,
-        ],
-      },
+      type: 'Update',
+      object: 'http://example.com/foo',
       state: expect.stringMatching(/"\d+"/u),
       published: date,
     });

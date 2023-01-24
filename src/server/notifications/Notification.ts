@@ -3,7 +3,7 @@ export const CONTEXT_NOTIFICATION = 'https://www.w3.org/ns/solid/notification/v1
 
 /**
  * The minimally expected fields for a Notification
- * as defined in https://solidproject.org/TR/notifications-protocol#notification-data-model.
+ * as defined in https://solidproject.org/TR/2022/notifications-protocol-20221231#data-model.
  */
 export interface Notification {
   '@context': [
@@ -12,11 +12,9 @@ export interface Notification {
     ...string[],
   ];
   id: string;
-  type: string[];
-  object: {
-    id: string;
-    type: string[];
-  };
+  type: string;
+  object: string;
   state?: string;
+  target?: string | string[];
   published: string;
 }
