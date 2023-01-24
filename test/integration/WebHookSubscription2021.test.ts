@@ -8,7 +8,7 @@ import type { App } from '../../src/init/App';
 import { matchesAuthorizationScheme } from '../../src/util/HeaderUtil';
 import { joinUrl, trimTrailingSlashes } from '../../src/util/PathUtil';
 import { readJsonStream } from '../../src/util/StreamUtil';
-import { NOTIFY, RDF } from '../../src/util/Vocabularies';
+import { NOTIFY } from '../../src/util/Vocabularies';
 import { expectNotification, subscribe } from '../util/NotificationUtil';
 import { getPort } from '../util/Util';
 import {
@@ -95,17 +95,15 @@ describe.each(stores)('A server supporting WebHookSubscription2021 using %s', (n
     const quads = new Store(new Parser().parse(await response.text()));
 
     // Find the notification channel for websockets
-    const channels = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.notificationChannel, null);
-    const webHookChannels = channels.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, RDF.terms.type, namedNode(`${NOTIFY.namespace}WebHookSubscription2021`)),
+    const subscriptions = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.subscription, null);
+    const webhookSubscriptions = subscriptions.filter((channel): boolean => quads.has(
+      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebHookSubscription2021`)),
     ));
-    expect(webHookChannels).toHaveLength(1);
-    const subscriptionUrls = quads.getObjects(webHookChannels[0], NOTIFY.terms.subscription, null);
-    expect(subscriptionUrls).toHaveLength(1);
-    subscriptionUrl = subscriptionUrls[0].value;
+    expect(webhookSubscriptions).toHaveLength(1);
+    subscriptionUrl = webhookSubscriptions[0].value;
 
     // It should also link to the server WebID
-    const webIds = quads.getObjects(webHookChannels[0], NOTIFY.terms.webid, null);
+    const webIds = quads.getObjects(webhookSubscriptions[0], NOTIFY.terms.webid, null);
     expect(webIds).toHaveLength(1);
     serverWebId = webIds[0].value;
   });

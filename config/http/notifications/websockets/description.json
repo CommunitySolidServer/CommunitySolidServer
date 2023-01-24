@@ -9,7 +9,6 @@
           "comment": "Handles the storage description triples used for discovery of a WebSocketSubscription2021 endpoint.",
           "@type": "NotificationDescriber",
           "route": { "@id": "urn:solid-server:default:WebSocket2021Route" },
-          "relative": "#websocketNotification",
           "type": "http://www.w3.org/ns/solid/notifications#WebSocketSubscription2021"
         }
       ]
