@@ -1,24 +1,25 @@
-import type { InferType } from 'yup';
+import { DataFactory, Store } from 'n3';
 import type { Credentials } from '../../../../../src/authentication/Credentials';
-import { AccessMode } from '../../../../../src/authorization/permissions/Permissions';
 import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
 import type { Logger } from '../../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../../src/logging/LogUtil';
+import { CONTEXT_NOTIFICATION } from '../../../../../src/server/notifications/Notification';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
-import type {
-  NotificationChannelStorage,
-} from '../../../../../src/server/notifications/NotificationChannelStorage';
 import type { StateHandler } from '../../../../../src/server/notifications/StateHandler';
+import type {
+  WebHookSubscription2021Channel,
+} from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
 import {
   isWebHook2021Channel,
   WebHookSubscription2021,
 } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
-import { IdentifierSetMultiMap } from '../../../../../src/util/map/IdentifierMap';
 import { joinUrl } from '../../../../../src/util/PathUtil';
-import { readableToString, readJsonStream } from '../../../../../src/util/StreamUtil';
-import { flushPromises } from '../../../../util/Util';
+import { NOTIFY, RDF } from '../../../../../src/util/Vocabularies';
+import quad = DataFactory.quad;
+import blankNode = DataFactory.blankNode;
+import namedNode = DataFactory.namedNode;
 
 jest.mock('../../../../../src/logging/LogUtil', (): any => {
   const logger: Logger =
@@ -26,93 +27,75 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
   return { getLoggerFor: (): Logger => logger };
 });
 
+jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
+
 describe('A WebHookSubscription2021', (): void => {
   const credentials: Credentials = { agent: { webId: 'http://example.org/alice' }};
   const target = 'http://example.org/somewhere-else';
-  let json: InferType<WebHookSubscription2021['schema']>;
+  const topic = 'https://storage.example/resource';
+  const subject = blankNode();
+  let data: Store;
+  let channel: WebHookSubscription2021Channel;
   const unsubscribeRoute = new AbsolutePathInteractionRoute('http://example.com/unsubscribe');
-  let storage: jest.Mocked<NotificationChannelStorage>;
   let stateHandler: jest.Mocked<StateHandler>;
   let channelType: WebHookSubscription2021;
 
   beforeEach(async(): Promise<void> => {
-    json = {
-      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-      type: 'WebHookSubscription2021',
+    data = new Store();
+    data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebHookSubscription2021));
+    data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));
+    data.addQuad(quad(subject, NOTIFY.terms.target, namedNode(target)));
+
+    const id = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3:https://storage.example/resource';
+    channel = {
+      id,
+      type: NOTIFY.WebHookSubscription2021,
       topic: 'https://storage.example/resource',
       target,
-      state: undefined,
-      startAt: undefined,
-      endAt: undefined,
-      accept: undefined,
-      rate: undefined,
+      webId: 'http://example.org/alice',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      unsubscribe_endpoint: joinUrl(unsubscribeRoute.getPath(), encodeURIComponent(id)),
     };
-
-    storage = {
-      create: jest.fn((features: Record<string, unknown>): NotificationChannel => ({
-        id: '123',
-        topic: 'http://example.com/foo',
-        type: 'WebHookSubscription2021',
-        ...features,
-      })),
-      add: jest.fn(),
-    } as any;
 
     stateHandler = {
       handleSafe: jest.fn(),
     } as any;
 
-    channelType = new WebHookSubscription2021(storage, unsubscribeRoute, stateHandler);
+    channelType = new WebHookSubscription2021(unsubscribeRoute, stateHandler);
   });
 
   it('exposes a utility function to verify if a channel is a webhook channel.', async(): Promise<void> => {
-    const channel = storage.create(json, {});
     expect(isWebHook2021Channel(channel)).toBe(true);
 
-    channel.type = 'something else';
+    (channel as NotificationChannel).type = 'something else';
     expect(isWebHook2021Channel(channel)).toBe(false);
   });
 
-  it('has the correct type.', async(): Promise<void> => {
-    expect(channelType.type).toBe('WebHookSubscription2021');
-  });
-
   it('correctly parses notification channel bodies.', async(): Promise<void> => {
-    await expect(channelType.schema.isValid(json)).resolves.toBe(true);
-
-    json.type = 'something else';
-    await expect(channelType.schema.isValid(json)).resolves.toBe(false);
-  });
-
-  it('requires Read permissions on the topic.', async(): Promise<void> => {
-    await expect(channelType.extractModes(json)).resolves
-      .toEqual(new IdentifierSetMultiMap([[{ path: json.topic }, AccessMode.read ]]));
-  });
-
-  it('stores the channel and returns a valid response when subscribing.', async(): Promise<void> => {
-    const { response } = await channelType.subscribe(json, credentials);
-    expect(response.metadata.contentType).toBe('application/ld+json');
-    await expect(readJsonStream(response.data)).resolves.toEqual({
-      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-      type: 'WebHookSubscription2021',
-      target,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      unsubscribe_endpoint: joinUrl(unsubscribeRoute.getPath(), '123'),
-    });
+    await expect(channelType.initChannel(data, credentials)).resolves.toEqual(channel);
   });
 
   it('errors if the credentials do not contain a WebID.', async(): Promise<void> => {
-    await expect(channelType.subscribe(json, {})).rejects
+    await expect(channelType.initChannel(data, {})).rejects
       .toThrow('A WebHookSubscription2021 subscription request needs to be authenticated with a WebID.');
   });
 
-  it('calls the state handler once the response has been read.', async(): Promise<void> => {
-    const { response, channel } = await channelType.subscribe(json, credentials);
-    expect(stateHandler.handleSafe).toHaveBeenCalledTimes(0);
+  it('removes the WebID when converting back to JSON-LD.', async(): Promise<void> => {
+    await expect(channelType.toJsonLd(channel)).resolves.toEqual({
+      '@context': [
+        CONTEXT_NOTIFICATION,
+      ],
+      id: channel.id,
+      type: NOTIFY.WebHookSubscription2021,
+      target,
+      topic,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      unsubscribe_endpoint: channel.unsubscribe_endpoint,
+    });
+  });
 
-    // Read out data to end stream correctly
-    await readableToString(response.data);
-
+  it('calls the state handler once the channel is completed.', async(): Promise<void> => {
+    await channelType.completeChannel(channel);
     expect(stateHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(stateHandler.handleSafe).toHaveBeenLastCalledWith({ channel });
   });
@@ -121,14 +104,7 @@ describe('A WebHookSubscription2021', (): void => {
     const logger = getLoggerFor('mock');
     stateHandler.handleSafe.mockRejectedValue(new Error('notification error'));
 
-    const { response } = await channelType.subscribe(json, credentials);
-    expect(logger.error).toHaveBeenCalledTimes(0);
-
-    // Read out data to end stream correctly
-    await readableToString(response.data);
-
-    await flushPromises();
-
+    await channelType.completeChannel(channel);
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenLastCalledWith('Error emitting state notification: notification error');
   });

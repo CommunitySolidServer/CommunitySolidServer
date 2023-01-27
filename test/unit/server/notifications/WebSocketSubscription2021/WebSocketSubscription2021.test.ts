@@ -1,70 +1,58 @@
-import { AccessMode } from '../../../../../src/authorization/permissions/Permissions';
+import { DataFactory, Store } from 'n3';
 import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
-import type { NotificationChannelJson } from '../../../../../src/server/notifications/NotificationChannel';
-import type { NotificationChannelStorage } from '../../../../../src/server/notifications/NotificationChannelStorage';
+import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
+
 import {
+  generateWebSocketUrl,
+} from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocket2021Util';
+import type {
+  WebSocketSubscription2021Channel,
+} from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocketSubscription2021';
+import {
+  isWebSocket2021Channel,
   WebSocketSubscription2021,
 } from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocketSubscription2021';
-import { IdentifierSetMultiMap } from '../../../../../src/util/map/IdentifierMap';
-import { readJsonStream } from '../../../../../src/util/StreamUtil';
+import { NOTIFY, RDF } from '../../../../../src/util/Vocabularies';
+import quad = DataFactory.quad;
+import blankNode = DataFactory.blankNode;
+import namedNode = DataFactory.namedNode;
+
+jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 
 describe('A WebSocketSubscription2021', (): void => {
-  let channel: NotificationChannelJson;
-  let storage: jest.Mocked<NotificationChannelStorage>;
+  let data: Store;
+  let channel: WebSocketSubscription2021Channel;
+  const subject = blankNode();
+  const topic = 'https://storage.example/resource';
   const route = new AbsolutePathInteractionRoute('http://example.com/foo');
   let channelType: WebSocketSubscription2021;
 
   beforeEach(async(): Promise<void> => {
+    data = new Store();
+    data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebSocketSubscription2021));
+    data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));
+
+    const id = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3:https://storage.example/resource';
     channel = {
-      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-      type: 'WebSocketSubscription2021',
-      topic: 'https://storage.example/resource',
-      state: undefined,
-      startAt: undefined,
-      endAt: undefined,
-      accept: undefined,
-      rate: undefined,
+      id,
+      type: NOTIFY.WebSocketSubscription2021,
+      topic,
+      source: generateWebSocketUrl(route.getPath(), id),
     };
 
-    storage = {
-      create: jest.fn().mockReturnValue({
-        id: '123',
-        topic: 'http://example.com/foo',
-        type: 'WebSocketSubscription2021',
-        lastEmit: 0,
-        features: {},
-      }),
-      add: jest.fn(),
-    } as any;
-
-    channelType = new WebSocketSubscription2021(storage, route);
+    channelType = new WebSocketSubscription2021(route);
   });
 
-  it('has the correct type.', async(): Promise<void> => {
-    expect(channelType.type).toBe('WebSocketSubscription2021');
+  it('exposes a utility function to verify if a channel is a websocket channel.', async(): Promise<void> => {
+    expect(isWebSocket2021Channel(channel)).toBe(true);
+
+    (channel as NotificationChannel).type = 'something else';
+    expect(isWebSocket2021Channel(channel)).toBe(false);
   });
 
   it('correctly parses notification channel bodies.', async(): Promise<void> => {
-    await expect(channelType.schema.isValid(channel)).resolves.toBe(true);
-
-    channel.type = 'something else';
-    await expect(channelType.schema.isValid(channel)).resolves.toBe(false);
-  });
-
-  it('requires Read permissions on the topic.', async(): Promise<void> => {
-    await expect(channelType.extractModes(channel)).resolves
-      .toEqual(new IdentifierSetMultiMap([[{ path: channel.topic }, AccessMode.read ]]));
-  });
-
-  it('stores the channel and returns a valid response when subscribing.', async(): Promise<void> => {
-    const { response } = await channelType.subscribe(channel);
-    expect(response.metadata.contentType).toBe('application/ld+json');
-    await expect(readJsonStream(response.data)).resolves.toEqual({
-      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-      type: 'WebSocketSubscription2021',
-      source: expect.stringMatching(/^ws:\/\/example.com\/foo\?auth=.+/u),
-    });
+    await expect(channelType.initChannel(data, {})).resolves.toEqual(channel);
   });
 });

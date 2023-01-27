@@ -5,7 +5,7 @@
       "comment": "Handles the generation and serialization of notifications for WebSocketSubscription2021.",
       "@id": "urn:solid-server:default:WebSocket2021NotificationHandler",
       "@type": "TypedNotificationHandler",
-      "type": "WebSocketSubscription2021",
+      "type": "http://www.w3.org/ns/solid/notifications#WebSocketSubscription2021",
       "source": {
         "@type": "ComposedNotificationHandler",
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },

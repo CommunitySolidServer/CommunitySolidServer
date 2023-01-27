@@ -1,46 +1,59 @@
-import { parse, toSeconds } from 'iso8601-duration';
-import type { InferType } from 'yup';
-import { array, number, object, string } from 'yup';
-import { CONTEXT_NOTIFICATION } from './Notification';
-
 /**
- * A JSON parsing schema that can be used to parse a notification channel sent during subscription.
- * Specific notification channels can extend this schema with their own custom keys.
+ * Internal representation of a notification channel.
+ * Most of the fields are those defined in
+ * https://solid.github.io/notifications/protocol#notification-channel-data-model
+ *
+ * We only support notification channels with a single topic.
  */
-export const NOTIFICATION_CHANNEL_SCHEMA = object({
-  '@context': array(string()).ensure().required().test({
-    name: 'RequireNotificationContext',
-    message: `The ${CONTEXT_NOTIFICATION} context is required in the notification channel JSON-LD body.`,
-    test: (context): boolean => Boolean(context?.includes(CONTEXT_NOTIFICATION)),
-  }),
-  type: string().required(),
-  topic: string().required(),
-  state: string().optional(),
-  startAt: number().transform((value, original): number | undefined =>
-    // Convert the date string to milliseconds
-    Date.parse(original)).optional(),
-  endAt: number().transform((value, original): number | undefined =>
-    // Convert the date string to milliseconds
-    Date.parse(original)).optional(),
-  rate: number().transform((value, original): number | undefined =>
-    // Convert the rate string to milliseconds
-    toSeconds(parse(original)) * 1000).optional(),
-  accept: string().optional(),
-});
-export type NotificationChannelJson = InferType<typeof NOTIFICATION_CHANNEL_SCHEMA>;
-
-/**
- * The info provided for a notification channel during a subscription.
- * `features` can contain custom values relevant for a specific channel type.
- */
-export type NotificationChannel = {
+export interface NotificationChannel {
+  /**
+   * The unique identifier of the channel.
+   */
   id: string;
-  topic: string;
+  /**
+   * The channel type.
+   */
   type: string;
-  startAt?: number;
-  endAt?: number;
-  accept?: string;
-  rate?: number;
+  /**
+   * The resource this channel sends notifications about.
+   */
+  topic: string;
+  /**
+   * The state parameter sent by the receiver.
+   * This is used to send a notification when the channel is established and the topic resource has a different state.
+   */
   state?: string;
+  /**
+   * When the channel should start sending notifications, in milliseconds since epoch.
+   */
+  startAt?: number;
+  /**
+   * When the channel should stop existing, in milliseconds since epoch.
+   */
+  endAt?: number;
+  /**
+   * The minimal time required between notifications, in milliseconds.
+   */
+  rate?: number;
+  /**
+   * The media type in which the receiver expects the notifications.
+   */
+  accept?: string;
+  /**
+   * The resource receivers can use to establish a connection and receive notifications.
+   */
+  receiveFrom?: string;
+  /**
+   * The resource on the receiver where notifications can be sent.
+   */
+  sendTo?: string;
+  /**
+   * Can be used to identify the sender.
+   */
+  sender?: string;
+
+  /**
+   * Internal value that we use to track when this channel last sent a notification.
+   */
   lastEmit?: number;
-};
+}

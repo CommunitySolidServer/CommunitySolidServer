@@ -3,6 +3,7 @@
   "Adapter",
   "AlgJwk",
   "BaseActivityEmitter",
+  "BaseChannelType",
   "BaseHttpError",
   "BaseRouterHandler",
   "BasicConditions",

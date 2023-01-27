@@ -16,7 +16,8 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig, removeFolder,
+  instantiateFromConfig,
+  removeFolder,
 } from './Config';
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
@@ -26,7 +27,7 @@ const baseUrl = `http://localhost:${port}/`;
 const clientPort = getPort('WebHookSubscription2021-client');
 const target = `http://localhost:${clientPort}/`;
 const webId = 'http://example.com/card/#me';
-const notificationType = 'WebHookSubscription2021';
+const notificationType = NOTIFY.WebHookSubscription2021;
 
 const rootFilePath = getTestFolder('WebHookSubscription2021');
 const stores: [string, any][] = [
@@ -109,7 +110,7 @@ describe.each(stores)('A server supporting WebHookSubscription2021 using %s', (n
   });
 
   it('supports subscribing.', async(): Promise<void> => {
-    await subscribe(notificationType, webId, subscriptionUrl, topic, { target });
+    await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.target]: target });
   });
 
   it('emits Created events.', async(): Promise<void> => {
@@ -168,7 +169,7 @@ describe.each(stores)('A server supporting WebHookSubscription2021 using %s', (n
       });
     });
 
-    await subscribe(notificationType, webId, subscriptionUrl, topic, { target, state: 'abc' });
+    await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.target]: target, state: 'abc' });
 
     // Will resolve even though the resource did not change since subscribing
     const { request, response } = await clientPromise;

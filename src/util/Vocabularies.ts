@@ -200,10 +200,13 @@ export const NOTIFY = createVocabulary('http://www.w3.org/ns/solid/notifications
   'startAt',
   'state',
   'subscription',
+  'target',
+  'topic',
   'webhookAuth',
   'webid',
 
   'WebHookSubscription2021',
+  'WebSocketSubscription2021',
 );
 
 export const OIDC = createVocabulary('http://www.w3.org/ns/solid/oidc#',
@@ -276,7 +279,9 @@ export const VCARD = createVocabulary('http://www.w3.org/2006/vcard/ns#',
 
 export const XSD = createVocabulary('http://www.w3.org/2001/XMLSchema#',
   'dateTime',
+  'duration',
   'integer',
+  'string',
 );
 
 // Alias for commonly used types

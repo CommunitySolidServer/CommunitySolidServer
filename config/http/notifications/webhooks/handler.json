@@ -5,7 +5,7 @@
       "comment": "Handles the generation and serialization of notifications for WebHookSubscription2021.",
       "@id": "urn:solid-server:default:WebHookNotificationHandler",
       "@type": "TypedNotificationHandler",
-      "type": "WebHookSubscription2021",
+      "type": "http://www.w3.org/ns/solid/notifications#WebHookSubscription2021",
       "source": {
         "@type": "ComposedNotificationHandler",
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
