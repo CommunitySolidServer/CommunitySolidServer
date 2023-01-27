@@ -29,7 +29,8 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
 describe('A WebHookEmitter', (): void => {
   const fetchMock: jest.Mock = fetch as any;
   const baseUrl = 'http://example.com/';
-  const webIdRoute = new AbsolutePathInteractionRoute('http://example.com/.notifcations/webhooks/webid');
+  const serverWebId = 'http://example.com/.notifcations/webhooks/webid';
+  const webIdRoute = new AbsolutePathInteractionRoute(serverWebId);
   const notification: Notification = {
     '@context': [
       'https://www.w3.org/ns/activitystreams',
@@ -46,7 +47,7 @@ describe('A WebHookEmitter', (): void => {
     topic: 'http://example.com/foo',
     type: NOTIFY.WebHookSubscription2021,
     target: 'http://example.org/somewhere-else',
-    webId: webIdRoute.getPath(),
+    webId: 'http://example.org/other/#me',
     // eslint-disable-next-line @typescript-eslint/naming-convention
     unsubscribe_endpoint: 'http://example.org/unsubscribe',
   };
@@ -103,13 +104,13 @@ describe('A WebHookEmitter', (): void => {
     // Check all the DPoP token fields
     const decodedDpopToken = await jwtVerify(encodedDpopToken, publicObject, { issuer: trimTrailingSlashes(baseUrl) });
     expect(decodedDpopToken.payload).toMatchObject({
-      webid: channel.webId,
-      azp: channel.webId,
-      sub: channel.webId,
+      webid: serverWebId,
+      azp: serverWebId,
+      sub: serverWebId,
       cnf: { jkt: await calculateJwkThumbprint(publicJwk, 'sha256') },
       iat: now,
       exp: now + (20 * 60 * 1000),
-      aud: [ channel.webId, 'solid' ],
+      aud: [ serverWebId, 'solid' ],
       jti: expect.stringContaining('-'),
     });
     expect(decodedDpopToken.protectedHeader).toMatchObject({

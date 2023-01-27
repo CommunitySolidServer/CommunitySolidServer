@@ -1,7 +1,7 @@
 /**
  * Internal representation of a notification channel.
  * Most of the fields are those defined in
- * https://solid.github.io/notifications/protocol#notification-channel-data-model
+ * https://solidproject.org/TR/2022/notifications-protocol-20221231#notification-channel-data-model
  *
  * We only support notification channels with a single topic.
  */
