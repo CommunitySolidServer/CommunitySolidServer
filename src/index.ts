@@ -338,6 +338,7 @@ export * from './server/notifications/WebSocketSubscription2021/WebSocketSubscri
 
 // Server/Notifications
 export * from './server/notifications/ActivityEmitter';
+export * from './server/notifications/BaseChannelType';
 export * from './server/notifications/BaseStateHandler';
 export * from './server/notifications/ComposedNotificationHandler';
 export * from './server/notifications/KeyValueChannelStorage';

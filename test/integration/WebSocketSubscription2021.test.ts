@@ -14,14 +14,15 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig, removeFolder,
+  instantiateFromConfig,
+  removeFolder,
 } from './Config';
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
 
 const port = getPort('WebSocketSubscription2021');
 const baseUrl = `http://localhost:${port}/`;
-const notificationType = 'WebSocketSubscription2021';
+const notificationType = NOTIFY.WebSocketSubscription2021;
 
 const rootFilePath = getTestFolder('WebSocketSubscription2021');
 const stores: [string, any][] = [
@@ -166,7 +167,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
 
     const channel = {
       '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-      type: 'WebSocketSubscription2021',
+      type: NOTIFY.WebSocketSubscription2021,
       topic: restricted,
     };
 
@@ -212,7 +213,8 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
   });
 
   it('removes expired channels.', async(): Promise<void> => {
-    const { source } = await subscribe(notificationType, webId, subscriptionUrl, topic, { endAt: 1 }) as any;
+    const { source } =
+      await subscribe(notificationType, webId, subscriptionUrl, topic, { endAt: '1988-03-09T14:48:00.000Z' }) as any;
 
     const socket = new WebSocket(source);
     const messagePromise = new Promise<Buffer>((resolve): any => socket.on('message', resolve));

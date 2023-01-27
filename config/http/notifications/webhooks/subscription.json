@@ -11,16 +11,17 @@
       "handler": {
         "@type": "NotificationSubscriber",
         "channelType": { "@id": "urn:solid-server:default:WebHookSubscription2021" },
+        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
         "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
-        "authorizer": { "@id": "urn:solid-server:default:Authorizer" }
+        "authorizer": { "@id": "urn:solid-server:default:Authorizer" },
+        "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
       }
     },
     {
       "comment": "Contains all the metadata relevant for a WebHookSubscription2021.",
       "@id": "urn:solid-server:default:WebHookSubscription2021",
       "@type": "WebHookSubscription2021",
-      "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" },
       "unsubscribeRoute": { "@id": "urn:solid-server:default:WebHookUnsubscribeRoute" },
       "stateHandler": {
         "@type": "BaseStateHandler",

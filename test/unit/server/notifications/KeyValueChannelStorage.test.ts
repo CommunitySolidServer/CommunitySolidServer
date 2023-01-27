@@ -3,10 +3,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import type { Logger } from '../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../src/logging/LogUtil';
 import { KeyValueChannelStorage } from '../../../../src/server/notifications/KeyValueChannelStorage';
-import type {
-  NotificationChannel,
-  NotificationChannelJson,
-} from '../../../../src/server/notifications/NotificationChannel';
+import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import resetAllMocks = jest.resetAllMocks;
@@ -21,12 +18,6 @@ describe('A KeyValueChannelStorage', (): void => {
   const logger = getLoggerFor('mock');
   const topic = 'http://example.com/foo';
   const identifier = { path: topic };
-  const json = {
-    '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-    type: 'WebSocketSubscription2021',
-    topic,
-  } as NotificationChannelJson;
-  const features = {};
   let channel: NotificationChannel;
   let internalMap: Map<string, any>;
   let internalStorage: KeyValueStorage<string, any>;
@@ -51,12 +42,6 @@ describe('A KeyValueChannelStorage', (): void => {
     };
 
     storage = new KeyValueChannelStorage(internalStorage, locker);
-  });
-
-  describe('#create', (): void => {
-    it('creates channel based on a notification channel.', async(): Promise<void> => {
-      expect(storage.create(json, features)).toEqual(channel);
-    });
   });
 
   describe('#get', (): void => {

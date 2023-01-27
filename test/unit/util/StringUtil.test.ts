@@ -1,7 +1,7 @@
 import {
   sanitizeUrlPart,
   splitCommaSeparated,
-  isValidFileName,
+  isValidFileName, msToDuration,
 } from '../../../src/util/StringUtil';
 
 describe('HeaderUtil', (): void => {
@@ -29,6 +29,23 @@ describe('HeaderUtil', (): void => {
     });
     it('returns false if the provided file name is invalid.', (): void => {
       expect(isValidFileName('$%^*')).toBeFalsy();
+    });
+  });
+
+  describe('#msToDuration', (): void => {
+    it('converts ms to a duration string.', async(): Promise<void> => {
+      const ms = ((2 * 24 * 60 * 60) + (10 * 60 * 60) + (5 * 60) + 50.25) * 1000;
+      expect(msToDuration(ms)).toBe('P2DT10H5M50.25S');
+    });
+
+    it('ignores 0 values.', async(): Promise<void> => {
+      const ms = ((2 * 24 * 60 * 60) + 50.25) * 1000;
+      expect(msToDuration(ms)).toBe('P2DT50.25S');
+    });
+
+    it('excludes the T if there is no time segment.', async(): Promise<void> => {
+      const ms = ((2 * 24 * 60 * 60)) * 1000;
+      expect(msToDuration(ms)).toBe('P2D');
     });
   });
 });

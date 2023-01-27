@@ -16,6 +16,7 @@ import type {
 import { NotImplementedHttpError } from '../../../../../src/util/errors/NotImplementedHttpError';
 import { matchesAuthorizationScheme } from '../../../../../src/util/HeaderUtil';
 import { trimTrailingSlashes } from '../../../../../src/util/PathUtil';
+import { NOTIFY } from '../../../../../src/util/Vocabularies';
 
 jest.mock('cross-fetch');
 
@@ -43,7 +44,7 @@ describe('A WebHookEmitter', (): void => {
   const channel: WebHookSubscription2021Channel = {
     id: 'id',
     topic: 'http://example.com/foo',
-    type: 'WebHookSubscription2021',
+    type: NOTIFY.WebHookSubscription2021,
     target: 'http://example.org/somewhere-else',
     webId: webIdRoute.getPath(),
     // eslint-disable-next-line @typescript-eslint/naming-convention

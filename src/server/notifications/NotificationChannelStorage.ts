@@ -1,5 +1,5 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import type { NotificationChannel, NotificationChannelJson } from './NotificationChannel';
+import type { NotificationChannel } from './NotificationChannel';
 
 /**
  * Stores all the information necessary to keep track of notification channels.
@@ -9,15 +9,7 @@ import type { NotificationChannel, NotificationChannelJson } from './Notificatio
  */
 export interface NotificationChannelStorage {
   /**
-   * Creates channel corresponding to the given channel and features.
-   * This does not store the generated channel in the storage.
-   * @param channel - Notification channel to generate channel of.
-   * @param features - Features to add to the channel
-   */
-  create: (channel: NotificationChannelJson, features: Record<string, unknown>) => NotificationChannel;
-
-  /**
-   * Returns the channel for the requested notification channel.
+   * Returns the requested channel.
    * `undefined` if no match was found or if the notification channel expired.
    * @param id - The identifier of the notification channel.
    */

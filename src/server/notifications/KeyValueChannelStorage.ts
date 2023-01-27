@@ -1,10 +1,9 @@
-import { v4 } from 'uuid';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
-import type { NotificationChannel, NotificationChannelJson } from './NotificationChannel';
+import type { NotificationChannel } from './NotificationChannel';
 import type { NotificationChannelStorage } from './NotificationChannelStorage';
 
 type StorageValue = string | string[] | NotificationChannel;
@@ -23,20 +22,6 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
   public constructor(storage: KeyValueStorage<string, StorageValue>, locker: ReadWriteLocker) {
     this.storage = storage;
     this.locker = locker;
-  }
-
-  public create(channel: NotificationChannelJson, features: Record<string, unknown>): NotificationChannel {
-    return {
-      id: `${channel.type}:${v4()}:${channel.topic}`,
-      topic: channel.topic,
-      type: channel.type,
-      startAt: channel.startAt,
-      endAt: channel.endAt,
-      accept: channel.accept,
-      rate: channel.rate,
-      state: channel.state,
-      ...features,
-    };
   }
 
   public async get(id: string): Promise<NotificationChannel | undefined> {

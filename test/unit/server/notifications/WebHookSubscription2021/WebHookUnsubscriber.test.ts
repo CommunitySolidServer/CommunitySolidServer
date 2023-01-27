@@ -11,6 +11,7 @@ import {
 } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookUnsubscriber';
 import { ForbiddenHttpError } from '../../../../../src/util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
+import { NOTIFY } from '../../../../../src/util/Vocabularies';
 
 describe('A WebHookUnsubscriber', (): void => {
   const request: HttpRequest = {} as any;
@@ -34,7 +35,7 @@ describe('A WebHookUnsubscriber', (): void => {
     } as any;
 
     storage = {
-      get: jest.fn().mockResolvedValue({ type: 'WebHookSubscription2021', webId }),
+      get: jest.fn().mockResolvedValue({ type: NOTIFY.WebHookSubscription2021, webId }),
       delete: jest.fn(),
     } as any;
 

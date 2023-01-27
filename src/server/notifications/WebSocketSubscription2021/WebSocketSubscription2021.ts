@@ -1,22 +1,29 @@
-import { string } from 'yup';
-import type { AccessMap } from '../../../authorization/permissions/Permissions';
-import { AccessMode } from '../../../authorization/permissions/Permissions';
-import { BasicRepresentation } from '../../../http/representation/BasicRepresentation';
+import type { Store } from 'n3';
+import type { Credentials } from '../../../authentication/Credentials';
 import type { InteractionRoute } from '../../../identity/interaction/routing/InteractionRoute';
 import { getLoggerFor } from '../../../logging/LogUtil';
-import { APPLICATION_LD_JSON } from '../../../util/ContentTypes';
-import { IdentifierSetMultiMap } from '../../../util/map/IdentifierMap';
-import { CONTEXT_NOTIFICATION } from '../Notification';
-import type { NotificationChannelJson } from '../NotificationChannel';
-import { NOTIFICATION_CHANNEL_SCHEMA } from '../NotificationChannel';
-import type { NotificationChannelStorage } from '../NotificationChannelStorage';
-import type { NotificationChannelResponse, NotificationChannelType } from '../NotificationChannelType';
+import { NOTIFY } from '../../../util/Vocabularies';
+import { BaseChannelType } from '../BaseChannelType';
+import type { NotificationChannel } from '../NotificationChannel';
 import { generateWebSocketUrl } from './WebSocket2021Util';
 
-const type = 'WebSocketSubscription2021';
-const schema = NOTIFICATION_CHANNEL_SCHEMA.shape({
-  type: string().required().oneOf([ type ]),
-});
+/**
+ * A {@link NotificationChannel} containing the necessary fields for a WebSocketSubscription2021 channel.
+ */
+export interface WebSocketSubscription2021Channel extends NotificationChannel {
+  /**
+   * The "notify:WebSocketSubscription2021" type.
+   */
+  type: typeof NOTIFY.WebSocketSubscription2021;
+  /**
+   * The WebSocket through which the channel will send notifications.
+   */
+  source: string;
+}
+
+export function isWebSocket2021Channel(channel: NotificationChannel): channel is WebSocketSubscription2021Channel {
+  return channel.type === NOTIFY.WebSocketSubscription2021;
+}
 
 /**
  * The notification channel type WebSocketSubscription2021 as described in
@@ -24,35 +31,22 @@ const schema = NOTIFICATION_CHANNEL_SCHEMA.shape({
  *
  * Requires read permissions on a resource to be able to receive notifications.
  */
-export class WebSocketSubscription2021 implements NotificationChannelType<typeof schema> {
+export class WebSocketSubscription2021 extends BaseChannelType {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly storage: NotificationChannelStorage;
   private readonly path: string;
 
-  public readonly type = type;
-  public readonly schema = schema;
-
-  public constructor(storage: NotificationChannelStorage, route: InteractionRoute) {
-    this.storage = storage;
+  public constructor(route: InteractionRoute) {
+    super(NOTIFY.terms.WebSocketSubscription2021);
     this.path = route.getPath();
   }
 
-  public async extractModes(json: NotificationChannelJson): Promise<AccessMap> {
-    return new IdentifierSetMultiMap<AccessMode>([[{ path: json.topic }, AccessMode.read ]]);
-  }
-
-  public async subscribe(json: NotificationChannelJson): Promise<NotificationChannelResponse> {
-    const channel = this.storage.create(json, {});
-    await this.storage.add(channel);
-
-    const jsonld = {
-      '@context': [ CONTEXT_NOTIFICATION ],
-      type: this.type,
+  public async initChannel(data: Store, credentials: Credentials): Promise<WebSocketSubscription2021Channel> {
+    const channel = await super.initChannel(data, credentials);
+    return {
+      ...channel,
+      type: NOTIFY.WebSocketSubscription2021,
       source: generateWebSocketUrl(this.path, channel.id),
     };
-    const response = new BasicRepresentation(JSON.stringify(jsonld), APPLICATION_LD_JSON);
-
-    return { response, channel };
   }
 }

@@ -11,9 +11,11 @@
       "handler": {
         "@type": "NotificationSubscriber",
         "channelType": { "@id": "urn:solid-server:default:WebSocketSubscription2021" },
+        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
         "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
-        "authorizer": { "@id": "urn:solid-server:default:Authorizer" }
+        "authorizer": { "@id": "urn:solid-server:default:Authorizer" },
+        "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
       }
     },
     {
@@ -26,7 +28,6 @@
       "comment": "Contains all the metadata relevant for a WebSocketSubscription2021.",
       "@id": "urn:solid-server:default:WebSocketSubscription2021",
       "@type": "WebSocketSubscription2021",
-      "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" },
       "route": { "@id": "urn:solid-server:default:WebSocket2021Route" }
     },
 

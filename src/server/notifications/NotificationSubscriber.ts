@@ -4,16 +4,17 @@ import type { Authorizer } from '../../authorization/Authorizer';
 import type { PermissionReader } from '../../authorization/PermissionReader';
 import { OkResponseDescription } from '../../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../../http/output/response/ResponseDescription';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { APPLICATION_LD_JSON } from '../../util/ContentTypes';
+import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
+import { APPLICATION_LD_JSON, INTERNAL_QUADS } from '../../util/ContentTypes';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { UnprocessableEntityHttpError } from '../../util/errors/UnprocessableEntityHttpError';
-import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
-import { readableToString } from '../../util/StreamUtil';
-import type { HttpRequest } from '../HttpRequest';
+import { endOfStream, readableToQuads } from '../../util/StreamUtil';
 import type { OperationHttpHandlerInput } from '../OperationHttpHandler';
 import { OperationHttpHandler } from '../OperationHttpHandler';
-import type { NotificationChannelJson } from './NotificationChannel';
+import type { NotificationChannel } from './NotificationChannel';
+import type { NotificationChannelStorage } from './NotificationChannelStorage';
 import type { NotificationChannelType } from './NotificationChannelType';
 
 export interface NotificationSubscriberArgs {
@@ -21,6 +22,10 @@ export interface NotificationSubscriberArgs {
    * The {@link NotificationChannelType} with all the necessary information.
    */
   channelType: NotificationChannelType;
+  /**
+   * {@link RepresentationConverter} used to convert input data into RDF.
+   */
+  converter: RepresentationConverter;
   /**
    * Used to extract the credentials from the request.
    */
@@ -34,6 +39,10 @@ export interface NotificationSubscriberArgs {
    */
   authorizer: Authorizer;
   /**
+   * Storage used to store the channels.
+   */
+  storage: NotificationChannelStorage;
+  /**
    * Overrides the expiration feature of channels, by making sure they always expire after the `maxDuration` value.
    * If the expiration of the channel is shorter than `maxDuration`, the original value will be kept.
    * Value is set in minutes. 0 is infinite.
@@ -46,34 +55,42 @@ export interface NotificationSubscriberArgs {
  *
  * Uses the information from the provided {@link NotificationChannelType} to validate the input
  * and verify the request has the required permissions available.
+ * If successful the generated channel will be stored in a {@link NotificationChannelStorage}.
  */
 export class NotificationSubscriber extends OperationHttpHandler {
   protected logger = getLoggerFor(this);
 
   private readonly channelType: NotificationChannelType;
+  private readonly converter: RepresentationConverter;
   private readonly credentialsExtractor: CredentialsExtractor;
   private readonly permissionReader: PermissionReader;
   private readonly authorizer: Authorizer;
+  private readonly storage: NotificationChannelStorage;
   private readonly maxDuration: number;
 
   public constructor(args: NotificationSubscriberArgs) {
     super();
     this.channelType = args.channelType;
+    this.converter = args.converter;
     this.credentialsExtractor = args.credentialsExtractor;
     this.permissionReader = args.permissionReader;
     this.authorizer = args.authorizer;
+    this.storage = args.storage;
     this.maxDuration = (args.maxDuration ?? 0) * 60 * 1000;
   }
 
   public async handle({ operation, request }: OperationHttpHandlerInput): Promise<ResponseDescription> {
-    if (operation.body.metadata.contentType !== APPLICATION_LD_JSON) {
-      throw new UnsupportedMediaTypeHttpError('Subscribe bodies need to be application/ld+json.');
-    }
+    const credentials = await this.credentialsExtractor.handleSafe(request);
+    this.logger.debug(`Extracted credentials: ${JSON.stringify(credentials)}`);
 
-    let channel: NotificationChannelJson;
+    let channel: NotificationChannel;
     try {
-      const json = JSON.parse(await readableToString(operation.body.data));
-      channel = await this.channelType.schema.validate(json);
+      const quadStream = await this.converter.handleSafe({
+        identifier: operation.target,
+        representation: operation.body,
+        preferences: { type: { [INTERNAL_QUADS]: 1 }},
+      });
+      channel = await this.channelType.initChannel(await readableToQuads(quadStream.data), credentials);
     } catch (error: unknown) {
       throw new UnprocessableEntityHttpError(`Unable to process notification channel: ${createErrorMessage(error)}`);
     }
@@ -86,17 +103,27 @@ export class NotificationSubscriber extends OperationHttpHandler {
     }
 
     // Verify if the client is allowed to subscribe
-    const credentials = await this.authorize(request, channel);
+    await this.authorize(credentials, channel);
 
-    const { response } = await this.channelType.subscribe(channel, credentials);
+    // Store the channel once it has been authorized
+    await this.storage.add(channel);
+
+    // Generate the response JSON-LD
+    const jsonld = await this.channelType.toJsonLd(channel);
+    const response = new BasicRepresentation(JSON.stringify(jsonld), APPLICATION_LD_JSON);
+
+    // Complete the channel once the response has been sent out
+    endOfStream(response.data)
+      .then((): Promise<void> => this.channelType.completeChannel(channel))
+      .catch((error): void => {
+        this.logger.error(`There was an issue completing notification channel ${channel.id}: ${
+          createErrorMessage(error)}`);
+      });
 
     return new OkResponseDescription(response.metadata, response.data);
   }
 
-  private async authorize(request: HttpRequest, channel: NotificationChannelJson): Promise<Credentials> {
-    const credentials = await this.credentialsExtractor.handleSafe(request);
-    this.logger.debug(`Extracted credentials: ${JSON.stringify(credentials)}`);
-
+  private async authorize(credentials: Credentials, channel: NotificationChannel): Promise<void> {
     const requestedModes = await this.channelType.extractModes(channel);
     this.logger.debug(`Retrieved required modes: ${[ ...requestedModes.entrySets() ]}`);
 
@@ -104,8 +131,6 @@ export class NotificationSubscriber extends OperationHttpHandler {
     this.logger.debug(`Available permissions are ${[ ...availablePermissions.entries() ]}`);
 
     await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });
-    this.logger.verbose(`Authorization succeeded, creating notification channel`);
-
-    return credentials;
+    this.logger.debug(`Authorization succeeded, creating notification channel`);
   }
 }

@@ -1,9 +1,9 @@
 # Notifications
 
-This section covers the architecture used to support Notifications protocol
-as described in <https://solidproject.org/TR/notifications-protocol>.
+This section covers the architecture used to support the Notifications protocol
+as described in <https://solidproject.org/TR/2022/notifications-protocol-20221231>.
 
-There are 3 core architectural components to this that each have separate entry points:
+There are three core architectural components, that have distinct entry points:
 
 * Exposing metadata to allow discovery of the subscription type.
 * Handling subscriptions targeting a resource.
@@ -19,12 +19,13 @@ as the notification subscription URL is always located in the root of the server
 flowchart LR
   StorageDescriptionHandler("<br>StorageDescriptionHandler")
   StorageDescriptionHandler --> StorageDescriber("<strong>StorageDescriber</strong><br>ArrayUnionHandler")
-  StorageDescriber --> StorageDescriberArgs
+  StorageDescriber --> NotificationDescriber("NotificationDescriber<br>NotificationDescriber")
+  NotificationDescriber --> NotificationDescriberArgs
 
-  subgraph StorageDescriberArgs[" "]
+  subgraph NotificationDescriberArgs[" "]
     direction LR
-    NotificationDescriber("<br>NotificationDescriber")
-    NotificationDescriber2("<br>NotificationDescriber")
+    NotificationChannelType("<br>NotificationChannelType")
+    NotificationChannelType2("<br>NotificationChannelType")
   end
 ```
 
@@ -33,14 +34,16 @@ and to handle content negotiation.
 To generate the data we have multiple `StorageDescriber`s,
 whose results get merged together in an `ArrayUnionHandler`.
 
+A `NotificationChannelType` contains the specific details of a specification notification channel type,
+including a JSON-LD representation of the corresponding subscription resource.
 One specific instance of a `StorageDescriber` is a `NotificationSubcriber`,
-that contains all the necessary presets to describe a notification subscription type.
+which merges those JSON-LD descriptions into a single set of RDF quads.
 When adding a new subscription type,
 a new instance of such a class should be added to the `urn:solid-server:default:StorageDescriber`.
 
 ## NotificationChannel
 
-To subscribe, a client has to send a specific JSON-LD request to the URl found during discovery.
+To subscribe, a client has to send a specific JSON-LD request to the URL found during discovery.
 
 ```mermaid
 flowchart LR
@@ -50,9 +53,9 @@ flowchart LR
   subgraph NotificationTypeHandlerArgs[" "]
     direction LR
     OperationRouterHandler("<br>OperationRouterHandler") --> NotificationSubscriber("<br>NotificationSubscriber")
-    NotificationSubscriber --> SubscriptionType("<br><i>SubscriptionType</i>")
+    NotificationChannelType --> NotificationChannelType("<br><i>NotificationChannelType</i>")
     OperationRouterHandler2("<br>OperationRouterHandler") --> NotificationSubscriber2("<br>NotificationSubscriber")
-    NotificationSubscriber2 --> SubscriptionType2("<br><i>SubscriptionType</i>")
+    NotificationChannelType2 --> NotificationChannelType2("<br><i>NotificationChannelType</i>")
   end
 ```
 
@@ -60,7 +63,7 @@ Every subscription type should have a subscription URL relative to the root noti
 which in our configs is set to `/.notifications/`.
 For every type there is then a `OperationRouterHandler` that accepts requests to that specific URL,
 after which a `NotificationSubscriber` handles all checks related to subscribing,
-for which it uses a `SubscriptionType` that contains all the information necessary for a specific type.
+for which it uses a `NotificationChannelType`.
 If the subscription is valid and has authorization, the results will be saved in a `NotificationChannelStorage`.
 
 ## Activity
@@ -99,13 +102,13 @@ To add support for [WebSocketSubscription2021](https://solidproject.org/TR/2022/
 notifications,
 components were added as described in the documentation above.
 
-For discovery a `NotificationDescriber` was added with the corresponding settings.
+For discovery, a `NotificationDescriber` was added with the corresponding settings.
 
-As `SubscriptionType` there is a specific `WebSocketSubscription2021` that contains all the necessary information.
+As `SubscriptionType`, there is a specific `WebSocketSubscription2021` that contains all the necessary information.
 
 ### Handling notifications
 
-As `NotificationHandler` the following architecture is used:
+As `NotificationHandler`, the following architecture is used:
 
 ```mermaid
 flowchart TB
@@ -137,8 +140,8 @@ and also caches the result so it can be reused by multiple subscriptions.
 `urn:solid-server:default:BaseNotificationSerializer` converts the Notification to a JSON-LD representation
 and handles any necessary content negotiation based on the `accept` notification feature.
 
-A `WebSocket2021Emitter` is a specific emitter that checks the current open WebSockets
-if they correspond to the subscription.
+A `WebSocket2021Emitter` is a specific emitter that checks
+whether the current open WebSockets correspond to the subscription.
 
 ### WebSockets
 
@@ -163,12 +166,12 @@ flowchart TB
 ```
 
 To detect and store WebSocket connections, the `WebSocket2021Listener` is added as a listener to the HTTP server.
-For all WebSocket connections that get opened, it verifies if they correspond to an existing subscription.
-If yes the information gets sent out to its stored `WebSocket2021Handler`.
+For all WebSocket connections that get opened, it verifies whether they correspond to an existing subscription.
+If yes, the information gets sent out to its stored `WebSocket2021Handler`.
 
-In this case this is a `SequenceHandler` which contains a `WebSocket2021Storer` and a `BaseStateHandler`.
+In this case, this is a `SequenceHandler`, which contains a `WebSocket2021Storer` and a `BaseStateHandler`.
 The `WebSocket2021Storer` will store the WebSocket in the same map used by the `WebSocket2021Emitter`,
-so that class can later on emit events as mentioned above.
+so that class can emit events later on, as mentioned above.
 The state handler will make sure that a notification gets sent out if the subscription has a `state` feature request,
 as defined in the notification specification.
 
