@@ -38,6 +38,7 @@ describe('A ListeningActivityHandler', (): void => {
     storage = {
       getAll: jest.fn().mockResolvedValue([ channel.id ]),
       get: jest.fn().mockResolvedValue(channel),
+      update: jest.fn(),
     } as any;
 
     emitter = new EventEmitter() as any;
@@ -58,6 +59,25 @@ describe('A ListeningActivityHandler', (): void => {
     expect(notificationHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(notificationHandler.handleSafe).toHaveBeenLastCalledWith({ channel, activity, topic });
     expect(logger.error).toHaveBeenCalledTimes(0);
+    expect(storage.update).toHaveBeenCalledTimes(0);
+  });
+
+  it('updates the lastEmit value of the channel if it has a rate limit.', async(): Promise<void> => {
+    jest.useFakeTimers();
+    channel.rate = 10 * 1000;
+    emitter.emit('changed', topic, activity);
+
+    await flushPromises();
+
+    expect(notificationHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(notificationHandler.handleSafe).toHaveBeenLastCalledWith({ channel, activity, topic });
+    expect(logger.error).toHaveBeenCalledTimes(0);
+    expect(storage.update).toHaveBeenCalledTimes(1);
+    expect(storage.update).toHaveBeenLastCalledWith({
+      ...channel,
+      lastEmit: Date.now(),
+    });
+    jest.useRealTimers();
   });
 
   it('does not emit an event on channels if their rate does not yet allow it.', async(): Promise<void> => {

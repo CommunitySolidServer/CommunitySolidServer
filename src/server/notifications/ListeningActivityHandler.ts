@@ -57,9 +57,18 @@ export class ListeningActivityHandler extends StaticHandler {
 
       // No need to wait on this to resolve before going to the next channel.
       // Prevent failed notification from blocking other notifications.
-      this.handler.handleSafe({ channel, activity, topic }).catch((error): void => {
-        this.logger.error(`Error trying to handle notification for ${id}: ${createErrorMessage(error)}`);
-      });
+      this.handler.handleSafe({ channel, activity, topic })
+        .then((): Promise<void> => {
+          // Update the `lastEmit` value if the channel has a rate limit
+          if (channel.rate) {
+            channel.lastEmit = Date.now();
+            return this.storage.update(channel);
+          }
+          return Promise.resolve();
+        })
+        .catch((error): void => {
+          this.logger.error(`Error trying to handle notification for ${id}: ${createErrorMessage(error)}`);
+        });
     }
   }
 }
