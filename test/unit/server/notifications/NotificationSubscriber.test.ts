@@ -12,7 +12,10 @@ import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
 import type { NotificationChannelStorage } from '../../../../src/server/notifications/NotificationChannelStorage';
-import type { NotificationChannelType } from '../../../../src/server/notifications/NotificationChannelType';
+import type {
+  NotificationChannelType,
+  SubscriptionService,
+} from '../../../../src/server/notifications/NotificationChannelType';
 import { NotificationSubscriber } from '../../../../src/server/notifications/NotificationSubscriber';
 import type { RepresentationConverter } from '../../../../src/storage/conversion/RepresentationConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
@@ -32,6 +35,12 @@ describe('A NotificationSubscriber', (): void => {
   const response: HttpResponse = {} as any;
   let operation: Operation;
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
+  const subscriptionService: SubscriptionService = {
+    '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
+    id: 'http://example.com/subscription/',
+    channelType: 'DummyType',
+    feature: [ 'rate' ],
+  };
   let channel: NotificationChannel;
   let channelType: jest.Mocked<NotificationChannelType>;
   let converter: jest.Mocked<RepresentationConverter>;
@@ -56,6 +65,7 @@ describe('A NotificationSubscriber', (): void => {
     };
 
     channelType = {
+      getDescription: jest.fn().mockReturnValue(subscriptionService),
       initChannel: jest.fn().mockResolvedValue(channel),
       toJsonLd: jest.fn().mockResolvedValue({}),
       extractModes: jest.fn(async(subscription): Promise<AccessMap> =>
@@ -86,6 +96,22 @@ describe('A NotificationSubscriber', (): void => {
     subscriber = new NotificationSubscriber(
       { channelType, converter, credentialsExtractor, permissionReader, authorizer, storage },
     );
+  });
+
+  it('returns a subscription service description on GET requests.', async(): Promise<void> => {
+    operation.method = 'GET';
+    const description = await subscriber.handle({ operation, request, response });
+    expect(description.statusCode).toBe(200);
+    expect(description.metadata?.contentType).toBe('application/ld+json');
+    expect(JSON.parse(await readableToString(description.data!))).toEqual(subscriptionService);
+  });
+
+  it('only returns metadata on HEAD requests.', async(): Promise<void> => {
+    operation.method = 'HEAD';
+    const description = await subscriber.handle({ operation, request, response });
+    expect(description.statusCode).toBe(200);
+    expect(description.metadata?.contentType).toBe('application/ld+json');
+    expect(description.data).toBeUndefined();
   });
 
   it('errors if the request can not be parsed correctly.', async(): Promise<void> => {

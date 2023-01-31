@@ -321,7 +321,6 @@ export * from './server/notifications/serialize/JsonLdNotificationSerializer';
 export * from './server/notifications/serialize/NotificationSerializer';
 
 // Server/Notifications/WebHookSubscription2021
-export * from './server/notifications/WebHookSubscription2021/WebHookDescriber';
 export * from './server/notifications/WebHookSubscription2021/WebHookEmitter';
 export * from './server/notifications/WebHookSubscription2021/WebHookSubscription2021';
 export * from './server/notifications/WebHookSubscription2021/WebHookUnsubscriber';
@@ -355,6 +354,7 @@ export * from './server/notifications/TypedNotificationHandler';
 
 // Server/Util
 export * from './server/util/BaseRouterHandler';
+export * from './server/util/ConvertingOperationHttpHandler';
 export * from './server/util/OperationRouterHandler';
 export * from './server/util/RedirectingHttpHandler';
 export * from './server/util/RouterHandler';

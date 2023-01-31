@@ -16,10 +16,15 @@
       "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "operationHandler": {
-        "comment": "New notification subscription types should be added here to allow subscriptions.",
-        "@id": "urn:solid-server:default:NotificationTypeHandler",
-        "@type": "WaterfallHandler",
-        "handlers": [ ]
+        "comment": "Converts outgoing responses based on the user preferences",
+        "@type": "ConvertingOperationHttpHandler",
+        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+        "operationHandler": {
+          "comment": "New notification subscription types should be added here to allow subscriptions.",
+          "@id": "urn:solid-server:default:NotificationTypeHandler",
+          "@type": "WaterfallHandler",
+          "handlers": [ ]
+        }
       }
     }
   ]

@@ -2,10 +2,19 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "New notification subscription types should add a handler containing their descriptions so they can be discovered.",
       "@id": "urn:solid-server:default:StorageDescriber",
       "@type": "ArrayUnionHandler",
-      "handlers": [ ]
+      "handlers": [
+        {
+          "comment": "New notification subscription types should add a NotificationChannelType here so they can be discovered.",
+          "@id": "urn:solid-server:default:NotificationDescriber",
+          "@type": "NotificationDescriber",
+          "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+          "subscriptions": [
+
+          ]
+        }
+      ]
     },
 
     {

@@ -19,11 +19,15 @@
         "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
         "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
         "operationHandler": {
-          "@type": "StorageDescriptionHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
-          "path": { "@id": "urn:solid-server:default:variable:storageDescriptionPath" },
+          "comment": "Converts outgoing responses based on the user preferences",
+          "@type": "ConvertingOperationHttpHandler",
           "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
-          "describer": { "@id": "urn:solid-server:default:StorageDescriber" }
+          "operationHandler": {
+            "@type": "StorageDescriptionHandler",
+            "store": { "@id": "urn:solid-server:default:ResourceStore" },
+            "path": { "@id": "urn:solid-server:default:variable:storageDescriptionPath" },
+            "describer": { "@id": "urn:solid-server:default:StorageDescriber" }
+          }
         }
       }
     },

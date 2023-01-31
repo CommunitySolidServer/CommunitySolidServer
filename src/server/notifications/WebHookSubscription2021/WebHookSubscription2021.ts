@@ -5,8 +5,9 @@ import { getLoggerFor } from '../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import { NOTIFY } from '../../../util/Vocabularies';
-import { BaseChannelType } from '../BaseChannelType';
+import { BaseChannelType, DEFAULT_NOTIFICATION_FEATURES } from '../BaseChannelType';
 import type { NotificationChannel } from '../NotificationChannel';
+import type { SubscriptionService } from '../NotificationChannelType';
 import type { StateHandler } from '../StateHandler';
 import { generateWebHookUnsubscribeUrl } from './WebHook2021Util';
 
@@ -33,6 +34,14 @@ export interface WebHookSubscription2021Channel extends NotificationChannel {
   unsubscribe_endpoint: string;
 }
 
+/**
+ * An extension of {@link SubscriptionService} adding the necessary `webid` field.
+ * This is currently not part of a context so the terms are added in full to make sure the resulting RDF is valid.
+ */
+export interface WebHookSubscriptionService extends SubscriptionService {
+  [NOTIFY.webid]: { id: string };
+}
+
 export function isWebHook2021Channel(channel: NotificationChannel): channel is WebHookSubscription2021Channel {
   return channel.type === NOTIFY.WebHookSubscription2021;
 }
@@ -50,9 +59,20 @@ export class WebHookSubscription2021 extends BaseChannelType {
 
   private readonly unsubscribePath: string;
   private readonly stateHandler: StateHandler;
+  private readonly webId: string;
 
-  public constructor(unsubscribeRoute: InteractionRoute, stateHandler: StateHandler) {
+  /**
+   * @param route - The route corresponding to the URL of the subscription service of this channel type.
+   * @param webIdRoute - The route to the WebID that needs to be used when generating DPoP tokens for notifications.
+   * @param unsubscribeRoute - The route where the request needs to be sent to unsubscribe.
+   * @param stateHandler - The {@link StateHandler} that will be called after a successful subscription.
+   * @param features - The features that need to be enabled for this channel type.
+   */
+  public constructor(route: InteractionRoute, webIdRoute: InteractionRoute, unsubscribeRoute: InteractionRoute,
+    stateHandler: StateHandler, features: string[] = DEFAULT_NOTIFICATION_FEATURES) {
     super(NOTIFY.terms.WebHookSubscription2021,
+      route,
+      [ ...features, NOTIFY.webhookAuth ],
       // Need to remember to remove `target` from the vocabulary again once this is updated to webhooks 2023,
       // as it is not actually part of the vocabulary.
       // Technically we should also require that this node is a named node,
@@ -62,6 +82,16 @@ export class WebHookSubscription2021 extends BaseChannelType {
       [{ path: NOTIFY.target, minCount: 1, maxCount: 1 }]);
     this.unsubscribePath = unsubscribeRoute.getPath();
     this.stateHandler = stateHandler;
+    this.webId = webIdRoute.getPath();
+  }
+
+  public getDescription(): WebHookSubscriptionService {
+    const base = super.getDescription();
+
+    return {
+      ...base,
+      [NOTIFY.webid]: { id: this.webId },
+    };
   }
 
   public async initChannel(data: Store, credentials: Credentials): Promise<WebHookSubscription2021Channel> {

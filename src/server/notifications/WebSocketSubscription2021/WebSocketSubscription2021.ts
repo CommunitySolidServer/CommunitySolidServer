@@ -34,11 +34,8 @@ export function isWebSocket2021Channel(channel: NotificationChannel): channel is
 export class WebSocketSubscription2021 extends BaseChannelType {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly path: string;
-
-  public constructor(route: InteractionRoute) {
-    super(NOTIFY.terms.WebSocketSubscription2021);
-    this.path = route.getPath();
+  public constructor(route: InteractionRoute, features?: string[]) {
+    super(NOTIFY.terms.WebSocketSubscription2021, route, features);
   }
 
   public async initChannel(data: Store, credentials: Credentials): Promise<WebSocketSubscription2021Channel> {

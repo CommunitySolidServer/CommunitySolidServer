@@ -1,49 +1,50 @@
-import type { NamedNode, Quad } from '@rdfjs/types';
+import type { Quad } from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import type { InteractionRoute } from '../../identity/interaction/routing/InteractionRoute';
+import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
+import { APPLICATION_LD_JSON, INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NOTIFY } from '../../util/Vocabularies';
 import { StorageDescriber } from '../description/StorageDescriber';
+import type { NotificationChannelType } from './NotificationChannelType';
 const { namedNode, quad } = DataFactory;
 
-export const DEFAULT_NOTIFICATION_FEATURES = [
-  NOTIFY.accept,
-  NOTIFY.endAt,
-  NOTIFY.rate,
-  NOTIFY.startAt,
-  NOTIFY.state,
-];
-
 /**
- * Outputs quads describing a Notification Subscription Service,
+ * Outputs quads describing all the subscription services of the server,
  * as described in https://solidproject.org/TR/2022/notifications-protocol-20221231#discovery and
  * https://solidproject.org/TR/2022/notifications-protocol-20221231#description-resource-data-model.
+ *
+ * In the future, if there is ever a need to add notification channels to the description resource as described above,
+ * this functionality should probably be added here as well.
  */
 export class NotificationDescriber extends StorageDescriber {
-  private readonly path: NamedNode;
-  private readonly type: NamedNode;
-  private readonly features: NamedNode[];
+  private readonly converter: RepresentationConverter;
+  private readonly subscriptions: NotificationChannelType[];
 
-  /**
-   * @param route - The route describing where the subscription target is.
-   * @param type - The rdf:type of the subscription type.
-   * @param features - Which features are enabled for this subscription type. Defaults to accept/expiration/rate/state.
-   */
-  public constructor(route: InteractionRoute, type: string,
-    features: string[] = DEFAULT_NOTIFICATION_FEATURES) {
+  public constructor(converter: RepresentationConverter, subscriptions: NotificationChannelType[]) {
     super();
-    this.path = namedNode(route.getPath());
-    this.type = namedNode(type);
-    this.features = features.map(namedNode);
+    this.converter = converter;
+    this.subscriptions = subscriptions;
   }
 
-  public async handle(input: ResourceIdentifier): Promise<Quad[]> {
-    const subject = namedNode(input.path);
+  public async handle(identifier: ResourceIdentifier): Promise<Quad[]> {
+    const subject = namedNode(identifier.path);
+
+    const subscriptionLinks: Quad[] = [];
+    const preferences = { type: { [INTERNAL_QUADS]: 1 }};
+    const subscriptionQuads = await Promise.all(this.subscriptions.map(async(sub): Promise<Quad[]> => {
+      const jsonld = sub.getDescription();
+      const representation = new BasicRepresentation(JSON.stringify(jsonld), { path: jsonld.id }, APPLICATION_LD_JSON);
+      const converted = await this.converter.handleSafe({ identifier, representation, preferences });
+      const arr = await arrayifyStream<Quad>(converted.data);
+      subscriptionLinks.push(quad(subject, NOTIFY.terms.subscription, namedNode(jsonld.id)));
+      return arr;
+    }));
 
     return [
-      quad(subject, NOTIFY.terms.subscription, this.path),
-      quad(this.path, NOTIFY.terms.channelType, this.type),
-      ...this.features.map((feature): Quad => quad(this.path, NOTIFY.terms.feature, feature)),
+      ...subscriptionLinks,
+      ...subscriptionQuads.flat(),
     ];
   }
 }
