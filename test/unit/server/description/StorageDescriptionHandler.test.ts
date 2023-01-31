@@ -7,7 +7,6 @@ import type { StorageDescriber } from '../../../../src/server/description/Storag
 import { StorageDescriptionHandler } from '../../../../src/server/description/StorageDescriptionHandler';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
-import type { RepresentationConverter } from '../../../../src/storage/conversion/RepresentationConverter';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { readableToQuads } from '../../../../src/util/StreamUtil';
 import { PIM, RDF } from '../../../../src/util/Vocabularies';
@@ -21,7 +20,6 @@ describe('A StorageDescriptionHandler', (): void => {
   let operation: Operation;
   let representation: Representation;
   let store: jest.Mocked<ResourceStore>;
-  let converter: jest.Mocked<RepresentationConverter>;
   let describer: jest.Mocked<StorageDescriber>;
   let handler: StorageDescriptionHandler;
 
@@ -40,17 +38,13 @@ describe('A StorageDescriptionHandler', (): void => {
       getRepresentation: jest.fn().mockResolvedValue(representation),
     } as any;
 
-    converter = {
-      handleSafe: jest.fn(async({ representation: rep }): Promise<Representation> => rep),
-    } as any;
-
     describer = {
       canHandle: jest.fn(),
       handle: jest.fn(async(target): Promise<Quad[]> =>
         [ quad(namedNode(target.path), RDF.terms.type, PIM.terms.Storage) ]),
     } as any;
 
-    handler = new StorageDescriptionHandler(store, path, converter, describer);
+    handler = new StorageDescriptionHandler(store, path, describer);
   });
 
   it('only handles GET requests.', async(): Promise<void> => {
@@ -92,6 +86,5 @@ describe('A StorageDescriptionHandler', (): void => {
     expect(quads.countQuads(operation.target.path, RDF.terms.type, PIM.terms.Storage, null)).toBe(1);
     expect(describer.handle).toHaveBeenCalledTimes(1);
     expect(describer.handle).toHaveBeenLastCalledWith(operation.target);
-    expect(converter.handleSafe).toHaveBeenCalledTimes(1);
   });
 });

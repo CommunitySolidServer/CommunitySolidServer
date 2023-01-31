@@ -1,9 +1,11 @@
 import { DataFactory, Store } from 'n3';
 import type { Credentials } from '../../../../src/authentication/Credentials';
 import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
-import { BaseChannelType } from '../../../../src/server/notifications/BaseChannelType';
+import {
+  AbsolutePathInteractionRoute,
+} from '../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
+import { BaseChannelType, DEFAULT_NOTIFICATION_FEATURES } from '../../../../src/server/notifications/BaseChannelType';
 import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
-import { DEFAULT_NOTIFICATION_FEATURES } from '../../../../src/server/notifications/NotificationDescriber';
 import { UnprocessableEntityHttpError } from '../../../../src/util/errors/UnprocessableEntityHttpError';
 import { IdentifierSetMultiMap } from '../../../../src/util/map/IdentifierMap';
 import { NOTIFY, RDF, XSD } from '../../../../src/util/Vocabularies';
@@ -16,9 +18,11 @@ jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a5
 
 const dummyType = namedNode('http://example.com/DummyType');
 class DummyChannelType extends BaseChannelType {
-  public constructor(properties?: unknown[]) {
+  public constructor(features?: string[], properties?: unknown[]) {
     super(
       dummyType,
+      new AbsolutePathInteractionRoute('http://example.com/DummyType/'),
+      features,
       properties,
     );
   }
@@ -28,6 +32,38 @@ describe('A BaseChannelType', (): void => {
   const id = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3:https://storage.example/resource';
   const credentials: Credentials = {};
   const channelType = new DummyChannelType();
+
+  it('can provide a description of the subscription service.', async(): Promise<void> => {
+    expect(channelType.getDescription()).toEqual({
+      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
+      id: 'http://example.com/DummyType/',
+      channelType: dummyType.value,
+      feature: [ 'accept', 'endAt', 'rate', 'startAt', 'state' ],
+    });
+  });
+
+  it('can configure specific features.', async(): Promise<void> => {
+    const otherChannelType = new DummyChannelType([ 'notify:accept' ]);
+    expect(otherChannelType.getDescription()).toEqual({
+      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
+      id: 'http://example.com/DummyType/',
+      channelType: dummyType.value,
+      feature: [ 'accept' ],
+    });
+  });
+
+  it('uses the notify prefix for non-default features in the namespace.', async(): Promise<void> => {
+    const otherChannelType = new DummyChannelType([ `${NOTIFY.namespace}feat1`, 'http://example.com/feat2' ]);
+    expect(otherChannelType.getDescription()).toEqual({
+      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
+      id: 'http://example.com/DummyType/',
+      channelType: dummyType.value,
+      feature: [
+        'notify:feat1',
+        'http://example.com/feat2',
+      ],
+    });
+  });
 
   describe('#initChannel', (): void => {
     let data: Store;

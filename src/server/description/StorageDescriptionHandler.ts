@@ -1,7 +1,6 @@
 import { OkResponseDescription } from '../../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../../http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
-import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
@@ -20,15 +19,12 @@ import type { StorageDescriber } from './StorageDescriber';
 export class StorageDescriptionHandler extends OperationHttpHandler {
   private readonly store: ResourceStore;
   private readonly path: string;
-  private readonly converter: RepresentationConverter;
   private readonly describer: StorageDescriber;
 
-  public constructor(store: ResourceStore, path: string, converter: RepresentationConverter,
-    describer: StorageDescriber) {
+  public constructor(store: ResourceStore, path: string, describer: StorageDescriber) {
     super();
     this.store = store;
     this.path = path;
-    this.converter = converter;
     this.describer = describer;
   }
 
@@ -46,13 +42,11 @@ export class StorageDescriptionHandler extends OperationHttpHandler {
     await this.describer.canHandle(target);
   }
 
-  public async handle({ operation: { target, preferences }}: OperationHttpHandlerInput): Promise<ResponseDescription> {
+  public async handle({ operation: { target }}: OperationHttpHandlerInput): Promise<ResponseDescription> {
     const quads = await this.describer.handle(target);
 
     const representation = new BasicRepresentation(quads, INTERNAL_QUADS);
 
-    const converted = await this.converter.handleSafe({ identifier: target, representation, preferences });
-
-    return new OkResponseDescription(converted.metadata, converted.data);
+    return new OkResponseDescription(representation.metadata, representation.data);
   }
 }

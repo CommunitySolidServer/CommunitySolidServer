@@ -3,6 +3,9 @@ import type { Credentials } from '../../../../../src/authentication/Credentials'
 import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
+import {
+  RelativePathInteractionRoute,
+} from '../../../../../src/identity/interaction/routing/RelativePathInteractionRoute';
 import type { Logger } from '../../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import { CONTEXT_NOTIFICATION } from '../../../../../src/server/notifications/Notification';
@@ -36,7 +39,9 @@ describe('A WebHookSubscription2021', (): void => {
   const subject = blankNode();
   let data: Store;
   let channel: WebHookSubscription2021Channel;
-  const unsubscribeRoute = new AbsolutePathInteractionRoute('http://example.com/unsubscribe');
+  const route = new AbsolutePathInteractionRoute('http://example.com/webhooks/');
+  const webIdRoute = new RelativePathInteractionRoute(route, '/webid');
+  const unsubscribeRoute = new RelativePathInteractionRoute(route, '/unsubscribe');
   let stateHandler: jest.Mocked<StateHandler>;
   let channelType: WebHookSubscription2021;
 
@@ -61,7 +66,7 @@ describe('A WebHookSubscription2021', (): void => {
       handleSafe: jest.fn(),
     } as any;
 
-    channelType = new WebHookSubscription2021(unsubscribeRoute, stateHandler);
+    channelType = new WebHookSubscription2021(route, webIdRoute, unsubscribeRoute, stateHandler);
   });
 
   it('exposes a utility function to verify if a channel is a webhook channel.', async(): Promise<void> => {
@@ -69,6 +74,16 @@ describe('A WebHookSubscription2021', (): void => {
 
     (channel as NotificationChannel).type = 'something else';
     expect(isWebHook2021Channel(channel)).toBe(false);
+  });
+
+  it('returns a correct description of the subscription service.', async(): Promise<void> => {
+    expect(channelType.getDescription()).toEqual({
+      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
+      id: 'http://example.com/webhooks/',
+      channelType: 'http://www.w3.org/ns/solid/notifications#WebHookSubscription2021',
+      feature: [ 'accept', 'endAt', 'rate', 'startAt', 'state', 'notify:webhookAuth' ],
+      'http://www.w3.org/ns/solid/notifications#webid': { id: 'http://example.com/webhooks/webid' },
+    });
   });
 
   it('correctly parses notification channel bodies.', async(): Promise<void> => {

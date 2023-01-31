@@ -6,8 +6,8 @@
       "@id": "urn:solid-server:default:WebSocket2021Subscriber",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "allowedMethods": [ "POST" ],
-      "allowedPathNames": [ "/WebSocketSubscription2021/" ],
+      "allowedMethods": [ "HEAD", "GET", "POST" ],
+      "allowedPathNames": [ "/WebSocketSubscription2021/$" ],
       "handler": {
         "@type": "NotificationSubscriber",
         "channelType": { "@id": "urn:solid-server:default:WebSocketSubscription2021" },
@@ -36,6 +36,16 @@
       "@type": "WaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:WebSocket2021Subscriber" }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:NotificationDescriber",
+      "@type": "NotificationDescriber",
+      "subscriptions": [
+        {
+          "@id": "urn:solid-server:default:WebSocketSubscription2021"
+        }
       ]
     }
   ]

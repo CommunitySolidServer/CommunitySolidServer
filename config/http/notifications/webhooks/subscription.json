@@ -6,7 +6,7 @@
       "@id": "urn:solid-server:default:WebHookSubscriber",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "allowedMethods": [ "POST" ],
+      "allowedMethods": [ "HEAD", "GET", "POST" ],
       "allowedPathNames": [ "/WebHookSubscription2021/$" ],
       "handler": {
         "@type": "NotificationSubscriber",
@@ -22,12 +22,24 @@
       "comment": "Contains all the metadata relevant for a WebHookSubscription2021.",
       "@id": "urn:solid-server:default:WebHookSubscription2021",
       "@type": "WebHookSubscription2021",
+      "route": { "@id": "urn:solid-server:default:WebHookRoute" },
+      "webIdRoute": { "@id": "urn:solid-server:default:WebHookWebIdRoute" },
       "unsubscribeRoute": { "@id": "urn:solid-server:default:WebHookUnsubscribeRoute" },
       "stateHandler": {
         "@type": "BaseStateHandler",
         "handler": { "@id": "urn:solid-server:default:WebHookNotificationHandler" },
         "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
       }
+    },
+
+    {
+      "@id": "urn:solid-server:default:NotificationDescriber",
+      "@type": "NotificationDescriber",
+      "subscriptions": [
+        {
+          "@id": "urn:solid-server:default:WebHookSubscription2021"
+        }
+      ]
     }
   ]
 }

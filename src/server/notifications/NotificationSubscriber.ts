@@ -80,6 +80,13 @@ export class NotificationSubscriber extends OperationHttpHandler {
   }
 
   public async handle({ operation, request }: OperationHttpHandlerInput): Promise<ResponseDescription> {
+    if (operation.method === 'GET' || operation.method === 'HEAD') {
+      const description = JSON.stringify(this.channelType.getDescription(), null, 2);
+      const representation = new BasicRepresentation(description, operation.target, APPLICATION_LD_JSON);
+      return new OkResponseDescription(representation.metadata,
+        operation.method === 'GET' ? representation.data : undefined);
+    }
+
     const credentials = await this.credentialsExtractor.handleSafe(request);
     this.logger.debug(`Extracted credentials: ${JSON.stringify(credentials)}`);
 
