@@ -1,6 +1,7 @@
 import { readJson } from 'fs-extra';
 import type { RegistrationManager } from '../identity/interaction/email-password/util/RegistrationManager';
 import { getLoggerFor } from '../logging/LogUtil';
+import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { Initializer } from './Initializer';
 
 /**
@@ -42,10 +43,15 @@ export class SeededPodInitializer extends Initializer {
       this.logger.debug(`Validated input: ${JSON.stringify(validated)}`);
 
       // Register and/or create a pod as requested. Potentially does nothing if all booleans are false.
-      await this.registrationManager.register(validated, true);
-      this.logger.info(`Initialized seeded pod and account for "${input.podName}".`);
-      count += 1;
+      try {
+        await this.registrationManager.register(validated, true);
+        this.logger.info(`Initialized seeded pod and account for "${input.podName}".`);
+        count += 1;
+      } catch (error: unknown) {
+        this.logger.warn(`Error while initializing seeded pod: ${createErrorMessage(error)})}`);
+      }
     }
+
     this.logger.info(`Initialized ${count} seeded pods.`);
   }
 }
