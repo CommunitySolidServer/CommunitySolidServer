@@ -3,6 +3,54 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.0-alpha.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v5.1.0...v6.0.0-alpha.0) (2023-02-01)
+
+### Features
+
+* Hash lock-related identifiers ([0d6b895](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0d6b895df361fef2dd79208605f3610a756ab178))
+* Take preferences as input in `RepresentationConvertingStore` ([7422fbf](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7422fbffe7500780ed01d4cb6f9dea520456657a))
+* Return clear error when multiple values for a cli flag are given ([5c79e60](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5c79e60238955b1c9d14d22d8fcd51cd8bec1c39))
+* Allow css configuration from package.json or config file ([d61bf9b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d61bf9bf1957fb706b2be2aaa016c367d2ae92f0))
+* Remove agent/user permission differentiation ([c46d01d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c46d01d3d724e53a2eb9774f027fc0c5632d7dcf))
+* Move WAC-Allow metadata collecting to HTTP handler ([6ad5c0c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6ad5c0c7977f4b53fe9d2249161b6157d056f9bb))
+* Allow CachedHandler to cache on multiple object fields ([9b15b1d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9b15b1d7e1e905ee03a0ec50e2e8b9daf69c1f00))
+* Allow server to bind to Unix Domain Sockets ([bf0e35b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/bf0e35be37e666769a083a95d52e78335f1d993e))
+* Add support for WebHookSubscription2021 ([f54c34d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f54c34d1e066dfc4feddf592adbcca5f5b14bd4e))
+* Add support for WebSocketSubscription2021 ([b1f7a6a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b1f7a6a8b1a5d28a03d0d6f4620b3078acc4e31e))
+* Add support for the Notification specification ([cbc07c6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cbc07c6ef3970083f0e513d15bc8f4d0a935b5d3))
+* Create a CachedHandler that caches AsyncHandler results ([be7af27](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/be7af277bb35344df11c5785aca5263e056b35ba))
+* Expose a storage description resource for storage containers ([df2f69f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/df2f69f5327f097662ffead20b0c49f755e85d56))
+* Create an OperationRouterHandler ([3db1921](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3db19216331ed789322a0509616a839bb890f788))
+* Create an ArrayUnionHandler which flattens the sources results ([da99ff3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/da99ff30f63b673ea272fc918c69c9ff4a5c0401))
+* Split up server creation and request handling ([4223dcf](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4223dcf8a48300cabc01bfa744ddf9e205808693))
+* Create a GenericEventEmitter interface ([764ce3c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/764ce3cc285ec5a41903c3018c2ae47444a1410d))
+* Support async default values in getDefault ([a1e916b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a1e916b73aa7aa8c5657ec030272192e68ac244a))
+* Add required ACP headers ([fa1dee5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fa1dee573e9481ca901aa52da275014ac8964b2e))
+* Update Credentials typings to support client/issuer ([f3e7a20](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f3e7a208002cc687505b06c6737785a02b71f733))
+* Update templates and generators to support ACP ([40f2c8e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/40f2c8ea42221fff706df66f01ddf6dccf58d462))
+* Create configs for server with ACP authorization ([db68074](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/db680740b57a82bac90cb50b26b91395064dc4c0))
+* Create AcpReader ([a6409ad](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a6409ad00d8034931873accedc2884abf556e23e))
+* Allow vocabularies to be extended ([97f7ca0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/97f7ca027ea55a5ee9a80582671743f33237c571))
+* Improve vocabulary typings ([2e1bae9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2e1bae90c7b06221b55ffb9382948a580e6408e4))
+* Remove caching from AgentGroupAccessChecker ([3c43d04](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3c43d046ef726556c59abfee52c259b92ed6df94))
+
+### Fixes
+
+* Expose Www-Authenticate via CORS ([60718a1](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/60718a123d201d64315d03d5cd7977479d6cdc7f))
+* Prevent accidental nested storages ([4d9d1b9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4d9d1b90b0d808d5807b8515e48fbee7ea6aaee0))
+* Convert TemplateEngine to AsyncHandlers ([cf74ce3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cf74ce3d2a70d77d1139637191ad27c87704ab2e))
+
+### Testing
+
+* Reduce integration test memory usage ([80fa81a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/80fa81a556c78d252ee3419fcdfd778b1b2ddc79))
+* Update PermissionTable to also test all ACP cases ([56b7e63](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/56b7e638430af0d6e09cb36ae63b472fd3d5aa64))
+
+### Documentation
+
+* Add links to tutorial repo ([f0c7c60](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f0c7c60619069d58e0c6b488e303cd9714477ec1))
+* Add notification architecture documentation ([7b6ddfa](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7b6ddfa2729d0146e08fbd0a2f5e25698a248ba1))
+* Document ACP-related changes ([c73ef50](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c73ef50e48fdf8a1646ca8a77be5c6ffeb5e9562))
+
 ## [5.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v5.0.0...v5.1.0) (2022-11-03)
 
 ### Features

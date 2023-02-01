@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "5.1.0",
+  "version": "6.0.0-alpha.0",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "keywords": [
     "solid",
@@ -23,13 +23,13 @@
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "dist/components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld": "dist/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld": "dist/components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/": "dist/components/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/config/": "config/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/dist/": "dist/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/templates/config/": "templates/config/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/": "dist/components/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/config/": "config/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/dist/": "dist/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/templates/config/": "templates/config/"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
