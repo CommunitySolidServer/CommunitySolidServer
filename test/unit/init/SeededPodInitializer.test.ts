@@ -45,4 +45,11 @@ describe('A SeededPodInitializer', (): void => {
     expect(registrationManager.validateInput).toHaveBeenCalledTimes(2);
     expect(registrationManager.register).toHaveBeenCalledTimes(2);
   });
+
+  it('does not throw exceptions when a seeded pod already exists.', async(): Promise<void> => {
+    registrationManager.register = jest.fn().mockRejectedValueOnce(new Error('Pod already exists'));
+    await new SeededPodInitializer(registrationManager, configFilePath).handle();
+    expect(registrationManager.validateInput).toHaveBeenCalledTimes(2);
+    expect(registrationManager.register).toHaveBeenCalledTimes(2);
+  });
 });
