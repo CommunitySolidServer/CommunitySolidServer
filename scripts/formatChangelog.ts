@@ -22,15 +22,6 @@ async function capitalizeListEntries(input: string): Promise<string> {
 }
 
 /**
- * Change all version titles to H2 ("### [vX.Y.Z]" to "## [vX.Y.Z]")
- * @param input - String to search/replace
- * @returns Promise with output string
- */
-async function convertH3ToH2(input: string): Promise<string> {
-  return input.replace(/### \[/gu, '## [');
-}
-
-/**
  * Ends the process and writes out an error in case something goes wrong.
  */
 function endProcess(error: Error): never {
@@ -45,7 +36,6 @@ function endProcess(error: Error): never {
  */
 async function formatChangelog(filePath: string): Promise<void> {
   let changelog = await readFile(filePath, 'utf8');
-  changelog = await convertH3ToH2(changelog);
   changelog = await capitalizeListEntries(changelog);
   return writeFile(filePath, changelog, 'utf8');
 }
