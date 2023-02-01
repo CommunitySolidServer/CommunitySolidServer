@@ -20,6 +20,7 @@ describe('ServerInitializer', (): void => {
     (getLoggerFor as jest.MockedFn<() => Logger>).mockReturnValue(logger);
 
     server = {
+      address: jest.fn().mockResolvedValue('address'),
       listen: jest.fn(),
       close: jest.fn((fn: () => void): void => fn()),
     } as any;
@@ -47,6 +48,18 @@ describe('ServerInitializer', (): void => {
     expect(server.listen).toHaveBeenLastCalledWith(3000);
     expect(logger.info).toHaveBeenCalledTimes(1);
     expect(logger.info).toHaveBeenLastCalledWith(`Listening to server at https://localhost:3000/`);
+  });
+
+  it('listens to the specified Unix Domain Socket.', async(): Promise<void> => {
+    initializer = new ServerInitializer(serverFactory, undefined, '/tmp/css.sock');
+    await initializer.handle();
+    expect(server.listen).toHaveBeenCalledWith('/tmp/css.sock');
+  });
+
+  it('throws when neither port or socket are set.', async(): Promise<void> => {
+    expect((): void => {
+      initializer = new ServerInitializer(serverFactory, undefined, undefined);
+    }).toThrow('Either Port or Socket arguments must be set');
   });
 
   it('can stop the server.', async(): Promise<void> => {

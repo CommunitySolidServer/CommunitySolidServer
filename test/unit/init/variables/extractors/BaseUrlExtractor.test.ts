@@ -16,6 +16,11 @@ describe('A BaseUrlExtractor', (): void => {
     await expect(computer.handle({ port: 3333 })).resolves.toBe('http://localhost:3333/');
   });
 
+  it('throws when a Unix Socket Path is provided without a baseUrl.', async(): Promise<void> => {
+    await expect(computer.handle({ socket: '/tmp/css.sock' })).rejects
+      .toThrow('BaseUrl argument should be provided when using Unix Domain Sockets.');
+  });
+
   it('defaults to port 3000.', async(): Promise<void> => {
     await expect(computer.handle({})).resolves.toBe('http://localhost:3000/');
   });

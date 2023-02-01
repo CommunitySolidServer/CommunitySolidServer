@@ -83,7 +83,7 @@
   "commit-and-tag-version": {
     "scripts": {
       "postbump": "ts-node ./scripts/upgradeConfig.ts",
-      "postchangelog": "ts-node ./scripts/formatChangelog.ts"
+      "postchangelog": "ts-node ./scripts/formatChangelog.ts && markdownlint-cli2-fix"
     },
     "writerOpts": {
       "commitsSort": false
@@ -128,7 +128,7 @@
     "arrayify-stream": "^2.0.0",
     "async-lock": "^1.3.2",
     "bcryptjs": "^2.4.3",
-    "componentsjs": "^5.3.0",
+    "componentsjs": "^5.3.2",
     "cors": "^2.8.5",
     "cross-fetch": "^3.1.5",
     "ejs": "^3.1.8",
