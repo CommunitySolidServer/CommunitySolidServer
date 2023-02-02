@@ -160,13 +160,13 @@ export class S3DataAccessor implements DataAccessor {
     return ensureLeadingSlash(identifier.path.replace(this.baseUrl, ''));
   }
 
-  // Combination of often used S3 parameters.
+  // Combination of often-used S3 parameters.
   protected baseParams(identifier: ResourceIdentifier): { Bucket: string; Key: string } {
     return { Bucket: this.bucket, Key: this.objectFor(identifier) };
   }
 
   /**
-   * Retrieves stream the object corresponding to the identifier from S3.
+   * Retrieves stream of the object corresponding to the identifier from S3.
    */
   public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
     this.logger.info(`Retrieving ${identifier.path}.`);
@@ -190,7 +190,7 @@ export class S3DataAccessor implements DataAccessor {
   }
 
   /**
-   * Generates metadata for direct children of the identifier, based on their key prefix (i.e. path).
+   * Generates metadata for direct children of the identifier, based on their key prefix (i.e., path).
    */
   public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
     this.logger.info(`Getting children of ${identifier.path}.`);

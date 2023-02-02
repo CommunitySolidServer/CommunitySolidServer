@@ -38,7 +38,7 @@
       "comment": "A single-pod server that stores its resources on disk."
     },
     {
-      "comment": "A more complex example with 3 different stores being routed to.",
+      "comment": "A more complex example, routing data to 3 different stores.",
       "@id": "urn:solid-server:default:ResourceStore_Backend",
       "@type": "RoutingResourceStore",
       "rule": { "@id": "urn:solid-server:default:RouterRule" }
@@ -46,8 +46,8 @@
 
     {
       "comment": [
-        "Configure routing to send all requests containing /file/ to the file store, containing /memory/ to the memory store and /sparql/ to the sparql endpoint store.",
-        "The root ACL and metadata resources will be stored in the sparql endpoint store."
+        "Configure routing to send all requests containing `/file/` to the file store, containing `/memory/` to the memory store, and `/sparql/` to the SPARQL endpoint store.",
+        "The root ACL and metadata resources will be stored in the SPARQL endpoint store."
       ],
       "@id": "urn:solid-server:default:RouterRule",
       "@type": "RegexRouterRule",
