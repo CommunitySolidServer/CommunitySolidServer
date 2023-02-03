@@ -27,9 +27,9 @@ describe('A KeyValueChannelStorage', (): void => {
   beforeEach(async(): Promise<void> => {
     resetAllMocks();
     channel = {
-      id: `WebSocketSubscription2021:${v4()}:http://example.com/foo`,
+      id: `WebSocketChannel2023:${v4()}:http://example.com/foo`,
       topic,
-      type: 'WebSocketSubscription2021',
+      type: 'WebSocketChannel2023',
     };
 
     internalMap = new Map();

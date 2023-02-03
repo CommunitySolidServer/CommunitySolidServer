@@ -3,12 +3,12 @@ import type { WebSocket } from 'ws';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import {
-  WebSocket2021Emitter,
-} from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocket2021Emitter';
+  WebSocket2023Emitter,
+} from '../../../../../src/server/notifications/WebSocketChannel2023/WebSocket2023Emitter';
 import type { SetMultiMap } from '../../../../../src/util/map/SetMultiMap';
 import { WrappedSetMultiMap } from '../../../../../src/util/map/WrappedSetMultiMap';
 
-describe('A WebSocket2021Emitter', (): void => {
+describe('A WebSocket2023Emitter', (): void => {
   const channel: NotificationChannel = {
     id: 'id',
     topic: 'http://example.com/foo',
@@ -17,7 +17,7 @@ describe('A WebSocket2021Emitter', (): void => {
 
   let webSocket: jest.Mocked<WebSocket>;
   let socketMap: SetMultiMap<string, WebSocket>;
-  let emitter: WebSocket2021Emitter;
+  let emitter: WebSocket2023Emitter;
 
   beforeEach(async(): Promise<void> => {
     webSocket = new EventEmitter() as any;
@@ -26,7 +26,7 @@ describe('A WebSocket2021Emitter', (): void => {
 
     socketMap = new WrappedSetMultiMap();
 
-    emitter = new WebSocket2021Emitter(socketMap);
+    emitter = new WebSocket2023Emitter(socketMap);
   });
 
   it('emits notifications to the stored WebSockets.', async(): Promise<void> => {

@@ -2,15 +2,15 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Handles the subscriptions targeting a WebSocketSubscription2021.",
-      "@id": "urn:solid-server:default:WebSocket2021Subscriber",
+      "comment": "Handles the subscriptions targeting a WebSocketChannel2023.",
+      "@id": "urn:solid-server:default:WebSocket2023Subscriber",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "allowedMethods": [ "HEAD", "GET", "POST" ],
-      "allowedPathNames": [ "/WebSocketSubscription2021/$" ],
+      "allowedPathNames": [ "/WebSocketChannel2023/$" ],
       "handler": {
         "@type": "NotificationSubscriber",
-        "channelType": { "@id": "urn:solid-server:default:WebSocketSubscription2021" },
+        "channelType": { "@id": "urn:solid-server:default:WebSocketChannel2023Type" },
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
         "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
@@ -19,23 +19,23 @@
       }
     },
     {
-      "@id": "urn:solid-server:default:WebSocket2021Route",
+      "@id": "urn:solid-server:default:WebSocket2023Route",
       "@type": "RelativePathInteractionRoute",
       "base": { "@id": "urn:solid-server:default:NotificationRoute" },
-      "relativePath": "/WebSocketSubscription2021/"
+      "relativePath": "/WebSocketChannel2023/"
     },
     {
-      "comment": "Contains all the metadata relevant for a WebSocketSubscription2021.",
-      "@id": "urn:solid-server:default:WebSocketSubscription2021",
-      "@type": "WebSocketSubscription2021",
-      "route": { "@id": "urn:solid-server:default:WebSocket2021Route" }
+      "comment": "Contains all the metadata relevant for a WebSocketChannel2023.",
+      "@id": "urn:solid-server:default:WebSocketChannel2023Type",
+      "@type": "WebSocketChannel2023Type",
+      "route": { "@id": "urn:solid-server:default:WebSocket2023Route" }
     },
 
     {
       "@id": "urn:solid-server:default:NotificationTypeHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:WebSocket2021Subscriber" }
+        { "@id": "urn:solid-server:default:WebSocket2023Subscriber" }
       ]
     },
 
@@ -44,7 +44,7 @@
       "@type": "NotificationDescriber",
       "subscriptions": [
         {
-          "@id": "urn:solid-server:default:WebSocketSubscription2021"
+          "@id": "urn:solid-server:default:WebSocketChannel2023Type"
         }
       ]
     }
