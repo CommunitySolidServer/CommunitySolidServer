@@ -2,13 +2,6 @@
 
 Options related to the server startup.
 
-## Base
-
-This is the entry point to the main server setup.
-
-* *default*: The main application. This should only be changed/replaced
-             if you want to start from a different kind of class.
-
 ## Init
 
 Contains a list of initializer that need to be run when starting the server.
@@ -17,6 +10,13 @@ Contains a list of initializer that need to be run when starting the server.
 * *initialize-root*: Makes sure the root container has the necessary resources to function properly.
                      This is only relevant if setup is disabled but root container access is still required.
 * *initialize-prefilled-root*: Similar to `initialize-root` but adds some introductory resources to the root container.
+
+## Main
+
+This is the entry point to the main server setup.
+
+* *default*: The main application. This should only be changed/replaced
+  if you want to start from a different kind of class.
 
 ## Setup
 
