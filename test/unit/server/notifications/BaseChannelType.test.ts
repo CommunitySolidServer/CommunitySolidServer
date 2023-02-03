@@ -142,6 +142,26 @@ describe('A BaseChannelType', (): void => {
       }));
     });
 
+    it('removes features from the input that are not supported.', async(): Promise<void> => {
+      const date = '1988-03-09T14:48:00.000Z';
+
+      data.addQuad(quad(subject, NOTIFY.terms.startAt, literal(date, XSD.terms.dateTime)));
+      data.addQuad(quad(subject, NOTIFY.terms.endAt, literal(date, XSD.terms.dateTime)));
+      data.addQuad(quad(subject, NOTIFY.terms.rate, literal('PT10S', XSD.terms.duration)));
+      data.addQuad(quad(subject, NOTIFY.terms.accept, literal('text/turtle')));
+      data.addQuad(quad(subject, NOTIFY.terms.state, literal('123456')));
+
+      const featChannelType = new DummyChannelType([ 'notify:endAt', 'notify:accept', NOTIFY.state ]);
+      await expect(featChannelType.initChannel(data, credentials)).resolves.toEqual({
+        id,
+        type: dummyType.value,
+        topic: 'https://storage.example/resource',
+        endAt: Date.parse(date),
+        accept: 'text/turtle',
+        state: '123456',
+      });
+    });
+
     it('requires correct datatypes on the features.', async(): Promise<void> => {
       for (const feature of DEFAULT_NOTIFICATION_FEATURES) {
         const badData = new Store(data.getQuads(null, null, null, null));

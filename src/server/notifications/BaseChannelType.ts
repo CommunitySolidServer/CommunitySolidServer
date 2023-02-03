@@ -223,18 +223,21 @@ export abstract class BaseChannelType implements NotificationChannelType {
 
     // Apply the values for all present features that are enabled
     for (const feature of DEFAULT_NOTIFICATION_FEATURES) {
-      const objects = data.getObjects(subject, feature, null);
-      if (objects.length === 1) {
-        // Will always succeed since we are iterating over a list which was built using `featureDefinitions`
-        const { dataType, key } = featureDefinitions.find((feat): boolean => feat.predicate.value === feature)!;
-        let val: string | number = objects[0].value;
-        if (dataType === XSD.dateTime) {
-          val = Date.parse(val);
-        } else if (dataType === XSD.duration) {
-          val = toSeconds(parse(val)) * 1000;
+      const featNode = this.features.find((node): boolean => node.value === feature);
+      if (featNode) {
+        const objects = data.getObjects(subject, feature, null);
+        if (objects.length === 1) {
+          // Will always succeed since we are iterating over a list which was built using `featureDefinitions`
+          const { dataType, key } = featureDefinitions.find((feat): boolean => feat.predicate.value === feature)!;
+          let val: string | number = objects[0].value;
+          if (dataType === XSD.dateTime) {
+            val = Date.parse(val);
+          } else if (dataType === XSD.duration) {
+            val = toSeconds(parse(val)) * 1000;
+          }
+          // Need to convince TS that we can assign `string | number` to this key
+          (channel as Record<typeof key, string | number>)[key] = val;
         }
-        // Need to convince TS that we can assign `string | number` to this key
-        (channel as Record<typeof key, string | number>)[key] = val;
       }
     }
 
