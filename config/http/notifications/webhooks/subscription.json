@@ -24,7 +24,6 @@
       "@type": "WebHookSubscription2021",
       "route": { "@id": "urn:solid-server:default:WebHookRoute" },
       "webIdRoute": { "@id": "urn:solid-server:default:WebHookWebIdRoute" },
-      "unsubscribeRoute": { "@id": "urn:solid-server:default:WebHookUnsubscribeRoute" },
       "stateHandler": {
         "@type": "BaseStateHandler",
         "handler": { "@id": "urn:solid-server:default:WebHookNotificationHandler" },

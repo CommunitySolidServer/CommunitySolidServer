@@ -14,6 +14,7 @@ import type { InteractionRoute } from '../../identity/interaction/routing/Intera
 import { ContextDocumentLoader } from '../../storage/conversion/ConversionUtil';
 import { UnprocessableEntityHttpError } from '../../util/errors/UnprocessableEntityHttpError';
 import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
+import { joinUrl } from '../../util/PathUtil';
 import { readableToQuads } from '../../util/StreamUtil';
 import { msToDuration } from '../../util/StringUtil';
 import { NOTIFY, RDF, XSD } from '../../util/Vocabularies';
@@ -201,7 +202,9 @@ export abstract class BaseChannelType implements NotificationChannelType {
 
   /**
    * Converts a set of quads to a {@link NotificationChannel}.
-   * Assumes the data is valid, so this should be called after {@link validateSubscription}
+   * Assumes the data is valid, so this should be called after {@link validateSubscription}.
+   *
+   * The generated identifier will be a URL made by combining the base URL of the channel type with a unique identifier.
    *
    * The values of the default features will be added to the resulting channel,
    * subclasses with additional features that need to be added are responsible for parsing those quads.
@@ -216,7 +219,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
     const type = data.getObjects(subject, RDF.terms.type, null)[0] as NamedNode;
 
     const channel: NotificationChannel = {
-      id: `${v4()}:${topic.value}`,
+      id: joinUrl(this.path, v4()),
       type: type.value,
       topic: topic.value,
     };

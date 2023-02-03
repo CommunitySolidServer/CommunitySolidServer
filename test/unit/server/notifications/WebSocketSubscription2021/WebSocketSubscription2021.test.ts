@@ -34,7 +34,7 @@ describe('A WebSocketSubscription2021', (): void => {
     data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebSocketSubscription2021));
     data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));
 
-    const id = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3:https://storage.example/resource';
+    const id = 'http://example.com/foo/4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
     channel = {
       id,
       type: NOTIFY.WebSocketSubscription2021,

@@ -6,7 +6,7 @@ import { BasicRepresentation } from '../../src/http/representation/BasicRepresen
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { joinUrl } from '../../src/util/PathUtil';
-import { NOTIFY } from '../../src/util/Vocabularies';
+import { NOTIFY, RDF } from '../../src/util/Vocabularies';
 import { expectNotification, subscribe } from '../util/NotificationUtil';
 import { getPort } from '../util/Util';
 import {
@@ -222,5 +222,30 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
 
     const message = (await messagePromise).toString();
     expect(message).toBe('Notification channel has expired');
+  });
+
+  it('can use other RDF formats and content negotiation when creating a channel.', async(): Promise<void> => {
+    const turtleChannel = `
+      _:id <${RDF.type}> <${notificationType}> ;
+           <http://www.w3.org/ns/solid/notifications#topic> <${topic}>.
+    `;
+
+    const response = await fetch(subscriptionUrl, {
+      method: 'POST',
+      headers: {
+        authorization: `WebID ${webId}`,
+        'content-type': 'text/turtle',
+        accept: 'text/turtle',
+      },
+      body: turtleChannel,
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('text/turtle');
+
+    const parser = new Parser({ baseIRI: subscriptionUrl });
+    const quads = new Store(parser.parse(await response.text()));
+
+    expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ NOTIFY.terms.WebSocketSubscription2021 ]);
+    expect(quads.getObjects(null, NOTIFY.terms.topic, null)).toEqual([ namedNode(topic) ]);
   });
 });

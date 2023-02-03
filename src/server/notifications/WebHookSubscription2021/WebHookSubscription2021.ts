@@ -9,7 +9,6 @@ import { BaseChannelType, DEFAULT_NOTIFICATION_FEATURES } from '../BaseChannelTy
 import type { NotificationChannel } from '../NotificationChannel';
 import type { SubscriptionService } from '../NotificationChannelType';
 import type { StateHandler } from '../StateHandler';
-import { generateWebHookUnsubscribeUrl } from './WebHook2021Util';
 
 /**
  * A {@link NotificationChannel} containing the necessary fields for a WebHookSubscription2021 channel.
@@ -57,19 +56,17 @@ export function isWebHook2021Channel(channel: NotificationChannel): channel is W
 export class WebHookSubscription2021 extends BaseChannelType {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly unsubscribePath: string;
   private readonly stateHandler: StateHandler;
   private readonly webId: string;
 
   /**
    * @param route - The route corresponding to the URL of the subscription service of this channel type.
    * @param webIdRoute - The route to the WebID that needs to be used when generating DPoP tokens for notifications.
-   * @param unsubscribeRoute - The route where the request needs to be sent to unsubscribe.
    * @param stateHandler - The {@link StateHandler} that will be called after a successful subscription.
    * @param features - The features that need to be enabled for this channel type.
    */
-  public constructor(route: InteractionRoute, webIdRoute: InteractionRoute, unsubscribeRoute: InteractionRoute,
-    stateHandler: StateHandler, features: string[] = DEFAULT_NOTIFICATION_FEATURES) {
+  public constructor(route: InteractionRoute, webIdRoute: InteractionRoute, stateHandler: StateHandler,
+    features: string[] = DEFAULT_NOTIFICATION_FEATURES) {
     super(NOTIFY.terms.WebHookSubscription2021,
       route,
       [ ...features, NOTIFY.webhookAuth ],
@@ -80,7 +77,6 @@ export class WebHookSubscription2021 extends BaseChannelType {
       // which would make this more annoying so we are lenient here.
       // Could change in the future once this field is updated and part of the context.
       [{ path: NOTIFY.target, minCount: 1, maxCount: 1 }]);
-    this.unsubscribePath = unsubscribeRoute.getPath();
     this.stateHandler = stateHandler;
     this.webId = webIdRoute.getPath();
   }
@@ -114,7 +110,7 @@ export class WebHookSubscription2021 extends BaseChannelType {
       webId,
       target: target.value,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      unsubscribe_endpoint: generateWebHookUnsubscribeUrl(this.unsubscribePath, channel.id),
+      unsubscribe_endpoint: channel.id,
     };
   }
 
