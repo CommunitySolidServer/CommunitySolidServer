@@ -7,7 +7,6 @@ import { NotFoundHttpError } from '../../../util/errors/NotFoundHttpError';
 import type { OperationHttpHandlerInput } from '../../OperationHttpHandler';
 import { OperationHttpHandler } from '../../OperationHttpHandler';
 import type { NotificationChannelStorage } from '../NotificationChannelStorage';
-import { parseWebHookUnsubscribeUrl } from './WebHook2021Util';
 import { isWebHook2021Channel } from './WebHookSubscription2021';
 
 /**
@@ -27,7 +26,7 @@ export class WebHookUnsubscriber extends OperationHttpHandler {
   }
 
   public async handle({ operation, request }: OperationHttpHandlerInput): Promise<ResponseDescription> {
-    const id = parseWebHookUnsubscribeUrl(operation.target.path);
+    const id = operation.target.path;
     const channel = await this.storage.get(id);
     if (!channel || !isWebHook2021Channel(channel)) {
       throw new NotFoundHttpError();

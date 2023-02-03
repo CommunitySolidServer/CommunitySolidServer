@@ -18,7 +18,6 @@ import {
   isWebHook2021Channel,
   WebHookSubscription2021,
 } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
-import { joinUrl } from '../../../../../src/util/PathUtil';
 import { NOTIFY, RDF } from '../../../../../src/util/Vocabularies';
 import quad = DataFactory.quad;
 import blankNode = DataFactory.blankNode;
@@ -41,7 +40,6 @@ describe('A WebHookSubscription2021', (): void => {
   let channel: WebHookSubscription2021Channel;
   const route = new AbsolutePathInteractionRoute('http://example.com/webhooks/');
   const webIdRoute = new RelativePathInteractionRoute(route, '/webid');
-  const unsubscribeRoute = new RelativePathInteractionRoute(route, '/unsubscribe');
   let stateHandler: jest.Mocked<StateHandler>;
   let channelType: WebHookSubscription2021;
 
@@ -51,7 +49,7 @@ describe('A WebHookSubscription2021', (): void => {
     data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));
     data.addQuad(quad(subject, NOTIFY.terms.target, namedNode(target)));
 
-    const id = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3:https://storage.example/resource';
+    const id = 'http://example.com/webhooks/4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
     channel = {
       id,
       type: NOTIFY.WebHookSubscription2021,
@@ -59,14 +57,14 @@ describe('A WebHookSubscription2021', (): void => {
       target,
       webId: 'http://example.org/alice',
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      unsubscribe_endpoint: joinUrl(unsubscribeRoute.getPath(), encodeURIComponent(id)),
+      unsubscribe_endpoint: id,
     };
 
     stateHandler = {
       handleSafe: jest.fn(),
     } as any;
 
-    channelType = new WebHookSubscription2021(route, webIdRoute, unsubscribeRoute, stateHandler);
+    channelType = new WebHookSubscription2021(route, webIdRoute, stateHandler);
   });
 
   it('exposes a utility function to verify if a channel is a webhook channel.', async(): Promise<void> => {

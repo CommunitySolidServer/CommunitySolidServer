@@ -25,7 +25,7 @@ describe('A WebHookUnsubscriber', (): void => {
   beforeEach(async(): Promise<void> => {
     operation = {
       method: 'DELETE',
-      target: { path: 'http://example.com/.notifications/webhooks/unsubscribe/134' },
+      target: { path: 'http://example.com/.notifications/webhooks/134' },
       preferences: {},
       body: new BasicRepresentation(),
     };
@@ -58,6 +58,6 @@ describe('A WebHookUnsubscriber', (): void => {
     await expect(unsubscriber.handle({ operation, request, response }))
       .resolves.toEqual(new ResetResponseDescription());
     expect(storage.delete).toHaveBeenCalledTimes(1);
-    expect(storage.delete).toHaveBeenLastCalledWith('134');
+    expect(storage.delete).toHaveBeenLastCalledWith('http://example.com/.notifications/webhooks/134');
   });
 });

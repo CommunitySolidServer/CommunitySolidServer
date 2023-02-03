@@ -5,6 +5,9 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import type { NamedNode } from 'n3';
 import { DataFactory, Parser, Store } from 'n3';
 import type { App } from '../../src/init/App';
+import type {
+  WebHookSubscription2021Channel,
+} from '../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
 import { matchesAuthorizationScheme } from '../../src/util/HeaderUtil';
 import { joinUrl, trimTrailingSlashes } from '../../src/util/PathUtil';
 import { readJsonStream } from '../../src/util/StreamUtil';
@@ -180,5 +183,16 @@ describe.each(stores)('A server supporting WebHookSubscription2021 using %s', (n
 
     // Close the connection so the server can shut down
     response.end();
+  });
+
+  it('allows a user to unsubscribe.', async(): Promise<void> => {
+    const json = await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.target]: target });
+    const unsubscribeUrl = (json as WebHookSubscription2021Channel).unsubscribe_endpoint;
+    let response = await fetch(unsubscribeUrl, { method: 'DELETE' });
+    expect(response.status).toBe(403);
+    response = await fetch(unsubscribeUrl, { method: 'DELETE', headers: { authorization: `WebID ${webId}` }});
+    expect(response.status).toBe(205);
+    response = await fetch(joinUrl(subscriptionUrl, 'abc'), { method: 'DELETE' });
+    expect(response.status).toBe(404);
   });
 });

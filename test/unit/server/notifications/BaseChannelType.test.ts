@@ -29,7 +29,7 @@ class DummyChannelType extends BaseChannelType {
 }
 
 describe('A BaseChannelType', (): void => {
-  const id = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3:https://storage.example/resource';
+  const id = 'http://example.com/DummyType/4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
   const credentials: Credentials = {};
   const channelType = new DummyChannelType();
 
