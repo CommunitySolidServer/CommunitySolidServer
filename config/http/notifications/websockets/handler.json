@@ -2,21 +2,21 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Handles the generation and serialization of notifications for WebSocketSubscription2021.",
-      "@id": "urn:solid-server:default:WebSocket2021NotificationHandler",
+      "comment": "Handles the generation and serialization of notifications for WebSocketChannel2023.",
+      "@id": "urn:solid-server:default:WebSocket2023NotificationHandler",
       "@type": "TypedNotificationHandler",
-      "type": "http://www.w3.org/ns/solid/notifications#WebSocketSubscription2021",
+      "type": "http://www.w3.org/ns/solid/notifications#WebSocketChannel2023",
       "source": {
         "@type": "ComposedNotificationHandler",
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
         "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
-        "emitter": { "@id": "urn:solid-server:default:WebSocket2021Emitter" }
+        "emitter": { "@id": "urn:solid-server:default:WebSocket2023Emitter" }
       }
     },
     {
       "comment": "Emits serialized notifications through WebSockets.",
-      "@id": "urn:solid-server:default:WebSocket2021Emitter",
-      "@type": "WebSocket2021Emitter",
+      "@id": "urn:solid-server:default:WebSocket2023Emitter",
+      "@type": "WebSocket2023Emitter",
       "socketMap": { "@id": "urn:solid-server:default:WebSocketMap" }
     },
 
@@ -24,7 +24,7 @@
       "@id": "urn:solid-server:default:NotificationHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:WebSocket2021NotificationHandler" }
+        { "@id": "urn:solid-server:default:WebSocket2023NotificationHandler" }
       ]
     }
   ]

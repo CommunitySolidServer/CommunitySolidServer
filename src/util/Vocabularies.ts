@@ -197,6 +197,7 @@ export const NOTIFY = createVocabulary('http://www.w3.org/ns/solid/notifications
   'endAt',
   'feature',
   'rate',
+  'receiveFrom',
   'startAt',
   'state',
   'subscription',
@@ -206,7 +207,7 @@ export const NOTIFY = createVocabulary('http://www.w3.org/ns/solid/notifications
   'webid',
 
   'WebHookSubscription2021',
-  'WebSocketSubscription2021',
+  'WebSocketChannel2023',
 );
 
 export const OIDC = createVocabulary('http://www.w3.org/ns/solid/oidc#',

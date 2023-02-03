@@ -4,21 +4,21 @@ import type { InteractionRoute } from '../../../identity/interaction/routing/Int
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { WebSocketServerConfigurator } from '../../WebSocketServerConfigurator';
 import type { NotificationChannelStorage } from '../NotificationChannelStorage';
-import type { WebSocket2021Handler } from './WebSocket2021Handler';
-import { parseWebSocketRequest } from './WebSocket2021Util';
+import type { WebSocket2023Handler } from './WebSocket2023Handler';
+import { parseWebSocketRequest } from './WebSocket2023Util';
 
 /**
- * Listens for WebSocket connections and verifies if they are valid WebSocketSubscription2021 connections,
- * in which case its {@link WebSocket2021Handler} will be alerted.
+ * Listens for WebSocket connections and verifies if they are valid WebSocketChannel2023 connections,
+ * in which case its {@link WebSocket2023Handler} will be alerted.
  */
-export class WebSocket2021Listener extends WebSocketServerConfigurator {
+export class WebSocket2023Listener extends WebSocketServerConfigurator {
   protected readonly logger = getLoggerFor(this);
 
   private readonly storage: NotificationChannelStorage;
-  private readonly handler: WebSocket2021Handler;
+  private readonly handler: WebSocket2023Handler;
   private readonly path: string;
 
-  public constructor(storage: NotificationChannelStorage, handler: WebSocket2021Handler, route: InteractionRoute) {
+  public constructor(storage: NotificationChannelStorage, handler: WebSocket2023Handler, route: InteractionRoute) {
     super();
     this.storage = storage;
     this.handler = handler;

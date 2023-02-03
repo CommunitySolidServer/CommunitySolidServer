@@ -14,17 +14,16 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig,
-  removeFolder,
+  instantiateFromConfig, removeFolder,
 } from './Config';
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
 
-const port = getPort('WebSocketSubscription2021');
+const port = getPort('WebSocketChannel2023');
 const baseUrl = `http://localhost:${port}/`;
-const notificationType = NOTIFY.WebSocketSubscription2021;
+const notificationType = NOTIFY.WebSocketChannel2023;
 
-const rootFilePath = getTestFolder('WebSocketSubscription2021');
+const rootFilePath = getTestFolder('WebSocketChannel2023');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
     configs: [ 'storage/backend/memory.json', 'util/resource-locker/memory.json' ],
@@ -37,7 +36,7 @@ const stores: [string, any][] = [
   }],
 ];
 
-describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', (name, { configs, teardown }): void => {
+describe.each(stores)('A server supporting WebSocketChannel2023 using %s', (name, { configs, teardown }): void => {
   let app: App;
   let store: ResourceStore;
   const webId = 'http://example.com/card/#me';
@@ -89,7 +88,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     // Find the notification channel for websockets
     const subscriptions = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.subscription, null);
     const websocketSubscriptions = subscriptions.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebSocketSubscription2021`)),
+      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebSocketChannel2023`)),
     ));
     expect(websocketSubscriptions).toHaveLength(1);
     subscriptionUrl = websocketSubscriptions[0].value;
@@ -97,7 +96,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
 
   it('supports subscribing.', async(): Promise<void> => {
     const response = await subscribe(notificationType, webId, subscriptionUrl, topic);
-    webSocketUrl = (response as any).source;
+    webSocketUrl = (response as any).receiveFrom;
   });
 
   it('emits Created events.', async(): Promise<void> => {
@@ -167,7 +166,7 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
 
     const channel = {
       '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-      type: NOTIFY.WebSocketSubscription2021,
+      type: notificationType,
       topic: restricted,
     };
 
@@ -199,9 +198,9 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     });
     expect(response.status).toBe(201);
 
-    const { source } = await subscribe(notificationType, webId, subscriptionUrl, topic, { state: 'abc' }) as any;
+    const { receiveFrom } = await subscribe(notificationType, webId, subscriptionUrl, topic, { state: 'abc' }) as any;
 
-    const socket = new WebSocket(source);
+    const socket = new WebSocket(receiveFrom);
     const notificationPromise = new Promise<Buffer>((resolve): any => socket.on('message', resolve));
     await new Promise<void>((resolve): any => socket.on('open', resolve));
 
@@ -213,10 +212,10 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
   });
 
   it('removes expired channels.', async(): Promise<void> => {
-    const { source } =
+    const { receiveFrom } =
       await subscribe(notificationType, webId, subscriptionUrl, topic, { endAt: '1988-03-09T14:48:00.000Z' }) as any;
 
-    const socket = new WebSocket(source);
+    const socket = new WebSocket(receiveFrom);
     const messagePromise = new Promise<Buffer>((resolve): any => socket.on('message', resolve));
     await new Promise<void>((resolve): any => socket.on('close', resolve));
 
@@ -245,7 +244,8 @@ describe.each(stores)('A server supporting WebSocketSubscription2021 using %s', 
     const parser = new Parser({ baseIRI: subscriptionUrl });
     const quads = new Store(parser.parse(await response.text()));
 
-    expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ NOTIFY.terms.WebSocketSubscription2021 ]);
+    expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ NOTIFY.terms.WebSocketChannel2023 ]);
     expect(quads.getObjects(null, NOTIFY.terms.topic, null)).toEqual([ namedNode(topic) ]);
+    expect(quads.countQuads(null, NOTIFY.terms.receiveFrom, null, null)).toBe(1);
   });
 });

@@ -3,15 +3,15 @@
   "@graph": [
     {
       "comment": "Catches newly opened WebSockets and verifies if they belong to a subscription.",
-      "@id": "urn:solid-server:default:WebSocket2021Listener",
-      "@type": "WebSocket2021Listener",
+      "@id": "urn:solid-server:default:WebSocket2023Listener",
+      "@type": "WebSocket2023Listener",
       "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" },
-      "route": { "@id": "urn:solid-server:default:WebSocket2021Route" },
+      "route": { "@id": "urn:solid-server:default:WebSocket2023Route" },
       "handler": {
         "@type": "SequenceHandler",
         "handlers": [
-          { "@id": "urn:solid-server:default:WebSocket2021Storer" },
-          { "@id": "urn:solid-server:default:WebSocket2021StateHandler" }
+          { "@id": "urn:solid-server:default:WebSocket2023Storer" },
+          { "@id": "urn:solid-server:default:WebSocket2023StateHandler" }
         ]
       }
     },
@@ -22,16 +22,16 @@
     },
     {
       "comment": "Stores the opened WebSockets for reuse.",
-      "@id": "urn:solid-server:default:WebSocket2021Storer",
-      "@type": "WebSocket2021Storer",
+      "@id": "urn:solid-server:default:WebSocket2023Storer",
+      "@type": "WebSocket2023Storer",
       "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" },
       "socketMap": { "@id": "urn:solid-server:default:WebSocketMap" }
     },
     {
-      "comment": "Handles the state feature of a WebSocketSubscription2021 subscription.",
-      "@id": "urn:solid-server:default:WebSocket2021StateHandler",
+      "comment": "Handles the state feature of a WebSocketChannel2023 subscription.",
+      "@id": "urn:solid-server:default:WebSocket2023StateHandler",
       "@type": "BaseStateHandler",
-      "handler": { "@id": "urn:solid-server:default:WebSocket2021NotificationHandler" },
+      "handler": { "@id": "urn:solid-server:default:WebSocket2023NotificationHandler" },
       "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
     },
 
@@ -39,7 +39,7 @@
       "@id": "urn:solid-server:default:ServerConfigurator",
       "@type": "ParallelHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:WebSocket2021Listener" }
+        { "@id": "urn:solid-server:default:WebSocket2023Listener" }
       ]
     }
   ]

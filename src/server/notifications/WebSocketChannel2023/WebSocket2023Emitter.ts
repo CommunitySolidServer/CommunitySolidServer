@@ -6,11 +6,11 @@ import { NotificationEmitter } from '../NotificationEmitter';
 import type { NotificationEmitterInput } from '../NotificationEmitter';
 
 /**
- * Emits notifications on WebSocketSubscription2021 subscription.
+ * Emits notifications on WebSocketChannel2023 subscription.
  * Uses the WebSockets found in the provided map.
  * The key should be the identifier of the matching channel.
  */
-export class WebSocket2021Emitter extends NotificationEmitter {
+export class WebSocket2023Emitter extends NotificationEmitter {
   protected readonly logger = getLoggerFor(this);
 
   private readonly socketMap: SetMultiMap<string, WebSocket>;

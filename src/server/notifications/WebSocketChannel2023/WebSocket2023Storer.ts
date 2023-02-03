@@ -3,11 +3,11 @@ import { getLoggerFor } from '../../../logging/LogUtil';
 import type { SetMultiMap } from '../../../util/map/SetMultiMap';
 import { setSafeInterval } from '../../../util/TimerUtil';
 import type { NotificationChannelStorage } from '../NotificationChannelStorage';
-import type { WebSocket2021HandlerInput } from './WebSocket2021Handler';
-import { WebSocket2021Handler } from './WebSocket2021Handler';
+import type { WebSocket2023HandlerInput } from './WebSocket2023Handler';
+import { WebSocket2023Handler } from './WebSocket2023Handler';
 
 /**
- * Keeps track of the WebSockets that were opened for a WebSocketSubscription2021 channel.
+ * Keeps track of the WebSockets that were opened for a WebSocketChannel2023 channel.
  * The WebSockets are stored in the map using the identifier of the matching channel.
  *
  * `cleanupTimer` defines in minutes how often the stored WebSockets are closed
@@ -15,7 +15,7 @@ import { WebSocket2021Handler } from './WebSocket2021Handler';
  * Defaults to 60 minutes.
  * Open WebSockets will not receive notifications if their channel expired.
  */
-export class WebSocket2021Storer extends WebSocket2021Handler {
+export class WebSocket2023Storer extends WebSocket2023Handler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly storage: NotificationChannelStorage;
@@ -34,7 +34,7 @@ export class WebSocket2021Storer extends WebSocket2021Handler {
     timer.unref();
   }
 
-  public async handle({ webSocket, channel }: WebSocket2021HandlerInput): Promise<void> {
+  public async handle({ webSocket, channel }: WebSocket2023HandlerInput): Promise<void> {
     this.socketMap.add(channel.id, webSocket);
     webSocket.on('error', (): boolean => this.socketMap.deleteEntry(channel.id, webSocket));
     webSocket.on('close', (): boolean => this.socketMap.deleteEntry(channel.id, webSocket));

@@ -326,14 +326,14 @@ export * from './server/notifications/WebHookSubscription2021/WebHookSubscriptio
 export * from './server/notifications/WebHookSubscription2021/WebHookUnsubscriber';
 export * from './server/notifications/WebHookSubscription2021/WebHookWebId';
 
-// Server/Notifications/WebSocketSubscription2021
-export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Emitter';
-export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Handler';
-export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Listener';
-export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Storer';
-export * from './server/notifications/WebSocketSubscription2021/WebSocket2021Util';
-export * from './server/notifications/WebSocketSubscription2021/WebSocketMap';
-export * from './server/notifications/WebSocketSubscription2021/WebSocketSubscription2021';
+// Server/Notifications/WebSocketChannel2023
+export * from './server/notifications/WebSocketChannel2023/WebSocket2023Emitter';
+export * from './server/notifications/WebSocketChannel2023/WebSocket2023Handler';
+export * from './server/notifications/WebSocketChannel2023/WebSocket2023Listener';
+export * from './server/notifications/WebSocketChannel2023/WebSocket2023Storer';
+export * from './server/notifications/WebSocketChannel2023/WebSocket2023Util';
+export * from './server/notifications/WebSocketChannel2023/WebSocketMap';
+export * from './server/notifications/WebSocketChannel2023/WebSocketChannel2023Type';
 
 // Server/Notifications
 export * from './server/notifications/ActivityEmitter';

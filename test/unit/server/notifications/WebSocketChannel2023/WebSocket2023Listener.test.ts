@@ -10,11 +10,11 @@ import type {
   NotificationChannelStorage,
 } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import type {
-  WebSocket2021Handler,
-} from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocket2021Handler';
+  WebSocket2023Handler,
+} from '../../../../../src/server/notifications/WebSocketChannel2023/WebSocket2023Handler';
 import {
-  WebSocket2021Listener,
-} from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocket2021Listener';
+  WebSocket2023Listener,
+} from '../../../../../src/server/notifications/WebSocketChannel2023/WebSocket2023Listener';
 import { flushPromises } from '../../../../util/Util';
 
 jest.mock('ws', (): any => ({
@@ -26,7 +26,7 @@ jest.mock('ws', (): any => ({
   })),
 }));
 
-describe('A WebSocket2021Listener', (): void => {
+describe('A WebSocket2023Listener', (): void => {
   const channel: NotificationChannel = {
     id: 'id',
     topic: 'http://example.com/foo',
@@ -37,9 +37,9 @@ describe('A WebSocket2021Listener', (): void => {
   let webSocket: WebSocket;
   let upgradeRequest: HttpRequest;
   let storage: jest.Mocked<NotificationChannelStorage>;
-  let handler: jest.Mocked<WebSocket2021Handler>;
+  let handler: jest.Mocked<WebSocket2023Handler>;
   const route = new AbsolutePathInteractionRoute('http://example.com/foo');
-  let listener: WebSocket2021Listener;
+  let listener: WebSocket2023Listener;
 
   beforeEach(async(): Promise<void> => {
     server = new EventEmitter() as any;
@@ -57,7 +57,7 @@ describe('A WebSocket2021Listener', (): void => {
       handleSafe: jest.fn(),
     } as any;
 
-    listener = new WebSocket2021Listener(storage, handler, route);
+    listener = new WebSocket2023Listener(storage, handler, route);
     await listener.handle(server);
   });
 

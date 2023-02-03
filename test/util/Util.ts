@@ -31,7 +31,7 @@ const portNames = [
   'Subdomains',
   'WebHookSubscription2021',
   'WebHookSubscription2021-client',
-  'WebSocketSubscription2021',
+  'WebSocketChannel2023',
 
   // Unit
   'BaseServerFactory',

@@ -1,9 +1,9 @@
 import type { IncomingMessage } from 'http';
 import {
   generateWebSocketUrl, parseWebSocketRequest,
-} from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocket2021Util';
+} from '../../../../../src/server/notifications/WebSocketChannel2023/WebSocket2023Util';
 
-describe('WebSocket2021Util', (): void => {
+describe('WebSocket2023Util', (): void => {
   describe('#generateWebSocketUrl', (): void => {
     it('generates a WebSocket link with a query parameter.', async(): Promise<void> => {
       expect(generateWebSocketUrl('http://example.com/', '123456')).toBe('ws://example.com/?auth=123456');

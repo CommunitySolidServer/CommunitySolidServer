@@ -96,15 +96,14 @@ It will pull the relevant subscriptions from the storage and call the stored `No
 For every subscription type, a `NotificationHandler` should be added to the `WaterfallHandler`
 that handles notifications for the specific type.
 
-## WebSocketSubscription2021
+## WebSocketChannel2023
 
-To add support for [WebSocketSubscription2021](https://solidproject.org/TR/2022/websocket-subscription-2021-20220509)
-notifications,
+To add support for [WebSocketChannel2023](https://solid.github.io/notifications/websocket-channel-2023) notifications,
 components were added as described in the documentation above.
 
 For discovery, a `NotificationDescriber` was added with the corresponding settings.
 
-As `SubscriptionType`, there is a specific `WebSocketSubscription2021` that contains all the necessary information.
+As `NotificationChannelType`, there is a specific `WebSocketChannel2023Type` that contains all the necessary information.
 
 ### Handling notifications
 
@@ -120,13 +119,13 @@ flowchart TB
     direction LR
     BaseNotificationGenerator("<strong>BaseNotificationGenerator</strong><br><i>NotificationGenerator</i>")
     BaseNotificationSerializer("<strong>BaseNotificationSerializer</strong><br><i>NotificationSerializer</i>")
-    WebSocket2021Emitter("<strong>WebSocket2021Emitter</strong><br>WebSocket2021Emitter")
-    BaseNotificationGenerator --> BaseNotificationSerializer --> WebSocket2021Emitter
+    WebSocket2023Emitter("<strong>WebSocket2023Emitter</strong><br>WebSocket2023Emitter")
+    BaseNotificationGenerator --> BaseNotificationSerializer --> WebSocket2023Emitter
   end
 ```
 
 A `TypedNotificationHandler` is a handler that can be used to filter out subscriptions for a specific type,
-making sure only WebSocketSubscription2021 subscriptions will be handled.
+making sure only WebSocketChannel2023 subscriptions will be handled.
 
 A `ComposedNotificationHandler` combines 3 interfaces to handle the notifications:
 
@@ -140,17 +139,17 @@ and also caches the result so it can be reused by multiple subscriptions.
 `urn:solid-server:default:BaseNotificationSerializer` converts the Notification to a JSON-LD representation
 and handles any necessary content negotiation based on the `accept` notification feature.
 
-A `WebSocket2021Emitter` is a specific emitter that checks
+A `WebSocket2023Emitter` is a specific emitter that checks
 whether the current open WebSockets correspond to the subscription.
 
 ### WebSockets
 
 ```mermaid
 flowchart TB
-  WebSocket2021Listener("<strong>WebSocket2021Listener</strong><br>WebSocket2021Listener")
-  WebSocket2021Listener --> WebSocket2021ListenerArgs
+  WebSocket2023Listener("<strong>WebSocket2023Listener</strong><br>WebSocket2023Listener")
+  WebSocket2023Listener --> WebSocket2023ListenerArgs
 
-  subgraph WebSocket2021ListenerArgs[" "]
+  subgraph WebSocket2023ListenerArgs[" "]
     direction LR
     NotificationChannelStorage("<strong>NotificationChannelStorage</strong><br>NotificationChannelStorage")
     SequenceHandler("<br>SequenceHandler")
@@ -160,17 +159,17 @@ flowchart TB
   
   subgraph SequenceHandlerArgs[" "]
     direction TB
-    WebSocket2021Storer("<strong>WebSocket2021Storer</strong><br>WebSocket2021Storer")
-    WebSocket2021StateHandler("<strong>WebSocket2021StateHandler</strong><br>BaseStateHandler")
+    WebSocket2023Storer("<strong>WebSocket2023Storer</strong><br>WebSocket2023Storer")
+    WebSocket2023StateHandler("<strong>WebSocket2023StateHandler</strong><br>BaseStateHandler")
   end
 ```
 
-To detect and store WebSocket connections, the `WebSocket2021Listener` is added as a listener to the HTTP server.
+To detect and store WebSocket connections, the `WebSocket2023Listener` is added as a listener to the HTTP server.
 For all WebSocket connections that get opened, it verifies whether they correspond to an existing subscription.
-If yes, the information gets sent out to its stored `WebSocket2021Handler`.
+If yes, the information gets sent out to its stored `WebSocket2023Handler`.
 
-In this case, this is a `SequenceHandler`, which contains a `WebSocket2021Storer` and a `BaseStateHandler`.
-The `WebSocket2021Storer` will store the WebSocket in the same map used by the `WebSocket2021Emitter`,
+In this case, this is a `SequenceHandler`, which contains a `WebSocket2023Storer` and a `BaseStateHandler`.
+The `WebSocket2023Storer` will store the WebSocket in the same map used by the `WebSocket2023Emitter`,
 so that class can emit events later on, as mentioned above.
 The state handler will make sure that a notification gets sent out if the subscription has a `state` feature request,
 as defined in the notification specification.
@@ -179,7 +178,7 @@ as defined in the notification specification.
 
 The additions required to support
 [WebHookSubscription2021](https://github.com/solid/notifications/blob/main/webhook-subscription-2021.md)
-are quite similar to those needed for WebSocketSubscription2021:
+are quite similar to those needed for WebSocketChannel2023:
 
 * For discovery, there is a `WebHookDescriber`, which is an extension of a `NotificationDescriber`.
 * The `WebHookSubscription2021` class contains all the necessary typing information.
