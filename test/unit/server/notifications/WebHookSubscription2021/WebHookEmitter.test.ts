@@ -9,11 +9,11 @@ import {
 import type { Logger } from '../../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
-import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import { WebHookEmitter } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookEmitter';
 import type {
-  WebHookFeatures,
+  WebHookSubscription2021Channel,
 } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
+import { NotImplementedHttpError } from '../../../../../src/util/errors/NotImplementedHttpError';
 import { matchesAuthorizationScheme } from '../../../../../src/util/HeaderUtil';
 import { trimTrailingSlashes } from '../../../../../src/util/PathUtil';
 
@@ -40,15 +40,14 @@ describe('A WebHookEmitter', (): void => {
     published: '123',
   };
   let representation: Representation;
-  const channel: NotificationChannel<WebHookFeatures> = {
+  const channel: WebHookSubscription2021Channel = {
     id: 'id',
     topic: 'http://example.com/foo',
-    type: 'type',
-    features: {
-      target: 'http://example.org/somewhere-else',
-      webId: webIdRoute.getPath(),
-    },
-    lastEmit: 0,
+    type: 'WebHookSubscription2021',
+    target: 'http://example.org/somewhere-else',
+    webId: webIdRoute.getPath(),
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    unsubscribe_endpoint: 'http://example.org/unsubscribe',
   };
 
   let privateJwk: AlgJwk;
@@ -75,6 +74,14 @@ describe('A WebHookEmitter', (): void => {
     emitter = new WebHookEmitter(baseUrl, webIdRoute, jwkGenerator);
   });
 
+  it('errors if the channel type is wrong.', async(): Promise<void> => {
+    const badChannel = {
+      ...channel,
+      type: 'something else',
+    };
+    await expect(emitter.canHandle({ channel: badChannel, representation })).rejects.toThrow(NotImplementedHttpError);
+  });
+
   it('sends out the necessary data and headers.', async(): Promise<void> => {
     const now = Date.now();
     jest.useFakeTimers();
@@ -95,13 +102,13 @@ describe('A WebHookEmitter', (): void => {
     // Check all the DPoP token fields
     const decodedDpopToken = await jwtVerify(encodedDpopToken, publicObject, { issuer: trimTrailingSlashes(baseUrl) });
     expect(decodedDpopToken.payload).toMatchObject({
-      webid: channel.features.webId,
-      azp: channel.features.webId,
-      sub: channel.features.webId,
+      webid: channel.webId,
+      azp: channel.webId,
+      sub: channel.webId,
       cnf: { jkt: await calculateJwkThumbprint(publicJwk, 'sha256') },
       iat: now,
       exp: now + (20 * 60 * 1000),
-      aud: [ channel.features.webId, 'solid' ],
+      aud: [ channel.webId, 'solid' ],
       jti: expect.stringContaining('-'),
     });
     expect(decodedDpopToken.protectedHeader).toMatchObject({
@@ -111,7 +118,7 @@ describe('A WebHookEmitter', (): void => {
     // CHeck the DPoP proof
     const decodedDpopProof = await jwtVerify(dpop, publicObject);
     expect(decodedDpopProof.payload).toMatchObject({
-      htu: channel.features.target,
+      htu: channel.target,
       htm: 'POST',
       iat: now,
       jti: expect.stringContaining('-'),
@@ -133,7 +140,7 @@ describe('A WebHookEmitter', (): void => {
 
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenLastCalledWith(
-      `There was an issue emitting a WebHook notification with target ${channel.features.target}: invalid request`,
+      `There was an issue emitting a WebHook notification with target ${channel.target}: invalid request`,
     );
   });
 });

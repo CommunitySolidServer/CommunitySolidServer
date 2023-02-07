@@ -8,7 +8,7 @@ import type { OperationHttpHandlerInput } from '../../OperationHttpHandler';
 import { OperationHttpHandler } from '../../OperationHttpHandler';
 import type { NotificationChannelStorage } from '../NotificationChannelStorage';
 import { parseWebHookUnsubscribeUrl } from './WebHook2021Util';
-import type { WebHookFeatures } from './WebHookSubscription2021';
+import { isWebHook2021Channel } from './WebHookSubscription2021';
 
 /**
  * Allows clients to unsubscribe from a WebHookSubscription2021.
@@ -18,9 +18,9 @@ export class WebHookUnsubscriber extends OperationHttpHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly credentialsExtractor: CredentialsExtractor;
-  private readonly storage: NotificationChannelStorage<WebHookFeatures>;
+  private readonly storage: NotificationChannelStorage;
 
-  public constructor(credentialsExtractor: CredentialsExtractor, storage: NotificationChannelStorage<WebHookFeatures>) {
+  public constructor(credentialsExtractor: CredentialsExtractor, storage: NotificationChannelStorage) {
     super();
     this.credentialsExtractor = credentialsExtractor;
     this.storage = storage;
@@ -29,12 +29,12 @@ export class WebHookUnsubscriber extends OperationHttpHandler {
   public async handle({ operation, request }: OperationHttpHandlerInput): Promise<ResponseDescription> {
     const id = parseWebHookUnsubscribeUrl(operation.target.path);
     const channel = await this.storage.get(id);
-    if (!channel) {
+    if (!channel || !isWebHook2021Channel(channel)) {
       throw new NotFoundHttpError();
     }
 
     const credentials = await this.credentialsExtractor.handleSafe(request);
-    if (channel.features.webId !== credentials.agent?.webId) {
+    if (channel.webId !== credentials.agent?.webId) {
       throw new ForbiddenHttpError();
     }
 

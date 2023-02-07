@@ -11,10 +11,8 @@ import type {
   NotificationChannelStorage,
 } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import type { StateHandler } from '../../../../../src/server/notifications/StateHandler';
-import type {
-  WebHookFeatures,
-} from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
 import {
+  isWebHook2021Channel,
   WebHookSubscription2021,
 } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
 import { IdentifierSetMultiMap } from '../../../../../src/util/map/IdentifierMap';
@@ -33,7 +31,7 @@ describe('A WebHookSubscription2021', (): void => {
   const target = 'http://example.org/somewhere-else';
   let json: InferType<WebHookSubscription2021['schema']>;
   const unsubscribeRoute = new AbsolutePathInteractionRoute('http://example.com/unsubscribe');
-  let storage: jest.Mocked<NotificationChannelStorage<WebHookFeatures>>;
+  let storage: jest.Mocked<NotificationChannelStorage>;
   let stateHandler: jest.Mocked<StateHandler>;
   let channelType: WebHookSubscription2021;
 
@@ -51,12 +49,11 @@ describe('A WebHookSubscription2021', (): void => {
     };
 
     storage = {
-      create: jest.fn((features: WebHookFeatures): NotificationChannel<WebHookFeatures> => ({
+      create: jest.fn((features: Record<string, unknown>): NotificationChannel => ({
         id: '123',
         topic: 'http://example.com/foo',
         type: 'WebHookSubscription2021',
-        lastEmit: 0,
-        features,
+        ...features,
       })),
       add: jest.fn(),
     } as any;
@@ -66,6 +63,14 @@ describe('A WebHookSubscription2021', (): void => {
     } as any;
 
     channelType = new WebHookSubscription2021(storage, unsubscribeRoute, stateHandler);
+  });
+
+  it('exposes a utility function to verify if a channel is a webhook channel.', async(): Promise<void> => {
+    const channel = storage.create(json, {});
+    expect(isWebHook2021Channel(channel)).toBe(true);
+
+    channel.type = 'something else';
+    expect(isWebHook2021Channel(channel)).toBe(false);
   });
 
   it('has the correct type.', async(): Promise<void> => {

@@ -46,7 +46,7 @@ export class ListeningActivityHandler extends StaticHandler {
       }
 
       // Don't emit if the previous notification was too recent according to the requested rate
-      if (channel.rate && channel.rate > Date.now() - channel.lastEmit) {
+      if (channel.lastEmit && channel.rate && channel.rate > Date.now() - channel.lastEmit) {
         continue;
       }
 

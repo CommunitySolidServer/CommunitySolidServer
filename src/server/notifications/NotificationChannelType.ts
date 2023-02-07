@@ -4,9 +4,9 @@ import type { AccessMap } from '../../authorization/permissions/Permissions';
 import type { Representation } from '../../http/representation/Representation';
 import type { NOTIFICATION_CHANNEL_SCHEMA, NotificationChannel } from './NotificationChannel';
 
-export interface NotificationChannelResponse<TFeat extends Record<string, unknown> = Record<string, unknown>> {
+export interface NotificationChannelResponse {
   response: Representation;
-  channel: NotificationChannel<TFeat>;
+  channel: NotificationChannel;
 }
 
 /**
@@ -14,8 +14,7 @@ export interface NotificationChannelResponse<TFeat extends Record<string, unknow
  * https://solidproject.org/TR/2022/notifications-protocol-20221231#notification-channel-types.
  */
 export interface NotificationChannelType<
-  TSub extends typeof NOTIFICATION_CHANNEL_SCHEMA = typeof NOTIFICATION_CHANNEL_SCHEMA,
-  TFeat extends Record<string, unknown> = Record<string, unknown>> {
+  TSub extends typeof NOTIFICATION_CHANNEL_SCHEMA = typeof NOTIFICATION_CHANNEL_SCHEMA> {
   /**
    * The expected type value in the JSON-LD body of requests subscribing for this notification channel type.
    */
@@ -39,5 +38,5 @@ export interface NotificationChannelType<
    *
    * @returns A {@link Representation} to return as a response and the generated {@link NotificationChannel}.
    */
-  subscribe: (json: InferType<TSub>, credentials: Credentials) => Promise<NotificationChannelResponse<TFeat>>;
+  subscribe: (json: InferType<TSub>, credentials: Credentials) => Promise<NotificationChannelResponse>;
 }

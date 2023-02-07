@@ -17,8 +17,6 @@ describe('A WebSocket2021Storer', (): void => {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
-    features: {},
-    lastEmit: 0,
   };
   let webSocket: jest.Mocked<WebSocket>;
   let storage: jest.Mocked<NotificationChannelStorage>;

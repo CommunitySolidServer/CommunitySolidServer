@@ -10,8 +10,6 @@ describe('A TypedNotificationHandler', (): void => {
     id: 'id',
     topic: topic.path,
     type: 'NotificationChannelType',
-    features: {},
-    lastEmit: 0,
   };
   let source: jest.Mocked<NotificationHandler>;
   let handler: TypedNotificationHandler;

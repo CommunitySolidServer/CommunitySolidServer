@@ -31,8 +31,6 @@ describe('A WebSocket2021Listener', (): void => {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
-    features: {},
-    lastEmit: 0,
   };
   const auth = '123456';
   let server: Server;

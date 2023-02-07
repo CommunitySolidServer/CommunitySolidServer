@@ -5,9 +5,7 @@ import { BasicRepresentation } from '../../../../../src/http/representation/Basi
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 import type { NotificationChannelStorage } from '../../../../../src/server/notifications/NotificationChannelStorage';
-import type {
-  WebHookFeatures,
-} from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
+
 import {
   WebHookUnsubscriber,
 } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookUnsubscriber';
@@ -20,7 +18,7 @@ describe('A WebHookUnsubscriber', (): void => {
   let operation: Operation;
   const webId = 'http://example.com/alice';
   let credentialsExtractor: jest.Mocked<CredentialsExtractor>;
-  let storage: jest.Mocked<NotificationChannelStorage<WebHookFeatures>>;
+  let storage: jest.Mocked<NotificationChannelStorage>;
   let unsubscriber: WebHookUnsubscriber;
 
   beforeEach(async(): Promise<void> => {
@@ -36,7 +34,7 @@ describe('A WebHookUnsubscriber', (): void => {
     } as any;
 
     storage = {
-      get: jest.fn().mockResolvedValue({ features: { webId }}),
+      get: jest.fn().mockResolvedValue({ type: 'WebHookSubscription2021', webId }),
       delete: jest.fn(),
     } as any;
 
