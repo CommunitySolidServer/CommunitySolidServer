@@ -10,26 +10,30 @@ describe('A MonitoringStore', (): void => {
   let store: MonitoringStore;
   let source: ResourceStore;
 
+  const id = { path: 'http://example.org/foo/bar/' };
+  const idNew = { path: 'http://example.org/foo/bar/new' };
+  const idOld = { path: 'http://example.org/foo/bar/old' };
+
   let changedCallback: () => void;
   let createdCallback: () => void;
   let updatedCallback: () => void;
   let deletedCallback: () => void;
 
   const addResourceReturnMock: ChangeMap = new IdentifierMap([
-    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Create }) ],
-    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
+    [ idNew, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Create }) ],
+    [ id, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
   ]);
   const setRepresentationReturnMock: ChangeMap = new IdentifierMap([
-    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
+    [ idNew, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
   ]);
   const deleteResourceReturnMock: ChangeMap = new IdentifierMap([
-    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Delete }) ],
-    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
+    [ idNew, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Delete }) ],
+    [ id, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
   ]);
   const modifyResourceReturnMock: ChangeMap = new IdentifierMap([
-    [{ path: 'http://example.org/foo/bar/old' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Delete }) ],
-    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Create }) ],
-    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
+    [ idOld, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Delete }) ],
+    [ idNew, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Create }) ],
+    [ id, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
   ]);
 
   beforeEach(async(): Promise<void> => {
@@ -61,98 +65,98 @@ describe('A MonitoringStore', (): void => {
 
   it('does not fire a change event after getRepresentation.', async(): Promise<void> => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
-    await store.getRepresentation({ path: 'http://example.org/foo/bar' }, {});
+    await store.getRepresentation(id, {});
     expect(changedCallback).toHaveBeenCalledTimes(0);
   });
 
   it('calls addResource directly from the source.', async(): Promise<void> => {
-    await expect(store.addResource({ path: 'http://example.org/foo/bar' }, {} as Representation))
+    await expect(store.addResource(id, {} as Representation))
       .resolves.toBe(addResourceReturnMock);
     expect(source.addResource).toHaveBeenCalledTimes(1);
-    expect(source.addResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
+    expect(source.addResource).toHaveBeenLastCalledWith(id, {}, undefined);
   });
 
   it('fires appropriate events according to the return value of source.addResource.', async(): Promise<void> => {
-    const result = store.addResource({ path: 'http://example.org/foo/bar/' }, {} as Representation);
+    const result = store.addResource(id, {} as Representation);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.terms.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.terms.Create);
+    expect(changedCallback).toHaveBeenCalledWith(id, AS.terms.Update, addResourceReturnMock.get(id));
+    expect(changedCallback).toHaveBeenCalledWith(idNew, AS.terms.Create, addResourceReturnMock.get(idNew));
     expect(createdCallback).toHaveBeenCalledTimes(1);
-    expect(createdCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
+    expect(createdCallback).toHaveBeenCalledWith(idNew, addResourceReturnMock.get(idNew));
     expect(updatedCallback).toHaveBeenCalledTimes(1);
-    expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' });
+    expect(updatedCallback).toHaveBeenCalledWith(id, addResourceReturnMock.get(id));
     expect(deletedCallback).toHaveBeenCalledTimes(0);
   });
 
   it('calls setRepresentation directly from the source.', async(): Promise<void> => {
-    await expect(store.setRepresentation({ path: 'http://example.org/foo/bar' }, {} as Representation))
+    await expect(store.setRepresentation(id, {} as Representation))
       .resolves.toEqual(setRepresentationReturnMock);
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
-    expect(source.setRepresentation).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
+    expect(source.setRepresentation).toHaveBeenLastCalledWith(id, {}, undefined);
   });
 
   it('fires appropriate events according to the return value of source.setRepresentation.', async(): Promise<void> => {
-    const result = store.setRepresentation({ path: 'http://example.org/foo/bar' }, {} as Representation);
+    const result = store.setRepresentation(id, {} as Representation);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(1);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.terms.Update);
+    expect(changedCallback).toHaveBeenCalledWith(idNew, AS.terms.Update, setRepresentationReturnMock.get(idNew));
     expect(createdCallback).toHaveBeenCalledTimes(0);
     expect(updatedCallback).toHaveBeenCalledTimes(1);
-    expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
+    expect(updatedCallback).toHaveBeenCalledWith(idNew, setRepresentationReturnMock.get(idNew));
     expect(deletedCallback).toHaveBeenCalledTimes(0);
   });
 
   it('calls deleteResource directly from the source.', async(): Promise<void> => {
-    await expect(store.deleteResource({ path: 'http://example.org/foo/bar' }))
+    await expect(store.deleteResource(id))
       .resolves.toEqual(deleteResourceReturnMock);
     expect(source.deleteResource).toHaveBeenCalledTimes(1);
-    expect(source.deleteResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, undefined);
+    expect(source.deleteResource).toHaveBeenLastCalledWith(id, undefined);
   });
 
   it('fires appropriate events according to the return value of source.deleteResource.', async(): Promise<void> => {
-    const result = store.deleteResource({ path: 'http://example.org/foo/bar' });
+    const result = store.deleteResource(id);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.terms.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.terms.Delete);
+    expect(changedCallback).toHaveBeenCalledWith(id, AS.terms.Update, deleteResourceReturnMock.get(id));
+    expect(changedCallback).toHaveBeenCalledWith(idNew, AS.terms.Delete, deleteResourceReturnMock.get(idNew));
     expect(createdCallback).toHaveBeenCalledTimes(0);
     expect(updatedCallback).toHaveBeenCalledTimes(1);
-    expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' });
+    expect(updatedCallback).toHaveBeenCalledWith(id, deleteResourceReturnMock.get(id));
     expect(deletedCallback).toHaveBeenCalledTimes(1);
-    expect(deletedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
+    expect(deletedCallback).toHaveBeenCalledWith(idNew, deleteResourceReturnMock.get(idNew));
   });
 
   it('calls modifyResource directly from the source.', async(): Promise<void> => {
-    await expect(store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch))
+    await expect(store.modifyResource(id, {} as Patch))
       .resolves.toEqual(modifyResourceReturnMock);
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
-    expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
+    expect(source.modifyResource).toHaveBeenLastCalledWith(id, {}, undefined);
   });
 
   it('fires appropriate events according to the return value of source.modifyResource.', async(): Promise<void> => {
-    const result = store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
+    const result = store.modifyResource(id, {} as Patch);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(3);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' }, AS.terms.Create);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' }, AS.terms.Update);
-    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/old' }, AS.terms.Delete);
+    expect(changedCallback).toHaveBeenCalledWith(idNew, AS.terms.Create, modifyResourceReturnMock.get(idNew));
+    expect(changedCallback).toHaveBeenCalledWith(id, AS.terms.Update, modifyResourceReturnMock.get(id));
+    expect(changedCallback).toHaveBeenCalledWith(idOld, AS.terms.Delete, modifyResourceReturnMock.get(idOld));
     expect(createdCallback).toHaveBeenCalledTimes(1);
-    expect(createdCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/new' });
+    expect(createdCallback).toHaveBeenCalledWith(idNew, modifyResourceReturnMock.get(idNew));
     expect(updatedCallback).toHaveBeenCalledTimes(1);
-    expect(updatedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/' });
+    expect(updatedCallback).toHaveBeenCalledWith(id, modifyResourceReturnMock.get(id));
     expect(deletedCallback).toHaveBeenCalledTimes(1);
-    expect(deletedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar/old' });
+    expect(deletedCallback).toHaveBeenCalledWith(idOld, modifyResourceReturnMock.get(idOld));
   });
 
   it('calls hasResource directly from the source.', async(): Promise<void> => {
-    await expect(store.hasResource({ path: 'http://example.org/foo/bar' })).resolves.toBe(true);
+    await expect(store.hasResource(id)).resolves.toBe(true);
     expect(source.hasResource).toHaveBeenCalledTimes(1);
-    expect(source.hasResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' });
+    expect(source.hasResource).toHaveBeenLastCalledWith(id);
   });
 
   it('should not emit an event when the Activity is not a valid AS value.', async(): Promise<void> => {
@@ -160,7 +164,7 @@ describe('A MonitoringStore', (): void => {
       [{ path: 'http://example.org/path' }, new RepresentationMetadata({ [SOLID_AS.activity]: 'SomethingRandom' }) ],
     ]));
 
-    await store.addResource({ path: 'http://example.org/foo/bar' }, {} as Patch);
+    await store.addResource(id, {} as Patch);
 
     expect(changedCallback).toHaveBeenCalledTimes(0);
     expect(createdCallback).toHaveBeenCalledTimes(0);

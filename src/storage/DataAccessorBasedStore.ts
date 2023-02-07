@@ -324,7 +324,8 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const container = this.identifierStrategy.getParentContainer(identifier);
-      this.addActivityMetadata(changes, container, AS.terms.Update);
+
+      this.addContainerActivity(changes, container, false, identifier);
 
       // Update modified date of parent
       await this.updateContainerModifiedDate(container);
@@ -424,7 +425,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     const changes: ChangeMap = new IdentifierMap();
 
-    // Tranform representation data to quads and add them to the metadata object
+    // Transform representation data to quads and add them to the metadata object
     const metadata = new RepresentationMetadata(subjectIdentifier);
     const quads = await arrayifyStream(representation.data);
     metadata.addQuads(quads);
@@ -482,7 +483,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
       // No changes means the parent container exists and will be updated
       if (changes.size === 0) {
-        this.addActivityMetadata(changes, parent, AS.terms.Update);
+        this.addContainerActivity(changes, parent, true, identifier);
       }
 
       // Parent container is also modified
@@ -709,5 +710,20 @@ export class DataAccessorBasedStore implements ResourceStore {
    */
   private addActivityMetadata(map: ChangeMap, id: ResourceIdentifier, activity: NamedNode): void {
     map.set(id, new RepresentationMetadata(id, { [SOLID_AS.activity]: activity }));
+  }
+
+  /**
+   * Generates activity metadata specifically for Add/Remove events on a container.
+   * @param map - ChangeMap to update.
+   * @param id - Identifier of the container.
+   * @param add - If there is a resource being added (`true`) or removed (`false`).
+   * @param object - The object that is being added/removed.
+   */
+  private addContainerActivity(map: ChangeMap, id: ResourceIdentifier, add: boolean, object: ResourceIdentifier): void {
+    const metadata = new RepresentationMetadata({
+      [SOLID_AS.activity]: add ? AS.terms.Add : AS.terms.Remove,
+      [AS.object]: namedNode(object.path),
+    });
+    map.set(id, metadata);
   }
 }

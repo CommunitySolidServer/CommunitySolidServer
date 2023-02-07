@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import type { Server } from 'http';
+import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import { UnsecureWebSocketsProtocol } from '../../../src/http/UnsecureWebSocketsProtocol';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import { BaseActivityEmitter } from '../../../src/server/notifications/ActivityEmitter';
@@ -26,6 +27,7 @@ class DummySocket extends EventEmitter {
 describe('An UnsecureWebSocketsProtocol', (): void => {
   let server: Server;
   let webSocket: DummySocket;
+  const metadata = new RepresentationMetadata();
   const source = new BaseActivityEmitter();
   let protocol: UnsecureWebSocketsProtocol;
 
@@ -67,7 +69,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
 
     describe('before subscribing to resources', (): void => {
       it('does not emit pub messages.', (): void => {
-        source.emit('changed', { path: 'https://mypod.example/foo/bar' }, AS.terms.Update);
+        source.emit('changed', { path: 'https://mypod.example/foo/bar' }, AS.terms.Update, metadata);
         expect(webSocket.messages).toHaveLength(0);
       });
     });
@@ -83,7 +85,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       });
 
       it('emits pub messages for that resource.', (): void => {
-        source.emit('changed', { path: 'https://mypod.example/foo/bar' }, AS.terms.Update);
+        source.emit('changed', { path: 'https://mypod.example/foo/bar' }, AS.terms.Update, metadata);
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift()).toBe('pub https://mypod.example/foo/bar');
       });
@@ -100,7 +102,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       });
 
       it('emits pub messages for that resource.', (): void => {
-        source.emit('changed', { path: 'https://mypod.example/relative/foo' }, AS.terms.Update);
+        source.emit('changed', { path: 'https://mypod.example/relative/foo' }, AS.terms.Update, metadata);
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift()).toBe('pub https://mypod.example/relative/foo');
       });

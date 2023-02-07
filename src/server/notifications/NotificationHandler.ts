@@ -1,3 +1,4 @@
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { AS, VocabularyTerm } from '../../util/Vocabularies';
@@ -7,6 +8,7 @@ export interface NotificationHandlerInput {
   topic: ResourceIdentifier;
   channel: NotificationChannel;
   activity?: VocabularyTerm<typeof AS>;
+  metadata?: RepresentationMetadata;
 }
 
 /**

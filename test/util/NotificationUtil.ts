@@ -35,7 +35,7 @@ export async function subscribe(type: string, webId: string, subscriptionUrl: st
  * @param topic - The topic of the notification.
  * @param type - What type of notification is expected.
  */
-export function expectNotification(notification: unknown, topic: string, type: 'Create' | 'Update' | 'Delete'): void {
+export function expectNotification(notification: unknown, topic: string, type: string): void {
   const expected: any = {
     '@context': [
       'https://www.w3.org/ns/activitystreams',
