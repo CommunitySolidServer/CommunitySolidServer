@@ -23,8 +23,8 @@ describe('A PostOperationHandler', (): void => {
     operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
       addResource: jest.fn().mockResolvedValue(new IdentifierMap([
-        [{ path: 'https://example.com/parent/newPath' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Create }) ],
-        [{ path: 'https://example.com/parent/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+        [{ path: 'https://example.com/parent/newPath' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Create }) ],
+        [{ path: 'https://example.com/parent/' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
       ])),
     } as any;
     handler = new PostOperationHandler(store);
@@ -64,7 +64,7 @@ describe('A PostOperationHandler', (): void => {
 
   it('errors if the store returns no created identifier.', async(): Promise<void> => {
     store.addResource.mockResolvedValueOnce(new IdentifierMap([
-      [{ path: 'https://example.com/parent/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+      [{ path: 'https://example.com/parent/' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
     ]));
     await expect(handler.handle({ operation })).rejects.toThrow(InternalServerError);
   });

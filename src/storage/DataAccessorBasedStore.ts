@@ -708,6 +708,6 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param activity - Which activity is taking place.
    */
   private addActivityMetadata(map: ChangeMap, id: ResourceIdentifier, activity: NamedNode): void {
-    map.set(id, new RepresentationMetadata(id, { [SOLID_AS.Activity]: activity }));
+    map.set(id, new RepresentationMetadata(id, { [SOLID_AS.activity]: activity }));
   }
 }
