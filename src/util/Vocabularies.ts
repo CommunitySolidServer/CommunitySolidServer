@@ -145,8 +145,12 @@ export const ACP = createVocabulary('http://www.w3.org/ns/solid/acp#',
 );
 
 export const AS = createVocabulary('https://www.w3.org/ns/activitystreams#',
+  'object',
+
+  'Add',
   'Create',
   'Delete',
+  'Remove',
   'Update',
 );
 

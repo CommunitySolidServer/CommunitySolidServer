@@ -9,7 +9,7 @@ import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
 export type MetadataIdentifier = ResourceIdentifier | NamedNode | BlankNode;
-export type MetadataValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
+export type MetadataValue = NamedNode | BlankNode | Literal | string | (NamedNode | Literal | BlankNode | string)[];
 export type MetadataRecord = Record<string, MetadataValue>;
 export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
 
@@ -253,7 +253,7 @@ export class RepresentationMetadata {
    * Runs the given function on all predicate/object pairs, but only converts the predicate to a named node once.
    */
   private forQuads(predicate: NamedNode, object: MetadataValue,
-    forFn: (pred: NamedNode, obj: NamedNode | Literal) => void): this {
+    forFn: (pred: NamedNode, obj: NamedNode | BlankNode | Literal) => void): this {
     const objects = Array.isArray(object) ? object : [ object ];
     for (const obj of objects) {
       forFn(predicate, toObjectTerm(obj, true));

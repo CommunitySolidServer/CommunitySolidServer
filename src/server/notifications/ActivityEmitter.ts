@@ -1,3 +1,4 @@
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { GenericEventEmitter } from '../../util/GenericEventEmitter';
 import { createGenericEventEmitterClass } from '../../util/GenericEventEmitter';
@@ -8,8 +9,11 @@ import type { AS, VocabularyTerm, VocabularyValue } from '../../util/Vocabularie
  * Both generic `change` events and ActivityStream-specific events are emitted.
  */
 export type ActivityEmitter =
-  GenericEventEmitter<'changed', (target: ResourceIdentifier, activity: VocabularyTerm<typeof AS>) => void> &
-  GenericEventEmitter<VocabularyValue<typeof AS>, (target: ResourceIdentifier) => void>;
+  GenericEventEmitter<'changed',
+  (target: ResourceIdentifier, activity: VocabularyTerm<typeof AS>, metadata: RepresentationMetadata) => void>
+  &
+  GenericEventEmitter<VocabularyValue<typeof AS>,
+  (target: ResourceIdentifier, metadata: RepresentationMetadata) => void>;
 
 /**
  * A class implementation of {@link ActivityEmitter}.

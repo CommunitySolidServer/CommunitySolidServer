@@ -10,7 +10,6 @@ import { RepresentationMetadata } from '../../../src/http/representation/Represe
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
 import { BasicConditions } from '../../../src/storage/BasicConditions';
-
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
@@ -265,7 +264,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add(RDF.terms.type, LDP.terms.Container);
       const result = await store.addResource(resourceID, representation);
       expect(result.size).toBe(2);
-      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
 
       const generatedID = [ ...result.keys() ].find((id): boolean => id.path !== resourceID.path)!;
       expect(generatedID).toBeDefined();
@@ -278,7 +277,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const result = await store.addResource(resourceID, representation);
 
       expect(result.size).toBe(2);
-      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
 
       const generatedID = [ ...result.keys() ].find((id): boolean => id.path !== resourceID.path)!;
       expect(generatedID).toBeDefined();
@@ -288,6 +287,8 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(arrayifyStream(accessor.data[generatedID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[generatedID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
       expect(result.get(generatedID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
+
+      expect(result.get(resourceID)?.get(AS.terms.object)?.value).toEqual(generatedID.path);
     });
 
     it('can write containers.', async(): Promise<void> => {
@@ -296,7 +297,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const result = await store.addResource(resourceID, representation);
 
       expect(result.size).toBe(2);
-      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
 
       const generatedID = [ ...result.keys() ].find((id): boolean => id.path !== resourceID.path)!;
       expect(generatedID).toBeDefined();
@@ -317,7 +318,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const result = await store.addResource(resourceID, representation);
       expect(result.size).toBe(2);
-      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
       expect(result.get({ path: `${root}newName` })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
     });
 
@@ -342,7 +343,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const result = await store.addResource(resourceID, representation);
       expect(result.size).toBe(2);
-      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
       expect(result.get({ path: `${root}newContainer/` })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
     });
 
@@ -366,7 +367,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const result = await store.addResource(resourceID, representation);
       expect(result.size).toBe(2);
-      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
       expect(result.get({ path: `${root}%26%26` })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
     });
 
@@ -459,7 +460,8 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}resource` };
       const result = await store.setRepresentation(resourceID, representation);
       expect(result.size).toBe(2);
-      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
+      expect(result.get({ path: root })?.get(AS.terms.object)?.value).toEqual(resourceID.path);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
@@ -476,7 +478,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
       const result = await store.setRepresentation(resourceID, representation);
       expect(result.size).toBe(2);
-      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
@@ -489,7 +491,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}resource` };
       const result = await store.setRepresentation(resourceID, representation);
       expect(result.size).toBe(2);
-      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
@@ -513,7 +515,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add(namedNode('gen'), 'value', SOLID_META.terms.ResponseMetadata);
       const result = await store.setRepresentation(resourceID, representation);
       expect(result.size).toBe(2);
-      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[resourceID.path].metadata.get(namedNode('notGen'))?.value).toBe('value');
@@ -535,7 +537,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}a/b/resource` };
       const result = await store.setRepresentation(resourceID, representation);
       expect(result.size).toBe(4);
-      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Add);
       expect(result.get({ path: `${root}a/` })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
       expect(result.get({ path: `${root}a/b/` })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
       expect(result.get({ path: `${root}a/b/resource` })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Create);
@@ -770,7 +772,8 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
       const result = await store.deleteResource(resourceID);
       expect(result.size).toBe(2);
-      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Remove);
+      expect(result.get({ path: root })?.get(AS.terms.object)?.value).toEqual(resourceID.path);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Delete);
       expect(accessor.data[resourceID.path]).toBeUndefined();
       expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
@@ -794,7 +797,7 @@ describe('A DataAccessorBasedStore', (): void => {
       auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
       const result = await store.deleteResource(auxResourceID);
       expect(result.size).toBe(2);
-      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Remove);
       expect(result.get(auxResourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Delete);
       expect(accessor.data[auxResourceID.path]).toBeUndefined();
     });
@@ -807,7 +810,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const result = await store.deleteResource(resourceID);
       expect(result.size).toBe(3);
-      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Remove);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Delete);
       expect(result.get(auxResourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Delete);
       expect(accessor.data[resourceID.path]).toBeUndefined();
@@ -830,7 +833,7 @@ describe('A DataAccessorBasedStore', (): void => {
       logger.error = jest.fn();
       const result = await store.deleteResource(resourceID);
       expect(result.size).toBe(2);
-      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
+      expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Remove);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Delete);
       expect(accessor.data[resourceID.path]).toBeUndefined();
       expect(accessor.data[auxResourceID.path]).toBeDefined();

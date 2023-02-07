@@ -223,6 +223,66 @@ describe.each(stores)('A server supporting WebSocketChannel2023 using %s', (name
     expect(message).toBe('Notification channel has expired');
   });
 
+  it('emits container notifications if contents get added or removed.', async(): Promise<void> => {
+    const resource = joinUrl(baseUrl, '/resource');
+    // Subscribing to the base URL, which is the parent container
+    const { receiveFrom } = await subscribe(notificationType, webId, subscriptionUrl, baseUrl) as any;
+
+    const socket = new WebSocket(receiveFrom);
+    let notificationPromise = new Promise<Buffer>((resolve): any => socket.on('message', resolve));
+    await new Promise<void>((resolve): any => socket.on('open', resolve));
+
+    let response = await fetch(resource, {
+      method: 'PUT',
+      headers: { 'content-type': 'text/plain' },
+      body: 'abc',
+    });
+    expect(response.status).toBe(201);
+
+    // Will receive the Add notification
+    let notification = JSON.parse((await notificationPromise).toString());
+
+    // Slightly differs from the other notifications due to the combination of object and target
+    expect(notification).toEqual({
+      '@context': [
+        'https://www.w3.org/ns/activitystreams',
+        'https://www.w3.org/ns/solid/notification/v1',
+      ],
+      id: expect.stringContaining(baseUrl),
+      type: 'Add',
+      object: resource,
+      target: baseUrl,
+      published: expect.anything(),
+      state: expect.anything(),
+    });
+
+    // Reset the notifications promise
+    notificationPromise = new Promise<Buffer>((resolve): any => socket.on('message', resolve));
+
+    response = await fetch(resource, {
+      method: 'DELETE',
+    });
+    expect(response.status).toBe(205);
+
+    // Will receive the Remove notification
+    notification = JSON.parse((await notificationPromise).toString());
+
+    expect(notification).toEqual({
+      '@context': [
+        'https://www.w3.org/ns/activitystreams',
+        'https://www.w3.org/ns/solid/notification/v1',
+      ],
+      id: expect.stringContaining(baseUrl),
+      type: 'Remove',
+      object: resource,
+      target: baseUrl,
+      published: expect.anything(),
+      state: expect.anything(),
+    });
+
+    socket.close();
+  });
+
   it('can use other RDF formats and content negotiation when creating a channel.', async(): Promise<void> => {
     const turtleChannel = `
       _:id <${RDF.type}> <${notificationType}> ;

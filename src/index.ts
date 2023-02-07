@@ -311,6 +311,7 @@ export * from './server/middleware/WebSocketAdvertiser';
 
 // Server/Notifications/Generate
 export * from './server/notifications/generate/ActivityNotificationGenerator';
+export * from './server/notifications/generate/AddRemoveNotificationGenerator';
 export * from './server/notifications/generate/DeleteNotificationGenerator';
 export * from './server/notifications/generate/NotificationGenerator';
 export * from './server/notifications/generate/StateNotificationGenerator';

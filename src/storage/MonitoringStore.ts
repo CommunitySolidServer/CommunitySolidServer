@@ -9,7 +9,7 @@ import type { Conditions } from './Conditions';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 // The ActivityStream terms for which we emit an event
-const knownActivities = [ AS.terms.Create, AS.terms.Delete, AS.terms.Update ];
+const knownActivities = [ AS.terms.Add, AS.terms.Create, AS.terms.Delete, AS.terms.Remove, AS.terms.Update ];
 
 /**
  * Store that notifies listeners of changes to its source
@@ -57,8 +57,8 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     for (const [ identifier, metadata ] of changes) {
       const activity = metadata.get(SOLID_AS.terms.activity);
       if (this.isKnownActivity(activity)) {
-        this.emit('changed', identifier, activity);
-        this.emit(activity.value, identifier);
+        this.emit('changed', identifier, activity, metadata);
+        this.emit(activity.value, identifier, metadata);
       }
     }
 

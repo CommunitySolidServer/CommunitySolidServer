@@ -1,3 +1,4 @@
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
@@ -28,14 +29,15 @@ export class ListeningActivityHandler extends StaticHandler {
     this.storage = storage;
     this.handler = handler;
 
-    emitter.on('changed', (topic, activity): void => {
-      this.emit(topic, activity).catch((error): void => {
+    emitter.on('changed', (topic, activity, metadata): void => {
+      this.emit(topic, activity, metadata).catch((error): void => {
         this.logger.error(`Something went wrong emitting notifications: ${createErrorMessage(error)}`);
       });
     });
   }
 
-  private async emit(topic: ResourceIdentifier, activity: VocabularyTerm<typeof AS>): Promise<void> {
+  private async emit(topic: ResourceIdentifier, activity: VocabularyTerm<typeof AS>,
+    metadata: RepresentationMetadata): Promise<void> {
     const channelIds = await this.storage.getAll(topic);
 
     for (const id of channelIds) {
@@ -57,7 +59,7 @@ export class ListeningActivityHandler extends StaticHandler {
 
       // No need to wait on this to resolve before going to the next channel.
       // Prevent failed notification from blocking other notifications.
-      this.handler.handleSafe({ channel, activity, topic })
+      this.handler.handleSafe({ channel, activity, topic, metadata })
         .then((): Promise<void> => {
           // Update the `lastEmit` value if the channel has a rate limit
           if (channel.rate) {
