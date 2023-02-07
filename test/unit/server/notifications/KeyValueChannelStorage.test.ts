@@ -26,12 +26,12 @@ describe('A KeyValueChannelStorage', (): void => {
     type: 'WebSocketSubscription2021',
     topic,
   } as NotificationChannelJson;
-  const features = { aa: 'bb' };
-  let channel: NotificationChannel<Record<string, string>>;
+  const features = {};
+  let channel: NotificationChannel;
   let internalMap: Map<string, any>;
   let internalStorage: KeyValueStorage<string, any>;
   let locker: ReadWriteLocker;
-  let storage: KeyValueChannelStorage<Record<string, string>>;
+  let storage: KeyValueChannelStorage;
 
   beforeEach(async(): Promise<void> => {
     resetAllMocks();
@@ -39,8 +39,6 @@ describe('A KeyValueChannelStorage', (): void => {
       id: `WebSocketSubscription2021:${v4()}:http://example.com/foo`,
       topic,
       type: 'WebSocketSubscription2021',
-      features,
-      lastEmit: 0,
     };
 
     internalMap = new Map();

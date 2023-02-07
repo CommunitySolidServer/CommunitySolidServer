@@ -16,8 +16,6 @@ describe('A BaseStateHandler', (): void => {
       id: 'id',
       topic: 'http://exa mple.com/foo',
       type: 'type',
-      features: {},
-      lastEmit: 0,
       state: '123',
     };
 

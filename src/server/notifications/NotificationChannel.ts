@@ -33,7 +33,7 @@ export type NotificationChannelJson = InferType<typeof NOTIFICATION_CHANNEL_SCHE
  * The info provided for a notification channel during a subscription.
  * `features` can contain custom values relevant for a specific channel type.
  */
-export type NotificationChannel<T = Record<string, unknown>> = {
+export type NotificationChannel = {
   id: string;
   topic: string;
   type: string;
@@ -42,6 +42,5 @@ export type NotificationChannel<T = Record<string, unknown>> = {
   accept?: string;
   rate?: number;
   state?: string;
-  lastEmit: number;
-  features: T;
+  lastEmit?: number;
 };

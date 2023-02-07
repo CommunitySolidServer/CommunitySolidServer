@@ -14,8 +14,6 @@ describe('An ActivityNotificationGenerator', (): void => {
     id: 'id',
     topic: topic.path,
     type: 'type',
-    features: {},
-    lastEmit: 0,
   };
   const activity = AS.terms.Update;
   const metadata = new RepresentationMetadata({

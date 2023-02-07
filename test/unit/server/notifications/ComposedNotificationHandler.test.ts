@@ -32,8 +32,6 @@ describe('A ComposedNotificationHandler', (): void => {
       id: 'id',
       topic: 'http://example.com/foo',
       type: 'type',
-      features: {},
-      lastEmit: 0,
     };
 
     generator = {

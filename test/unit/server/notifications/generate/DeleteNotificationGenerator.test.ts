@@ -11,8 +11,6 @@ describe('A DeleteNotificationGenerator', (): void => {
     id: 'id',
     topic: topic.path,
     type: 'type',
-    features: {},
-    lastEmit: 0,
   };
   const activity = AS.terms.Delete;
   const generator = new DeleteNotificationGenerator();

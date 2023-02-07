@@ -7,40 +7,39 @@ import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
 import type { NotificationChannel, NotificationChannelJson } from './NotificationChannel';
 import type { NotificationChannelStorage } from './NotificationChannelStorage';
 
-type StorageValue<T> = string | string[] | NotificationChannel<T>;
+type StorageValue = string | string[] | NotificationChannel;
 
 /**
  * Stores all the {@link NotificationChannel} in a {@link KeyValueStorage}.
  *
  * Uses a {@link ReadWriteLocker} to prevent internal race conditions.
  */
-export class KeyValueChannelStorage<T extends Record<string, unknown>> implements NotificationChannelStorage<T> {
+export class KeyValueChannelStorage implements NotificationChannelStorage {
   protected logger = getLoggerFor(this);
 
-  private readonly storage: KeyValueStorage<string, StorageValue<T>>;
+  private readonly storage: KeyValueStorage<string, StorageValue>;
   private readonly locker: ReadWriteLocker;
 
-  public constructor(storage: KeyValueStorage<string, StorageValue<T>>, locker: ReadWriteLocker) {
+  public constructor(storage: KeyValueStorage<string, StorageValue>, locker: ReadWriteLocker) {
     this.storage = storage;
     this.locker = locker;
   }
 
-  public create(channel: NotificationChannelJson, features: T): NotificationChannel<T> {
+  public create(channel: NotificationChannelJson, features: Record<string, unknown>): NotificationChannel {
     return {
       id: `${channel.type}:${v4()}:${channel.topic}`,
       topic: channel.topic,
       type: channel.type,
-      lastEmit: 0,
       startAt: channel.startAt,
       endAt: channel.endAt,
       accept: channel.accept,
       rate: channel.rate,
       state: channel.state,
-      features,
+      ...features,
     };
   }
 
-  public async get(id: string): Promise<NotificationChannel<T> | undefined> {
+  public async get(id: string): Promise<NotificationChannel | undefined> {
     const channel = await this.storage.get(id);
     if (channel && this.isChannel(channel)) {
       if (typeof channel.endAt === 'number' && channel.endAt < Date.now()) {
@@ -63,7 +62,7 @@ export class KeyValueChannelStorage<T extends Record<string, unknown>> implement
     return [];
   }
 
-  public async add(channel: NotificationChannel<T>): Promise<void> {
+  public async add(channel: NotificationChannel): Promise<void> {
     const target = { path: channel.topic };
     return this.locker.withWriteLock(this.getLockKey(target), async(): Promise<void> => {
       const channels = await this.getAll(target);
@@ -73,7 +72,7 @@ export class KeyValueChannelStorage<T extends Record<string, unknown>> implement
     });
   }
 
-  public async update(channel: NotificationChannel<T>): Promise<void> {
+  public async update(channel: NotificationChannel): Promise<void> {
     return this.locker.withWriteLock(this.getLockKey(channel.id), async(): Promise<void> => {
       const oldChannel = await this.storage.get(channel.id);
 
@@ -124,7 +123,7 @@ export class KeyValueChannelStorage<T extends Record<string, unknown>> implement
     });
   }
 
-  private isChannel(value: StorageValue<T>): value is NotificationChannel<T> {
+  private isChannel(value: StorageValue): value is NotificationChannel {
     return Boolean((value as NotificationChannel).id);
   }
 

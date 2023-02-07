@@ -14,8 +14,6 @@ describe('A StateNotificationGenerator', (): void => {
     id: 'id',
     topic: topic.path,
     type: 'type',
-    features: {},
-    lastEmit: 0,
   };
   const notification: Notification = {
     '@context': [
