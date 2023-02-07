@@ -16,20 +16,20 @@ describe('A MonitoringStore', (): void => {
   let deletedCallback: () => void;
 
   const addResourceReturnMock: ChangeMap = new IdentifierMap([
-    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Create }) ],
-    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Create }) ],
+    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
   ]);
   const setRepresentationReturnMock: ChangeMap = new IdentifierMap([
-    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
   ]);
   const deleteResourceReturnMock: ChangeMap = new IdentifierMap([
-    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Delete }) ],
-    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Delete }) ],
+    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
   ]);
   const modifyResourceReturnMock: ChangeMap = new IdentifierMap([
-    [{ path: 'http://example.org/foo/bar/old' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Delete }) ],
-    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Create }) ],
-    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.Activity]: AS.terms.Update }) ],
+    [{ path: 'http://example.org/foo/bar/old' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Delete }) ],
+    [{ path: 'http://example.org/foo/bar/new' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Create }) ],
+    [{ path: 'http://example.org/foo/bar/' }, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Update }) ],
   ]);
 
   beforeEach(async(): Promise<void> => {
@@ -157,7 +157,7 @@ describe('A MonitoringStore', (): void => {
 
   it('should not emit an event when the Activity is not a valid AS value.', async(): Promise<void> => {
     source.addResource = jest.fn().mockResolvedValue(new IdentifierMap([
-      [{ path: 'http://example.org/path' }, new RepresentationMetadata({ [SOLID_AS.Activity]: 'SomethingRandom' }) ],
+      [{ path: 'http://example.org/path' }, new RepresentationMetadata({ [SOLID_AS.activity]: 'SomethingRandom' }) ],
     ]));
 
     await store.addResource({ path: 'http://example.org/foo/bar' }, {} as Patch);

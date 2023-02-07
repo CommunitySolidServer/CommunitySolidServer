@@ -55,7 +55,7 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
 
   private emitChanged(changes: ChangeMap): ChangeMap {
     for (const [ identifier, metadata ] of changes) {
-      const activity = metadata.get(SOLID_AS.terms.Activity);
+      const activity = metadata.get(SOLID_AS.terms.activity);
       if (this.isKnownActivity(activity)) {
         this.emit('changed', identifier, activity);
         this.emit(activity.value, identifier);

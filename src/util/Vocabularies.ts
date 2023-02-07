@@ -243,8 +243,8 @@ export const SOLID = createVocabulary('http://www.w3.org/ns/solid/terms#',
   'InsertDeletePatch',
 );
 
-export const SOLID_AS = createVocabulary('http://www.w3.org/ns/solid/activitystreams#',
-  'Activity',
+export const SOLID_AS = createVocabulary('urn:npm:solid:community-server:activity:',
+  'activity',
 );
 
 export const SOLID_ERROR = createVocabulary('urn:npm:solid:community-server:error:',

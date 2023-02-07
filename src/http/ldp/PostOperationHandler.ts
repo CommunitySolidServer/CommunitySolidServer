@@ -44,7 +44,7 @@ export class PostOperationHandler extends OperationHandler {
     }
     const changes = await this.store.addResource(operation.target, operation.body, operation.conditions);
     const createdIdentifier = find(changes.keys(), (identifier): boolean =>
-      Boolean(changes.get(identifier)?.has(SOLID_AS.terms.Activity, AS.terms.Create)));
+      Boolean(changes.get(identifier)?.has(SOLID_AS.terms.activity, AS.terms.Create)));
     if (!createdIdentifier) {
       throw new InternalServerError('Operation was successful but no created identifier was returned.');
     }
