@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import type { WebSocket } from 'ws';
+import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type {
-  NotificationChannelInfo,
   NotificationChannelStorage,
 } from '../../../../../src/server/notifications/NotificationChannelStorage';
 
@@ -13,7 +13,7 @@ import { WrappedSetMultiMap } from '../../../../../src/util/map/WrappedSetMultiM
 import { flushPromises } from '../../../../util/Util';
 
 describe('A WebSocket2021Storer', (): void => {
-  const info: NotificationChannelInfo = {
+  const channel: NotificationChannel = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
@@ -39,23 +39,23 @@ describe('A WebSocket2021Storer', (): void => {
   });
 
   it('stores WebSockets.', async(): Promise<void> => {
-    await expect(storer.handle({ info, webSocket })).resolves.toBeUndefined();
+    await expect(storer.handle({ channel, webSocket })).resolves.toBeUndefined();
     expect([ ...socketMap.keys() ]).toHaveLength(1);
-    expect(socketMap.has(info.id)).toBe(true);
+    expect(socketMap.has(channel.id)).toBe(true);
   });
 
   it('removes closed WebSockets.', async(): Promise<void> => {
-    await expect(storer.handle({ info, webSocket })).resolves.toBeUndefined();
-    expect(socketMap.has(info.id)).toBe(true);
+    await expect(storer.handle({ channel, webSocket })).resolves.toBeUndefined();
+    expect(socketMap.has(channel.id)).toBe(true);
     webSocket.emit('close');
-    expect(socketMap.has(info.id)).toBe(false);
+    expect(socketMap.has(channel.id)).toBe(false);
   });
 
   it('removes erroring WebSockets.', async(): Promise<void> => {
-    await expect(storer.handle({ info, webSocket })).resolves.toBeUndefined();
-    expect(socketMap.has(info.id)).toBe(true);
+    await expect(storer.handle({ channel, webSocket })).resolves.toBeUndefined();
+    expect(socketMap.has(channel.id)).toBe(true);
     webSocket.emit('error');
-    expect(socketMap.has(info.id)).toBe(false);
+    expect(socketMap.has(channel.id)).toBe(false);
   });
 
   it('removes expired WebSockets.', async(): Promise<void> => {
@@ -68,18 +68,18 @@ describe('A WebSocket2021Storer', (): void => {
     webSocket2.close = jest.fn();
     const webSocketOther: jest.Mocked<WebSocket> = new EventEmitter() as any;
     webSocketOther.close = jest.fn();
-    const infoOther: NotificationChannelInfo = {
-      ...info,
+    const channelOther: NotificationChannel = {
+      ...channel,
       id: 'other',
     };
-    await expect(storer.handle({ info, webSocket })).resolves.toBeUndefined();
-    await expect(storer.handle({ info, webSocket: webSocket2 })).resolves.toBeUndefined();
-    await expect(storer.handle({ info: infoOther, webSocket: webSocketOther })).resolves.toBeUndefined();
+    await expect(storer.handle({ channel, webSocket })).resolves.toBeUndefined();
+    await expect(storer.handle({ channel, webSocket: webSocket2 })).resolves.toBeUndefined();
+    await expect(storer.handle({ channel: channelOther, webSocket: webSocketOther })).resolves.toBeUndefined();
 
-    // `info` expired, `infoOther` did not
+    // `channel` expired, `channelOther` did not
     storage.get.mockImplementation((id): any => {
-      if (id === infoOther.id) {
-        return infoOther;
+      if (id === channelOther.id) {
+        return channelOther;
       }
     });
 

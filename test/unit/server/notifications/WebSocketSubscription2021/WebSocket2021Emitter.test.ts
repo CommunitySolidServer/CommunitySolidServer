@@ -1,9 +1,7 @@
 import { EventEmitter } from 'events';
 import type { WebSocket } from 'ws';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
-import type {
-  NotificationChannelInfo,
-} from '../../../../../src/server/notifications/NotificationChannelStorage';
+import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import {
   WebSocket2021Emitter,
 } from '../../../../../src/server/notifications/WebSocketSubscription2021/WebSocket2021Emitter';
@@ -11,7 +9,7 @@ import type { SetMultiMap } from '../../../../../src/util/map/SetMultiMap';
 import { WrappedSetMultiMap } from '../../../../../src/util/map/WrappedSetMultiMap';
 
 describe('A WebSocket2021Emitter', (): void => {
-  const info: NotificationChannelInfo = {
+  const channel: NotificationChannel = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
@@ -34,17 +32,17 @@ describe('A WebSocket2021Emitter', (): void => {
   });
 
   it('emits notifications to the stored WebSockets.', async(): Promise<void> => {
-    socketMap.add(info.id, webSocket);
+    socketMap.add(channel.id, webSocket);
 
     const representation = new BasicRepresentation('notification', 'text/plain');
-    await expect(emitter.handle({ info, representation })).resolves.toBeUndefined();
+    await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
     expect(webSocket.send).toHaveBeenCalledTimes(1);
     expect(webSocket.send).toHaveBeenLastCalledWith('notification');
   });
 
   it('destroys the representation if there is no matching WebSocket.', async(): Promise<void> => {
     const representation = new BasicRepresentation('notification', 'text/plain');
-    await expect(emitter.handle({ info, representation })).resolves.toBeUndefined();
+    await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
     expect(webSocket.send).toHaveBeenCalledTimes(0);
     expect(representation.data.destroyed).toBe(true);
   });
@@ -53,11 +51,11 @@ describe('A WebSocket2021Emitter', (): void => {
     const webSocket2: jest.Mocked<WebSocket> = new EventEmitter() as any;
     webSocket2.send = jest.fn();
 
-    socketMap.add(info.id, webSocket);
-    socketMap.add(info.id, webSocket2);
+    socketMap.add(channel.id, webSocket);
+    socketMap.add(channel.id, webSocket2);
 
     const representation = new BasicRepresentation('notification', 'text/plain');
-    await expect(emitter.handle({ info, representation })).resolves.toBeUndefined();
+    await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
     expect(webSocket.send).toHaveBeenCalledTimes(1);
     expect(webSocket.send).toHaveBeenLastCalledWith('notification');
     expect(webSocket2.send).toHaveBeenCalledTimes(1);
@@ -67,16 +65,16 @@ describe('A WebSocket2021Emitter', (): void => {
   it('only sends to the matching WebSockets.', async(): Promise<void> => {
     const webSocket2: jest.Mocked<WebSocket> = new EventEmitter() as any;
     webSocket2.send = jest.fn();
-    const info2: NotificationChannelInfo = {
-      ...info,
+    const channel2: NotificationChannel = {
+      ...channel,
       id: 'other',
     };
 
-    socketMap.add(info.id, webSocket);
-    socketMap.add(info2.id, webSocket2);
+    socketMap.add(channel.id, webSocket);
+    socketMap.add(channel2.id, webSocket2);
 
     const representation = new BasicRepresentation('notification', 'text/plain');
-    await expect(emitter.handle({ info, representation })).resolves.toBeUndefined();
+    await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
     expect(webSocket.send).toHaveBeenCalledTimes(1);
     expect(webSocket.send).toHaveBeenLastCalledWith('notification');
     expect(webSocket2.send).toHaveBeenCalledTimes(0);

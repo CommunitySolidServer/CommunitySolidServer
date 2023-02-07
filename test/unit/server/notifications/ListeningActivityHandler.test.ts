@@ -4,8 +4,8 @@ import type { Logger } from '../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../src/logging/LogUtil';
 import type { ActivityEmitter } from '../../../../src/server/notifications/ActivityEmitter';
 import { ListeningActivityHandler } from '../../../../src/server/notifications/ListeningActivityHandler';
+import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
 import type {
-  NotificationChannelInfo,
   NotificationChannelStorage,
 } from '../../../../src/server/notifications/NotificationChannelStorage';
 import type { NotificationHandler } from '../../../../src/server/notifications/NotificationHandler';
@@ -21,7 +21,7 @@ describe('A ListeningActivityHandler', (): void => {
   const logger: jest.Mocked<Logger> = getLoggerFor('mock') as any;
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
   const activity = AS.terms.Update;
-  let info: NotificationChannelInfo;
+  let channel: NotificationChannel;
   let storage: jest.Mocked<NotificationChannelStorage>;
   let emitter: ActivityEmitter;
   let notificationHandler: jest.Mocked<NotificationHandler>;
@@ -29,7 +29,7 @@ describe('A ListeningActivityHandler', (): void => {
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
-    info = {
+    channel = {
       id: 'id',
       topic: 'http://example.com/foo',
       type: 'type',
@@ -38,8 +38,8 @@ describe('A ListeningActivityHandler', (): void => {
     };
 
     storage = {
-      getAll: jest.fn().mockResolvedValue([ info.id ]),
-      get: jest.fn().mockResolvedValue(info),
+      getAll: jest.fn().mockResolvedValue([ channel.id ]),
+      get: jest.fn().mockResolvedValue(channel),
     } as any;
 
     emitter = new EventEmitter() as any;
@@ -58,13 +58,13 @@ describe('A ListeningActivityHandler', (): void => {
     await flushPromises();
 
     expect(notificationHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(notificationHandler.handleSafe).toHaveBeenLastCalledWith({ info, activity, topic });
+    expect(notificationHandler.handleSafe).toHaveBeenLastCalledWith({ channel, activity, topic });
     expect(logger.error).toHaveBeenCalledTimes(0);
   });
 
   it('does not emit an event on channels if their rate does not yet allow it.', async(): Promise<void> => {
-    info.rate = 100000;
-    info.lastEmit = Date.now();
+    channel.rate = 100000;
+    channel.lastEmit = Date.now();
 
     emitter.emit('changed', topic, activity);
 
@@ -75,7 +75,7 @@ describe('A ListeningActivityHandler', (): void => {
   });
 
   it('does not emit an event on channels if their start time has not been reached.', async(): Promise<void> => {
-    info.startAt = Date.now() + 100000;
+    channel.startAt = Date.now() + 100000;
 
     emitter.emit('changed', topic, activity);
 
@@ -86,7 +86,7 @@ describe('A ListeningActivityHandler', (): void => {
   });
 
   it('does not stop if one channel causes an error.', async(): Promise<void> => {
-    storage.getAll.mockResolvedValue([ info.id, info.id ]);
+    storage.getAll.mockResolvedValue([ channel.id, channel.id ]);
     notificationHandler.handleSafe.mockRejectedValueOnce(new Error('bad input'));
 
     emitter.emit('changed', topic, activity);
@@ -95,7 +95,7 @@ describe('A ListeningActivityHandler', (): void => {
 
     expect(notificationHandler.handleSafe).toHaveBeenCalledTimes(2);
     expect(logger.error).toHaveBeenCalledTimes(1);
-    expect(logger.error).toHaveBeenLastCalledWith(`Error trying to handle notification for ${info.id}: bad input`);
+    expect(logger.error).toHaveBeenLastCalledWith(`Error trying to handle notification for ${channel.id}: bad input`);
   });
 
   it('logs an error if something goes wrong handling the event.', async(): Promise<void> => {

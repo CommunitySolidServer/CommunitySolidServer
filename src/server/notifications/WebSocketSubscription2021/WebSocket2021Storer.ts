@@ -34,10 +34,10 @@ export class WebSocket2021Storer extends WebSocket2021Handler {
     timer.unref();
   }
 
-  public async handle({ webSocket, info }: WebSocket2021HandlerInput): Promise<void> {
-    this.socketMap.add(info.id, webSocket);
-    webSocket.on('error', (): boolean => this.socketMap.deleteEntry(info.id, webSocket));
-    webSocket.on('close', (): boolean => this.socketMap.deleteEntry(info.id, webSocket));
+  public async handle({ webSocket, channel }: WebSocket2021HandlerInput): Promise<void> {
+    this.socketMap.add(channel.id, webSocket);
+    webSocket.on('error', (): boolean => this.socketMap.deleteEntry(channel.id, webSocket));
+    webSocket.on('close', (): boolean => this.socketMap.deleteEntry(channel.id, webSocket));
   }
 
   /**

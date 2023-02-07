@@ -1,12 +1,12 @@
 import type { Notification } from '../../../../../src/server/notifications/Notification';
-import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
+import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import {
   JsonLdNotificationSerializer,
 } from '../../../../../src/server/notifications/serialize/JsonLdNotificationSerializer';
 import { readableToString } from '../../../../../src/util/StreamUtil';
 
 describe('A JsonLdNotificationSerializer', (): void => {
-  const info: NotificationChannelInfo = {
+  const channel: NotificationChannel = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
@@ -27,7 +27,7 @@ describe('A JsonLdNotificationSerializer', (): void => {
   const serializer = new JsonLdNotificationSerializer();
 
   it('converts notifications into JSON-LD.', async(): Promise<void> => {
-    const representation = await serializer.handle({ notification, info });
+    const representation = await serializer.handle({ notification, channel });
     expect(representation.metadata.contentType).toBe('application/ld+json');
     expect(JSON.parse(await readableToString(representation.data))).toEqual(notification);
   });

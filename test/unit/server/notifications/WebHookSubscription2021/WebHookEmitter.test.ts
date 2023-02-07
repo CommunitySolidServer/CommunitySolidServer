@@ -9,7 +9,7 @@ import {
 import type { Logger } from '../../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
-import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
+import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import { WebHookEmitter } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookEmitter';
 import type {
   WebHookFeatures,
@@ -40,7 +40,7 @@ describe('A WebHookEmitter', (): void => {
     published: '123',
   };
   let representation: Representation;
-  const info: NotificationChannelInfo<WebHookFeatures> = {
+  const channel: NotificationChannel<WebHookFeatures> = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
@@ -79,7 +79,7 @@ describe('A WebHookEmitter', (): void => {
     const now = Date.now();
     jest.useFakeTimers();
     jest.setSystemTime(now);
-    await expect(emitter.handle({ info, representation })).resolves.toBeUndefined();
+    await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const call = fetchMock.mock.calls[0];
@@ -95,13 +95,13 @@ describe('A WebHookEmitter', (): void => {
     // Check all the DPoP token fields
     const decodedDpopToken = await jwtVerify(encodedDpopToken, publicObject, { issuer: trimTrailingSlashes(baseUrl) });
     expect(decodedDpopToken.payload).toMatchObject({
-      webid: info.features.webId,
-      azp: info.features.webId,
-      sub: info.features.webId,
+      webid: channel.features.webId,
+      azp: channel.features.webId,
+      sub: channel.features.webId,
       cnf: { jkt: await calculateJwkThumbprint(publicJwk, 'sha256') },
       iat: now,
       exp: now + (20 * 60 * 1000),
-      aud: [ info.features.webId, 'solid' ],
+      aud: [ channel.features.webId, 'solid' ],
       jti: expect.stringContaining('-'),
     });
     expect(decodedDpopToken.protectedHeader).toMatchObject({
@@ -111,7 +111,7 @@ describe('A WebHookEmitter', (): void => {
     // CHeck the DPoP proof
     const decodedDpopProof = await jwtVerify(dpop, publicObject);
     expect(decodedDpopProof.payload).toMatchObject({
-      htu: info.features.target,
+      htu: channel.features.target,
       htm: 'POST',
       iat: now,
       jti: expect.stringContaining('-'),
@@ -129,11 +129,11 @@ describe('A WebHookEmitter', (): void => {
     const logger = getLoggerFor('mock');
 
     fetchMock.mockResolvedValue({ status: 400, text: async(): Promise<string> => 'invalid request' });
-    await expect(emitter.handle({ info, representation })).resolves.toBeUndefined();
+    await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
 
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenLastCalledWith(
-      `There was an issue emitting a WebHook notification with target ${info.features.target}: invalid request`,
+      `There was an issue emitting a WebHook notification with target ${channel.features.target}: invalid request`,
     );
   });
 });

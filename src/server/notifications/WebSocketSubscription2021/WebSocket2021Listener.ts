@@ -38,16 +38,16 @@ export class WebSocket2021Listener extends WebSocketServerConfigurator {
       return webSocket.close();
     }
 
-    const info = await this.storage.get(id);
+    const channel = await this.storage.get(id);
 
-    if (!info) {
-      // Info not being there implies it has expired
+    if (!channel) {
+      // Channel not being there implies it has expired
       webSocket.send(`Notification channel has expired`);
       return webSocket.close();
     }
 
-    this.logger.info(`Accepted WebSocket connection listening to changes on ${info.topic}`);
+    this.logger.info(`Accepted WebSocket connection listening to changes on ${channel.topic}`);
 
-    await this.handler.handleSafe({ info, webSocket });
+    await this.handler.handleSafe({ channel, webSocket });
   }
 }

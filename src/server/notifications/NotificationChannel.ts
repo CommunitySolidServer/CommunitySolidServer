@@ -27,4 +27,21 @@ export const NOTIFICATION_CHANNEL_SCHEMA = object({
     toSeconds(parse(original)) * 1000).optional(),
   accept: string().optional(),
 });
-export type NotificationChannel = InferType<typeof NOTIFICATION_CHANNEL_SCHEMA>;
+export type NotificationChannelJson = InferType<typeof NOTIFICATION_CHANNEL_SCHEMA>;
+
+/**
+ * The info provided for a notification channel during a subscription.
+ * `features` can contain custom values relevant for a specific channel type.
+ */
+export type NotificationChannel<T = Record<string, unknown>> = {
+  id: string;
+  topic: string;
+  type: string;
+  startAt?: number;
+  endAt?: number;
+  accept?: string;
+  rate?: number;
+  state?: string;
+  lastEmit: number;
+  features: T;
+};

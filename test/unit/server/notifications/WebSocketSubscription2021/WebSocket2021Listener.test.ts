@@ -5,8 +5,8 @@ import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
+import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type {
-  NotificationChannelInfo,
   NotificationChannelStorage,
 } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import type {
@@ -27,7 +27,7 @@ jest.mock('ws', (): any => ({
 }));
 
 describe('A WebSocket2021Listener', (): void => {
-  const info: NotificationChannelInfo = {
+  const channel: NotificationChannel = {
     id: 'id',
     topic: 'http://example.com/foo',
     type: 'type',
@@ -52,7 +52,7 @@ describe('A WebSocket2021Listener', (): void => {
     upgradeRequest = { url: `/foo?auth=${auth}` } as any;
 
     storage = {
-      get: jest.fn().mockResolvedValue(info),
+      get: jest.fn().mockResolvedValue(channel),
     } as any;
 
     handler = {
@@ -119,6 +119,6 @@ describe('A WebSocket2021Listener', (): void => {
     expect(webSocket.send).toHaveBeenCalledTimes(0);
     expect(webSocket.close).toHaveBeenCalledTimes(0);
     expect(handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(handler.handleSafe).toHaveBeenLastCalledWith({ webSocket, info });
+    expect(handler.handleSafe).toHaveBeenLastCalledWith({ webSocket, channel });
   });
 });

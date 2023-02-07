@@ -4,13 +4,13 @@ import type { ResourceIdentifier } from '../../../../../src/http/representation/
 import {
   ActivityNotificationGenerator,
 } from '../../../../../src/server/notifications/generate/ActivityNotificationGenerator';
-import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
+import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type { ResourceStore } from '../../../../../src/storage/ResourceStore';
 import { AS, DC, LDP, RDF } from '../../../../../src/util/Vocabularies';
 
 describe('An ActivityNotificationGenerator', (): void => {
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const info: NotificationChannelInfo = {
+  const channel: NotificationChannel = {
     id: 'id',
     topic: topic.path,
     type: 'type',
@@ -35,8 +35,8 @@ describe('An ActivityNotificationGenerator', (): void => {
   });
 
   it('only handles defined activities.', async(): Promise<void> => {
-    await expect(generator.canHandle({ topic, info })).rejects.toThrow('Only defined activities are supported.');
-    await expect(generator.canHandle({ topic, info, activity })).resolves.toBeUndefined();
+    await expect(generator.canHandle({ topic, channel })).rejects.toThrow('Only defined activities are supported.');
+    await expect(generator.canHandle({ topic, channel, activity })).resolves.toBeUndefined();
   });
 
   it('generates a notification.', async(): Promise<void> => {
@@ -45,7 +45,7 @@ describe('An ActivityNotificationGenerator', (): void => {
     jest.useFakeTimers();
     jest.setSystemTime(ms);
 
-    await expect(generator.handle({ topic, info, activity })).resolves.toEqual({
+    await expect(generator.handle({ topic, channel, activity })).resolves.toEqual({
       '@context': [
         'https://www.w3.org/ns/activitystreams',
         'https://www.w3.org/ns/solid/notification/v1',

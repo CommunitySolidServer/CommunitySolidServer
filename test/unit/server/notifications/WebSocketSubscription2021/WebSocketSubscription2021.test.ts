@@ -2,7 +2,7 @@ import { AccessMode } from '../../../../../src/authorization/permissions/Permiss
 import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
-import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
+import type { NotificationChannelJson } from '../../../../../src/server/notifications/NotificationChannel';
 import type { NotificationChannelStorage } from '../../../../../src/server/notifications/NotificationChannelStorage';
 import {
   WebSocketSubscription2021,
@@ -11,7 +11,7 @@ import { IdentifierSetMultiMap } from '../../../../../src/util/map/IdentifierMap
 import { readJsonStream } from '../../../../../src/util/StreamUtil';
 
 describe('A WebSocketSubscription2021', (): void => {
-  let channel: NotificationChannel;
+  let channel: NotificationChannelJson;
   let storage: jest.Mocked<NotificationChannelStorage>;
   const route = new AbsolutePathInteractionRoute('http://example.com/foo');
   let channelType: WebSocketSubscription2021;
@@ -58,7 +58,7 @@ describe('A WebSocketSubscription2021', (): void => {
       .toEqual(new IdentifierSetMultiMap([[{ path: channel.topic }, AccessMode.read ]]));
   });
 
-  it('stores the info and returns a valid response when subscribing.', async(): Promise<void> => {
+  it('stores the channel and returns a valid response when subscribing.', async(): Promise<void> => {
     const { response } = await channelType.subscribe(channel);
     expect(response.metadata.contentType).toBe('application/ld+json');
     await expect(readJsonStream(response.data)).resolves.toEqual({

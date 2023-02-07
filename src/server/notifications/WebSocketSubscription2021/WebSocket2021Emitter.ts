@@ -21,9 +21,9 @@ export class WebSocket2021Emitter extends NotificationEmitter {
     this.socketMap = socketMap;
   }
 
-  public async handle({ info, representation }: NotificationEmitterInput): Promise<void> {
+  public async handle({ channel, representation }: NotificationEmitterInput): Promise<void> {
     // Called as a NotificationEmitter: emit the notification
-    const webSockets = this.socketMap.get(info.id);
+    const webSockets = this.socketMap.get(channel.id);
     if (webSockets) {
       const data = await readableToString(representation.data);
       for (const webSocket of webSockets) {
