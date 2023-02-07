@@ -7,7 +7,7 @@ import { getLoggerFor } from '../../../logging/LogUtil';
 import { APPLICATION_LD_JSON } from '../../../util/ContentTypes';
 import { IdentifierSetMultiMap } from '../../../util/map/IdentifierMap';
 import { CONTEXT_NOTIFICATION } from '../Notification';
-import type { NotificationChannel } from '../NotificationChannel';
+import type { NotificationChannelJson } from '../NotificationChannel';
 import { NOTIFICATION_CHANNEL_SCHEMA } from '../NotificationChannel';
 import type { NotificationChannelStorage } from '../NotificationChannelStorage';
 import type { NotificationChannelResponse, NotificationChannelType } from '../NotificationChannelType';
@@ -38,21 +38,21 @@ export class WebSocketSubscription2021 implements NotificationChannelType<typeof
     this.path = route.getPath();
   }
 
-  public async extractModes(channel: NotificationChannel): Promise<AccessMap> {
-    return new IdentifierSetMultiMap<AccessMode>([[{ path: channel.topic }, AccessMode.read ]]);
+  public async extractModes(json: NotificationChannelJson): Promise<AccessMap> {
+    return new IdentifierSetMultiMap<AccessMode>([[{ path: json.topic }, AccessMode.read ]]);
   }
 
-  public async subscribe(channel: NotificationChannel): Promise<NotificationChannelResponse> {
-    const info = this.storage.create(channel, {});
-    await this.storage.add(info);
+  public async subscribe(json: NotificationChannelJson): Promise<NotificationChannelResponse> {
+    const channel = this.storage.create(json, {});
+    await this.storage.add(channel);
 
     const jsonld = {
       '@context': [ CONTEXT_NOTIFICATION ],
       type: this.type,
-      source: generateWebSocketUrl(this.path, info.id),
+      source: generateWebSocketUrl(this.path, channel.id),
     };
     const response = new BasicRepresentation(JSON.stringify(jsonld), APPLICATION_LD_JSON);
 
-    return { response, info };
+    return { response, channel };
   }
 }

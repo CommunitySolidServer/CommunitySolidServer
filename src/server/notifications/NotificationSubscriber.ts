@@ -13,7 +13,7 @@ import { readableToString } from '../../util/StreamUtil';
 import type { HttpRequest } from '../HttpRequest';
 import type { OperationHttpHandlerInput } from '../OperationHttpHandler';
 import { OperationHttpHandler } from '../OperationHttpHandler';
-import type { NotificationChannel } from './NotificationChannel';
+import type { NotificationChannelJson } from './NotificationChannel';
 import type { NotificationChannelType } from './NotificationChannelType';
 
 export interface NotificationSubscriberArgs {
@@ -34,8 +34,8 @@ export interface NotificationSubscriberArgs {
    */
   authorizer: Authorizer;
   /**
-   * Overrides the expiration feature of channels by making sure they always expire after the `maxDuration` value.
-   * In case the expiration of the channel is shorter than `maxDuration` the original value will be kept.
+   * Overrides the expiration feature of channels, by making sure they always expire after the `maxDuration` value.
+   * If the expiration of the channel is shorter than `maxDuration`, the original value will be kept.
    * Value is set in minutes. 0 is infinite.
    */
   maxDuration?: number;
@@ -70,7 +70,7 @@ export class NotificationSubscriber extends OperationHttpHandler {
       throw new UnsupportedMediaTypeHttpError('Subscribe bodies need to be application/ld+json.');
     }
 
-    let channel: NotificationChannel;
+    let channel: NotificationChannelJson;
     try {
       const json = JSON.parse(await readableToString(operation.body.data));
       channel = await this.channelType.schema.validate(json);
@@ -93,7 +93,7 @@ export class NotificationSubscriber extends OperationHttpHandler {
     return new OkResponseDescription(response.metadata, response.data);
   }
 
-  private async authorize(request: HttpRequest, channel: NotificationChannel): Promise<Credentials> {
+  private async authorize(request: HttpRequest, channel: NotificationChannelJson): Promise<Credentials> {
     const credentials = await this.credentialsExtractor.handleSafe(request);
     this.logger.debug(`Extracted credentials: ${JSON.stringify(credentials)}`);
 

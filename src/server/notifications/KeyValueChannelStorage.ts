@@ -4,13 +4,13 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
-import type { NotificationChannel } from './NotificationChannel';
-import type { NotificationChannelInfo, NotificationChannelStorage } from './NotificationChannelStorage';
+import type { NotificationChannel, NotificationChannelJson } from './NotificationChannel';
+import type { NotificationChannelStorage } from './NotificationChannelStorage';
 
-type StorageValue<T> = string | string[] | NotificationChannelInfo<T>;
+type StorageValue<T> = string | string[] | NotificationChannel<T>;
 
 /**
- * Stores all the {@link NotificationChannelInfo} in a {@link KeyValueStorage}.
+ * Stores all the {@link NotificationChannel} in a {@link KeyValueStorage}.
  *
  * Uses a {@link ReadWriteLocker} to prevent internal race conditions.
  */
@@ -25,7 +25,7 @@ export class KeyValueChannelStorage<T extends Record<string, unknown>> implement
     this.locker = locker;
   }
 
-  public create(channel: NotificationChannel, features: T): NotificationChannelInfo<T> {
+  public create(channel: NotificationChannelJson, features: T): NotificationChannel<T> {
     return {
       id: `${channel.type}:${v4()}:${channel.topic}`,
       topic: channel.topic,
@@ -40,92 +40,92 @@ export class KeyValueChannelStorage<T extends Record<string, unknown>> implement
     };
   }
 
-  public async get(id: string): Promise<NotificationChannelInfo<T> | undefined> {
-    const info = await this.storage.get(id);
-    if (info && this.isChannelInfo(info)) {
-      if (typeof info.endAt === 'number' && info.endAt < Date.now()) {
+  public async get(id: string): Promise<NotificationChannel<T> | undefined> {
+    const channel = await this.storage.get(id);
+    if (channel && this.isChannel(channel)) {
+      if (typeof channel.endAt === 'number' && channel.endAt < Date.now()) {
         this.logger.info(`Notification channel ${id} has expired.`);
         await this.locker.withWriteLock(this.getLockKey(id), async(): Promise<void> => {
-          await this.deleteInfo(info);
+          await this.deleteChannel(channel);
         });
         return;
       }
 
-      return info;
+      return channel;
     }
   }
 
   public async getAll(topic: ResourceIdentifier): Promise<string[]> {
-    const infos = await this.storage.get(topic.path);
-    if (Array.isArray(infos)) {
-      return infos;
+    const channels = await this.storage.get(topic.path);
+    if (Array.isArray(channels)) {
+      return channels;
     }
     return [];
   }
 
-  public async add(info: NotificationChannelInfo<T>): Promise<void> {
-    const target = { path: info.topic };
+  public async add(channel: NotificationChannel<T>): Promise<void> {
+    const target = { path: channel.topic };
     return this.locker.withWriteLock(this.getLockKey(target), async(): Promise<void> => {
-      const infos = await this.getAll(target);
-      await this.storage.set(info.id, info);
-      infos.push(info.id);
-      await this.storage.set(info.topic, infos);
+      const channels = await this.getAll(target);
+      await this.storage.set(channel.id, channel);
+      channels.push(channel.id);
+      await this.storage.set(channel.topic, channels);
     });
   }
 
-  public async update(info: NotificationChannelInfo<T>): Promise<void> {
-    return this.locker.withWriteLock(this.getLockKey(info.id), async(): Promise<void> => {
-      const oldInfo = await this.storage.get(info.id);
+  public async update(channel: NotificationChannel<T>): Promise<void> {
+    return this.locker.withWriteLock(this.getLockKey(channel.id), async(): Promise<void> => {
+      const oldChannel = await this.storage.get(channel.id);
 
-      if (oldInfo) {
-        if (!this.isChannelInfo(oldInfo)) {
-          throw new InternalServerError(`Trying to update ${info.id} which is not a NotificationChannelInfo.`);
+      if (oldChannel) {
+        if (!this.isChannel(oldChannel)) {
+          throw new InternalServerError(`Trying to update ${channel.id} which is not a NotificationChannel.`);
         }
-        if (info.topic !== oldInfo.topic) {
-          throw new InternalServerError(`Trying to change the topic of a notification channel ${info.id}`);
+        if (channel.topic !== oldChannel.topic) {
+          throw new InternalServerError(`Trying to change the topic of a notification channel ${channel.id}`);
         }
       }
 
-      await this.storage.set(info.id, info);
+      await this.storage.set(channel.id, channel);
     });
   }
 
   public async delete(id: string): Promise<void> {
     return this.locker.withWriteLock(this.getLockKey(id), async(): Promise<void> => {
-      const info = await this.get(id);
-      if (!info) {
+      const channel = await this.get(id);
+      if (!channel) {
         return;
       }
-      await this.deleteInfo(info);
+      await this.deleteChannel(channel);
     });
   }
 
   /**
-   * Utility function for deleting a specific {@link NotificationChannelInfo} object.
-   * Does not create a lock on the info ID so should be wrapped in such a lock.
+   * Utility function for deleting a specific {@link NotificationChannel} object.
+   * Does not create a lock on the channel ID so should be wrapped in such a lock.
    */
-  private async deleteInfo(info: NotificationChannelInfo): Promise<void> {
-    await this.locker.withWriteLock(this.getLockKey(info.topic), async(): Promise<void> => {
-      const infos = await this.getAll({ path: info.topic });
-      const idx = infos.indexOf(info.id);
+  private async deleteChannel(channel: NotificationChannel): Promise<void> {
+    await this.locker.withWriteLock(this.getLockKey(channel.topic), async(): Promise<void> => {
+      const channels = await this.getAll({ path: channel.topic });
+      const idx = channels.indexOf(channel.id);
       // If idx < 0 we have an inconsistency
       if (idx < 0) {
-        this.logger.error(`Channel info ${info.id} was not found in the list of info targeting ${info.topic}.`);
+        this.logger.error(`Channel ${channel.id} was not found in the list of channels targeting ${channel.topic}.`);
         this.logger.error('This should not happen and indicates a data consistency issue.');
       } else {
-        infos.splice(idx, 1);
-        if (infos.length > 0) {
-          await this.storage.set(info.topic, infos);
+        channels.splice(idx, 1);
+        if (channels.length > 0) {
+          await this.storage.set(channel.topic, channels);
         } else {
-          await this.storage.delete(info.topic);
+          await this.storage.delete(channel.topic);
         }
       }
-      await this.storage.delete(info.id);
+      await this.storage.delete(channel.id);
     });
   }
 
-  private isChannelInfo(value: StorageValue<T>): value is NotificationChannelInfo<T> {
-    return Boolean((value as NotificationChannelInfo).id);
+  private isChannel(value: StorageValue<T>): value is NotificationChannel<T> {
+    return Boolean((value as NotificationChannel).id);
   }
 
   private getLockKey(identifier: ResourceIdentifier | string): ResourceIdentifier {

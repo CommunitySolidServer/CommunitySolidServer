@@ -52,11 +52,11 @@ export class WebHookSubscription2021 implements NotificationChannelType<typeof s
     this.stateHandler = stateHandler;
   }
 
-  public async extractModes(channel: InferType<typeof schema>): Promise<AccessMap> {
-    return new IdentifierSetMultiMap<AccessMode>([[{ path: channel.topic }, AccessMode.read ]]);
+  public async extractModes(json: InferType<typeof schema>): Promise<AccessMap> {
+    return new IdentifierSetMultiMap<AccessMode>([[{ path: json.topic }, AccessMode.read ]]);
   }
 
-  public async subscribe(channel: InferType<typeof schema>, credentials: Credentials):
+  public async subscribe(json: InferType<typeof schema>, credentials: Credentials):
   Promise<NotificationChannelResponse<WebHookFeatures>> {
     const webId = credentials.agent?.webId;
 
@@ -66,15 +66,15 @@ export class WebHookSubscription2021 implements NotificationChannelType<typeof s
       );
     }
 
-    const info = this.storage.create(channel, { target: channel.target, webId });
-    await this.storage.add(info);
+    const channel = this.storage.create(json, { target: json.target, webId });
+    await this.storage.add(channel);
 
     const jsonld = {
       '@context': [ CONTEXT_NOTIFICATION ],
       type: this.type,
-      target: channel.target,
+      target: json.target,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      unsubscribe_endpoint: generateWebHookUnsubscribeUrl(this.unsubscribePath, info.id),
+      unsubscribe_endpoint: generateWebHookUnsubscribeUrl(this.unsubscribePath, channel.id),
     };
     const response = new BasicRepresentation(JSON.stringify(jsonld), APPLICATION_LD_JSON);
 
@@ -82,11 +82,11 @@ export class WebHookSubscription2021 implements NotificationChannelType<typeof s
     // right after we send the response for subscribing.
     // We do this by waiting for the response to be closed.
     endOfStream(response.data)
-      .then((): Promise<void> => this.stateHandler.handleSafe({ info }))
+      .then((): Promise<void> => this.stateHandler.handleSafe({ channel }))
       .catch((error): void => {
         this.logger.error(`Error emitting state notification: ${createErrorMessage(error)}`);
       });
 
-    return { response, info };
+    return { response, channel };
   }
 }

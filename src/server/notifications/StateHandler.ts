@@ -1,5 +1,5 @@
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
-import type { NotificationChannelInfo } from './NotificationChannelStorage';
+import type { NotificationChannel } from './NotificationChannel';
 
 /**
  * Handles the `state` feature of notifications.
@@ -8,4 +8,4 @@ import type { NotificationChannelInfo } from './NotificationChannelStorage';
  *
  * Implementations of this class should handle all channels and filter out those that need a `state` notification.
  */
-export abstract class StateHandler extends AsyncHandler<{ info: NotificationChannelInfo }> {}
+export abstract class StateHandler extends AsyncHandler<{ channel: NotificationChannel }> {}

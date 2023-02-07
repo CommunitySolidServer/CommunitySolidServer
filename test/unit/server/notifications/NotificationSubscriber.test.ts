@@ -47,7 +47,7 @@ describe('A NotificationSubscriber', (): void => {
       schema: NOTIFICATION_CHANNEL_SCHEMA,
       extractModes: jest.fn(async(subscription): Promise<AccessMap> =>
         new IdentifierSetMultiMap([[{ path: subscription.topic }, AccessMode.read ]]) as AccessMap),
-      subscribe: jest.fn().mockResolvedValue({ response: new BasicRepresentation(), info: {}}),
+      subscribe: jest.fn().mockResolvedValue({ response: new BasicRepresentation(), channel: {}}),
     };
 
     credentialsExtractor = {

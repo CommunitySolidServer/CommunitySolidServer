@@ -2,12 +2,12 @@ import type { ResourceIdentifier } from '../../../../../src/http/representation/
 import {
   DeleteNotificationGenerator,
 } from '../../../../../src/server/notifications/generate/DeleteNotificationGenerator';
-import type { NotificationChannelInfo } from '../../../../../src/server/notifications/NotificationChannelStorage';
+import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import { AS } from '../../../../../src/util/Vocabularies';
 
 describe('A DeleteNotificationGenerator', (): void => {
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const info: NotificationChannelInfo = {
+  const channel: NotificationChannel = {
     id: 'id',
     topic: topic.path,
     type: 'type',
@@ -18,10 +18,11 @@ describe('A DeleteNotificationGenerator', (): void => {
   const generator = new DeleteNotificationGenerator();
 
   it('can only handle input with the Delete activity.', async(): Promise<void> => {
-    await expect(generator.canHandle({ topic, info })).rejects.toThrow('Only Delete activity updates are supported.');
-    await expect(generator.canHandle({ topic, info, activity: AS.terms.Update }))
+    await expect(generator.canHandle({ topic, channel })).rejects
+      .toThrow('Only Delete activity updates are supported.');
+    await expect(generator.canHandle({ topic, channel, activity: AS.terms.Update }))
       .rejects.toThrow('Only Delete activity updates are supported.');
-    await expect(generator.canHandle({ topic, info, activity })).resolves.toBeUndefined();
+    await expect(generator.canHandle({ topic, channel, activity })).resolves.toBeUndefined();
   });
 
   it('generates a Delete notification.', async(): Promise<void> => {
@@ -30,7 +31,7 @@ describe('A DeleteNotificationGenerator', (): void => {
     jest.useFakeTimers();
     jest.setSystemTime(ms);
 
-    await expect(generator.handle({ topic, info, activity })).resolves.toEqual({
+    await expect(generator.handle({ topic, channel, activity })).resolves.toEqual({
       '@context': [
         'https://www.w3.org/ns/activitystreams',
         'https://www.w3.org/ns/solid/notification/v1',

@@ -39,25 +39,25 @@ export class ListeningActivityHandler extends StaticHandler {
     const channelIds = await this.storage.getAll(topic);
 
     for (const id of channelIds) {
-      const info = await this.storage.get(id);
-      if (!info) {
+      const channel = await this.storage.get(id);
+      if (!channel) {
         // Notification channel has expired
         continue;
       }
 
       // Don't emit if the previous notification was too recent according to the requested rate
-      if (info.rate && info.rate > Date.now() - info.lastEmit) {
+      if (channel.rate && channel.rate > Date.now() - channel.lastEmit) {
         continue;
       }
 
       // Don't emit if we have not yet reached the requested starting time
-      if (info.startAt && info.startAt > Date.now()) {
+      if (channel.startAt && channel.startAt > Date.now()) {
         continue;
       }
 
       // No need to wait on this to resolve before going to the next channel.
       // Prevent failed notification from blocking other notifications.
-      this.handler.handleSafe({ info, activity, topic }).catch((error): void => {
+      this.handler.handleSafe({ channel, activity, topic }).catch((error): void => {
         this.logger.error(`Error trying to handle notification for ${id}: ${createErrorMessage(error)}`);
       });
     }

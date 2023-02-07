@@ -1,14 +1,15 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
-import type { NotificationChannelInfo, NotificationChannelStorage } from './NotificationChannelStorage';
+import type { NotificationChannel } from './NotificationChannel';
+import type { NotificationChannelStorage } from './NotificationChannelStorage';
 import type { NotificationHandler } from './NotificationHandler';
 import { StateHandler } from './StateHandler';
 
 /**
  * Handles the `state` feature by calling a {@link NotificationHandler}
- * in case the {@link NotificationChannelInfo} has a `state` value.
+ * in case the {@link NotificationChannel} has a `state` value.
  *
- * Deletes the `state` parameter from the info afterwards.
+ * Deletes the `state` parameter from the channel afterwards.
  */
 export class BaseStateHandler extends StateHandler {
   protected readonly logger = getLoggerFor(this);
@@ -22,14 +23,14 @@ export class BaseStateHandler extends StateHandler {
     this.storage = storage;
   }
 
-  public async handle({ info }: { info: NotificationChannelInfo }): Promise<void> {
-    if (info.state) {
-      const topic = { path: info.topic };
+  public async handle({ channel }: { channel: NotificationChannel }): Promise<void> {
+    if (channel.state) {
+      const topic = { path: channel.topic };
       try {
-        await this.handler.handleSafe({ info, topic });
+        await this.handler.handleSafe({ channel, topic });
         // Remove the state once the relevant notification has been sent
-        delete info.state;
-        await this.storage.update(info);
+        delete channel.state;
+        await this.storage.update(channel);
       } catch (error: unknown) {
         this.logger.error(`Problem emitting state notification: ${createErrorMessage(error)}`);
       }

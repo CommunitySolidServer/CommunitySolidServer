@@ -16,7 +16,7 @@ export class TypedNotificationHandler extends NotificationHandler {
   }
 
   public async canHandle(input: NotificationHandlerInput): Promise<void> {
-    if (input.info.type !== this.type) {
+    if (input.channel.type !== this.type) {
       throw new NotImplementedHttpError(`Only ${this.type} notification channels are supported.`);
     }
     await this.source.canHandle(input);

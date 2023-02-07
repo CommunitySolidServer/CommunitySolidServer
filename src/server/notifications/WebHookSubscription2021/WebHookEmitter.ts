@@ -34,8 +34,8 @@ export class WebHookEmitter extends NotificationEmitter<WebHookFeatures> {
     this.expiration = expiration * 60 * 1000;
   }
 
-  public async handle({ info, representation }: NotificationEmitterInput<WebHookFeatures>): Promise<void> {
-    this.logger.debug(`Emitting WebHook notification with target ${info.features.target}`);
+  public async handle({ channel, representation }: NotificationEmitterInput<WebHookFeatures>): Promise<void> {
+    this.logger.debug(`Emitting WebHook notification with target ${channel.features.target}`);
 
     const privateKey = await this.jwkGenerator.getPrivateKey();
     const publicKey = await this.jwkGenerator.getPublicKey();
@@ -66,14 +66,14 @@ export class WebHookEmitter extends NotificationEmitter<WebHookFeatures> {
 
     // https://datatracker.ietf.org/doc/html/draft-ietf-oauth-dpop#section-4.2
     const dpopProof = await new SignJWT({
-      htu: info.features.target,
+      htu: channel.features.target,
       htm: 'POST',
     }).setProtectedHeader({ alg: privateKey.alg, jwk: publicKey, typ: 'dpop+jwt' })
       .setIssuedAt(time)
       .setJti(v4())
       .sign(privateKeyObject);
 
-    const response = await fetch(info.features.target, {
+    const response = await fetch(channel.features.target, {
       method: 'POST',
       headers: {
         'content-type': representation.metadata.contentType!,
@@ -83,7 +83,7 @@ export class WebHookEmitter extends NotificationEmitter<WebHookFeatures> {
       body: await readableToString(representation.data),
     });
     if (response.status >= 400) {
-      this.logger.error(`There was an issue emitting a WebHook notification with target ${info.features.target}: ${
+      this.logger.error(`There was an issue emitting a WebHook notification with target ${channel.features.target}: ${
         await response.text()}`);
     }
   }

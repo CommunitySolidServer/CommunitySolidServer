@@ -14,7 +14,7 @@ export interface ComposedNotificationHandlerArgs {
  * Generates, serializes and emits a {@link Notification} using a {@link NotificationGenerator},
  * {@link NotificationSerializer} and {@link NotificationEmitter}.
  *
- * Will not emit an event in case it has the same state as the notification channel info.
+ * Will not emit an event when it has the same state as the notification channel.
  */
 export class ComposedNotificationHandler extends NotificationHandler {
   private readonly generator: NotificationGenerator;
@@ -35,13 +35,13 @@ export class ComposedNotificationHandler extends NotificationHandler {
   public async handle(input: NotificationHandlerInput): Promise<void> {
     const notification = await this.generator.handle(input);
 
-    const { state } = input.info;
+    const { state } = input.channel;
     // In case the state matches there is no need to send the notification
     if (typeof state === 'string' && state === notification.state) {
       return;
     }
 
-    const representation = await this.serializer.handleSafe({ info: input.info, notification });
-    await this.emitter.handleSafe({ info: input.info, representation });
+    const representation = await this.serializer.handleSafe({ channel: input.channel, notification });
+    await this.emitter.handleSafe({ channel: input.channel, representation });
   }
 }

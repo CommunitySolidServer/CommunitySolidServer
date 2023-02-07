@@ -25,7 +25,7 @@ export class ConvertingNotificationSerializer extends NotificationSerializer {
   public async handle(input: NotificationSerializerInput): Promise<Representation> {
     const representation = await this.source.handle(input);
 
-    const type = input.info.accept;
+    const type = input.channel.accept;
 
     if (!type) {
       return representation;

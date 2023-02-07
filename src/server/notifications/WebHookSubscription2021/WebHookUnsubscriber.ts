@@ -28,13 +28,13 @@ export class WebHookUnsubscriber extends OperationHttpHandler {
 
   public async handle({ operation, request }: OperationHttpHandlerInput): Promise<ResponseDescription> {
     const id = parseWebHookUnsubscribeUrl(operation.target.path);
-    const info = await this.storage.get(id);
-    if (!info) {
+    const channel = await this.storage.get(id);
+    if (!channel) {
       throw new NotFoundHttpError();
     }
 
     const credentials = await this.credentialsExtractor.handleSafe(request);
-    if (info.features.webId !== credentials.agent?.webId) {
+    if (channel.features.webId !== credentials.agent?.webId) {
       throw new ForbiddenHttpError();
     }
 

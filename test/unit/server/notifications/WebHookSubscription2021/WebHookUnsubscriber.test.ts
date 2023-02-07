@@ -43,7 +43,7 @@ describe('A WebHookUnsubscriber', (): void => {
     unsubscriber = new WebHookUnsubscriber(credentialsExtractor, storage);
   });
 
-  it('rejects if the id does not match any stored info.', async(): Promise<void> => {
+  it('rejects if the id does not match any stored channel.', async(): Promise<void> => {
     storage.get.mockResolvedValue(undefined);
     await expect(unsubscriber.handle({ operation, request, response })).rejects.toThrow(NotFoundHttpError);
     expect(storage.delete).toHaveBeenCalledTimes(0);
@@ -55,7 +55,7 @@ describe('A WebHookUnsubscriber', (): void => {
     expect(storage.delete).toHaveBeenCalledTimes(0);
   });
 
-  it('deletes the corresponding info.', async(): Promise<void> => {
+  it('deletes the corresponding channel.', async(): Promise<void> => {
     await expect(unsubscriber.handle({ operation, request, response }))
       .resolves.toEqual(new ResetResponseDescription());
     expect(storage.delete).toHaveBeenCalledTimes(1);
