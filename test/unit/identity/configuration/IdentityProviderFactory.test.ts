@@ -59,6 +59,10 @@ describe('An IdentityProviderFactory', (): void => {
       res: {},
       request: {
         href: 'http://example.com/idp/',
+        query: {
+          client_id: 'CLIENT_ID',
+          redirect_uri: 'REDIRECT_URI',
+        },
       },
       accepts: jest.fn().mockReturnValue('type'),
     } as any;
@@ -233,6 +237,32 @@ describe('An IdentityProviderFactory', (): void => {
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
     expect(error.message).toBe('bad data - more info - more details');
     expect(error.stack).toContain('Error: bad data - more info - more details');
+  });
+
+  it('throws a specific error for unknown clients.', async(): Promise<void> => {
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+
+    const error = new Error('invalid_client') as errors.OIDCProviderError;
+    error.error_description = 'client is invalid';
+    error.error_detail = 'client not found';
+
+    await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe)
+      .toHaveBeenLastCalledWith({ error: expect.objectContaining({
+        statusCode: 400,
+        name: 'BadRequestHttpError',
+        message: 'Unknown client, you might need to clear your cookies and cached data on the client.',
+        errorCode: 'E0003',
+        details: {
+          client_id: 'CLIENT_ID',
+          redirect_uri: 'REDIRECT_URI',
+        },
+      }),
+      request: ctx.req });
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
   });
 
   it('adds middleware to make the OIDC provider think the request wants HTML.', async(): Promise<void> => {

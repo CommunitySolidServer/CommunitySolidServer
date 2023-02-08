@@ -19,6 +19,7 @@ import type { ResponseWriter } from '../../http/output/ResponseWriter';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
 import { guardStream } from '../../util/GuardedStream';
@@ -396,6 +397,22 @@ export class IdentityProviderFactory implements ProviderFactory {
         if (error.stack) {
           error.stack = error.stack.replace(/.*/u, `${error.name}: ${error.message}`);
         }
+      }
+
+      // A client not being found is quite often the result of cookies being stored by the authn client,
+      // so we want to provide a more detailed error message explaining what to do.
+      if (oidcError.error_description === 'client is invalid' && oidcError.error_detail === 'client not found') {
+        const unknownClientError = new BadRequestHttpError(
+          'Unknown client, you might need to clear your cookies and cached data on the client.', {
+            errorCode: 'E0003',
+            details: {
+              client_id: ctx.request.query.client_id,
+              redirect_uri: ctx.request.query.redirect_uri,
+            },
+          },
+        );
+        unknownClientError.stack = error.stack;
+        error = unknownClientError;
       }
 
       const result = await this.errorHandler.handleSafe({ error, request: guardStream(ctx.req) });

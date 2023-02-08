@@ -1,0 +1,15 @@
+# Trying to authenticate an unknown client
+
+The server received a request from a client with ID **{{ client_id }}**,
+but this client is not registered with the server.
+
+This is quite often caused by the server data being wiped,
+thereby forgetting all clients.
+After clients register they often cache this data in the browser
+and automatically try to reconnect to the server,
+but since the server no longer knows the client this request is rejected.
+
+The only solution to this problem is to remove the data cached by the client.
+This can be done by clearing the cookies and cache in your browser for that specific URL.
+After succes, this client wanted the server to redirect you to <{{ redirect_uri }}>,
+so that is probably the site for which you need to remove your browser data.
