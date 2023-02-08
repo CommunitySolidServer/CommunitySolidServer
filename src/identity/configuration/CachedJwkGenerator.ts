@@ -1,7 +1,7 @@
 import { createPublicKey } from 'crypto';
 import type { KeyObject } from 'crypto';
 import { exportJWK, generateKeyPair, importJWK } from 'jose';
-import type { AsymmetricSigningAlgorithm } from 'oidc-provider';
+import type { JWKS, AsymmetricSigningAlgorithm } from 'oidc-provider';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { AlgJwk, JwkGenerator } from './JwkGenerator';
 
@@ -17,12 +17,12 @@ export class CachedJwkGenerator implements JwkGenerator {
   public readonly alg: AsymmetricSigningAlgorithm;
 
   private readonly key: string;
-  private readonly storage: KeyValueStorage<string, AlgJwk>;
+  private readonly storage: KeyValueStorage<string, JWKS>;
 
   private privateJwk?: AlgJwk;
   private publicJwk?: AlgJwk;
 
-  public constructor(alg: AsymmetricSigningAlgorithm, storageKey: string, storage: KeyValueStorage<string, AlgJwk>) {
+  public constructor(alg: AsymmetricSigningAlgorithm, storageKey: string, storage: KeyValueStorage<string, JWKS>) {
     this.alg = alg;
     this.key = storageKey;
     this.storage = storage;
@@ -33,10 +33,12 @@ export class CachedJwkGenerator implements JwkGenerator {
       return this.privateJwk;
     }
 
-    const jwk = await this.storage.get(this.key);
-    if (jwk) {
-      this.privateJwk = jwk;
-      return jwk;
+    // We store in JWKS format for backwards compatibility reasons.
+    // If we want to just store the key instead we will need some way to do the migration.
+    const jwks = await this.storage.get(this.key);
+    if (jwks) {
+      this.privateJwk = jwks.keys[0] as AlgJwk;
+      return this.privateJwk;
     }
 
     const { privateKey } = await generateKeyPair(this.alg);
@@ -45,7 +47,7 @@ export class CachedJwkGenerator implements JwkGenerator {
     const privateJwk = { ...await exportJWK(privateKey) } as AlgJwk;
     privateJwk.alg = this.alg;
 
-    await this.storage.set(this.key, privateJwk);
+    await this.storage.set(this.key, { keys: [ privateJwk ]});
     this.privateJwk = privateJwk;
     return privateJwk;
   }
