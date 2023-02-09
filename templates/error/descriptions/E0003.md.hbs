@@ -1,15 +1,26 @@
-# Trying to authenticate an unknown client
+# Authenticating with unknown client
+You are trying to log in to an application,
+but we can't proceed
+because the app is using invalid settings.
 
-The server received a request from a client with ID **{{ client_id }}**,
+These steps should force the app to send us the right details:
+1. [Go back](javascript:history.back()) to the app.
+2. Clear your cookies.
+3. Clear your cache.
+
+## Detailed error information
+We received a request from a client with ID `{{ client_id }}`,
 but this client is not registered with the server.
 
-This is quite often caused by the server data being wiped,
-thereby forgetting all clients.
-After clients register they often cache this data in the browser
-and automatically try to reconnect to the server,
-but since the server no longer knows the client this request is rejected.
+Probably,
+this client was registered with the server in the past,
+but it is no longer recognized
+because some internal server data was removed.
+Your data is still safe;
+we just don't recognize the apps's previous authentication anymore.
 
-The only solution to this problem is to remove the data cached by the client.
-This can be done by clearing the cookies and cache in your browser for that specific URL.
-After succes, this client wanted the server to redirect you to <{{ redirect_uri }}>,
-so that is probably the site for which you need to remove your browser data.
+Because your browser still has the old authentication settings stored,
+it tries to use them instead of setting up new ones.
+By clearing those settings,
+the application should automatically create a new client,
+allowing you to log in again.
