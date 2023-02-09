@@ -22,6 +22,8 @@ export class BaseUrlExtractor extends ShorthandExtractor {
       throw new Error('BaseUrl argument should be provided when using Unix Domain Sockets.');
     }
     const port = args.port ?? this.defaultPort;
-    return `http://localhost:${port}/`;
+    const url = new URL('http://localhost/');
+    url.port = `${port}`;
+    return url.href;
   }
 }
