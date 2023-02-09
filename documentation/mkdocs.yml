@@ -83,6 +83,7 @@ nav:
     - Identity provider: usage/identity-provider.md
     - Client credentials: usage/client-credentials.md
     - Seeding pods: usage/seeding-pods.md
+    - Notifications: usage/notifications.md
   - Architecture:
     - Overview: architecture/overview.md
     - Dependency injection: architecture/dependency-injection.md
