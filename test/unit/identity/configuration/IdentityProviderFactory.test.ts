@@ -253,7 +253,7 @@ describe('An IdentityProviderFactory', (): void => {
       .toHaveBeenLastCalledWith({ error: expect.objectContaining({
         statusCode: 400,
         name: 'BadRequestHttpError',
-        message: 'Unknown client, you might need to clear your cookies and cached data on the client.',
+        message: 'Unknown client, you might need to clear the local storage on the client.',
         errorCode: 'E0003',
         details: {
           client_id: 'CLIENT_ID',

@@ -403,7 +403,7 @@ export class IdentityProviderFactory implements ProviderFactory {
       // so we want to provide a more detailed error message explaining what to do.
       if (oidcError.error_description === 'client is invalid' && oidcError.error_detail === 'client not found') {
         const unknownClientError = new BadRequestHttpError(
-          'Unknown client, you might need to clear your cookies and cached data on the client.', {
+          'Unknown client, you might need to clear the local storage on the client.', {
             errorCode: 'E0003',
             details: {
               client_id: ctx.request.query.client_id,
