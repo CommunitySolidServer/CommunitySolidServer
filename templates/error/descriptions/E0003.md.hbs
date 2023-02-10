@@ -1,0 +1,26 @@
+# Authenticating with unknown client
+You are trying to log in to an application,
+but we can't proceed
+because the app is using invalid settings.
+
+To force the app to send us the right details,
+delete the local storage in your browser for the site that sent you here.
+Based on the data the app sent us,
+this is probably `{{ redirect_uri }}`.
+
+## Detailed error information
+We received a request from a client with ID `{{ client_id }}`,
+but this client is not registered with the server.
+
+Probably,
+this client was registered with the server in the past,
+but it is no longer recognized
+because some internal server data was removed.
+Your data is still safe;
+we just don't recognize the app's previous authentication anymore.
+
+Because your browser still has the old authentication settings stored,
+it tries to use them instead of setting up new ones.
+By clearing those settings,
+the application should automatically create a new client,
+allowing you to log in again.
