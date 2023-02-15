@@ -1,6 +1,41 @@
+import fetch from 'cross-fetch';
+import { readJsonSync } from 'fs-extra';
+import type { IJsonLdContext } from 'jsonld-context-parser';
+import { FetchDocumentLoader } from 'jsonld-context-parser';
 import type { ValuePreference, ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { InternalServerError } from '../../util/errors/InternalServerError';
+import { resolveAssetPath } from '../../util/PathUtil';
+
+/**
+ * First, checks whether a context is stored locally before letting the super class do a fetch.
+ * This can be used when converting JSON-LD with Comunica-related libraries, such as `rdf-parse`.
+ *
+ * To use this, add this document loader to the options of the call
+ * using the `KeysRdfParseJsonLd.documentLoader.name` key.
+ * All extra keys get passed in the Comunica ActionContext
+ * and this is the key that is used to define the document loader.
+ * See https://github.com/rubensworks/rdf-parse.js/blob/master/lib/RdfParser.ts
+ * and https://github.com/comunica/comunica/blob/master/packages/actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts
+ */
+export class ContextDocumentLoader extends FetchDocumentLoader {
+  private readonly contexts: Record<string, IJsonLdContext>;
+
+  public constructor(contexts: Record<string, string>) {
+    super(fetch);
+    this.contexts = {};
+    for (const [ key, path ] of Object.entries(contexts)) {
+      this.contexts[key] = readJsonSync(resolveAssetPath(path));
+    }
+  }
+
+  public async load(url: string): Promise<IJsonLdContext> {
+    if (url in this.contexts) {
+      return this.contexts[url];
+    }
+    return super.load(url);
+  }
+}
 
 /**
  * Cleans incoming preferences to prevent unwanted behaviour.
