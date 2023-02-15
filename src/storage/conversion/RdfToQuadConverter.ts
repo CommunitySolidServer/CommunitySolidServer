@@ -1,43 +1,17 @@
 import { PassThrough } from 'stream';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import type { NamedNode } from '@rdfjs/types';
-import fetch from 'cross-fetch';
-import { readJsonSync } from 'fs-extra';
-import { FetchDocumentLoader } from 'jsonld-context-parser';
-import type { IJsonLdContext } from 'jsonld-context-parser';
 import rdfParser from 'rdf-parse';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
-import { resolveAssetPath } from '../../util/PathUtil';
 import { pipeSafely } from '../../util/StreamUtil';
 import { PREFERRED_PREFIX_TERM, SOLID_META } from '../../util/Vocabularies';
 import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
+import { ContextDocumentLoader } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-
-/**
- * First checks if a context is stored locally before letting the super class do a fetch.
- */
-class ContextDocumentLoader extends FetchDocumentLoader {
-  private readonly contexts: Record<string, IJsonLdContext>;
-
-  public constructor(contexts: Record<string, string>) {
-    super(fetch);
-    this.contexts = {};
-    for (const [ key, path ] of Object.entries(contexts)) {
-      this.contexts[key] = readJsonSync(resolveAssetPath(path));
-    }
-  }
-
-  public async load(url: string): Promise<IJsonLdContext> {
-    if (url in this.contexts) {
-      return this.contexts[url];
-    }
-    return super.load(url);
-  }
-}
 
 /**
  * Converts most major RDF serializations to `internal/quads`.
@@ -63,10 +37,6 @@ export class RdfToQuadConverter extends BaseTypedRepresentationConverter {
     const rawQuads = rdfParser.parse(representation.data, {
       contentType: representation.metadata.contentType!,
       baseIRI: identifier.path,
-      // All extra keys get passed in the Comunica ActionContext
-      // and this is the key that is used to define the document loader.
-      // See https://github.com/rubensworks/rdf-parse.js/blob/master/lib/RdfParser.ts
-      // and https://github.com/comunica/comunica/blob/master/packages/actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts
       [KeysRdfParseJsonLd.documentLoader.name]: this.documentLoader,
     } as any)
       // This works only for those cases where the data stream has been completely read before accessing the metadata.

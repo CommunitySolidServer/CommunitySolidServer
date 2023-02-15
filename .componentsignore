@@ -12,6 +12,7 @@
   "Dict",
   "Error",
   "EventEmitter",
+  "FetchDocumentLoader",
   "GenericEventEmitter",
   "HashMap",
   "HttpErrorOptions",
