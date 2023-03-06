@@ -20,7 +20,9 @@ import { BasicRepresentation } from '../../http/representation/BasicRepresentati
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import type { HttpError } from '../../util/errors/HttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
+import { OAuthHttpError } from '../../util/errors/OAuthHttpError';
 import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import { joinUrl } from '../../util/PathUtil';
@@ -379,7 +381,8 @@ export class IdentityProviderFactory implements ProviderFactory {
       // Doesn't really matter which type it is since all relevant fields are optional
       const oidcError = error as errors.OIDCProviderError;
 
-      let detailedError = error.message;
+      // Create a more detailed error message for logging and to show is `showStackTrace` is enabled.
+      let detailedError = oidcError.message;
       if (oidcError.error_description) {
         detailedError += ` - ${oidcError.error_description}`;
       }
@@ -389,13 +392,21 @@ export class IdentityProviderFactory implements ProviderFactory {
 
       this.logger.warn(`OIDC request failed: ${detailedError}`);
 
-      // OIDC library hides extra details in these fields
+      // Convert to our own error object.
+      // This ensures serializing the error object will generate the correct output later on.
+      // We specifically copy the fields instead of passing the object to contain the `oidc-provider` dependency
+      // to the current file.
+      let resultingError: HttpError = new OAuthHttpError(out, oidcError.name, oidcError.statusCode, oidcError.message);
+      // Keep the original stack to make debugging easier
+      resultingError.stack = oidcError.stack;
+
       if (this.showStackTrace) {
-        error.message = detailedError;
+        // Expose more information if `showStackTrace` is enabled
+        resultingError.message = detailedError;
 
         // Also change the error message in the stack trace
-        if (error.stack) {
-          error.stack = error.stack.replace(/.*/u, `${error.name}: ${error.message}`);
+        if (resultingError.stack) {
+          resultingError.stack = resultingError.stack.replace(/.*/u, `${oidcError.name}: ${oidcError.message}`);
         }
       }
 
@@ -411,11 +422,11 @@ export class IdentityProviderFactory implements ProviderFactory {
             },
           },
         );
-        unknownClientError.stack = error.stack;
-        error = unknownClientError;
+        unknownClientError.stack = oidcError.stack;
+        resultingError = unknownClientError;
       }
 
-      const result = await this.errorHandler.handleSafe({ error, request: guardStream(ctx.req) });
+      const result = await this.errorHandler.handleSafe({ error: resultingError, request: guardStream(ctx.req) });
       await this.responseWriter.handleSafe({ response: ctx.res, result });
     };
   }

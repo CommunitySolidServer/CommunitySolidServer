@@ -2,6 +2,7 @@ import { BasicRepresentation } from '../../http/representation/BasicRepresentati
 import type { Representation } from '../../http/representation/Representation';
 import { APPLICATION_JSON, INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
+import { OAuthHttpError } from '../../util/errors/OAuthHttpError';
 import { getSingleItem } from '../../util/StreamUtil';
 import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -21,6 +22,11 @@ export class ErrorToJsonConverter extends BaseTypedRepresentationConverter {
       name: error.name,
       message: error.message,
     };
+
+    // OAuth errors responses require additional fields
+    if (OAuthHttpError.isInstance(error)) {
+      Object.assign(result, error.mandatoryFields);
+    }
 
     if (HttpError.isInstance(error)) {
       result.statusCode = error.statusCode;
