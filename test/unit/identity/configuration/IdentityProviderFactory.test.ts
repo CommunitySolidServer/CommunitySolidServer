@@ -12,6 +12,7 @@ import type { Interaction, InteractionHandler } from '../../../../src/identity/i
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
+import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 jest.mock('oidc-provider', (): any => ({
@@ -229,14 +230,16 @@ describe('An IdentityProviderFactory', (): void => {
     error.error_description = 'more info';
     error.error_detail = 'more details';
 
+    const oAuthError = new OAuthHttpError(error, error.name, 500, 'bad data - more info - more details');
+
     await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
-      .toHaveBeenLastCalledWith({ error, request: ctx.req });
+      .toHaveBeenLastCalledWith({ error: oAuthError, request: ctx.req });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
-    expect(error.message).toBe('bad data - more info - more details');
-    expect(error.stack).toContain('Error: bad data - more info - more details');
+    expect(oAuthError.message).toBe('bad data - more info - more details');
+    expect(oAuthError.stack).toContain('Error: bad data - more info - more details');
   });
 
   it('throws a specific error for unknown clients.', async(): Promise<void> => {
