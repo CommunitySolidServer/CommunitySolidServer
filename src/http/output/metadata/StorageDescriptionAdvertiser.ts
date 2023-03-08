@@ -1,11 +1,9 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
-import type { ResourceStore } from '../../../storage/ResourceStore';
+import type { StorageLocationStrategy } from '../../../server/description/StorageLocationStrategy';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import { addHeader } from '../../../util/HeaderUtil';
-import type { IdentifierStrategy } from '../../../util/identifiers/IdentifierStrategy';
 import { joinUrl } from '../../../util/PathUtil';
-import { LDP, PIM, RDF, SOLID } from '../../../util/Vocabularies';
-import type { TargetExtractor } from '../../input/identifier/TargetExtractor';
+import { LDP, RDF, SOLID } from '../../../util/Vocabularies';
 import type { ResourceIdentifier } from '../../representation/ResourceIdentifier';
 import type { MetadataWriterInput } from './MetadataWriter';
 import { MetadataWriter } from './MetadataWriter';
@@ -18,18 +16,13 @@ import { MetadataWriter } from './MetadataWriter';
 export class StorageDescriptionAdvertiser extends MetadataWriter {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly targetExtractor: TargetExtractor;
-  private readonly identifierStrategy: IdentifierStrategy;
-  private readonly store: ResourceStore;
-  private readonly path: string;
+  private readonly storageStrategy: StorageLocationStrategy;
+  private readonly relativePath: string;
 
-  public constructor(targetExtractor: TargetExtractor, identifierStrategy: IdentifierStrategy, store: ResourceStore,
-    path: string) {
+  public constructor(storageStrategy: StorageLocationStrategy, relativePath: string) {
     super();
-    this.identifierStrategy = identifierStrategy;
-    this.targetExtractor = targetExtractor;
-    this.store = store;
-    this.path = path;
+    this.storageStrategy = storageStrategy;
+    this.relativePath = relativePath;
   }
 
   public async handle({ response, metadata }: MetadataWriterInput): Promise<void> {
@@ -40,22 +33,13 @@ export class StorageDescriptionAdvertiser extends MetadataWriter {
     const identifier = { path: metadata.identifier.value };
     let storageRoot: ResourceIdentifier;
     try {
-      storageRoot = await this.findStorageRoot(identifier);
+      storageRoot = await this.storageStrategy.getStorageIdentifier(identifier);
+      this.logger.debug(`Found storage root ${storageRoot.path}`);
     } catch (error: unknown) {
       this.logger.error(`Unable to find storage root: ${createErrorMessage(error)}`);
       return;
     }
-    const storageDescription = joinUrl(storageRoot.path, this.path);
+    const storageDescription = joinUrl(storageRoot.path, this.relativePath);
     addHeader(response, 'Link', `<${storageDescription}>; rel="${SOLID.storageDescription}"`);
-  }
-
-  private async findStorageRoot(identifier: ResourceIdentifier): Promise<ResourceIdentifier> {
-    const representation = await this.store.getRepresentation(identifier, {});
-    // We only need the metadata
-    representation.data.destroy();
-    if (representation.metadata.has(RDF.terms.type, PIM.terms.Storage)) {
-      return identifier;
-    }
-    return this.findStorageRoot(this.identifierStrategy.getParentContainer(identifier));
   }
 }

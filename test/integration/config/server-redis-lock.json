@@ -14,7 +14,7 @@
     "css:config/identity/pod/static.json",
 
 
-
+    "css:config/identity/registration/disabled.json",
     "css:config/ldp/authentication/debug-auth-header.json",
     "css:config/ldp/authorization/allow-all.json",
     "css:config/ldp/handler/default.json",

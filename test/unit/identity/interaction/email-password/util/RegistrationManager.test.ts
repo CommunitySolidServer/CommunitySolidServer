@@ -36,6 +36,7 @@ describe('A RegistrationManager', (): void => {
 
     identifierGenerator = {
       generate: jest.fn((name: string): ResourceIdentifier => ({ path: `${baseUrl}${name}/` })),
+      extractPod: jest.fn(),
     };
 
     ownershipValidator = {

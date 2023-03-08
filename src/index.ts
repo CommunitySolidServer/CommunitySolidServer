@@ -295,9 +295,12 @@ export * from './server/WacAllowHttpHandler';
 export * from './server/WebSocketServerConfigurator';
 
 // Server/Description
+export * from './server/description/PodStorageLocationStrategy';
+export * from './server/description/RootStorageLocationStrategy';
 export * from './server/description/StaticStorageDescriber';
 export * from './server/description/StorageDescriber';
 export * from './server/description/StorageDescriptionHandler';
+export * from './server/description/StorageLocationStrategy';
 
 // Server/Middleware
 export * from './server/middleware/AcpHeaderHandler';
