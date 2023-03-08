@@ -1,24 +1,18 @@
-import type { TargetExtractor } from '../../../../../src/http/input/identifier/TargetExtractor';
 import type { MetadataWriterInput } from '../../../../../src/http/output/metadata/MetadataWriter';
 import { StorageDescriptionAdvertiser } from '../../../../../src/http/output/metadata/StorageDescriptionAdvertiser';
-import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../../../../src/http/representation/ResourceIdentifier';
+import type { StorageLocationStrategy } from '../../../../../src/server/description/StorageLocationStrategy';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
-import type { ResourceStore } from '../../../../../src/storage/ResourceStore';
-import { SingleRootIdentifierStrategy } from '../../../../../src/util/identifiers/SingleRootIdentifierStrategy';
-import { joinUrl } from '../../../../../src/util/PathUtil';
-import { LDP, PIM, RDF } from '../../../../../src/util/Vocabularies';
+import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
+import { LDP, RDF } from '../../../../../src/util/Vocabularies';
 
 describe('A StorageDescriptionAdvertiser', (): void => {
   let metadata: RepresentationMetadata;
   let response: jest.Mocked<HttpResponse>;
   let input: MetadataWriterInput;
-  const baseUrl = 'http://example.com/';
-  const path = '.well-known/solid';
-  let targetExtractor: jest.Mocked<TargetExtractor>;
-  const identifierStrategy = new SingleRootIdentifierStrategy(baseUrl);
-  let store: jest.Mocked<ResourceStore>;
+  const storageIdentifier = { path: 'http://example.com/foo/' };
+  let strategy: jest.Mocked<StorageLocationStrategy>;
+  const relativePath = '.well-known/solid';
   let advertiser: StorageDescriptionAdvertiser;
 
   beforeEach(async(): Promise<void> => {
@@ -33,15 +27,11 @@ describe('A StorageDescriptionAdvertiser', (): void => {
 
     input = { metadata, response };
 
-    targetExtractor = {
-      handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url!) })),
-    } as any;
+    strategy = {
+      getStorageIdentifier: jest.fn().mockResolvedValue(storageIdentifier),
+    };
 
-    store = {
-      getRepresentation: jest.fn().mockResolvedValue(new BasicRepresentation('', { [RDF.type]: PIM.terms.Storage })),
-    } as any;
-
-    advertiser = new StorageDescriptionAdvertiser(targetExtractor, identifierStrategy, store, path);
+    advertiser = new StorageDescriptionAdvertiser(strategy, relativePath);
   });
 
   it('adds a storage description link header.', async(): Promise<void> => {
@@ -59,7 +49,7 @@ describe('A StorageDescriptionAdvertiser', (): void => {
 
   it('does nothing if it cannot find a storage root.', async(): Promise<void> => {
     // No storage container will be found
-    store.getRepresentation.mockResolvedValue(new BasicRepresentation());
+    strategy.getStorageIdentifier.mockRejectedValue(new BadRequestHttpError('bad identifier'));
     await expect(advertiser.handle(input)).resolves.toBeUndefined();
     expect(response.setHeader).toHaveBeenCalledTimes(0);
   });

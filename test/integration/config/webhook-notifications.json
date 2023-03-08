@@ -14,7 +14,7 @@
     "css:config/identity/handler/default.json",
     "css:config/identity/ownership/token.json",
     "css:config/identity/pod/static.json",
-    "css:config/identity/registration/enabled.json",
+    "css:config/identity/registration/disabled.json",
     "css:config/ldp/authentication/debug-auth-header.json",
     "css:config/ldp/authorization/webacl.json",
     "css:config/ldp/handler/default.json",
