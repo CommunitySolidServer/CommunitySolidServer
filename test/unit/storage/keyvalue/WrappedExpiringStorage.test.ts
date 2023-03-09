@@ -121,7 +121,11 @@ describe('A WrappedExpiringStorage', (): void => {
     // Disable interval function and simply check it was called with the correct parameters
     // Otherwise it gets quite difficult to verify the async interval function gets executed
     const mockInterval = jest.spyOn(global, 'setInterval');
-    mockInterval.mockImplementation(jest.fn());
+
+    // We only need to call the timer.unref() once when the object is created
+    const mockFn = jest.fn().mockReturnValueOnce({unref: jest.fn()});
+    mockInterval.mockImplementationOnce(mockFn);
+    
     // Timeout of 1 minute
     storage = new WrappedExpiringStorage(source, 1);
     const data = [
@@ -141,33 +145,11 @@ describe('A WrappedExpiringStorage', (): void => {
     // Await the function that should have been executed by the interval
     await (mockInterval.mock.calls[0][0] as () => Promise<void>)();
 
+    // Make sure timer.unref() is called on initialization
+    expect(mockFn).toHaveBeenCalledTimes(1);
     expect(source.delete).toHaveBeenCalledTimes(1);
     expect(source.delete).toHaveBeenLastCalledWith('key2');
     mockInterval.mockRestore();
   });
 
-  it('can stop the timer.', async(): Promise<void> => {
-    const mockInterval = jest.spyOn(global, 'setInterval');
-    const mockClear = jest.spyOn(global, 'clearInterval');
-    // Timeout of 1 minute
-    storage = new WrappedExpiringStorage(source, 1);
-    const data = [
-      [ 'key1', createExpires('data1', tomorrow) ],
-      [ 'key2', createExpires('data2', yesterday) ],
-      [ 'key3', createExpires('data3') ],
-    ];
-    source.entries.mockImplementationOnce(function* (): any {
-      yield* data;
-    });
-
-    await expect(storage.finalize()).resolves.toBeUndefined();
-
-    // Make sure clearInterval was called with the interval timer
-    expect(mockClear.mock.calls).toHaveLength(1);
-    expect(mockClear.mock.calls[0]).toHaveLength(1);
-    expect(mockClear.mock.calls[0][0]).toBe(mockInterval.mock.results[0].value);
-
-    mockInterval.mockRestore();
-    mockClear.mockRestore();
-  });
 });

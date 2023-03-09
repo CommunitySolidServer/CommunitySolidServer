@@ -1,4 +1,3 @@
-import type { Finalizable } from '../../init/final/Finalizable';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { setSafeInterval } from '../../util/TimerUtil';
@@ -13,7 +12,7 @@ export type Expires<T> = { expires?: string; payload: T };
  * Will delete expired entries when trying to get their value.
  * Has a timer that will delete all expired data every hour (default value).
  */
-export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKey, TValue>, Finalizable {
+export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKey, TValue> {
   protected readonly logger = getLoggerFor(this);
   private readonly source: KeyValueStorage<TKey, Expires<TValue>>;
   private readonly timer: NodeJS.Timeout;
@@ -28,6 +27,7 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
       'Failed to remove expired entries',
       this.removeExpiredEntries.bind(this),
       timeout * 60 * 1000);
+    this.timer.unref();
   }
 
   public async get(key: TKey): Promise<TValue | undefined> {
@@ -120,12 +120,5 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
       result.expires = new Date(expireData.expires);
     }
     return result;
-  }
-
-  /**
-   * Stops the continuous cleanup timer.
-   */
-  public async finalize(): Promise<void> {
-    clearInterval(this.timer);
   }
 }
