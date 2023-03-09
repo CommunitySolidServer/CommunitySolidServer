@@ -123,9 +123,9 @@ describe('A WrappedExpiringStorage', (): void => {
     const mockInterval = jest.spyOn(global, 'setInterval');
 
     // We only need to call the timer.unref() once when the object is created
-    const mockFn = jest.fn().mockReturnValueOnce({unref: jest.fn()});
+    const mockFn = jest.fn().mockReturnValueOnce({ unref: jest.fn() });
     mockInterval.mockImplementationOnce(mockFn);
-    
+
     // Timeout of 1 minute
     storage = new WrappedExpiringStorage(source, 1);
     const data = [
@@ -151,5 +151,4 @@ describe('A WrappedExpiringStorage', (): void => {
     expect(source.delete).toHaveBeenLastCalledWith('key2');
     mockInterval.mockRestore();
   });
-
 });
