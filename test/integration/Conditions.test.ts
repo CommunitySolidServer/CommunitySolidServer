@@ -189,7 +189,6 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
       headers: { 'if-none-match': eTag! },
     });
     expect(response.status).toBe(304);
-    
   });
 
   it('prevents operations if the "if-unmodified-since" header is before the modified date.', async(): Promise<void> => {
