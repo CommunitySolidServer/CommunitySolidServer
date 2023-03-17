@@ -7,6 +7,7 @@ import { BasicRepresentation } from '../http/representation/BasicRepresentation'
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
+import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
@@ -17,6 +18,7 @@ import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import { NotModifiedHttpError } from '../util/errors/NotModifiedHttpError';
 import { PreconditionFailedHttpError } from '../util/errors/PreconditionFailedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { concat } from '../util/IterableUtil';
@@ -103,7 +105,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
+  public async getRepresentation(identifier: ResourceIdentifier,
+    preferences?: RepresentationPreferences, conditions?: Conditions): Promise<Representation> {
     this.validateIdentifier(identifier);
     let isMetadata = false;
 
@@ -115,6 +118,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
     let metadata = await this.accessor.getMetadata(identifier);
     let representation: Representation;
+    if (conditions) {
+      this.validateConditions(conditions, metadata, true);
+    }
 
     // Potentially add auxiliary related metadata
     // Solid, §4.3: "Clients can discover auxiliary resources associated with a subject resource by making an HTTP HEAD
@@ -347,10 +353,13 @@ export class DataAccessorBasedStore implements ResourceStore {
   /**
    * Verify if the given metadata matches the conditions.
    */
-  protected validateConditions(conditions?: Conditions, metadata?: RepresentationMetadata): void {
+  protected validateConditions(conditions?: Conditions, metadata?: RepresentationMetadata, read?: boolean): void {
     // The 412 (Precondition Failed) status code indicates
     // that one or more conditions given in the request header fields evaluated to false when tested on the server.
     if (conditions && !conditions.matchesMetadata(metadata)) {
+      if (read) {
+        throw new NotModifiedHttpError();
+      }
       throw new PreconditionFailedHttpError();
     }
   }
