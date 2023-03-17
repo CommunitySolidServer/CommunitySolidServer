@@ -5,7 +5,7 @@ import { generateHttpErrorClass } from './HttpError';
 const BaseHttpError = generateHttpErrorClass(304, 'NotModifiedHttpError');
 
 /**
- * An error thrown when a request conflict with current state of the server.
+ * An error is thrown when a request conflicts with the current state of the server.
  */
 export class NotModifiedHttpError extends BaseHttpError {
   public constructor(message?: string, options?: HttpErrorOptions) {
