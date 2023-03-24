@@ -40,6 +40,11 @@ const response = await fetch('http://localhost:3000/idp/credentials/', {
 const { id, secret } = await response.json();
 ```
 
+If there is something wrong with your input the response code will be 500.
+If no account is linked to the email,
+the message will be "Account does not exist" and
+if the password is wrong it will be "Incorrect password".
+
 ## Requesting an Access token
 
 The ID and secret combination generated above can be used to request an Access Token from the server.
