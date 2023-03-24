@@ -221,7 +221,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('throws a 304 if the request is a read type error.', async(): Promise<void> => {
       const resourceID = { path: root };
-      const conditions = new BasicConditions({ notMatchesETag: [ '*' ] }); //});
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
       await expect(store.getRepresentation(resourceID, undefined, conditions)).rejects.toThrow(NotModifiedHttpError);
     });
   });
