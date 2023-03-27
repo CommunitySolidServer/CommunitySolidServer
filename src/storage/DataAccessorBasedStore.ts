@@ -118,9 +118,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
     let metadata = await this.accessor.getMetadata(identifier);
     let representation: Representation;
-    if (conditions) {
-      this.validateConditions(true, conditions, metadata);
-    }
+
+    this.validateConditions(true, conditions, metadata);
 
     // Potentially add auxiliary related metadata
     // Solid, §4.3: "Clients can discover auxiliary resources associated with a subject resource by making an HTTP HEAD

@@ -224,6 +224,12 @@ describe('A DataAccessorBasedStore', (): void => {
       const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
       await expect(store.getRepresentation(resourceID, undefined, conditions)).rejects.toThrow(NotModifiedHttpError);
     });
+
+    it('has conditions but throws no error.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ matchesETag: [ '*' ]});
+      await expect(store.getRepresentation(resourceID, undefined, conditions)).resolves.toBeTruthy();
+    });
   });
 
   describe('adding a Resource', (): void => {
