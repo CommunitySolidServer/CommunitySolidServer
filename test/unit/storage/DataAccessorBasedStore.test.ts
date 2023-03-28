@@ -19,6 +19,7 @@ import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError'
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
+import { NotModifiedHttpError } from '../../../src/util/errors/NotModifiedHttpError';
 import { PreconditionFailedHttpError } from '../../../src/util/errors/PreconditionFailedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
@@ -26,6 +27,7 @@ import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC, SOLID_AS, AS } from '../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../util/SimpleSuffixStrategy';
+
 const { namedNode, quad, literal } = DataFactory;
 
 const GENERATED_PREDICATE = namedNode('generated');
@@ -215,6 +217,18 @@ describe('A DataAccessorBasedStore', (): void => {
         ),
       );
       expect(result.metadata.contentType).toBe(INTERNAL_QUADS);
+    });
+
+    it('throws a 304 if the request is a read type error.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.getRepresentation(resourceID, undefined, conditions)).rejects.toThrow(NotModifiedHttpError);
+    });
+
+    it('has conditions but throws no error.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ matchesETag: [ '*' ]});
+      await expect(store.getRepresentation(resourceID, undefined, conditions)).resolves.toBeTruthy();
     });
   });
 

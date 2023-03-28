@@ -170,6 +170,27 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     expect(await deleteResource(documentUrl!)).toBeUndefined();
   });
 
+  it('throws 304 error if "if-none-match" header matches and request type is GET or HEAD.', async(): Promise<void> => {
+    // GET root ETag
+    let response = await getResource(baseUrl);
+    const eTag = response.headers.get('ETag');
+    expect(typeof eTag).toBe('string');
+
+    // GET fails because of header
+    response = await fetch(baseUrl, {
+      method: 'GET',
+      headers: { 'if-none-match': eTag! },
+    });
+    expect(response.status).toBe(304);
+
+    // HEAD fails because of header
+    response = await fetch(baseUrl, {
+      method: 'HEAD',
+      headers: { 'if-none-match': eTag! },
+    });
+    expect(response.status).toBe(304);
+  });
+
   it('prevents operations if the "if-unmodified-since" header is before the modified date.', async(): Promise<void> => {
     const documentUrl = `${baseUrl}document3.txt`;
     // PUT

@@ -9,16 +9,19 @@ import { InternalServerError } from '../../../../src/util/errors/InternalServerE
 import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { NotModifiedHttpError } from '../../../../src/util/errors/NotModifiedHttpError';
 import { PayloadHttpError } from '../../../../src/util/errors/PayloadHttpError';
 import { PreconditionFailedHttpError } from '../../../../src/util/errors/PreconditionFailedHttpError';
 import { UnauthorizedHttpError } from '../../../../src/util/errors/UnauthorizedHttpError';
 import { UnprocessableEntityHttpError } from '../../../../src/util/errors/UnprocessableEntityHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { SOLID_ERROR } from '../../../../src/util/Vocabularies';
+
 const { literal, namedNode, quad } = DataFactory;
 
 describe('HttpError', (): void => {
   const errors: [string, number, HttpErrorClass][] = [
+    [ 'NotModifiedHttpError', 304, NotModifiedHttpError ],
     [ 'BadRequestHttpError', 400, BadRequestHttpError ],
     [ 'UnauthorizedHttpError', 401, UnauthorizedHttpError ],
     [ 'ForbiddenHttpError', 403, ForbiddenHttpError ],
