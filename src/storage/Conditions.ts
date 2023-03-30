@@ -25,16 +25,12 @@ export interface Conditions {
   /**
    * Checks validity based on the given metadata.
    * @param metadata - Metadata of the representation. Undefined if the resource does not exist.
+   * @param strict - How to compare the ETag related headers.
+   *                 If true, exact string matching will be used to compare with the ETag for the given metadata.
+   *                 If false, it will take into account that content negotiation might still happen
+   *                 which can change the ETag.
    */
-  matchesMetadata: (metadata?: RepresentationMetadata) => boolean;
-  /**
-   * Checks validity based on the given ETag and/or date.
-   * This function assumes the resource being checked exists.
-   * If not, the `matchesMetadata` function should be used.
-   * @param eTag - Condition based on ETag.
-   * @param lastModified - Condition based on last modified date.
-   */
-  matches: (eTag?: string, lastModified?: Date) => boolean;
+  matchesMetadata: (metadata?: RepresentationMetadata, strict?: boolean) => boolean;
 }
 
 /**
@@ -45,8 +41,32 @@ export interface Conditions {
  */
 export function getETag(metadata: RepresentationMetadata): string | undefined {
   const modified = metadata.get(DC.terms.modified);
-  if (modified) {
+  const { contentType } = metadata;
+  if (modified && contentType) {
     const date = new Date(modified.value);
-    return `"${date.getTime()}"`;
+    return `"${date.getTime()}-${contentType}"`;
   }
+}
+
+/**
+ * Validates whether a given ETag corresponds to the current state of the resource,
+ * independent of the representation the ETag corresponds to.
+ * Assumes ETags are made with the {@link getETag} function.
+ * Since we base the ETag on the last modified date,
+ * we know the ETag still matches as long as that didn't change.
+ *
+ * @param eTag - ETag to validate.
+ * @param metadata - Metadata of the resource.
+ *
+ * @returns `true` if the ETag represents the current state of the resource.
+ */
+export function isCurrentETag(eTag: string, metadata: RepresentationMetadata): boolean {
+  const modified = metadata.get(DC.terms.modified);
+  if (!modified) {
+    return false;
+  }
+  const time = eTag.split('-', 1)[0];
+  const date = new Date(modified.value);
+  // `time` will still have the initial`"` of the ETag string
+  return time === `"${date.getTime()}`;
 }

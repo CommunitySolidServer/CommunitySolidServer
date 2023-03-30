@@ -189,6 +189,13 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
       headers: { 'if-none-match': eTag! },
     });
     expect(response.status).toBe(304);
+
+    // GET succeeds if the ETag header doesn't match
+    response = await fetch(baseUrl, {
+      method: 'GET',
+      headers: { 'if-none-match': '"123456"' },
+    });
+    expect(response.status).toBe(200);
   });
 
   it('prevents operations if the "if-unmodified-since" header is before the modified date.', async(): Promise<void> => {
@@ -217,5 +224,23 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
       headers: { 'if-unmodified-since': lastModified.toUTCString() },
     });
     expect(response.status).toBe(205);
+  });
+
+  it('returns different ETags for different content-types.', async(): Promise<void> => {
+    let response = await getResource(baseUrl, { accept: 'text/turtle' }, { contentType: 'text/turtle' });
+    const eTagTurtle = response.headers.get('ETag');
+    response = await getResource(baseUrl, { accept: 'application/ld+json' }, { contentType: 'application/ld+json' });
+    const eTagJson = response.headers.get('ETag');
+    expect(eTagTurtle).not.toEqual(eTagJson);
+
+    // Both ETags can be used on the same resource
+    response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'text/turtle' }});
+    expect(response.status).toBe(304);
+    response = await fetch(baseUrl, { headers: { 'if-none-match': eTagJson!, accept: 'application/ld+json' }});
+    expect(response.status).toBe(304);
+
+    // But not for the other representation
+    response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'application/ld+json' }});
+    expect(response.status).toBe(200);
   });
 });

@@ -1,5 +1,6 @@
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { assertReadConditions } from '../../util/ResourceUtil';
 import { OkResponseDescription } from '../output/response/OkResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
@@ -25,6 +26,9 @@ export class GetOperationHandler extends OperationHandler {
 
   public async handle({ operation }: OperationHandlerInput): Promise<ResponseDescription> {
     const body = await this.store.getRepresentation(operation.target, operation.preferences, operation.conditions);
+
+    // Check whether the cached representation is still valid or it is necessary to send a new representation
+    assertReadConditions(body, operation.conditions);
 
     return new OkResponseDescription(body.metadata, body.data);
   }
