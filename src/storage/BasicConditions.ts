@@ -1,6 +1,6 @@
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { DC } from '../util/Vocabularies';
-import { getETag } from './Conditions';
+import { getETag, isCurrentETag } from './Conditions';
 import type { Conditions } from './Conditions';
 
 export interface BasicConditionsOptions {
@@ -26,40 +26,43 @@ export class BasicConditions implements Conditions {
     this.unmodifiedSince = options.unmodifiedSince;
   }
 
-  public matchesMetadata(metadata?: RepresentationMetadata): boolean {
+  public matchesMetadata(metadata?: RepresentationMetadata, strict?: boolean): boolean {
     if (!metadata) {
       // RFC7232: ...If-Match... If the field-value is "*", the condition is false if the origin server
       // does not have a current representation for the target resource.
       return !this.matchesETag?.includes('*');
     }
 
-    const modified = metadata.get(DC.terms.modified);
-    const modifiedDate = modified ? new Date(modified.value) : undefined;
-    const etag = getETag(metadata);
-    return this.matches(etag, modifiedDate);
-  }
-
-  public matches(eTag?: string, lastModified?: Date): boolean {
     // RFC7232: ...If-None-Match... If the field-value is "*", the condition is false if the origin server
     // has a current representation for the target resource.
     if (this.notMatchesETag?.includes('*')) {
       return false;
     }
 
-    if (eTag) {
-      if (this.matchesETag && !this.matchesETag.includes(eTag) && !this.matchesETag.includes('*')) {
-        return false;
-      }
-      if (this.notMatchesETag?.includes(eTag)) {
-        return false;
-      }
+    // Helper function to see if an ETag matches the provided metadata
+    // eslint-disable-next-line func-style
+    let eTagMatches = (tag: string): boolean => isCurrentETag(tag, metadata);
+    if (strict) {
+      const eTag = getETag(metadata);
+      eTagMatches = (tag: string): boolean => tag === eTag;
     }
 
-    if (lastModified) {
-      if (this.modifiedSince && lastModified < this.modifiedSince) {
+    if (this.matchesETag && !this.matchesETag.includes('*') && !this.matchesETag.some(eTagMatches)) {
+      return false;
+    }
+    if (this.notMatchesETag?.some(eTagMatches)) {
+      return false;
+    }
+
+    // In practice, this will only be undefined on a backend
+    // that doesn't store the modified date.
+    const modified = metadata.get(DC.terms.modified);
+    if (modified) {
+      const modifiedDate = new Date(modified.value);
+      if (this.modifiedSince && modifiedDate < this.modifiedSince) {
         return false;
       }
-      if (this.unmodifiedSince && lastModified > this.unmodifiedSince) {
+      if (this.unmodifiedSince && modifiedDate > this.unmodifiedSince) {
         return false;
       }
     }
