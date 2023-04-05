@@ -44,6 +44,7 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 ## Comprehensive guides and tutorials
 
 * [The CSS tutorial repository](https://github.com/CommunitySolidServer/tutorials/)
+* [CSS configuration generator](https://communitysolidserver.github.io/configuration-generator/)
 
 ## Making changes
 

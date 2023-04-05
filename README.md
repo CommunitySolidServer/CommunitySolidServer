@@ -167,7 +167,9 @@ The Community Solid Server uses [Components.js](https://componentsjs.readthedocs
 to specify how modules and components need to be wired together at runtime.
 
 Examples and guidance on configurations
-are available in the [`config` folder](https://github.com/CommunitySolidServer/CommunitySolidServer/tree/main/config).
+are available in the [`config` folder](https://github.com/CommunitySolidServer/CommunitySolidServer/tree/main/config),
+and the [configurations tutorial](https://github.com/CommunitySolidServer/tutorials/blob/main/custom-configurations.md).
+There is also a [configuration generator](https://communitysolidserver.github.io/configuration-generator/).
 
 Recipes for configuring the server can be found at [CommunitySolidServer/recipes](https://github.com/CommunitySolidServer/recipes).
 
@@ -176,7 +178,7 @@ Recipes for configuring the server can be found at [CommunitySolidServer/recipes
 The server allows writing and plugging in custom modules
 without altering its base source code.
 
-The [📗 API documentation](https://communitysolidserver.github.io/CommunitySolidServer/latest/5.x/docs) and
+The [📗 API documentation](https://communitysolidserver.github.io/CommunitySolidServer/5.x/docs) and
 the [📓 user documentation](https://communitysolidserver.github.io/CommunitySolidServer/)
 can help you find your way.
 There is also a repository of [📚 comprehensive tutorials](https://github.com/CommunitySolidServer/tutorials/)
