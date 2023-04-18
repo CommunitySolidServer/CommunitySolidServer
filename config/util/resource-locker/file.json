@@ -6,18 +6,12 @@
       "@id": "urn:solid-server:default:ResourceLocker",
       "@type": "WrappedExpiringReadWriteLocker",
       "locker": {
-        "@type": "GreedyReadWriteLocker",
+        "@type": "EqualReadWriteLocker",
         "locker": {
           "@id": "urn:solid-server:default:FileSystemResourceLocker",
           "@type": "FileSystemResourceLocker",
           "args_rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" }
-        },
-        "storage": {
-          "@id": "urn:solid-server:default:LockStorage"
-        },
-        "suffixes_count": "count",
-        "suffixes_read": "read",
-        "suffixes_write": "write"
+        }
       },
       "expiration": 6000
     },
