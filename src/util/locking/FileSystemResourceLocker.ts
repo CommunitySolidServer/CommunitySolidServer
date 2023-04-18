@@ -53,6 +53,9 @@ function isCodedError(err: unknown): err is { code: string } & Error {
 /**
  * A resource locker making use of the [proper-lockfile](https://www.npmjs.com/package/proper-lockfile) library.
  * Note that no locks are kept in memory, thus this is considered thread- and process-safe.
+ * While it stores the actual locks on disk, it also tracks them in memory for when they need to be released.
+ * This means only the worker thread that acquired a lock can release it again,
+ * making this implementation unusable in combination with a wrapping read/write lock implementation.
  *
  * This **proper-lockfile** library has its own retry mechanism for the operations, since a lock/unlock call will
  * either resolve successfully or reject immediately with the causing error. The retry function of the library
