@@ -6,9 +6,9 @@
 
 - The server can be configured to use [ACP](https://solidproject.org/TR/acp) instead of WebACL.
   `config/file-acp.json` is an example of a configuration that uses this authorization scheme instead.
-- Support for the new [WebSocket Notification protocol](https://solidproject.org/TR/websocket-subscription-2021)
-  and the [WebHook Notification protocol draft](https://github.com/solid/notifications/blob/main/webhook-subscription-2021.md)
-  was added.
+- Support for the new [Notification specification](https://solidproject.org/TR/2022/notifications-protocol-20221231)
+  was added. See the documentation for further details.
+- All resources now have a storage description header as defined in the v0.10.0 Solid protocol specification.
 
 ### Data migration
 
