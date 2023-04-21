@@ -324,7 +324,6 @@ export * from './server/notifications/serialize/NotificationSerializer';
 // Server/Notifications/WebHookSubscription2021
 export * from './server/notifications/WebHookSubscription2021/WebHookEmitter';
 export * from './server/notifications/WebHookSubscription2021/WebHookSubscription2021';
-export * from './server/notifications/WebHookSubscription2021/WebHookUnsubscriber';
 export * from './server/notifications/WebHookSubscription2021/WebHookWebId';
 
 // Server/Notifications/WebSocketChannel2023
@@ -350,6 +349,7 @@ export * from './server/notifications/NotificationDescriber';
 export * from './server/notifications/NotificationEmitter';
 export * from './server/notifications/NotificationHandler';
 export * from './server/notifications/NotificationSubscriber';
+export * from './server/notifications/NotificationUnsubscriber';
 export * from './server/notifications/StateHandler';
 export * from './server/notifications/TypedNotificationHandler';
 

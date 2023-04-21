@@ -308,4 +308,13 @@ describe.each(stores)('A server supporting WebSocketChannel2023 using %s', (name
     expect(quads.getObjects(null, NOTIFY.terms.topic, null)).toEqual([ namedNode(topic) ]);
     expect(quads.countQuads(null, NOTIFY.terms.receiveFrom, null, null)).toBe(1);
   });
+
+  it('can remove notification channels.', async(): Promise<void> => {
+    const { id } = await subscribe(notificationType, webId, subscriptionUrl, topic) as any;
+
+    const response = await fetch(id, { method: 'DELETE' });
+    expect(response.status).toBe(205);
+
+    // Expired WebSockets only get removed every hour so not feasible to test in integration test
+  });
 });

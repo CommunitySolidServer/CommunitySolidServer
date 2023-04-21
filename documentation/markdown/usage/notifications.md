@@ -135,6 +135,19 @@ The `unsubscribe_endpoint` field is new here.
 Once created, the notification channel can be removed and notifications stopped
 by sending a `DELETE` request to the URL found in that field.
 
+## Unsubscribing from a notification channel
+
+!!! note
+    This feature is not part of the Solid Notification v0.2 specification
+    so might be changed or removed in the future.
+
+If you no longer want to receive notifications on the channel you created,
+you can send a `DELETE` request to the channel to remove it.
+Use the value found in the `id` field of the subscription response.
+There is no way to retrieve this identifier later on,
+so make sure to keep track of it just in case you want to unsubscribe at some point.
+No authorization is needed for this request.
+
 ## Notification format
 
 Below is an example notification that would be sent when a resource changes:
@@ -203,13 +216,13 @@ The available fields are:
 
 ## Important note for server owners
 
-There is not much restriction on who can create a new notification channel,
+There is not much restriction on who can create a new notification channel;
 only `Read` permissions on the target resource are required.
 It is therefore possible for the server to accumulate created channels.
 As these channels still get used every time their corresponding resource changes,
 this could degrade server performance.
 
-For this reason, the server is by default configured to always remove notification channels after 2 weeks.
+For this reason, the default server configuration removes notification channels after two weeks (20160 minutes).
 You can modify this behaviour by adding the following block to your configuration:
 
 ```json
@@ -222,5 +235,5 @@ You can modify this behaviour by adding the following block to your configuratio
 
 `maxDuration` defines after how many minutes every channel will be removed.
 Setting this value to 0 will allow channels to exist forever.
-Similarly, for changing the maximum duration of webhook channels you can use the identifier
+Similarly, to change the maximum duration of webhook channels you can use the identifier
 `urn:solid-server:default:WebHookSubscriber`.

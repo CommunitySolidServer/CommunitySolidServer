@@ -2,7 +2,9 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Disable notifications by not attaching a notification listener."
+      "comment": "Disables notification routing.",
+      "@id": "urn:solid-server:default:NotificationHttpHandler",
+      "@type": "UnsupportedAsyncHandler"
     }
   ]
 }

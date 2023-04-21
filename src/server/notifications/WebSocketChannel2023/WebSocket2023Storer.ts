@@ -49,7 +49,8 @@ export class WebSocket2023Storer extends WebSocket2023Handler {
       const result = await this.storage.get(id);
       if (!result) {
         for (const socket of sockets) {
-          // Due to the attached listener this also deletes the entries
+          // Due to the attached listener, this also deletes the entries in the `socketMap`
+          socket.send(`Notification channel has expired`);
           socket.close();
         }
       }

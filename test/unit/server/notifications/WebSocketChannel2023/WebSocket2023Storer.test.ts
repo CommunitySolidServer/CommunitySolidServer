@@ -25,6 +25,7 @@ describe('A WebSocket2023Storer', (): void => {
 
   beforeEach(async(): Promise<void> => {
     webSocket = new EventEmitter() as any;
+    webSocket.send = jest.fn();
     webSocket.close = jest.fn();
 
     storage = {
@@ -63,8 +64,10 @@ describe('A WebSocket2023Storer', (): void => {
     storer = new WebSocket2023Storer(storage, socketMap);
 
     const webSocket2: jest.Mocked<WebSocket> = new EventEmitter() as any;
+    webSocket2.send = jest.fn();
     webSocket2.close = jest.fn();
     const webSocketOther: jest.Mocked<WebSocket> = new EventEmitter() as any;
+    webSocketOther.send = jest.fn();
     webSocketOther.close = jest.fn();
     const channelOther: NotificationChannel = {
       ...channel,
