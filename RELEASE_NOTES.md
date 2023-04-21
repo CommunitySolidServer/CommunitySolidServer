@@ -14,6 +14,14 @@
 
 No actions are required to migrate data.
 
+### Template changes
+
+The expected format of template folders for generating pods or initializing the root has changed,
+see the `templates/pod` folder for an example.
+More specifically: each of those folders used is now expected to have multiple subfolders.
+The subfolder `base` will always be copied,
+whereas the subfolders `acp` and `wac` will only be copied if the corresponding access control system is enabled.
+
 ### Configuration changes
 
 You might need to make changes to your v5 configuration if you use a custom config.
