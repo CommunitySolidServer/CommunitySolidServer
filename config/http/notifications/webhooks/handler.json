@@ -2,10 +2,10 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Handles the generation and serialization of notifications for WebHookSubscription2021.",
+      "comment": "Handles the generation and serialization of notifications for WebHookChannel2023.",
       "@id": "urn:solid-server:default:WebHookNotificationHandler",
       "@type": "TypedNotificationHandler",
-      "type": "http://www.w3.org/ns/solid/notifications#WebHookSubscription2021",
+      "type": "http://www.w3.org/ns/solid/notifications#WebHookChannel2023",
       "source": {
         "@type": "ComposedNotificationHandler",
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
@@ -28,6 +28,6 @@
       "handlers": [
         { "@id": "urn:solid-server:default:WebHookNotificationHandler" }
       ]
-    },
+    }
   ]
 }

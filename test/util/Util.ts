@@ -29,8 +29,8 @@ const portNames = [
   'SetupMemory',
   'SparqlStorage',
   'Subdomains',
-  'WebHookSubscription2021',
-  'WebHookSubscription2021-client',
+  'WebHookChannel2023',
+  'WebHookChannel2023-client',
   'WebSocketChannel2023',
 
   // Unit

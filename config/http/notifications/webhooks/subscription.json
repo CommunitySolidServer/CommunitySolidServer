@@ -2,16 +2,16 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Handles the subscriptions targeting a WebHookSubscription2021.",
+      "comment": "Handles the subscriptions targeting a WebHookChannel2023.",
       "@id": "urn:solid-server:default:WebHookRouter",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "allowedMethods": [ "HEAD", "GET", "POST" ],
-      "allowedPathNames": [ "/WebHookSubscription2021/$" ],
+      "allowedPathNames": [ "/WebHookChannel2023/$" ],
       "handler": {
         "@id": "urn:solid-server:default:WebHookSubscriber",
         "@type": "NotificationSubscriber",
-        "channelType": { "@id": "urn:solid-server:default:WebHookSubscription2021" },
+        "channelType": { "@id": "urn:solid-server:default:WebHookChannel2023Type" },
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
         "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
@@ -20,9 +20,9 @@
       }
     },
     {
-      "comment": "Contains all the metadata relevant for a WebHookSubscription2021.",
-      "@id": "urn:solid-server:default:WebHookSubscription2021",
-      "@type": "WebHookSubscription2021",
+      "comment": "Contains all the metadata relevant for a WebHookChannel2023.",
+      "@id": "urn:solid-server:default:WebHookChannel2023Type",
+      "@type": "WebhookChannel2023Type",
       "route": { "@id": "urn:solid-server:default:WebHookRoute" },
       "webIdRoute": { "@id": "urn:solid-server:default:WebHookWebIdRoute" },
       "stateHandler": {
@@ -37,7 +37,7 @@
       "@type": "NotificationDescriber",
       "subscriptions": [
         {
-          "@id": "urn:solid-server:default:WebHookSubscription2021"
+          "@id": "urn:solid-server:default:WebHookChannel2023Type"
         }
       ]
     }

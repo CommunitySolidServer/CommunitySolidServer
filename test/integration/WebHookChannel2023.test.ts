@@ -23,14 +23,14 @@ import {
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
 
-const port = getPort('WebHookSubscription2021');
+const port = getPort('WebHookChannel2023');
 const baseUrl = `http://localhost:${port}/`;
-const clientPort = getPort('WebHookSubscription2021-client');
+const clientPort = getPort('WebHookChannel2023-client');
 const target = `http://localhost:${clientPort}/`;
 const webId = 'http://example.com/card/#me';
-const notificationType = NOTIFY.WebHookSubscription2021;
+const notificationType = NOTIFY.WebHookChannel2023;
 
-const rootFilePath = getTestFolder('WebHookSubscription2021');
+const rootFilePath = getTestFolder('WebHookChannel2023');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
     configs: [ 'storage/backend/memory.json', 'util/resource-locker/memory.json' ],
@@ -43,7 +43,7 @@ const stores: [string, any][] = [
   }],
 ];
 
-describe.each(stores)('A server supporting WebHookSubscription2021 using %s', (name, { configs, teardown }): void => {
+describe.each(stores)('A server supporting WebHookChannel2023 using %s', (name, { configs, teardown }): void => {
   let app: App;
   const topic = joinUrl(baseUrl, '/foo');
   let storageDescriptionUrl: string;
@@ -99,19 +99,16 @@ describe.each(stores)('A server supporting WebHookSubscription2021 using %s', (n
     // Find the notification channel for websockets
     const subscriptions = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.subscription, null);
     const webhookSubscriptions = subscriptions.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebHookSubscription2021`)),
+      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebHookChannel2023`)),
     ));
     expect(webhookSubscriptions).toHaveLength(1);
     subscriptionUrl = webhookSubscriptions[0].value;
-
-    // It should also link to the server WebID
-    const webIds = quads.getObjects(webhookSubscriptions[0], NOTIFY.terms.webid, null);
-    expect(webIds).toHaveLength(1);
-    serverWebId = webIds[0].value;
   });
 
   it('supports subscribing.', async(): Promise<void> => {
-    await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.target]: target });
+    const { sender } =
+      await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.sendTo]: target }) as any;
+    serverWebId = sender;
   });
 
   it('emits Created events.', async(): Promise<void> => {
@@ -170,7 +167,7 @@ describe.each(stores)('A server supporting WebHookSubscription2021 using %s', (n
       });
     });
 
-    await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.target]: target, state: 'abc' });
+    await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.sendTo]: target, state: 'abc' });
 
     // Will resolve even though the resource did not change since subscribing
     const { request, response } = await clientPromise;
@@ -184,7 +181,7 @@ describe.each(stores)('A server supporting WebHookSubscription2021 using %s', (n
   });
 
   it('can remove notification channels.', async(): Promise<void> => {
-    const { id } = await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.target]: target }) as any;
+    const { id } = await subscribe(notificationType, webId, subscriptionUrl, topic, { [NOTIFY.sendTo]: target }) as any;
 
     const response = await fetch(id, { method: 'DELETE' });
     expect(response.status).toBe(205);

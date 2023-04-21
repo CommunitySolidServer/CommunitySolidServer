@@ -9,11 +9,14 @@ import { trimTrailingSlashes } from '../../../util/PathUtil';
 import { readableToString } from '../../../util/StreamUtil';
 import type { NotificationEmitterInput } from '../NotificationEmitter';
 import { NotificationEmitter } from '../NotificationEmitter';
-import type { WebHookSubscription2021Channel } from './WebHookSubscription2021';
-import { isWebHook2021Channel } from './WebHookSubscription2021';
+import type { WebhookChannel2023 } from './WebhookChannel2023Type';
+import { isWebHook2023Channel } from './WebhookChannel2023Type';
 
 /**
- * Emits a notification representation using the WebHookSubscription2021 specification.
+ * Emits a notification representation using the WebHookChannel2023 specification.
+ *
+ * At the time of writing it is not specified how exactly a notification sender should make its requests verifiable,
+ * so for now we use a token similar to those from Solid-OIDC, signed by the server itself.
  *
  * Generates a DPoP token and proof, and adds those to the HTTP request that is sent to the target.
  *
@@ -37,15 +40,15 @@ export class WebHookEmitter extends NotificationEmitter {
   }
 
   public async canHandle({ channel }: NotificationEmitterInput): Promise<void> {
-    if (!isWebHook2021Channel(channel)) {
-      throw new NotImplementedHttpError(`${channel.id} is not a WebHookSubscription2021 channel.`);
+    if (!isWebHook2023Channel(channel)) {
+      throw new NotImplementedHttpError(`${channel.id} is not a WebHookChannel2023 channel.`);
     }
   }
 
   public async handle({ channel, representation }: NotificationEmitterInput): Promise<void> {
     // Cast was checked in `canHandle`
-    const webHookChannel = channel as WebHookSubscription2021Channel;
-    this.logger.debug(`Emitting WebHook notification with target ${webHookChannel.target}`);
+    const webHookChannel = channel as WebhookChannel2023;
+    this.logger.debug(`Emitting WebHook notification with target ${webHookChannel.sendTo}`);
 
     const privateKey = await this.jwkGenerator.getPrivateKey();
     const publicKey = await this.jwkGenerator.getPublicKey();
@@ -55,8 +58,7 @@ export class WebHookEmitter extends NotificationEmitter {
     // Make sure both header and proof have the same timestamp
     const time = Date.now();
 
-    // The spec is not completely clear on which fields actually need to be present in the token,
-    // only that it needs to contain the WebID somehow.
+    // Currently the spec does not define how the notification sender should identify.
     // The format used here has been chosen to be similar
     // to how ID tokens are described in the Solid-OIDC specification for consistency.
     const dpopToken = await new SignJWT({
@@ -76,14 +78,14 @@ export class WebHookEmitter extends NotificationEmitter {
 
     // https://datatracker.ietf.org/doc/html/draft-ietf-oauth-dpop#section-4.2
     const dpopProof = await new SignJWT({
-      htu: webHookChannel.target,
+      htu: webHookChannel.sendTo,
       htm: 'POST',
     }).setProtectedHeader({ alg: privateKey.alg, jwk: publicKey, typ: 'dpop+jwt' })
       .setIssuedAt(time)
       .setJti(v4())
       .sign(privateKeyObject);
 
-    const response = await fetch(webHookChannel.target, {
+    const response = await fetch(webHookChannel.sendTo, {
       method: 'POST',
       headers: {
         'content-type': representation.metadata.contentType!,
@@ -93,7 +95,7 @@ export class WebHookEmitter extends NotificationEmitter {
       body: await readableToString(representation.data),
     });
     if (response.status >= 400) {
-      this.logger.error(`There was an issue emitting a WebHook notification with target ${webHookChannel.target}: ${
+      this.logger.error(`There was an issue emitting a WebHook notification with target ${webHookChannel.sendTo}: ${
         await response.text()}`);
     }
   }
