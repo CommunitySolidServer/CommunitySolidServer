@@ -204,13 +204,13 @@ export const NOTIFY = createVocabulary('http://www.w3.org/ns/solid/notifications
   'receiveFrom',
   'startAt',
   'state',
+  'sender',
+  'sendTo',
   'subscription',
-  'target',
   'topic',
   'webhookAuth',
-  'webid',
 
-  'WebHookSubscription2021',
+  'WebHookChannel2023',
   'WebSocketChannel2023',
 );
 

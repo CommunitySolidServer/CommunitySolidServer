@@ -5,7 +5,7 @@
       "@id": "urn:solid-server:default:WebHookRoute",
       "@type": "RelativePathInteractionRoute",
       "base": { "@id": "urn:solid-server:default:NotificationRoute" },
-      "relativePath": "/WebHookSubscription2021/"
+      "relativePath": "/WebHookChannel2023/"
     },
     {
       "@id": "urn:solid-server:default:WebHookWebIdRoute",
@@ -15,11 +15,11 @@
     },
 
     {
-      "comment": "Handles the WebHookSubscription2021 WebID.",
+      "comment": "Handles the WebHookChannel2023 WebID.",
       "@id": "urn:solid-server:default:WebHookWebId",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "allowedPathNames": [ "/WebHookSubscription2021/webId$" ],
+      "allowedPathNames": [ "/WebHookChannel2023/webId$" ],
       "handler": {
         "@type": "WebHookWebId",
         "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }

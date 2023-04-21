@@ -27,7 +27,7 @@ export function isWebSocket2023Channel(channel: NotificationChannel): channel is
 
 /**
  * The notification channel type WebSocketChannel2023 as described in
- * https://solidproject.org/TR/websocket-subscription-2021
+ * https://solid.github.io/notifications/websocket-channel-2023
  *
  * Requires read permissions on a resource to be able to receive notifications.
  */

@@ -2,7 +2,7 @@ import { fetch } from 'cross-fetch';
 
 /**
  * Subscribes to a notification channel.
- * @param type - The type of the notification channel, e.g., "NOTIFY.WebHookSubscription2021".
+ * @param type - The type of the notification channel, e.g., "NOTIFY.WebHookChannel2023".
  * @param webId - The WebID to spoof in the authorization header. This assumes the config uses the debug auth import.
  * @param subscriptionUrl - The subscription URL to which the request needs to be sent.
  * @param topic - The topic to subscribe to.

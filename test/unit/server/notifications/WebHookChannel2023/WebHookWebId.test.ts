@@ -3,7 +3,7 @@ import type { Operation } from '../../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
-import { WebHookWebId } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookWebId';
+import { WebHookWebId } from '../../../../../src/server/notifications/WebHookChannel2023/WebHookWebId';
 import { readableToString } from '../../../../../src/util/StreamUtil';
 import { SOLID } from '../../../../../src/util/Vocabularies';
 const { namedNode, quad } = DataFactory;

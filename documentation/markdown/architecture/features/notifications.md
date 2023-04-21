@@ -174,13 +174,13 @@ so that class can emit events later on, as mentioned above.
 The state handler will make sure that a notification gets sent out if the subscription has a `state` feature request,
 as defined in the notification specification.
 
-## WebHookSubscription2021
+## WebHookChannel2023
 
 The additions required to support
-[WebHookSubscription2021](https://github.com/solid/notifications/blob/main/webhook-subscription-2021.md)
+[WebHookChannel2023](https://solid.github.io/notifications/webhook-channel-2023)
 are quite similar to those needed for WebSocketChannel2023:
 
 * For discovery, there is a `WebHookDescriber`, which is an extension of a `NotificationDescriber`.
-* The `WebHookSubscription2021` class contains all the necessary typing information.
+* The `WebHookChannel2023Type` class contains all the necessary typing information.
 * `WebHookEmitter` is the `NotificationEmitter` that sends the request.
 * `WebHookUnsubscriber` and `WebHookWebId` are additional utility classes to support the spec requirements.

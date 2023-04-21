@@ -1,5 +1,4 @@
 import { DataFactory, Store } from 'n3';
-import type { Credentials } from '../../../../../src/authentication/Credentials';
 import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
@@ -12,12 +11,12 @@ import { CONTEXT_NOTIFICATION } from '../../../../../src/server/notifications/No
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type { StateHandler } from '../../../../../src/server/notifications/StateHandler';
 import type {
-  WebHookSubscription2021Channel,
-} from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
+  WebhookChannel2023,
+} from '../../../../../src/server/notifications/WebHookChannel2023/WebhookChannel2023Type';
 import {
-  isWebHook2021Channel,
-  WebHookSubscription2021,
-} from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
+  isWebHook2023Channel,
+  WebhookChannel2023Type,
+} from '../../../../../src/server/notifications/WebHookChannel2023/WebhookChannel2023Type';
 import { NOTIFY, RDF } from '../../../../../src/util/Vocabularies';
 import quad = DataFactory.quad;
 import blankNode = DataFactory.blankNode;
@@ -31,79 +30,59 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
 
 jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 
-describe('A WebHookSubscription2021', (): void => {
-  const credentials: Credentials = { agent: { webId: 'http://example.org/alice' }};
-  const target = 'http://example.org/somewhere-else';
+describe('A WebhookChannel2023Type', (): void => {
+  const sendTo = 'http://example.org/somewhere-else';
   const topic = 'https://storage.example/resource';
   const subject = blankNode();
   let data: Store;
-  let channel: WebHookSubscription2021Channel;
+  let channel: WebhookChannel2023;
   const route = new AbsolutePathInteractionRoute('http://example.com/webhooks/');
   const webIdRoute = new RelativePathInteractionRoute(route, '/webid');
   let stateHandler: jest.Mocked<StateHandler>;
-  let channelType: WebHookSubscription2021;
+  let channelType: WebhookChannel2023Type;
 
   beforeEach(async(): Promise<void> => {
     data = new Store();
-    data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebHookSubscription2021));
+    data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebHookChannel2023));
     data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));
-    data.addQuad(quad(subject, NOTIFY.terms.target, namedNode(target)));
+    data.addQuad(quad(subject, NOTIFY.terms.sendTo, namedNode(sendTo)));
 
     const id = 'http://example.com/webhooks/4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
     channel = {
       id,
-      type: NOTIFY.WebHookSubscription2021,
+      type: NOTIFY.WebHookChannel2023,
       topic: 'https://storage.example/resource',
-      target,
-      webId: 'http://example.org/alice',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      unsubscribe_endpoint: id,
+      sendTo,
     };
 
     stateHandler = {
       handleSafe: jest.fn(),
     } as any;
 
-    channelType = new WebHookSubscription2021(route, webIdRoute, stateHandler);
+    channelType = new WebhookChannel2023Type(route, webIdRoute, stateHandler);
   });
 
   it('exposes a utility function to verify if a channel is a webhook channel.', async(): Promise<void> => {
-    expect(isWebHook2021Channel(channel)).toBe(true);
+    expect(isWebHook2023Channel(channel)).toBe(true);
 
     (channel as NotificationChannel).type = 'something else';
-    expect(isWebHook2021Channel(channel)).toBe(false);
-  });
-
-  it('returns a correct description of the subscription service.', async(): Promise<void> => {
-    expect(channelType.getDescription()).toEqual({
-      '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
-      id: 'http://example.com/webhooks/',
-      channelType: 'http://www.w3.org/ns/solid/notifications#WebHookSubscription2021',
-      feature: [ 'accept', 'endAt', 'rate', 'startAt', 'state', 'notify:webhookAuth' ],
-      'http://www.w3.org/ns/solid/notifications#webid': { id: 'http://example.com/webhooks/webid' },
-    });
+    expect(isWebHook2023Channel(channel)).toBe(false);
   });
 
   it('correctly parses notification channel bodies.', async(): Promise<void> => {
-    await expect(channelType.initChannel(data, credentials)).resolves.toEqual(channel);
+    await expect(channelType.initChannel(data)).resolves.toEqual(channel);
   });
 
-  it('errors if the credentials do not contain a WebID.', async(): Promise<void> => {
-    await expect(channelType.initChannel(data, {})).rejects
-      .toThrow('A WebHookSubscription2021 subscription request needs to be authenticated with a WebID.');
-  });
-
-  it('removes the WebID when converting back to JSON-LD.', async(): Promise<void> => {
+  it('adds the WebID when generating a JSON-LD representation of a channel.', async(): Promise<void> => {
     await expect(channelType.toJsonLd(channel)).resolves.toEqual({
       '@context': [
         CONTEXT_NOTIFICATION,
       ],
       id: channel.id,
-      type: NOTIFY.WebHookSubscription2021,
-      target,
+      type: NOTIFY.WebHookChannel2023,
+      sendTo,
       topic,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      unsubscribe_endpoint: channel.unsubscribe_endpoint,
+      sender: 'http://example.com/webhooks/webid',
     });
   });
 

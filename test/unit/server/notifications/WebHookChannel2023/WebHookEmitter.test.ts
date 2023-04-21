@@ -9,10 +9,10 @@ import {
 import type { Logger } from '../../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
-import { WebHookEmitter } from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookEmitter';
 import type {
-  WebHookSubscription2021Channel,
-} from '../../../../../src/server/notifications/WebHookSubscription2021/WebHookSubscription2021';
+  WebhookChannel2023,
+} from '../../../../../src/server/notifications/WebHookChannel2023/WebhookChannel2023Type';
+import { WebHookEmitter } from '../../../../../src/server/notifications/WebHookChannel2023/WebHookEmitter';
 import { NotImplementedHttpError } from '../../../../../src/util/errors/NotImplementedHttpError';
 import { matchesAuthorizationScheme } from '../../../../../src/util/HeaderUtil';
 import { trimTrailingSlashes } from '../../../../../src/util/PathUtil';
@@ -42,14 +42,11 @@ describe('A WebHookEmitter', (): void => {
     published: '123',
   };
   let representation: Representation;
-  const channel: WebHookSubscription2021Channel = {
+  const channel: WebhookChannel2023 = {
     id: 'id',
     topic: 'http://example.com/foo',
-    type: NOTIFY.WebHookSubscription2021,
-    target: 'http://example.org/somewhere-else',
-    webId: 'http://example.org/other/#me',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    unsubscribe_endpoint: 'http://example.org/unsubscribe',
+    type: NOTIFY.WebHookChannel2023,
+    sendTo: 'http://example.org/somewhere-else',
   };
 
   let privateJwk: AlgJwk;
@@ -120,7 +117,7 @@ describe('A WebHookEmitter', (): void => {
     // CHeck the DPoP proof
     const decodedDpopProof = await jwtVerify(dpop, publicObject);
     expect(decodedDpopProof.payload).toMatchObject({
-      htu: channel.target,
+      htu: channel.sendTo,
       htm: 'POST',
       iat: now,
       jti: expect.stringContaining('-'),
@@ -142,7 +139,7 @@ describe('A WebHookEmitter', (): void => {
 
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenLastCalledWith(
-      `There was an issue emitting a WebHook notification with target ${channel.target}: invalid request`,
+      `There was an issue emitting a WebHook notification with target ${channel.sendTo}: invalid request`,
     );
   });
 });
