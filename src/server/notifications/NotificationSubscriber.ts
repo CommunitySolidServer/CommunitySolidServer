@@ -46,6 +46,7 @@ export interface NotificationSubscriberArgs {
    * Overrides the expiration feature of channels, by making sure they always expire after the `maxDuration` value.
    * If the expiration of the channel is shorter than `maxDuration`, the original value will be kept.
    * Value is set in minutes. 0 is infinite.
+   * Defaults to 20160 minutes, which is 2 weeks.
    */
   maxDuration?: number;
 }
@@ -76,7 +77,7 @@ export class NotificationSubscriber extends OperationHttpHandler {
     this.permissionReader = args.permissionReader;
     this.authorizer = args.authorizer;
     this.storage = args.storage;
-    this.maxDuration = (args.maxDuration ?? 0) * 60 * 1000;
+    this.maxDuration = (args.maxDuration ?? 20160) * 60 * 1000;
   }
 
   public async handle({ operation, request }: OperationHttpHandlerInput): Promise<ResponseDescription> {

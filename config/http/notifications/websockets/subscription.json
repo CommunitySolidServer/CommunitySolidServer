@@ -3,12 +3,13 @@
   "@graph": [
     {
       "comment": "Handles the subscriptions targeting a WebSocketChannel2023.",
-      "@id": "urn:solid-server:default:WebSocket2023Subscriber",
+      "@id": "urn:solid-server:default:WebSocket2023Router",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "allowedMethods": [ "HEAD", "GET", "POST" ],
       "allowedPathNames": [ "/WebSocketChannel2023/$" ],
       "handler": {
+        "@id": "urn:solid-server:default:WebSocket2023Subscriber",
         "@type": "NotificationSubscriber",
         "channelType": { "@id": "urn:solid-server:default:WebSocketChannel2023Type" },
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
@@ -35,7 +36,7 @@
       "@id": "urn:solid-server:default:NotificationTypeHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:WebSocket2023Subscriber" }
+        { "@id": "urn:solid-server:default:WebSocket2023Router" }
       ]
     },
 

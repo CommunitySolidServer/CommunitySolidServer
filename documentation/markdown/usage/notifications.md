@@ -200,3 +200,27 @@ The available fields are:
   A new notification will only be sent out after this much time has passed since the previous notification.
 * **`accept`**: A description of the `content-type(s)` in which the client would want to receive the notifications.
   Expects the same values as an `Accept` HTTP header.
+
+## Important note for server owners
+
+There is not much restriction on who can create a new notification channel,
+only `Read` permissions on the target resource are required.
+It is therefore possible for the server to accumulate created channels.
+As these channels still get used every time their corresponding resource changes,
+this could degrade server performance.
+
+For this reason, the server is by default configured to always remove notification channels after 2 weeks.
+You can modify this behaviour by adding the following block to your configuration:
+
+```json
+{
+  "@id": "urn:solid-server:default:WebSocket2023Subscriber",
+  "@type": "NotificationSubscriber",
+  "maxDuration": 20160
+}
+```
+
+`maxDuration` defines after how many minutes every channel will be removed.
+Setting this value to 0 will allow channels to exist forever.
+Similarly, for changing the maximum duration of webhook channels you can use the identifier
+`urn:solid-server:default:WebHookSubscriber`.
