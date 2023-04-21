@@ -44,7 +44,7 @@
       "@id": "urn:solid-server:default:NotificationTypeHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:WebHookSubscriber" },
+        { "@id": "urn:solid-server:default:WebHookRouter" },
         { "@id": "urn:solid-server:default:WebHookUnsubscriber" },
         { "@id": "urn:solid-server:default:WebHookWebId" }
       ]

@@ -3,12 +3,13 @@
   "@graph": [
     {
       "comment": "Handles the subscriptions targeting a WebHookSubscription2021.",
-      "@id": "urn:solid-server:default:WebHookSubscriber",
+      "@id": "urn:solid-server:default:WebHookRouter",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "allowedMethods": [ "HEAD", "GET", "POST" ],
       "allowedPathNames": [ "/WebHookSubscription2021/$" ],
       "handler": {
+        "@id": "urn:solid-server:default:WebHookSubscriber",
         "@type": "NotificationSubscriber",
         "channelType": { "@id": "urn:solid-server:default:WebHookSubscription2021" },
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
