@@ -9,6 +9,7 @@
 - Support for the new [Notification specification](https://solidproject.org/TR/2022/notifications-protocol-20221231)
   was added. See the documentation for further details.
 - All resources now have a storage description header as defined in the v0.10.0 Solid protocol specification.
+- The server configuration settings can be set from the package.json or .community-solid-server.config.json/.js files.
 
 ### Data migration
 
@@ -104,7 +105,6 @@ These changes are relevant if you wrote custom modules for the server that depen
 - Regex-based configurations now have ordered entries and use the first match found.
 - When starting the server through code, it is now possible to provide CLI value bindings as well in `AppRunner`.
 - Support for Node v12 was dropped.
-- The server configuration settings can be set from the package.json or .community-solid-server.config.json/.js files.
 
 ### Data migration
 
