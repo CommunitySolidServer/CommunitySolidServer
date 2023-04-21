@@ -37,7 +37,8 @@ export interface NotificationChannelStorage {
 
   /**
    * Deletes the given notification channel from the storage.
+   * Returns true if the channel existed.
    * @param id - The identifier of the notification channel
    */
-  delete: (id: string) => Promise<void>;
+  delete: (id: string) => Promise<boolean>;
 }

@@ -74,13 +74,14 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
     });
   }
 
-  public async delete(id: string): Promise<void> {
-    return this.locker.withWriteLock(this.getLockKey(id), async(): Promise<void> => {
+  public async delete(id: string): Promise<boolean> {
+    return this.locker.withWriteLock(this.getLockKey(id), async(): Promise<boolean> => {
       const channel = await this.get(id);
       if (!channel) {
-        return;
+        return false;
       }
       await this.deleteChannel(channel);
+      return true;
     });
   }
 

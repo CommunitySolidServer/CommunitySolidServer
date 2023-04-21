@@ -14,20 +14,6 @@
       "relativePath": "/webId"
     },
 
-
-    {
-      "comment": "Handles unsubscribing from a WebHookSubscription2021.",
-      "@id": "urn:solid-server:default:WebHookUnsubscriber",
-      "@type": "OperationRouterHandler",
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "allowedMethods": [ "DELETE" ],
-      "allowedPathNames": [ "/WebHookSubscription2021/" ],
-      "handler": {
-        "@type": "WebHookUnsubscriber",
-        "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
-        "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
-      }
-    },
     {
       "comment": "Handles the WebHookSubscription2021 WebID.",
       "@id": "urn:solid-server:default:WebHookWebId",
@@ -45,7 +31,6 @@
       "@type": "WaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:WebHookRouter" },
-        { "@id": "urn:solid-server:default:WebHookUnsubscriber" },
         { "@id": "urn:solid-server:default:WebHookWebId" }
       ]
     }

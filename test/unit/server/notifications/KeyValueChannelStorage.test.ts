@@ -130,7 +130,7 @@ describe('A KeyValueChannelStorage', (): void => {
       await storage.add(channel);
       await storage.add(channel2);
       expect(internalMap.size).toBe(3);
-      await expect(storage.delete(channel.id)).resolves.toBeUndefined();
+      await expect(storage.delete(channel.id)).resolves.toBe(true);
       expect(internalMap.size).toBe(2);
       expect([ ...internalMap.values() ]).toEqual(expect.arrayContaining([
         [ channel2.id ],
@@ -140,12 +140,12 @@ describe('A KeyValueChannelStorage', (): void => {
 
     it('removes the references for an identifier if the array is empty.', async(): Promise<void> => {
       await storage.add(channel);
-      await expect(storage.delete(channel.id)).resolves.toBeUndefined();
+      await expect(storage.delete(channel.id)).resolves.toBe(true);
       expect(internalMap.size).toBe(0);
     });
 
     it('does nothing if the target does not exist.', async(): Promise<void> => {
-      await expect(storage.delete(channel.id)).resolves.toBeUndefined();
+      await expect(storage.delete(channel.id)).resolves.toBe(false);
     });
 
     it('logs an error if the target can not be found in the list of references.', async(): Promise<void> => {
@@ -153,7 +153,7 @@ describe('A KeyValueChannelStorage', (): void => {
       // Looking for the key so this test doesn't depend on the internal keys used
       const id = [ ...internalMap.entries() ].find((entry): boolean => Array.isArray(entry[1]))![0];
       internalMap.set(id, []);
-      await expect(storage.delete(channel.id)).resolves.toBeUndefined();
+      await expect(storage.delete(channel.id)).resolves.toBe(true);
       expect(logger.error).toHaveBeenCalledTimes(2);
     });
   });

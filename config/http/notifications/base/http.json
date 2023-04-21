@@ -16,6 +16,21 @@
       "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "operationHandler": {
+        "@type": "WaterfallHandler",
+        "handlers": [
+          { "@id": "urn:solid-server:default:NotificationReadWriteHandler" },
+          { "@id": "urn:solid-server:default:NotificationDeleteHandler" }
+        ]
+      }
+    },
+
+    {
+      "comment": "Handles reading and writing notification subscriptions and channels.",
+      "@id": "urn:solid-server:default:NotificationReadWriteHandler",
+      "@type": "OperationRouterHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "allowedMethods": [ "HEAD", "GET", "POST" ],
+      "handler": {
         "comment": "Converts outgoing responses based on the user preferences",
         "@type": "ConvertingOperationHttpHandler",
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
@@ -25,6 +40,18 @@
           "@type": "WaterfallHandler",
           "handlers": [ ]
         }
+      }
+    },
+
+    {
+      "comment": "Handles deleting notification channels.",
+      "@id": "urn:solid-server:default:NotificationDeleteHandler",
+      "@type": "OperationRouterHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "allowedMethods": [ "DELETE" ],
+      "handler": {
+        "@type": "NotificationUnsubscriber",
+        "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
       }
     }
   ]

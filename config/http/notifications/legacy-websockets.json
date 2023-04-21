@@ -2,6 +2,11 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
+      "comment": "Disables notification routing.",
+      "@id": "urn:solid-server:default:NotificationHttpHandler",
+      "@type": "UnsupportedAsyncHandler"
+    },
+    {
       "@id": "urn:solid-server:default:ServerConfigurator",
       "@type": "ParallelHandler",
       "handlers": [
