@@ -1,5 +1,5 @@
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
-import { getETag, isCurrentETag } from '../../../src/storage/Conditions';
+import { getETag, sameResourceState } from '../../../src/storage/Conditions';
 import { CONTENT_TYPE, DC } from '../../../src/util/Vocabularies';
 
 describe('Conditions', (): void => {
@@ -13,41 +13,32 @@ describe('Conditions', (): void => {
       expect(getETag(metadata)).toBe(`"${now.getTime()}-text/turtle"`);
     });
 
-    it('returns undefined if no date or content-type was found.', async(): Promise<void> => {
+    it('creates a simpler ETag if no content type was found.', async(): Promise<void> => {
       const now = new Date();
+      expect(getETag(new RepresentationMetadata({ [DC.modified]: now.toISOString() }))).toBe(`"${now.getTime()}-"`);
+    });
+
+    it('returns undefined if no date found.', async(): Promise<void> => {
       expect(getETag(new RepresentationMetadata())).toBeUndefined();
-      expect(getETag(new RepresentationMetadata({ [DC.modified]: now.toISOString() }))).toBeUndefined();
       expect(getETag(new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' }))).toBeUndefined();
     });
   });
 
-  describe('#isCurrentETag', (): void => {
-    const now = new Date();
+  describe('sameResourceState', (): void => {
+    const eTag = '"123456-text/turtle"';
+    const eTagJson = '"123456-application/ld+json"';
+    const eTagWrongTime = '"654321-text/turtle"';
 
-    it('compares an ETag with the current resource state.', async(): Promise<void> => {
-      const metadata = new RepresentationMetadata({
-        [DC.modified]: now.toISOString(),
-        [CONTENT_TYPE]: 'text/turtle',
-      });
-      const eTag = getETag(metadata)!;
-      expect(isCurrentETag(eTag, metadata)).toBe(true);
-      expect(isCurrentETag('"ETag"', metadata)).toBe(false);
+    it('returns true if the ETags are the same.', async(): Promise<void> => {
+      expect(sameResourceState(eTag, eTag)).toBe(true);
     });
 
-    it('ignores the content-type.', async(): Promise<void> => {
-      const metadata = new RepresentationMetadata({
-        [DC.modified]: now.toISOString(),
-        [CONTENT_TYPE]: 'text/turtle',
-      });
-      const eTag = getETag(metadata)!;
-      metadata.contentType = 'application/ld+json';
-      expect(isCurrentETag(eTag, metadata)).toBe(true);
-      expect(isCurrentETag('"ETag"', metadata)).toBe(false);
+    it('returns true if the ETags target the same timestamp.', async(): Promise<void> => {
+      expect(sameResourceState(eTag, eTagJson)).toBe(true);
     });
 
-    it('returns false if the metadata has no last modified date.', async(): Promise<void> => {
-      const metadata = new RepresentationMetadata();
-      expect(isCurrentETag('"ETag"', metadata)).toBe(false);
+    it('returns false if the timestamp differs.', async(): Promise<void> => {
+      expect(sameResourceState(eTag, eTagWrongTime)).toBe(false);
     });
   });
 });
