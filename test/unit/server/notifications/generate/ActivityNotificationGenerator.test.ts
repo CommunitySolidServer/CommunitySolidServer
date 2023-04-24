@@ -6,7 +6,7 @@ import {
 } from '../../../../../src/server/notifications/generate/ActivityNotificationGenerator';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type { ResourceStore } from '../../../../../src/storage/ResourceStore';
-import { AS, DC, LDP, RDF } from '../../../../../src/util/Vocabularies';
+import { AS, CONTENT_TYPE, DC, LDP, RDF } from '../../../../../src/util/Vocabularies';
 
 describe('An ActivityNotificationGenerator', (): void => {
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
@@ -20,6 +20,7 @@ describe('An ActivityNotificationGenerator', (): void => {
     [RDF.type]: LDP.terms.Resource,
     // Needed for ETag
     [DC.modified]: new Date().toISOString(),
+    [CONTENT_TYPE]: 'text/turtle',
   });
   let store: jest.Mocked<ResourceStore>;
   let generator: ActivityNotificationGenerator;
@@ -51,7 +52,7 @@ describe('An ActivityNotificationGenerator', (): void => {
       id: `urn:${ms}:http://example.com/foo`,
       type: 'Update',
       object: 'http://example.com/foo',
-      state: expect.stringMatching(/"\d+"/u),
+      state: expect.stringMatching(/"\d+-text\/turtle"/u),
       published: date,
     });
 

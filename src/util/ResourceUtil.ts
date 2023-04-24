@@ -3,6 +3,8 @@ import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
+import type { Conditions } from '../storage/Conditions';
+import { NotModifiedHttpError } from './errors/NotModifiedHttpError';
 import { guardedStreamFrom } from './StreamUtil';
 import { toLiteral } from './TermUtil';
 import { CONTENT_TYPE_TERM, DC, LDP, RDF, SOLID_META, XSD } from './Vocabularies';
@@ -64,4 +66,26 @@ export async function cloneRepresentation(representation: Representation): Promi
   );
   representation.data = guardedStreamFrom(data);
   return result;
+}
+
+/**
+ * Verify whether the given {@link Representation} matches the given conditions.
+ * If not, destroy the data stream and throw a {@link NotModifiedHttpError}.
+ * If `conditions` is not defined, nothing will happen.
+ *
+ * This uses the strict conditions check which takes the content type into account;
+ * therefore, this should only be called after content negotiation, when it is certain what the output will be.
+ *
+ * Note that browsers only keep track of one ETag, and the Vary header has no impact on this,
+ * meaning the browser could send us the ETag for a Turtle resource even though it is requesting JSON-LD;
+ * this is why we have to check ETags after content negotiation.
+ *
+ * @param body - The representation to compare the conditions against.
+ * @param conditions - The conditions to assert.
+ */
+export function assertReadConditions(body: Representation, conditions?: Conditions): void {
+  if (conditions && !conditions.matchesMetadata(body.metadata, true)) {
+    body.data.destroy();
+    throw new NotModifiedHttpError();
+  }
 }

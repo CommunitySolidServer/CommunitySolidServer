@@ -469,6 +469,7 @@ export * from './util/errors/MethodNotAllowedHttpError';
 export * from './util/errors/MovedPermanentlyHttpError';
 export * from './util/errors/NotFoundHttpError';
 export * from './util/errors/NotImplementedHttpError';
+export * from './util/errors/OAuthHttpError';
 export * from './util/errors/PreconditionFailedHttpError';
 export * from './util/errors/RedirectHttpError';
 export * from './util/errors/SystemError';

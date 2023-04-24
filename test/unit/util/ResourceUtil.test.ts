@@ -1,9 +1,18 @@
 import 'jest-rdf';
+import type { Readable } from 'stream';
 import type { NamedNode, Literal } from 'n3';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
-import { addTemplateMetadata, cloneRepresentation, updateModifiedDate } from '../../../src/util/ResourceUtil';
+import type { Conditions } from '../../../src/storage/Conditions';
+import { NotModifiedHttpError } from '../../../src/util/errors/NotModifiedHttpError';
+import type { Guarded } from '../../../src/util/GuardedStream';
+import {
+  addTemplateMetadata,
+  assertReadConditions,
+  cloneRepresentation,
+  updateModifiedDate,
+} from '../../../src/util/ResourceUtil';
 import { CONTENT_TYPE_TERM, DC, SOLID_META, XSD } from '../../../src/util/Vocabularies';
 
 describe('ResourceUtil', (): void => {
@@ -57,6 +66,38 @@ describe('ResourceUtil', (): void => {
       const res = await cloneRepresentation(representation);
       res.metadata.contentType = 'type/type';
       expect(representation.metadata.contentType).not.toBe(res.metadata.contentType);
+    });
+  });
+
+  describe('#assertReadConditions', (): void => {
+    let data: jest.Mocked<Guarded<Readable>>;
+
+    beforeEach(async(): Promise<void> => {
+      data = {
+        destroy: jest.fn(),
+      } as any;
+      representation.data = data;
+    });
+
+    it('does nothing if the conditions are undefined.', async(): Promise<void> => {
+      expect((): any => assertReadConditions(representation)).not.toThrow();
+      expect(data.destroy).toHaveBeenCalledTimes(0);
+    });
+
+    it('does nothing if the conditions match.', async(): Promise<void> => {
+      const conditions: Conditions = {
+        matchesMetadata: (): boolean => true,
+      };
+      expect((): any => assertReadConditions(representation, conditions)).not.toThrow();
+      expect(data.destroy).toHaveBeenCalledTimes(0);
+    });
+
+    it('throws a NotModifiedHttpError if the conditions do not match.', async(): Promise<void> => {
+      const conditions: Conditions = {
+        matchesMetadata: (): boolean => false,
+      };
+      expect((): any => assertReadConditions(representation, conditions)).toThrow(NotModifiedHttpError);
+      expect(data.destroy).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -625,6 +625,7 @@ describe('A Solid server with IDP', (): void => {
       expect(json.message).toBe(`invalid_request - unrecognized route or not allowed method (GET on /.oidc/foo)`);
       expect(json.statusCode).toBe(404);
       expect(json.stack).toBeDefined();
+      expect(json.error).toBe('invalid_request');
     });
   });
 });

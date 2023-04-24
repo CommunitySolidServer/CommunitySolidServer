@@ -25,6 +25,7 @@ import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC, SOLID_AS, AS } from '../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../util/SimpleSuffixStrategy';
+
 const { namedNode, quad, literal } = DataFactory;
 
 const GENERATED_PREDICATE = namedNode('generated');

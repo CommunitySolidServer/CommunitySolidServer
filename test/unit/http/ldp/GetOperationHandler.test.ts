@@ -1,10 +1,13 @@
+import type { Readable } from 'stream';
 import { GetOperationHandler } from '../../../../src/http/ldp/GetOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { NotModifiedHttpError } from '../../../../src/util/errors/NotModifiedHttpError';
 
 describe('A GetOperationHandler', (): void => {
   let operation: Operation;
@@ -13,12 +16,15 @@ describe('A GetOperationHandler', (): void => {
   const body = new BasicRepresentation();
   let store: ResourceStore;
   let handler: GetOperationHandler;
+  let data: Readable;
+  const metadata = new RepresentationMetadata();
 
   beforeEach(async(): Promise<void> => {
     operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences, conditions, body };
+    data = { destroy: jest.fn() } as any;
     store = {
       getRepresentation: jest.fn(async(): Promise<Representation> =>
-        ({ binary: false, data: 'data', metadata: 'metadata' } as any)),
+        ({ binary: false, data, metadata } as any)),
     } as unknown as ResourceStore;
 
     handler = new GetOperationHandler(store);
@@ -33,9 +39,17 @@ describe('A GetOperationHandler', (): void => {
   it('returns the representation from the store with the correct response.', async(): Promise<void> => {
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(200);
-    expect(result.metadata).toBe('metadata');
-    expect(result.data).toBe('data');
+    expect(result.metadata).toBe(metadata);
+    expect(result.data).toBe(data);
     expect(store.getRepresentation).toHaveBeenCalledTimes(1);
     expect(store.getRepresentation).toHaveBeenLastCalledWith(operation.target, preferences, conditions);
+  });
+
+  it('returns a 304 if the conditions do not match.', async(): Promise<void> => {
+    operation.conditions = {
+      matchesMetadata: (): boolean => false,
+    };
+    await expect(handler.handle({ operation })).rejects.toThrow(NotModifiedHttpError);
+    expect(data.destroy).toHaveBeenCalledTimes(1);
   });
 });

@@ -24,4 +24,8 @@ describe('A BaseUrlExtractor', (): void => {
   it('defaults to port 3000.', async(): Promise<void> => {
     await expect(computer.handle({})).resolves.toBe('http://localhost:3000/');
   });
+
+  it('does not add the port if it is 80.', async(): Promise<void> => {
+    await expect(computer.handle({ port: 80 })).resolves.toBe('http://localhost/');
+  });
 });
