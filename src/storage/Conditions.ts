@@ -42,31 +42,21 @@ export interface Conditions {
 export function getETag(metadata: RepresentationMetadata): string | undefined {
   const modified = metadata.get(DC.terms.modified);
   const { contentType } = metadata;
-  if (modified && contentType) {
+  if (modified) {
     const date = new Date(modified.value);
-    return `"${date.getTime()}-${contentType}"`;
+    // It is possible for the content type to be undefined,
+    // such as when only the metadata returned by a `DataAccessor` is used.
+    return `"${date.getTime()}-${contentType ?? ''}"`;
   }
 }
 
 /**
- * Validates whether a given ETag corresponds to the current state of the resource,
- * independent of the representation the ETag corresponds to.
+ * Validates whether 2 ETags correspond to the same state of a resource,
+ * independent of the representation the ETags correspond to.
  * Assumes ETags are made with the {@link getETag} function.
- * Since we base the ETag on the last modified date,
- * we know the ETag still matches as long as that didn't change.
- *
- * @param eTag - ETag to validate.
- * @param metadata - Metadata of the resource.
- *
- * @returns `true` if the ETag represents the current state of the resource.
  */
-export function isCurrentETag(eTag: string, metadata: RepresentationMetadata): boolean {
-  const modified = metadata.get(DC.terms.modified);
-  if (!modified) {
-    return false;
-  }
-  const time = eTag.split('-', 1)[0];
-  const date = new Date(modified.value);
-  // `time` will still have the initial`"` of the ETag string
-  return time === `"${date.getTime()}`;
+export function sameResourceState(eTag1: string, eTag2: string): boolean {
+  // Since we base the ETag on the last modified date,
+  // we know the ETags match as long as the date part is the same.
+  return eTag1.split('-')[0] === eTag2.split('-')[0];
 }

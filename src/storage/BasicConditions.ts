@@ -1,6 +1,6 @@
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { DC } from '../util/Vocabularies';
-import { getETag, isCurrentETag } from './Conditions';
+import { getETag, sameResourceState } from './Conditions';
 import type { Conditions } from './Conditions';
 
 export interface BasicConditionsOptions {
@@ -39,19 +39,21 @@ export class BasicConditions implements Conditions {
       return false;
     }
 
-    // Helper function to see if an ETag matches the provided metadata
-    // eslint-disable-next-line func-style
-    let eTagMatches = (tag: string): boolean => isCurrentETag(tag, metadata);
-    if (strict) {
-      const eTag = getETag(metadata);
-      eTagMatches = (tag: string): boolean => tag === eTag;
-    }
+    const eTag = getETag(metadata);
+    if (eTag) {
+      // Helper function to see if an ETag matches the provided metadata
+      // eslint-disable-next-line func-style
+      let eTagMatches = (tag: string): boolean => sameResourceState(tag, eTag);
+      if (strict) {
+        eTagMatches = (tag: string): boolean => tag === eTag;
+      }
 
-    if (this.matchesETag && !this.matchesETag.includes('*') && !this.matchesETag.some(eTagMatches)) {
-      return false;
-    }
-    if (this.notMatchesETag?.some(eTagMatches)) {
-      return false;
+      if (this.matchesETag && !this.matchesETag.includes('*') && !this.matchesETag.some(eTagMatches)) {
+        return false;
+      }
+      if (this.notMatchesETag?.some(eTagMatches)) {
+        return false;
+      }
     }
 
     // In practice, this will only be undefined on a backend

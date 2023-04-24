@@ -1,3 +1,4 @@
+import { sameResourceState } from '../../storage/Conditions';
 import type { NotificationGenerator } from './generate/NotificationGenerator';
 import type { NotificationEmitter } from './NotificationEmitter';
 import type { NotificationHandlerInput } from './NotificationHandler';
@@ -37,7 +38,7 @@ export class ComposedNotificationHandler extends NotificationHandler {
 
     const { state } = input.channel;
     // In case the state matches there is no need to send the notification
-    if (typeof state === 'string' && state === notification.state) {
+    if (typeof state === 'string' && notification.state && sameResourceState(state, notification.state)) {
       return;
     }
 

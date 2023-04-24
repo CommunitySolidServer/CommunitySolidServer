@@ -18,7 +18,7 @@ describe('A ComposedNotificationHandler', (): void => {
     type: 'Update',
     object: 'http://example.com/foo',
     published: '123',
-    state: '123',
+    state: '"123456-text/turtle"',
   };
   let channel: NotificationChannel;
   const representation = new BasicRepresentation();
@@ -66,8 +66,8 @@ describe('A ComposedNotificationHandler', (): void => {
     expect(emitter.handleSafe).toHaveBeenLastCalledWith({ channel, representation });
   });
 
-  it('does not emit the notification if its state matches the channel state.', async(): Promise<void> => {
-    channel.state = notification.state;
+  it('does not emit the notification if it has the same resource state as the channel.', async(): Promise<void> => {
+    channel.state = '"123456-application/ld+json"';
     await expect(handler.handle({ channel, topic })).resolves.toBeUndefined();
     expect(generator.handle).toHaveBeenCalledTimes(1);
     expect(generator.handle).toHaveBeenLastCalledWith({ channel, topic });
