@@ -8,7 +8,8 @@ Exports an object that contains a list of all auxiliary resources that need to b
 In case you create a new auxiliary strategy you can just add it to this list.
 
 * *acl*: Default list with only support for acl auxiliary resources.
-* *no-acl*: An empty list which can be added to.
+* *acp*: Default list with only support for acr auxiliary resources.
+* *empty*: An empty list which can be added to.
 
 ## Identifiers
 

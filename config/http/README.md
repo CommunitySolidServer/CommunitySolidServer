@@ -26,6 +26,7 @@ Determines how notifications should be sent out from the server when resources c
 * *disabled*: No notifications are sent out.
 * *legacy-websocket*: Follows the legacy Solid WebSocket
   [specification](https://github.com/solid/solid-spec/blob/master/api-websockets.md).
+  Will be removed in future versions.
 * *webhooks*: Follows the WebHookChannel2023
   [specification](https://solid.github.io/notifications/webhook-channel-2023) draft.
 * *websockets*: Follows the WebSocketChannel2023

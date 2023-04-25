@@ -16,8 +16,9 @@ Covers how agents are identified.
 
 Covers how operations are authorized (or rejected).
 
+* *acp*: Use Access Control Policy.
 * *allow-all*: No authorization, everything is allowed.
-* *webacl*: Use the default Web Access Control.
+* *webacl*: Use Web Access Control.
 
 ## Handler
 

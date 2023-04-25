@@ -38,6 +38,8 @@ The following changes pertain to the imports in the default configs:
 - A new `http/notifications` set of import options have been added
   to determine which notification specification a CSS instance should use.
   Most default configurations have been updated to use `http/notifications/websockets.json`.
+- `ldp/authorization` and `util/auxiliary` have new options to support ACP.
+- `util/auxiliary/no-acl.json` was renamed to `util/auxiliary/empty.json`.
 
 The following changes are relevant for v5 custom configs that replaced certain features.
 
