@@ -1,6 +1,5 @@
 import type { IncomingMessage } from 'http';
 import type { WebSocket } from 'ws';
-import type { InteractionRoute } from '../../../identity/interaction/routing/InteractionRoute';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { WebSocketServerConfigurator } from '../../WebSocketServerConfigurator';
 import type { NotificationChannelStorage } from '../NotificationChannelStorage';
@@ -16,27 +15,17 @@ export class WebSocket2023Listener extends WebSocketServerConfigurator {
 
   private readonly storage: NotificationChannelStorage;
   private readonly handler: WebSocket2023Handler;
-  private readonly path: string;
+  private readonly baseUrl: string;
 
-  public constructor(storage: NotificationChannelStorage, handler: WebSocket2023Handler, route: InteractionRoute) {
+  public constructor(storage: NotificationChannelStorage, handler: WebSocket2023Handler, baseUrl: string) {
     super();
     this.storage = storage;
     this.handler = handler;
-    this.path = new URL(route.getPath()).pathname;
+    this.baseUrl = baseUrl;
   }
 
   protected async handleConnection(webSocket: WebSocket, upgradeRequest: IncomingMessage): Promise<void> {
-    const { path, id } = parseWebSocketRequest(upgradeRequest);
-
-    if (path !== this.path) {
-      webSocket.send('Unknown WebSocket target.');
-      return webSocket.close();
-    }
-
-    if (!id) {
-      webSocket.send('Missing auth parameter from WebSocket URL.');
-      return webSocket.close();
-    }
+    const id = parseWebSocketRequest(this.baseUrl, upgradeRequest);
 
     const channel = await this.storage.get(id);
 

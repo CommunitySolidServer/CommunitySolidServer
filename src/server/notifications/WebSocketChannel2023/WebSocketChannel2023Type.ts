@@ -43,7 +43,7 @@ export class WebSocketChannel2023Type extends BaseChannelType {
     return {
       ...channel,
       type: NOTIFY.WebSocketChannel2023,
-      receiveFrom: generateWebSocketUrl(this.path, channel.id),
+      receiveFrom: generateWebSocketUrl(channel.id),
     };
   }
 }

@@ -1,34 +1,32 @@
 import type { IncomingMessage } from 'http';
+import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 
 /**
- * Generates a WebSocket URL by converting an HTTP(S) URL into a WS(S) URL
- * and adding the `auth` query parameter using the identifier.
- * @param url - The HTTP(S) URL.
- * @param id - The identifier to use as `auth` parameter.
+ * Generates a WebSocket URL by converting an HTTP(S) URL into a WS(S) URL.
+ * @param id - The identifier of the channel. Needs to be a URL.
  */
-export function generateWebSocketUrl(url: string, id: string): string {
-  return `ws${url.slice('http'.length)}?auth=${encodeURIComponent(id)}`;
+export function generateWebSocketUrl(id: string): string {
+  return `ws${id.slice('http'.length)}`;
 }
 
 /**
- * Parses a {@link IncomingMessage} to extract both its path and the identifier used for authentication.
- * The returned path is relative to the host.
+ * Parses a {@link IncomingMessage} to extract its path used for authentication.
  *
- * E.g., a request to `ws://example.com/foo/bar?auth=123456` would return `{ path: '/foo/bar', id: '123456' }`.
- *
+ * @param baseUrl - The base URL of the server.
  * @param request - The request to parse.
  */
-export function parseWebSocketRequest(request: IncomingMessage): { path: string; id?: string } {
-  // Base doesn't matter since we just want the path and query parameter
-  const { pathname, searchParams } = new URL(request.url ?? '', 'http://example.com');
+export function parseWebSocketRequest(baseUrl: string, request: IncomingMessage): string {
+  const path = request.url;
 
-  let auth: string | undefined;
-  if (searchParams.has('auth')) {
-    auth = decodeURIComponent(searchParams.get('auth')!);
+  if (!path) {
+    throw new BadRequestHttpError('Missing url parameter in WebSocket request');
   }
 
-  return {
-    path: pathname,
-    id: auth,
-  };
+  // Use dummy base and then explicitly set the host and protocol from the base URL.
+  const id = new URL(path, 'http://example.com');
+  const base = new URL(baseUrl);
+  id.host = base.host;
+  id.protocol = base.protocol;
+
+  return id.href;
 }
