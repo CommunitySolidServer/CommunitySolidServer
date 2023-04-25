@@ -39,7 +39,7 @@ describe('A WebSocketChannel2023', (): void => {
       id,
       type: NOTIFY.WebSocketChannel2023,
       topic,
-      receiveFrom: generateWebSocketUrl(route.getPath(), id),
+      receiveFrom: generateWebSocketUrl(id),
     };
 
     channelType = new WebSocketChannel2023Type(route);

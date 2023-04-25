@@ -1,9 +1,7 @@
 import { EventEmitter } from 'events';
 import type { Server } from 'http';
 import type { WebSocket } from 'ws';
-import {
-  AbsolutePathInteractionRoute,
-} from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
+
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type {
@@ -32,13 +30,12 @@ describe('A WebSocket2023Listener', (): void => {
     topic: 'http://example.com/foo',
     type: 'type',
   };
-  const auth = '123456';
   let server: Server;
   let webSocket: WebSocket;
   let upgradeRequest: HttpRequest;
   let storage: jest.Mocked<NotificationChannelStorage>;
   let handler: jest.Mocked<WebSocket2023Handler>;
-  const route = new AbsolutePathInteractionRoute('http://example.com/foo');
+  const baseUrl = 'http://example.com/';
   let listener: WebSocket2023Listener;
 
   beforeEach(async(): Promise<void> => {
@@ -47,7 +44,7 @@ describe('A WebSocket2023Listener', (): void => {
     webSocket.send = jest.fn();
     webSocket.close = jest.fn();
 
-    upgradeRequest = { url: `/foo?auth=${auth}` } as any;
+    upgradeRequest = { url: `/foo/123456` } as any;
 
     storage = {
       get: jest.fn().mockResolvedValue(channel),
@@ -57,47 +54,11 @@ describe('A WebSocket2023Listener', (): void => {
       handleSafe: jest.fn(),
     } as any;
 
-    listener = new WebSocket2023Listener(storage, handler, route);
+    listener = new WebSocket2023Listener(storage, handler, baseUrl);
     await listener.handle(server);
   });
 
-  it('rejects request targeting an unknown path.', async(): Promise<void> => {
-    upgradeRequest.url = '/wrong';
-    server.emit('upgrade', upgradeRequest, webSocket);
-
-    await flushPromises();
-
-    expect(webSocket.send).toHaveBeenCalledTimes(1);
-    expect(webSocket.send).toHaveBeenLastCalledWith('Unknown WebSocket target.');
-    expect(webSocket.close).toHaveBeenCalledTimes(1);
-    expect(handler.handleSafe).toHaveBeenCalledTimes(0);
-  });
-
-  it('rejects request with no url.', async(): Promise<void> => {
-    delete upgradeRequest.url;
-    server.emit('upgrade', upgradeRequest, webSocket);
-
-    await flushPromises();
-
-    expect(webSocket.send).toHaveBeenCalledTimes(1);
-    expect(webSocket.send).toHaveBeenLastCalledWith('Unknown WebSocket target.');
-    expect(webSocket.close).toHaveBeenCalledTimes(1);
-    expect(handler.handleSafe).toHaveBeenCalledTimes(0);
-  });
-
-  it('rejects requests without an auth parameter.', async(): Promise<void> => {
-    upgradeRequest.url = '/foo';
-    server.emit('upgrade', upgradeRequest, webSocket);
-
-    await flushPromises();
-
-    expect(webSocket.send).toHaveBeenCalledTimes(1);
-    expect(webSocket.send).toHaveBeenLastCalledWith('Missing auth parameter from WebSocket URL.');
-    expect(webSocket.close).toHaveBeenCalledTimes(1);
-    expect(handler.handleSafe).toHaveBeenCalledTimes(0);
-  });
-
-  it('rejects requests with an unknown auth parameter.', async(): Promise<void> => {
+  it('rejects requests with an unknown target.', async(): Promise<void> => {
     storage.get.mockResolvedValue(undefined);
     server.emit('upgrade', upgradeRequest, webSocket);
 

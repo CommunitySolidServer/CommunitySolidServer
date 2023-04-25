@@ -6,7 +6,7 @@
       "@id": "urn:solid-server:default:WebSocket2023Listener",
       "@type": "WebSocket2023Listener",
       "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" },
-      "route": { "@id": "urn:solid-server:default:WebSocket2023Route" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "handler": {
         "@type": "SequenceHandler",
         "handlers": [
