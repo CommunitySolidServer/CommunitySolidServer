@@ -18,7 +18,8 @@ import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { PIM, RDF } from '../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../util/SimpleSuffixStrategy';
 import { flushPromises } from '../util/Util';
-jest.useFakeTimers('legacy');
+
+jest.useFakeTimers();
 
 describe('A LockingResourceStore', (): void => {
   let path: string;
