@@ -23,7 +23,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
         node-version:
-          - '14.2'
+          - '14.14'
           - '14.x'
           - '16.0'
           - '16.x'
