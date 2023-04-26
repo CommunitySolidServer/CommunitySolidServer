@@ -126,10 +126,6 @@ describe('A RedisLocker', (): void => {
       jest.clearAllTimers();
     });
 
-    afterAll(async(): Promise<void> => {
-      jest.restoreAllMocks();
-    });
-
     it('will fill in default arguments when constructed with empty arguments.', (): void => {
       expect((): ReadWriteLocker => new RedisLocker()).toBeDefined();
       expect((): ReadWriteLocker => new RedisLocker()).not.toThrow();
@@ -452,10 +448,6 @@ describe('A RedisLocker', (): void => {
     afterEach(async(): Promise<void> => {
     // In case some locks are not released by a test the timers will still be running
       jest.clearAllTimers();
-    });
-
-    afterAll(async(): Promise<void> => {
-      jest.restoreAllMocks();
     });
 
     it('will fill in default arguments when constructed with empty arguments.', (): void => {

@@ -1,12 +1,4 @@
 module.exports = {
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json',
-    },
-  },
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
   testRegex: '/test/(unit|integration)/.*\\.test\\.ts$',
   moduleFileExtensions: [
     'ts',
@@ -21,4 +13,5 @@ module.exports = {
   },
   // Slower machines had problems calling the WebSocket integration callbacks on time
   testTimeout: 60000,
+  preset: 'ts-jest',
 };

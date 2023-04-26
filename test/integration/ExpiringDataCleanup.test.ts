@@ -7,7 +7,8 @@ import {
   instantiateFromConfig,
 } from './Config';
 
-jest.useFakeTimers('legacy');
+// These `doNotFake` settings are necessary to make sure the server still works
+jest.useFakeTimers({ doNotFake: [ 'nextTick' ]});
 
 const port = getPort('ExpiringDataCleanup');
 const baseUrl = `http://localhost:${port}/`;
