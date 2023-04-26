@@ -1,5 +1,9 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "import": [
+    "css:config/http/server-factory/https/cli.json",
+    "css:config/http/server-factory/https/resolver.json"
+  ],
   "@graph": [
     {
       "comment": "Creates a server that supports HTTPS requests.",
