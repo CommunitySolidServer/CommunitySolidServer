@@ -36,8 +36,8 @@
     },
 
     {
-      "@id": "urn:solid-server:default:ServerConfigurator",
-      "@type": "ParallelHandler",
+      "@id": "urn:solid-server:default:WebSocketHandler",
+      "@type": "WaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:WebSocket2023Listener" }
       ]

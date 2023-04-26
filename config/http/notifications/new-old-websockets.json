@@ -1,11 +1,16 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/http/notifications/base/description.json",
+    "css:config/http/notifications/base/handler.json",
+    "css:config/http/notifications/base/http.json",
+    "css:config/http/notifications/base/listener.json",
+    "css:config/http/notifications/base/storage.json",
+    "css:config/http/notifications/websockets/handler.json",
+    "css:config/http/notifications/websockets/http.json",
+    "css:config/http/notifications/websockets/subscription.json"
+  ],
   "@graph": [
-    {
-      "comment": "Disables notification routing.",
-      "@id": "urn:solid-server:default:NotificationHttpHandler",
-      "@type": "UnsupportedAsyncHandler"
-    },
     {
       "@id": "urn:solid-server:default:WebSocketHandler",
       "@type": "WaterfallHandler",

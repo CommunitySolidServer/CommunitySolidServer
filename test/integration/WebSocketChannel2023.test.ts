@@ -220,7 +220,7 @@ describe.each(stores)('A server supporting WebSocketChannel2023 using %s', (name
     await new Promise<void>((resolve): any => socket.on('close', resolve));
 
     const message = (await messagePromise).toString();
-    expect(message).toBe('Notification channel has expired');
+    expect(message).toContain('There was an error opening this WebSocket');
   });
 
   it('emits container notifications if contents get added or removed.', async(): Promise<void> => {
