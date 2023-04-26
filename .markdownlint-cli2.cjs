@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = {
-  ignores: [ "node_modules/", "LICENSE.md" ],
+  ignores: [ "node_modules/", "LICENSE.md", ".github/" ],
 
   globs: [ "**/*.md" ],
 
@@ -26,6 +26,9 @@ module.exports = {
     },
 
     // Set Ordered list item prefix to "ordered" (use 1. 2. 3. not 1. 1. 1.)
-    MD029: { "style": "ordered" }
+    MD029: { "style": "ordered" },
+
+    // Allow inline HTML
+    MD033: false,
   }
 };
