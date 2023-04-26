@@ -169,8 +169,8 @@
   "devDependencies": {
     "@commitlint/cli": "^17.6.1",
     "@commitlint/config-conventional": "^17.6.1",
-    "@inrupt/solid-client-authn-core": "^1.12.2",
-    "@inrupt/solid-client-authn-node": "^1.12.2",
+    "@inrupt/solid-client-authn-core": "1.14.0",
+    "@inrupt/solid-client-authn-node": "1.14.0",
     "@microsoft/tsdoc-config": "^0.16.2",
     "@tsconfig/node14": "^1.0.3",
     "@types/cheerio": "^0.22.31",
