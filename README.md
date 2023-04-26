@@ -35,7 +35,7 @@ and get started with Solid immediately.
 ## ⚡ Running the server
 
 To run the server, you will need [Node.js](https://nodejs.org/en/).
-We support versions 14.2 and up.
+We support versions 14.14 and up.
 
 If you do not use Node.js,
 you can run a [Docker](https://www.docker.com/) version instead.
