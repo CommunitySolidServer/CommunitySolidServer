@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import type { Server } from 'http';
 import { createServer as createHttpServer } from 'http';
+import type { ServerOptions } from 'https';
 import { createServer as createHttpsServer } from 'https';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpServerFactory } from './HttpServerFactory';
@@ -46,17 +47,16 @@ export class BaseServerFactory implements HttpServerFactory {
    * Creates an HTTP(S) server.
    */
   public async createServer(): Promise<Server> {
-    const createServer = this.options.https ? createHttpsServer : createHttpServer;
     const options = this.createServerOptions();
 
-    const server = createServer(options);
+    const server = this.options.https ? createHttpsServer(options) : createHttpServer(options);
 
     await this.configurator.handleSafe(server);
 
     return server;
   }
 
-  private createServerOptions(): BaseServerFactoryOptions {
+  private createServerOptions(): ServerOptions {
     const options = { ...this.options };
     for (const id of [ 'key', 'cert', 'pfx' ] as const) {
       const val = options[id];
