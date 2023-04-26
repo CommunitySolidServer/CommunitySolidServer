@@ -160,7 +160,7 @@ export class AppRunner {
       typeChecking: false,
     };
 
-    const configs = params.config.map(resolveAssetPath);
+    const configs = (params.config as string[]).map(resolveAssetPath);
 
     // Create the Components.js manager used to build components from the provided config
     let componentsManager: ComponentsManager<any>;
