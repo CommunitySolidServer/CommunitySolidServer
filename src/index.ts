@@ -292,6 +292,7 @@ export * from './server/OperationHttpHandler';
 export * from './server/ParsingHttpHandler';
 export * from './server/ServerConfigurator';
 export * from './server/WacAllowHttpHandler';
+export * from './server/WebSocketHandler';
 export * from './server/WebSocketServerConfigurator';
 
 // Server/Description

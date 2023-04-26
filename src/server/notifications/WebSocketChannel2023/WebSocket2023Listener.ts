@@ -1,16 +1,16 @@
-import type { IncomingMessage } from 'http';
-import type { WebSocket } from 'ws';
 import { getLoggerFor } from '../../../logging/LogUtil';
-import { WebSocketServerConfigurator } from '../../WebSocketServerConfigurator';
+import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';
+import type { WebSocketHandlerInput } from '../../WebSocketHandler';
+import { WebSocketHandler } from '../../WebSocketHandler';
 import type { NotificationChannelStorage } from '../NotificationChannelStorage';
 import type { WebSocket2023Handler } from './WebSocket2023Handler';
 import { parseWebSocketRequest } from './WebSocket2023Util';
 
 /**
- * Listens for WebSocket connections and verifies if they are valid WebSocketChannel2023 connections,
+ * Listens for WebSocket connections and verifies whether they are valid WebSocketChannel2023 connections,
  * in which case its {@link WebSocket2023Handler} will be alerted.
  */
-export class WebSocket2023Listener extends WebSocketServerConfigurator {
+export class WebSocket2023Listener extends WebSocketHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly storage: NotificationChannelStorage;
@@ -24,16 +24,18 @@ export class WebSocket2023Listener extends WebSocketServerConfigurator {
     this.baseUrl = baseUrl;
   }
 
-  protected async handleConnection(webSocket: WebSocket, upgradeRequest: IncomingMessage): Promise<void> {
+  public async canHandle({ upgradeRequest }: WebSocketHandlerInput): Promise<void> {
     const id = parseWebSocketRequest(this.baseUrl, upgradeRequest);
-
     const channel = await this.storage.get(id);
 
     if (!channel) {
-      // Channel not being there implies it has expired
-      webSocket.send(`Notification channel has expired`);
-      return webSocket.close();
+      throw new NotImplementedHttpError(`Unknown or expired WebSocket channel ${id}`);
     }
+  }
+
+  public async handle({ webSocket, upgradeRequest }: WebSocketHandlerInput): Promise<void> {
+    const id = parseWebSocketRequest(this.baseUrl, upgradeRequest);
+    const channel = (await this.storage.get(id))!;
 
     this.logger.info(`Accepted WebSocket connection listening to changes on ${channel.topic}`);
 

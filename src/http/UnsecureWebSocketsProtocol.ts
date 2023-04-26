@@ -4,8 +4,10 @@ import type { WebSocket } from 'ws';
 import type { SingleThreaded } from '../init/cluster/SingleThreaded';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ActivityEmitter } from '../server/notifications/ActivityEmitter';
-import { WebSocketServerConfigurator } from '../server/WebSocketServerConfigurator';
+import type { WebSocketHandlerInput } from '../server/WebSocketHandler';
+import { WebSocketHandler } from '../server/WebSocketHandler';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
+import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { GenericEventEmitter } from '../util/GenericEventEmitter';
 import { createGenericEventEmitterClass } from '../util/GenericEventEmitter';
 import { parseForwarded } from '../util/HeaderUtil';
@@ -124,22 +126,34 @@ class WebSocketListener extends WebSocketListenerEmitter {
 
 /**
  * Provides live update functionality following
- * the Solid WebSockets API Spec solid-0.1
+ * the Solid WebSockets API Spec solid-0.1.
+ *
+ * The `baseUrl` parameter should be the same one that is used to advertise with the Updates-Via header.
  */
-export class UnsecureWebSocketsProtocol extends WebSocketServerConfigurator implements SingleThreaded {
+export class UnsecureWebSocketsProtocol extends WebSocketHandler implements SingleThreaded {
   protected readonly logger = getLoggerFor(this);
+
+  private readonly path: string;
   private readonly listeners = new Set<WebSocketListener>();
 
-  public constructor(source: ActivityEmitter) {
+  public constructor(source: ActivityEmitter, baseUrl: string) {
     super();
 
     this.logger.warn('The chosen configuration includes Solid WebSockets API 0.1, which is unauthenticated.');
     this.logger.warn('This component will be removed from default configurations in future versions.');
 
+    this.path = new URL(baseUrl).pathname;
+
     source.on('changed', (changed: ResourceIdentifier): void => this.onResourceChanged(changed));
   }
 
-  protected async handleConnection(webSocket: WebSocket, upgradeRequest: IncomingMessage): Promise<void> {
+  public async canHandle({ upgradeRequest }: WebSocketHandlerInput): Promise<void> {
+    if (upgradeRequest.url !== this.path) {
+      throw new NotImplementedHttpError(`Only WebSocket requests to ${this.path} are supported.`);
+    }
+  }
+
+  public async handle({ webSocket, upgradeRequest }: WebSocketHandlerInput): Promise<void> {
     const listener = new WebSocketListener(webSocket);
     this.listeners.add(listener);
     this.logger.info(`New WebSocket added, ${this.listeners.size} in total`);

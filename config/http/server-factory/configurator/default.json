@@ -11,6 +11,16 @@
           "@type": "HandlerServerConfigurator",
           "handler": { "@id": "urn:solid-server:default:HttpHandler" },
           "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
+        },
+        {
+          "comment": "Handles all WebSocket connections to the server.",
+          "@id": "urn:solid-server:default:WebSocketServerConfigurator",
+          "@type": "WebSocketServerConfigurator",
+          "handler": {
+            "@id": "urn:solid-server:default:WebSocketHandler",
+            "@type": "WaterfallHandler",
+            "handlers": []
+          }
         }
       ]
     }
