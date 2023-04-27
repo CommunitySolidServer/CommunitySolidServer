@@ -17,12 +17,12 @@ describe('HandlerUtil', (): void => {
     });
 
     it('errors if there is no matching handler.', async(): Promise<void> => {
-      await expect(findHandler([ handlerFalse, handlerFalse ], null)).rejects.toThrow('[Not supported, Not supported]');
+      await expect(findHandler([ handlerFalse, handlerFalse ], null)).rejects.toThrow('Not supported, Not supported');
     });
 
     it('supports non-native Errors.', async(): Promise<void> => {
       handlerFalse.canHandle = jest.fn().mockRejectedValue('apple');
-      await expect(findHandler([ handlerFalse ], null)).rejects.toThrow('[Unknown error: apple]');
+      await expect(findHandler([ handlerFalse ], null)).rejects.toThrow('Unknown error: apple');
     });
   });
 
@@ -42,7 +42,7 @@ describe('HandlerUtil', (): void => {
 
     it('errors if there is no matching handler.', async(): Promise<void> => {
       await expect(filterHandlers([ handlerFalse, handlerFalse ], null))
-        .rejects.toThrow('[Not supported, Not supported]');
+        .rejects.toThrow('Not supported, Not supported');
     });
   });
 });

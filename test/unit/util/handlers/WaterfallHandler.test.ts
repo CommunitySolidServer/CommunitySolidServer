@@ -42,7 +42,7 @@ describe('A WaterfallHandler', (): void => {
     it('can not handle data if no handler supports it.', async(): Promise<void> => {
       const handler = new WaterfallHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.canHandle(null)).rejects.toThrow('[Not supported, Not supported]');
+      await expect(handler.canHandle(null)).rejects.toThrow('Not supported, Not supported');
     });
 
     it('throws unknown errors if no Error objects are thrown.', async(): Promise<void> => {
@@ -51,7 +51,7 @@ describe('A WaterfallHandler', (): void => {
       };
       const handler = new WaterfallHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.canHandle(null)).rejects.toThrow('[Unknown error: apple, Unknown error: apple]');
+      await expect(handler.canHandle(null)).rejects.toThrow('Unknown error: apple, Unknown error: apple');
     });
 
     it('handles data if a handler supports it.', async(): Promise<void> => {
@@ -79,7 +79,7 @@ describe('A WaterfallHandler', (): void => {
     it('throws the canHandle error when calling handleSafe if the data is not supported.', async(): Promise<void> => {
       const handler = new WaterfallHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported, Not supported]');
+      await expect(handler.handleSafe(null)).rejects.toThrow('Not supported, Not supported');
     });
   });
 });

@@ -3,7 +3,7 @@ import { createAggregateError, getStatusCode } from '../../../../src/util/errors
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 
 describe('ErrorUtil', (): void => {
-  describe('createAggregateError', (): void => {
+  describe('#createAggregateError', (): void => {
     const error401 = new HttpError(401, 'UnauthorizedHttpError');
     const error415 = new HttpError(415, 'UnsupportedMediaTypeHttpError');
     const error501 = new HttpError(501, 'NotImplementedHttpError');
@@ -35,6 +35,19 @@ describe('ErrorUtil', (): void => {
         statusCode: 500,
         name: 'InternalServerError',
       });
+    });
+
+    it('has no error message if none of the errors had one.', async(): Promise<void> => {
+      expect(createAggregateError([ error401, error501 ]).message).toBe('');
+    });
+
+    it('copies the error message if there is one error with a message.', async(): Promise<void> => {
+      expect(createAggregateError([ error, error501 ]).message).toBe('noStatusCode');
+    });
+
+    it('joins the error messages if there are multiple.', async(): Promise<void> => {
+      expect(createAggregateError([ error, error, error501 ]).message)
+        .toBe('Multiple handler errors: noStatusCode, noStatusCode');
     });
   });
 
