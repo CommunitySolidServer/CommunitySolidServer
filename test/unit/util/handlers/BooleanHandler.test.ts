@@ -26,7 +26,7 @@ describe('A BooleanHandler', (): void => {
 
   it('errors if none of its handlers supports the input.', async(): Promise<void> => {
     const handler = new BooleanHandler([ handlerCanNotHandle, handlerCanNotHandle ]);
-    await expect(handler.canHandle(null)).rejects.toThrow('[Not supported, Not supported]');
+    await expect(handler.canHandle(null)).rejects.toThrow('Not supported, Not supported');
   });
 
   it('returns true if any of its handlers returns true.', async(): Promise<void> => {
@@ -51,6 +51,6 @@ describe('A BooleanHandler', (): void => {
 
   it('throws the canHandle error when calling handleSafe with unsupported input.', async(): Promise<void> => {
     const handler = new BooleanHandler([ handlerCanNotHandle, handlerCanNotHandle ]);
-    await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported, Not supported]');
+    await expect(handler.handleSafe(null)).rejects.toThrow('Not supported, Not supported');
   });
 });

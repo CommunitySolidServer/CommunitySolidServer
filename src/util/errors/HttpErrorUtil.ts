@@ -16,14 +16,23 @@ export function getStatusCode(error: Error): number {
  * If they are all within the 4xx range, 400 will be used, otherwise 500.
  *
  * @param errors - Errors to combine.
- * @param messagePrefix - Prefix for the aggregate error message. Will be followed with an array of all the messages.
  */
-export function createAggregateError(errors: Error[], messagePrefix = 'No handler supports the given input:'):
+export function createAggregateError(errors: Error[]):
 HttpError {
   const httpErrors = errors.map((error): HttpError =>
     HttpError.isInstance(error) ? error : new InternalServerError(createErrorMessage(error)));
-  const joined = httpErrors.map((error: Error): string => error.message).join(', ');
-  const message = `${messagePrefix} [${joined}]`;
+  const messages = httpErrors.map((error: Error): string => error.message).filter((msg): boolean => msg.length > 0);
+
+  // Let message depend on the messages that were present.
+  // This prevents a bunch of empty strings being joined in the case most of them were 404s.
+  let message: string;
+  if (messages.length === 0) {
+    message = '';
+  } else if (messages.length === 1) {
+    message = messages[0];
+  } else {
+    message = `Multiple handler errors: ${messages.join(', ')}`;
+  }
 
   // Check if all errors have the same status code
   if (httpErrors.length > 0 && httpErrors.every((error): boolean => error.statusCode === httpErrors[0].statusCode)) {
