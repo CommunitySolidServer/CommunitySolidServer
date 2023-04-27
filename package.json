@@ -68,7 +68,7 @@
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-configs.sh",
     "test:ts": "tsc -p test --noEmit",
-    "test:integration": "node --expose-gc --no-compilation-cache ./node_modules/jest/bin/jest.js -- test/integration",
+    "test:integration": "jest test/integration",
     "test:unit": "jest --config=./jest.coverage.config.js test/unit",
     "test:watch": "jest --coverageReporters none --watch test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
