@@ -7,7 +7,7 @@ import type { ResourceLocker } from './ResourceLocker';
  * A {@link ReadWriteLocker} that gives no priority to read or write operations: both use the same lock.
  */
 export class EqualReadWriteLocker implements ReadWriteLocker {
-  private readonly locker: ResourceLocker;
+  protected readonly locker: ResourceLocker;
 
   public constructor(locker: ResourceLocker) {
     this.locker = locker;
@@ -27,7 +27,7 @@ export class EqualReadWriteLocker implements ReadWriteLocker {
    * @param identifier - Identifier of resource that needs to be locked.
    * @param whileLocked - Function to resolve while the resource is locked.
    */
-  private async withLock<T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>): Promise<T> {
+  protected async withLock<T>(identifier: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>): Promise<T> {
     await this.locker.acquire(identifier);
     try {
       return await whileLocked();

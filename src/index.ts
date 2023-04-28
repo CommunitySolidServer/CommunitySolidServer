@@ -501,11 +501,13 @@ export * from './util/identifiers/SingleRootIdentifierStrategy';
 export * from './util/identifiers/SubdomainIdentifierStrategy';
 
 // Util/Locking
+export * from './util/locking/BaseReadWriteLocker';
 export * from './util/locking/ExpiringReadWriteLocker';
 export * from './util/locking/EqualReadWriteLocker';
 export * from './util/locking/FileSystemResourceLocker';
 export * from './util/locking/GreedyReadWriteLocker';
 export * from './util/locking/MemoryResourceLocker';
+export * from './util/locking/PartialReadWriteLocker';
 export * from './util/locking/ReadWriteLocker';
 export * from './util/locking/RedisLocker';
 export * from './util/locking/ResourceLocker';

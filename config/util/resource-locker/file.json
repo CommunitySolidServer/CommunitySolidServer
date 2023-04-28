@@ -6,7 +6,7 @@
       "@id": "urn:solid-server:default:ResourceLocker",
       "@type": "WrappedExpiringReadWriteLocker",
       "locker": {
-        "@type": "EqualReadWriteLocker",
+        "@type": "PartialReadWriteLocker",
         "locker": {
           "@id": "urn:solid-server:default:FileSystemResourceLocker",
           "@type": "FileSystemResourceLocker",

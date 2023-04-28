@@ -10,10 +10,7 @@
         "locker": {
           "@type": "MemoryResourceLocker"
         },
-        "storage": { "@id": "urn:solid-server:default:LockStorage" },
-        "suffixes_count": "count",
-        "suffixes_read": "read",
-        "suffixes_write": "write"
+        "storage": { "@id": "urn:solid-server:default:LockStorage" }
       },
       "expiration": 6000
     }
