@@ -66,6 +66,9 @@ The following changes are relevant for v5 custom configs that replaced certain f
     - `/notifications/*`
 - IDP private key generation was moved to a separate generator class.
     - `/identity/handler/*`
+- The Read/Write lockers have changed slightly.
+    - `/util/resource-locker/file.json`
+    - `/util/resource-locker/memory.json`
 
 ### Interface changes
 
@@ -83,6 +86,7 @@ These changes are relevant if you wrote custom modules for the server that depen
   `PermissionSet` and `Permission` were merged into a single interface.
   This impacts all authentication and authorization related classes.
 - `HttpServerFactory.startServer` function was renamed to `createServer` and is no longer expected to start the server.
+- `GreedyReadWriteLocker` constructor parameters have changed.
 
 ## v5.1.0
 

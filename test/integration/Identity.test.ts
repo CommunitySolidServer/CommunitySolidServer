@@ -13,11 +13,23 @@ import type { App } from '../../src/init/App';
 import { APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinUrl } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
-import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
+import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 import { IdentityTestState } from './IdentityTestState';
 
 const port = getPort('Identity');
 const baseUrl = `http://localhost:${port}/`;
+
+const rootFilePath = getTestFolder('Identity');
+const stores: [string, any][] = [
+  [ 'in-memory storage', {
+    config: 'server-memory.json',
+    teardown: jest.fn(),
+  }],
+  [ 'on-disk storage', {
+    config: 'server-file.json',
+    teardown: async(): Promise<void> => removeFolder(rootFilePath),
+  }],
+];
 
 // Don't send actual e-mails
 jest.mock('nodemailer');
@@ -37,7 +49,7 @@ async function postForm(url: string, formBody: string): Promise<Response> {
 // They will be simulated by storing the values and passing them along.
 // This is why the redirects are handled manually.
 // We also need to parse the HTML in several steps since there is no API.
-describe('A Solid server with IDP', (): void => {
+describe.each(stores)('A Solid server with IDP using %s', (name, { config, teardown }): void => {
   let app: App;
   const redirectUrl = 'http://mockedredirect/';
   const container = new URL('secret/', baseUrl).href;
@@ -61,8 +73,11 @@ describe('A Solid server with IDP', (): void => {
 
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      getTestConfigPath('server-memory.json'),
-      getDefaultVariables(port, baseUrl),
+      getTestConfigPath(config),
+      {
+        ...getDefaultVariables(port, baseUrl),
+        'urn:solid-server:default:variable:rootFilePath': rootFilePath,
+      },
     ) as Record<string, any>;
     ({ app } = instances);
     await app.start();
@@ -90,11 +105,12 @@ describe('A Solid server with IDP', (): void => {
       body: aclTurtle,
     });
     if (res.status !== 201) {
-      throw new Error('Something went wrong initializing the test ACL');
+      throw new Error(`Something went wrong initializing the test ACL: ${await res.text()}`);
     }
   });
 
   afterAll(async(): Promise<void> => {
+    await teardown();
     await app.stop();
   });
 
