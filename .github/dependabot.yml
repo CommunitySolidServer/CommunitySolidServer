@@ -14,7 +14,7 @@ updates:
       interval: "daily"
       time: "03:35"
       timezone: "Europe/Brussels"
-    target-branch: "versions/6.0.0"
+    target-branch: "versions/next-major"
     ignore:
       # Ignore minor and patch version updates
       - dependency-name: "*"

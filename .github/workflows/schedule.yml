@@ -12,7 +12,7 @@ jobs:
       matrix:
         branch:
           - 'main'
-          - 'versions/6.0.0'
+          - 'versions/next-major'
     uses: ./.github/workflows/cth-test.yml
     with:
       branch: ${{ matrix.branch }}
