@@ -3,6 +3,55 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.0-alpha.0...v6.0.0) (2023-05-02)
+
+### Features
+
+* Support both the old and new WebSocket specifications together ([4b7621f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4b7621f9e0be487fc5df47086572b24e9ed42475))
+* Use WebSocket2023Channel identifier for WebSocket URL ([69af7c4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/69af7c4e163038635b62f6bcc573d6d8e8d9fd37))
+* Replace WebHookSubscription2021 with WebHookChannel2023 ([d59a159](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d59a1595d56a606deba42ae5605ffe4a3c250b6c))
+* Allow unsubscribing from all notification channels ([e946348](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e9463483f4380c526b8a7b188e945a55123348d4))
+* Restrict channels to 2 weeks by default ([f7e05ca](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f7e05ca31e718732540214bc3f4b9400e6564c11))
+* Support Add/Remove notifications on containers ([134237a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/134237a80fab602d2aed61cb5ff499488a474d0b))
+* Replace WebSocketSubscription2021 with WebSocketChannel2023 ([702e8f5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/702e8f5f59e8bec2fb29000ec14239d3f2d00d36))
+* Use URLs for channel identifiers ([cbbb10a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cbbb10afa1f186a973d98a0ce55429cb5aee5a3a))
+* Ignore unsupported notifications features in subscriptions ([67d1ff4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/67d1ff4ac0a93c051e8491826414f3471c2f05aa))
+* Support GET requests on subscription services ([65860f7](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/65860f77da56dfc80f68ea6a43b99ac3b3e202a5))
+* Update notification object to match the updated examples ([7c343a5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7c343a5fcce415251d25dfb184e5e8d3496c1710))
+* Replace expiration feature with startAt and endAt ([caee563](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/caee563dd69a34944c9b175654e24946b264c2f9))
+* Use notification v0.2 features in discovery ([10980e9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/10980e90a31b5dff51e18ba52856ab486fefb2da))
+* Support conditions for GET/HEAD requests ([f0596c2](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f0596c2eb8b1f62b31fdcd26070ea9fbf8468a74))
+* Provide clear error message for unknown clients ([c332412](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c332412074d3969420348687e8323fffaec2f882))
+* SeededPodInitializer log exceptions as warning instead of crashing ([2efc141](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2efc141baa11f4f2a0063c189843583a05cc4012))
+
+### Documentation
+
+* Explain changes to template folders ([a4d4118](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a4d4118474324c9c2d00ee683348236da6b0789b))
+* Describe how notifications work on the server ([1a1a6ee](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1a1a6ee71467678eb9ad346a5550b75afe73c86b))
+* Update RELEASE_NOTES with correct notification information ([40ad4a6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/40ad4a61704d17213f9092933ee27ebd37714f6e))
+* Add references to the configuration generator ([4b33017](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4b3301738e3884a3b4324982c324463a1beb990c))
+* Add responses when client credentials are incorrect ([50bb8cf](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/50bb8cf923cf6f7ea8e10e305df4959f7221275e))
+* Add Zenodo badge in README ([5acddcb](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5acddcb5b204fe91c0ed2f4b24c0241e851afd3a))
+
+### Testing
+
+* Fix Jest memory issues ([26f24aa](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/26f24aa76c1aadf5a0578bbf9d5bd6d3362377f6))
+
+### Fixes
+
+* Make sure locker allows reentrant lock acquisition ([5347025](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/53470257201999566e3012923af45c19f0a6a938))
+* Make aggregated errors prettier ([0d5d072](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0d5d072f79bc6f34c0080b8c626a4548ffaebb16))
+* Support new ETag format in notification states ([b250bea](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b250beaec902e4e564eea68318f9f9f3342c13b0))
+* Minor documentation and configuration updates ([4ff6fe6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4ff6fe66eaaebc537cb73346ae997b09630ba879))
+* Update the lastEmit value after sending a notification ([b2f4d7f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b2f4d7fb2dd9fa92c6fa5f57a0e3d93195343815))
+* Replace inefficient storage detection ([23db528](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/23db528472169925b4705140424f6d470574760d))
+* Use EqualReadWriteLocker with file locker to prevent deadlocks ([0a30be5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0a30be55ef433400965ff76581213b23f0e59a4e))
+* Ensure the ETag is representation specific ([c3f48dd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c3f48ddb97c842dc3a2bbfd06230cb6caa10917d))
+* Store internal JWK as JWKS to be backwards compatible ([7fd0b50](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7fd0b503837b378ff9a8764290938014a2a5a11a))
+* Updated WrappedExpiringStorage to use timer.unref ([b6faed0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b6faed0db3cb2b6282acdafb64e1225c89e66842))
+* Output required OAuth error fields ([63fd062](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/63fd062f16d2e88e86c1aa44733c3daddef2bb23))
+* Do not add port 80 to default base URL ([bb74278](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/bb7427842c0f360852e33863972f14bc72d7502a))
+
 ## [6.0.0-alpha.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v5.1.0...v6.0.0-alpha.0) (2023-02-01)
 
 ### Features
