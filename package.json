@@ -159,7 +159,7 @@
     "rdf-validate-shacl": "^0.4.5",
     "sparqlalgebrajs": "^4.0.5",
     "sparqljs": "^3.6.2",
-    "url-join": "^4.0.1",
+    "url-join": "^5.0.0",
     "uuid": "^9.0.0",
     "winston": "^3.8.2",
     "winston-transport": "^4.5.0",
