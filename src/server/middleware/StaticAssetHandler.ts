@@ -3,6 +3,7 @@ import escapeStringRegexp from 'escape-string-regexp';
 import * as mime from 'mime-types';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { ensureTrailingSlash, joinFilePath, resolveAssetPath, trimLeadingSlashes } from '../../util/PathUtil';
@@ -16,6 +17,7 @@ import type { HttpRequest } from '../HttpRequest';
  * Relative file paths are assumed to be relative to cwd.
  * Relative file paths can be preceded by `@css:`, e.g. `@css:foo/bar`,
  * in case they need to be relative to the module root.
+ * File paths ending in a slash assume the target is a folder and map all of its contents.
  */
 export class StaticAssetHandler extends HttpHandler {
   private readonly mappings: Record<string, string>;
@@ -27,6 +29,7 @@ export class StaticAssetHandler extends HttpHandler {
    * Creates a handler for the provided static resources.
    * @param assets - A mapping from URL paths to paths,
    *  where URL paths ending in a slash are interpreted as entire folders.
+   * @param baseUrl - The base URL of the server.
    * @param options - Cache expiration time in seconds.
    */
   public constructor(assets: Record<string, string>, baseUrl: string, options: { expires?: number } = {}) {
@@ -49,11 +52,19 @@ export class StaticAssetHandler extends HttpHandler {
     const paths = Object.keys(this.mappings)
       .sort((pathA, pathB): number => pathB.length - pathA.length);
 
-    // Collect regular expressions for files and folders separately
+    // Collect regular expressions for files and folders separately.
+    // The arrays need initial values to prevent matching everything, as they will if these are empty.
     const files = [ '.^' ];
     const folders = [ '.^' ];
     for (const path of paths) {
-      (path.endsWith('/') ? folders : files).push(escapeStringRegexp(path));
+      const filePath = this.mappings[path];
+      if (filePath.endsWith('/') && !path.endsWith('/')) {
+        throw new InternalServerError(
+          `Server is misconfigured: StaticAssetHandler can not ` +
+          `have a file path ending on a slash if the URL does not, but received ${path} and ${filePath}`,
+        );
+      }
+      (filePath.endsWith('/') ? folders : files).push(escapeStringRegexp(path));
     }
 
     // Either match an exact document or a file within a folder (stripping the query string)
@@ -72,7 +83,8 @@ export class StaticAssetHandler extends HttpHandler {
 
     // The mapping is either a known document, or a file within a folder
     const [ , document, folder, file ] = match;
-    return document ?
+
+    return typeof document === 'string' ?
       this.mappings[document] :
       joinFilePath(this.mappings[folder], decodeURIComponent(file));
   }

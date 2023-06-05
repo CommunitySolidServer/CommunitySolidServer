@@ -3,6 +3,7 @@ import fs from 'fs';
 import { PassThrough, Readable } from 'stream';
 import { createResponse } from 'node-mocks-http';
 import { StaticAssetHandler } from '../../../../src/server/middleware/StaticAssetHandler';
+import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { getModuleRoot, joinFilePath } from '../../../../src/util/PathUtil';
@@ -12,14 +13,15 @@ const createReadStream = jest.spyOn(fs, 'createReadStream')
 
 describe('A StaticAssetHandler', (): void => {
   const handler = new StaticAssetHandler({
+    '/': '/assets/README.md',
     '/foo/bar/style': '/assets/styles/bar.css',
     '/foo/bar/main': '/assets/scripts/bar.js',
     '/foo/bar/unknown': '/assets/bar.unknown',
     '/foo/bar/cwd': 'paths/cwd.txt',
     '/foo/bar/module': '@css:paths/module.txt',
-    '/foo/bar/folder1/': '/assets/folders/1/',
-    '/foo/bar/folder2/': '/assets/folders/2',
-    '/foo/bar/folder2/subfolder/': '/assets/folders/3',
+    '/foo/bar/document/': '/assets/document.txt',
+    '/foo/bar/folder/': '/assets/folders/1/',
+    '/foo/bar/folder/subfolder/': '/assets/folders/2/',
   }, 'http://localhost:3000');
 
   afterEach(jest.clearAllMocks);
@@ -159,8 +161,28 @@ describe('A StaticAssetHandler', (): void => {
     expect(response._getData()).toBe('');
   });
 
-  it('handles a request to a known folder URL defined without slash.', async(): Promise<void> => {
-    const request = { method: 'GET', url: '/foo/bar/folder1/abc/def.css' };
+  it('handles URLs with a trailing slash that link to a document.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/document/' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    const responseEnd = new Promise((resolve): any => response.on('end', resolve));
+    await handler.handleSafe({ request, response } as any);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/plain');
+
+    await responseEnd;
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith('/assets/document.txt');
+    expect(response._getData()).toBe('file contents');
+  });
+
+  it('requires folders to be linked to URLs ending on a slash.', async(): Promise<void> => {
+    expect((): StaticAssetHandler => new StaticAssetHandler({ '/foo': '/bar/' }, 'http://example.com/'))
+      .toThrow(InternalServerError);
+  });
+
+  it('handles a request to a known folder URL defined with slash.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/folder/abc/def.css?abc=def' };
     const response = createResponse({ eventEmitter: EventEmitter });
     await handler.handleSafe({ request, response } as any);
 
@@ -171,8 +193,8 @@ describe('A StaticAssetHandler', (): void => {
     expect(createReadStream).toHaveBeenCalledWith('/assets/folders/1/abc/def.css');
   });
 
-  it('handles a request to a known folder URL defined with slash.', async(): Promise<void> => {
-    const request = { method: 'GET', url: '/foo/bar/folder2/abc/def.css?abc=def' };
+  it('prefers the longest path handler.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/folder/subfolder/abc/def.css?' };
     const response = createResponse({ eventEmitter: EventEmitter });
     await handler.handleSafe({ request, response } as any);
 
@@ -183,20 +205,8 @@ describe('A StaticAssetHandler', (): void => {
     expect(createReadStream).toHaveBeenCalledWith('/assets/folders/2/abc/def.css');
   });
 
-  it('prefers the longest path handler.', async(): Promise<void> => {
-    const request = { method: 'GET', url: '/foo/bar/folder2/subfolder/abc/def.css?' };
-    const response = createResponse({ eventEmitter: EventEmitter });
-    await handler.handleSafe({ request, response } as any);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
-
-    expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/3/abc/def.css');
-  });
-
   it('handles a request to a known folder URL with spaces.', async(): Promise<void> => {
-    const request = { method: 'GET', url: '/foo/bar/folder2/a%20b%20c/def.css' };
+    const request = { method: 'GET', url: '/foo/bar/folder/a%20b%20c/def.css' };
     const response = createResponse({ eventEmitter: EventEmitter });
     await handler.handleSafe({ request, response } as any);
 
@@ -204,11 +214,11 @@ describe('A StaticAssetHandler', (): void => {
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
 
     expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/2/a b c/def.css');
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/1/a b c/def.css');
   });
 
   it('does not handle a request to a known folder URL with parent path segments.', async(): Promise<void> => {
-    const request = { method: 'GET', url: '/foo/bar/folder1/../def.css' };
+    const request = { method: 'GET', url: '/foo/bar/folder/../def.css' };
     const response = createResponse({ eventEmitter: EventEmitter });
     await expect(handler.canHandle({ request, response } as any)).rejects.toThrow();
   });

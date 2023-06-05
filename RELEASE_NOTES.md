@@ -4,7 +4,9 @@
 
 ### New features
 
-- ...
+- The `StaticAssetHandler` can now be used to link static pages to containers.
+  This can be used to set a static page for the root container of a server.
+  See the `/config/app/init/static-root.json` config for an example.
 
 ### Data migration
 
@@ -18,15 +20,18 @@ The `@context` needs to be updated to
 `https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld`.
 
 The following changes pertain to the imports in the default configs:
- - ...
+
+- There is a new `static-root.json` import option for `app/init`, setting a static page for the root container.
 
 The following changes are relevant for v5 custom configs that replaced certain features.
- - ...
+
+- `/app/init/*` imports have changed. Functionality remained the same though.
 
 ### Interface changes
 
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
- - ...
+
+- ...
 
 ## v6.0.0
 

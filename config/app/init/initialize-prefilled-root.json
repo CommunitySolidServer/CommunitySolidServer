@@ -1,23 +1,17 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "import": [
-    "css:config/app/init/base/init.json",
+    "css:config/app/init/default.json",
     "css:config/app/init/initializers/prefilled-root.json"
   ],
   "@graph": [
     {
-      "comment": "These handlers are called only for the Primary process whenever the server is started, and can be used to ensure that all necessary resources for booting are available. (in singlethreaded mode, these are always called)",
+      "comment": "Initializes the root container resource.",
       "@id": "urn:solid-server:default:PrimaryParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:RootInitializer" }
       ]
-    },
-    {
-      "comment": "These handlers are called only for the workers processes whenever the server is started, and can be used to ensure that all necessary resources for booting are available. (in singlethreaded mode, these are always called)",
-      "@id": "urn:solid-server:default:WorkerParallelInitializer",
-      "@type": "ParallelHandler",
-      "handlers": [ ]
     }
   ]
 }
