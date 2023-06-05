@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/app/init/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Sets the root of the server to a static page.",
+      "@id": "urn:solid-server:default:StaticAssetHandler",
+      "@type": "StaticAssetHandler",
+      "assets": [
+        {
+          "StaticAssetHandler:_assets_key": "/",
+          "StaticAssetHandler:_assets_value": "@css:templates/root/prefilled/base/index.html"
+        }
+      ]
+    }
+  ]
+}

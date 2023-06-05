@@ -10,6 +10,7 @@ Contains a list of initializer that need to be run when starting the server.
 * *initialize-root*: Makes sure the root container has the necessary resources to function properly.
                      This is only relevant if setup is disabled but root container access is still required.
 * *initialize-prefilled-root*: Similar to `initialize-root` but adds some introductory resources to the root container.
+* *static-root*: Shows a static introduction page at the server root. This is not a Solid resource.
 
 ## Main
 
