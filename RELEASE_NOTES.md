@@ -1,5 +1,33 @@
 # Community Solid Server release notes
 
+## v7.0.0
+
+### New features
+
+- ...
+
+### Data migration
+
+No actions are required to migrate data.
+
+### Configuration changes
+
+You might need to make changes to your v6 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+ - ...
+
+The following changes are relevant for v5 custom configs that replaced certain features.
+ - ...
+
+### Interface changes
+
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+ - ...
+
 ## v6.0.0
 
 ### New features
