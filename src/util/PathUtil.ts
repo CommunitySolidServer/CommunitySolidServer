@@ -155,16 +155,31 @@ export function toCanonicalUriPath(path: string): string {
     encodeURIComponent(decodeURIComponent(part)));
 }
 
+// Characters not allowed in a Windows file path
+const forbiddenSymbols = {
+  '<': '%3C',
+  '>': '%3E',
+  ':': '%3A',
+  '"': '%22',
+  '|': '%7C',
+  '?': '%3F',
+  // `*` does not get converted by `encodeUriComponent`
+  '*': '%2A',
+} as const;
+const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`, 'ug');
 /**
  * This function is used when converting a URI to a file path. Decodes all components of a URI path,
  * with the exception of encoded slash characters, as this would lead to unexpected file locations
  * being targeted (resulting in erroneous behaviour of the file based backend).
+ * Characters that would result in an illegal file path remain percent encoded.
  *
  * @param path - The path to decode the URI path components of.
  * @returns A decoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function decodeUriPathComponents(path: string): string {
-  return transformPathComponents(path, decodeURIComponent);
+  return transformPathComponents(path, (part): string => decodeURIComponent(part)
+    // The characters replaced below result in illegal Windows file paths so need to be encoded
+    .replace(forbiddenRegex, (val): string => forbiddenSymbols[val as keyof typeof forbiddenSymbols]));
 }
 
 /**
