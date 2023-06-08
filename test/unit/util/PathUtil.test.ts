@@ -96,7 +96,7 @@ describe('PathUtil', (): void => {
 
   describe('#toCanonicalUriPath', (): void => {
     it('encodes only the necessary parts.', (): void => {
-      expect(toCanonicalUriPath('/a%20path&/name')).toBe('/a%20path%26/name');
+      expect(toCanonicalUriPath('/a%20path&*/name')).toBe('/a%20path%26*/name');
     });
 
     it('leaves the query string untouched.', (): void => {
@@ -137,6 +137,11 @@ describe('PathUtil', (): void => {
       expect(decodeUriPathComponents('/a%252Fb')).toBe('/a%252Fb');
       expect(decodeUriPathComponents('/a%25252Fb')).toBe('/a%25252Fb');
       expect(decodeUriPathComponents('/a%2525252Fb')).toBe('/a%2525252Fb');
+    });
+
+    it('ensures illegal path characters are encoded.', async(): Promise<void> => {
+      expect(decodeUriPathComponents('/a<path%3F%3E/*:name?abc=def&xyz'))
+        .toBe('/a%3Cpath%3F%3E/%2A%3Aname?abc=def&xyz');
     });
   });
 
