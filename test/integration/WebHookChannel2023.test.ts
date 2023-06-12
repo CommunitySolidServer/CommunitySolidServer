@@ -97,7 +97,7 @@ describe.each(stores)('A server supporting WebHookChannel2023 using %s', (name, 
     const quads = new Store(new Parser().parse(await response.text()));
 
     // Find the notification channel for websockets
-    const subscriptions = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.subscription, null);
+    const subscriptions = quads.getObjects(null, NOTIFY.terms.subscription, null);
     const webhookSubscriptions = subscriptions.filter((channel): boolean => quads.has(
       quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebHookChannel2023`)),
     ));

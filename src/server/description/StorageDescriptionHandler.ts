@@ -1,6 +1,7 @@
 import { OkResponseDescription } from '../../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../../http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
@@ -32,7 +33,7 @@ export class StorageDescriptionHandler extends OperationHttpHandler {
     if (method !== 'GET') {
       throw new MethodNotAllowedHttpError([ method ], `Only GET requests can target the storage description.`);
     }
-    const container = { path: ensureTrailingSlash(target.path.slice(0, -this.path.length)) };
+    const container = this.getStorageIdentifier(target);
     const representation = await this.store.getRepresentation(container, {});
     representation.data.destroy();
     if (!representation.metadata.has(RDF.terms.type, PIM.terms.Storage)) {
@@ -43,10 +44,17 @@ export class StorageDescriptionHandler extends OperationHttpHandler {
   }
 
   public async handle({ operation: { target }}: OperationHttpHandlerInput): Promise<ResponseDescription> {
-    const quads = await this.describer.handle(target);
+    const quads = await this.describer.handle(this.getStorageIdentifier(target));
 
     const representation = new BasicRepresentation(quads, INTERNAL_QUADS);
 
     return new OkResponseDescription(representation.metadata, representation.data);
+  }
+
+  /**
+   * Determine the identifier of the root storage based on the identifier of the root storage description resource.
+   */
+  protected getStorageIdentifier(descriptionIdentifier: ResourceIdentifier): ResourceIdentifier {
+    return { path: ensureTrailingSlash(descriptionIdentifier.path.slice(0, -this.path.length)) };
   }
 }

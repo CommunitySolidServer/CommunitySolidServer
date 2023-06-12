@@ -83,8 +83,8 @@ describe('A StorageDescriptionHandler', (): void => {
     expect(result.metadata?.contentType).toBe('internal/quads');
     expect(result.data).toBeDefined();
     const quads = await readableToQuads(result.data!);
-    expect(quads.countQuads(operation.target.path, RDF.terms.type, PIM.terms.Storage, null)).toBe(1);
+    expect(quads.countQuads('http://example.com/', RDF.terms.type, PIM.terms.Storage, null)).toBe(1);
     expect(describer.handle).toHaveBeenCalledTimes(1);
-    expect(describer.handle).toHaveBeenLastCalledWith(operation.target);
+    expect(describer.handle).toHaveBeenLastCalledWith({ path: 'http://example.com/' });
   });
 });
