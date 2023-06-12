@@ -21,14 +21,13 @@ import {
   removeFolder,
 } from './Config';
 import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
 
 const port = getPort('WebHookChannel2023');
 const baseUrl = `http://localhost:${port}/`;
 const clientPort = getPort('WebHookChannel2023-client');
 const target = `http://localhost:${clientPort}/`;
 const webId = 'http://example.com/card/#me';
-const notificationType = NOTIFY.WebHookChannel2023;
+const notificationType = NOTIFY.WebhookChannel2023;
 
 const rootFilePath = getTestFolder('WebHookChannel2023');
 const stores: [string, any][] = [
@@ -99,7 +98,7 @@ describe.each(stores)('A server supporting WebHookChannel2023 using %s', (name, 
     // Find the notification channel for websockets
     const subscriptions = quads.getObjects(null, NOTIFY.terms.subscription, null);
     const webhookSubscriptions = subscriptions.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebHookChannel2023`)),
+      quad(channel as NamedNode, NOTIFY.terms.channelType, NOTIFY.terms.WebhookChannel2023),
     ));
     expect(webhookSubscriptions).toHaveLength(1);
     subscriptionUrl = webhookSubscriptions[0].value;
