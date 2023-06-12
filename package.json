@@ -18,7 +18,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=14.14"
+    "node": ">=18.0"
   },
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "dist/components/components.jsonld",
@@ -172,7 +172,7 @@
     "@inrupt/solid-client-authn-core": "1.14.0",
     "@inrupt/solid-client-authn-node": "1.14.0",
     "@microsoft/tsdoc-config": "^0.16.2",
-    "@tsconfig/node14": "^1.0.3",
+    "@tsconfig/node18": "^2.0.1",
     "@types/cheerio": "^0.22.31",
     "@types/jest": "^29.5.1",
     "@types/set-cookie-parser": "^2.4.2",
