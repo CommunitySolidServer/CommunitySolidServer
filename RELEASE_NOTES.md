@@ -4,6 +4,7 @@
 
 ### New features
 
+- The minimum supported Node version is now v18.
 - The `StaticAssetHandler` can now be used to link static pages to containers.
   This can be used to set a static page for the root container of a server.
   See the `/config/app/init/static-root.json` config for an example.

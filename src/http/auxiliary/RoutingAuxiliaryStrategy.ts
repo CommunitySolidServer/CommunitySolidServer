@@ -12,10 +12,11 @@ import { RoutingAuxiliaryIdentifierStrategy } from './RoutingAuxiliaryIdentifier
  * or only the matching strategy if the input is an auxiliary identifier.
  */
 export class RoutingAuxiliaryStrategy extends RoutingAuxiliaryIdentifierStrategy implements AuxiliaryStrategy {
-  protected readonly sources!: AuxiliaryStrategy[];
+  protected readonly sources: AuxiliaryStrategy[] = [];
 
   public constructor(sources: AuxiliaryStrategy[]) {
     super(sources);
+    this.sources = sources;
   }
 
   public usesOwnAuthorization(identifier: ResourceIdentifier): boolean {

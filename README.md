@@ -31,7 +31,7 @@ And, of course, for many others who like to experience Solid.
 
 ## ⚡ Running the Community Solid Server
 
-Use [Node.js](https://nodejs.org/en/) 14.14 or up and execute:
+Use [Node.js](https://nodejs.org/en/) 18.0 or up and execute:
 
 ```shell
 npx @solid/community-server
