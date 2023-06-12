@@ -210,7 +210,7 @@ export const NOTIFY = createVocabulary('http://www.w3.org/ns/solid/notifications
   'topic',
   'webhookAuth',
 
-  'WebHookChannel2023',
+  'WebhookChannel2023',
   'WebSocketChannel2023',
 );
 

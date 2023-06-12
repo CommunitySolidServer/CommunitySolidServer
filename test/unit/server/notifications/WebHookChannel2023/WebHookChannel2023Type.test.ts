@@ -43,14 +43,14 @@ describe('A WebhookChannel2023Type', (): void => {
 
   beforeEach(async(): Promise<void> => {
     data = new Store();
-    data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebHookChannel2023));
+    data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebhookChannel2023));
     data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));
     data.addQuad(quad(subject, NOTIFY.terms.sendTo, namedNode(sendTo)));
 
     const id = 'http://example.com/webhooks/4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
     channel = {
       id,
-      type: NOTIFY.WebHookChannel2023,
+      type: NOTIFY.WebhookChannel2023,
       topic: 'https://storage.example/resource',
       sendTo,
     };
@@ -79,7 +79,7 @@ describe('A WebhookChannel2023Type', (): void => {
         CONTEXT_NOTIFICATION,
       ],
       id: channel.id,
-      type: NOTIFY.WebHookChannel2023,
+      type: NOTIFY.WebhookChannel2023,
       sendTo,
       topic,
       sender: 'http://example.com/webhooks/webid',

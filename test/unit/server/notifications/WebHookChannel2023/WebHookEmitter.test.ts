@@ -45,7 +45,7 @@ describe('A WebHookEmitter', (): void => {
   const channel: WebhookChannel2023 = {
     id: 'id',
     topic: 'http://example.com/foo',
-    type: NOTIFY.WebHookChannel2023,
+    type: NOTIFY.WebhookChannel2023,
     sendTo: 'http://example.org/somewhere-else',
   };
 
