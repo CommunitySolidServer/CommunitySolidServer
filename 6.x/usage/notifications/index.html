@@ -17,7 +17,7 @@
         <link rel="next" href="../../architecture/overview/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -25,10 +25,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.a6bdf11c.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -562,7 +562,7 @@
         
           <li class="md-nav__item">
   <a href="#webhooks" class="md-nav__link">
-    WebHooks
+    Webhooks
   </a>
   
 </li>
@@ -1051,7 +1051,7 @@
         
           <li class="md-nav__item">
   <a href="#webhooks" class="md-nav__link">
-    WebHooks
+    Webhooks
   </a>
   
 </li>
@@ -1137,7 +1137,7 @@ with the <code>http://www.w3.org/ns/solid/terms#storageDescription</code> relati
 <span class="nv">&lt;http://localhost:3000/.well-known/solid&gt;</span>
     <span class="kt">a</span>                   <span class="nv">&lt;http://www.w3.org/ns/pim/space#Storage&gt;</span> <span class="p">;</span>
     <span class="nn">notify</span><span class="p">:</span><span class="nt">subscription</span> <span class="nv">&lt;http://localhost:3000/.notifications/WebSocketChannel2023/&gt;</span> <span class="p">,</span>
-                        <span class="nv">&lt;http://localhost:3000/.notifications/WebHookChannel2023/&gt;</span> <span class="p">.</span>
+                        <span class="nv">&lt;http://localhost:3000/.notifications/WebhookChannel2023/&gt;</span> <span class="p">.</span>
 <span class="nv">&lt;http://localhost:3000/.notifications/WebSocketChannel2023/&gt;</span>
     <span class="nn">notify</span><span class="p">:</span><span class="nt">channelType</span>  <span class="nn">notify</span><span class="p">:</span><span class="nt">WebSocketChannel2023</span> <span class="p">;</span>
     <span class="nn">notify</span><span class="p">:</span><span class="nt">feature</span>      <span class="nn">notify</span><span class="p">:</span><span class="nt">accept</span> <span class="p">,</span>
@@ -1145,8 +1145,8 @@ with the <code>http://www.w3.org/ns/solid/terms#storageDescription</code> relati
                         <span class="nn">notify</span><span class="p">:</span><span class="nt">rate</span> <span class="p">,</span>
                         <span class="nn">notify</span><span class="p">:</span><span class="nt">startAt</span> <span class="p">,</span>
                         <span class="nn">notify</span><span class="p">:</span><span class="nt">state</span> <span class="p">.</span>
-<span class="nv">&lt;http://localhost:3000/.notifications/WebSocketChannel2023/&gt;</span>
-    <span class="nn">notify</span><span class="p">:</span><span class="nt">channelType</span>  <span class="nn">notify</span><span class="p">:</span><span class="nt">WebHookChannel2023</span><span class="p">;</span>
+<span class="nv">&lt;http://localhost:3000/.notifications/WebhookChannel2023/&gt;</span>
+    <span class="nn">notify</span><span class="p">:</span><span class="nt">channelType</span>  <span class="nn">notify</span><span class="p">:</span><span class="nt">WebhookChannel2023</span><span class="p">;</span>
     <span class="nn">notify</span><span class="p">:</span><span class="nt">feature</span>      <span class="nn">notify</span><span class="p">:</span><span class="nt">accept</span> <span class="p">,</span>
                         <span class="nn">notify</span><span class="p">:</span><span class="nt">endAt</span> <span class="p">,</span>
                         <span class="nn">notify</span><span class="p">:</span><span class="nt">rate</span> <span class="p">,</span>
@@ -1166,7 +1166,7 @@ Requests without <code>Read</code> permission will be rejected.</p>
 <h2 id="notification-channel-types">Notification channel types<a class="headerlink" href="#notification-channel-types" title="Permanent link">&para;</a></h2>
 <p>There are currently up to two supported ways to get notifications in CSS, depending on your configuration:
 the notification channel types <a href="https://solid.github.io/notifications/websocket-channel-2023"><code>WebSocketChannel2023</code></a>;
-and <a href="https://solid.github.io/notifications/webhook-channel-2023"><code>WebHookChannel2023</code></a>.</p>
+and <a href="https://solid.github.io/notifications/webhook-channel-2023"><code>WebhookChannel2023</code></a>.</p>
 <h3 id="websockets">WebSockets<a class="headerlink" href="#websockets" title="Permanent link">&para;</a></h3>
 <p>To subscribe to the <code>http://localhost:3000/foo</code> resource using WebSockets,
 you use an authenticated <code>POST</code> request to send the following JSON-LD document to the server,
@@ -1192,23 +1192,23 @@ In JavaScript, this can be done using the WebSocket object, such as:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">ws</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">WebSocket</span><span class="p">(</span><span class="nx">receiveFrom</span><span class="p">);</span>
 <span class="nx">ws</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">notification</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">notification</span><span class="p">));</span>
 </code></pre></div>
-<h3 id="webhooks">WebHooks<a class="headerlink" href="#webhooks" title="Permanent link">&para;</a></h3>
+<h3 id="webhooks">Webhooks<a class="headerlink" href="#webhooks" title="Permanent link">&para;</a></h3>
 <p>Similar to the WebSocket subscription, below is sample JSON-LD
-that would be sent to <code>http://localhost:3000/.notifications/WebHookChannel2023/</code>:</p>
+that would be sent to <code>http://localhost:3000/.notifications/WebhookChannel2023/</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;https://www.w3.org/ns/solid/notification/v1&quot;</span><span class="w"> </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/solid/notifications#WebHookChannel2023&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/solid/notifications#WebhookChannel2023&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;topic&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/foo&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;sendTo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://example.com/webhook&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>Note that this document has an additional <code>sendTo</code> field.
-This is the WebHook URL of your server, the URL to which you want the notifications to be sent.</p>
+This is the Webhook URL of your server, the URL to which you want the notifications to be sent.</p>
 <p>The response would then be something like this:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;https://www.w3.org/ns/solid/notification/v1&quot;</span><span class="w"> </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/.notifications/WebHookChannel2023/eeaf2c17-699a-4e53-8355-e91d13807e5f&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/solid/notifications#WebHookChannel2023&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/.notifications/WebhookChannel2023/eeaf2c17-699a-4e53-8355-e91d13807e5f&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/solid/notifications#WebhookChannel2023&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;topic&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/foo&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;sendTo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://example.com/webhook&quot;</span>
 <span class="p">}</span>
@@ -1395,7 +1395,7 @@ Similarly, to change the maximum duration of webhook channels you can use the id
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.top", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.fac441b0.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b4d07000.min.js"></script>
       
     
   </body>
