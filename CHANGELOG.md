@@ -3,6 +3,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.0...v6.0.1) (2023-06-15)
+
+### Fixes
+
+* Use correct type for Webhook notifications ([c0a881b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c0a881b9809d3a551c4cdf63bbd89ce57f3fff8d))
+* Make root storage subject of storage description ([9584ab7](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9584ab7549ecf7ab20fe1e6db28f3c900d9a5392))
+* Prevent illegal file paths from being generated ([fdee4b3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fdee4b334fa456746e9d2097284321a6c1fa2362))
+
 ## [6.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.0-alpha.0...v6.0.0) (2023-05-02)
 
 ### Features
