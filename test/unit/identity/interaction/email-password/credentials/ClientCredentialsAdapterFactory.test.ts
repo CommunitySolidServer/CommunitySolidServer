@@ -1,4 +1,3 @@
-import type { Adapter } from 'oidc-provider';
 import {
   ClientCredentialsAdapter,
   ClientCredentialsAdapterFactory,
@@ -8,6 +7,7 @@ import type {
 } from '../../../../../../src/identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { AdapterFactory } from '../../../../../../src/identity/storage/AdapterFactory';
 import type { KeyValueStorage } from '../../../../../../src/storage/keyvalue/KeyValueStorage';
+import type { Adapter } from '../../../../../../templates/types/oidc-provider';
 
 describe('A ClientCredentialsAdapterFactory', (): void => {
   let storage: jest.Mocked<KeyValueStorage<string, ClientCredentials>>;

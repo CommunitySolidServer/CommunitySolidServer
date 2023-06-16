@@ -1,9 +1,9 @@
-import type { Adapter } from 'oidc-provider';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import {
   PassthroughAdapter,
   PassthroughAdapterFactory,
 } from '../../../../src/identity/storage/PassthroughAdapterFactory';
+import type { Adapter } from '../../../../templates/types/oidc-provider';
 
 describe('A PassthroughAdapterFactory', (): void => {
   let sourceFactory: jest.Mocked<AdapterFactory>;

@@ -1,4 +1,4 @@
-import type { Provider } from 'oidc-provider';
+import type Provider from '../../../templates/types/oidc-provider';
 
 /**
  * Returns a Provider of OIDC interactions.

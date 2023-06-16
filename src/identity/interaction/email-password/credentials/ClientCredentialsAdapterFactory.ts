@@ -1,4 +1,4 @@
-import type { AdapterPayload, Adapter } from 'oidc-provider';
+import type { AdapterPayload, Adapter } from '../../../../../templates/types/oidc-provider';
 import type { KeyValueStorage } from '../../../../storage/keyvalue/KeyValueStorage';
 import type { AdapterFactory } from '../../../storage/AdapterFactory';
 import { PassthroughAdapterFactory, PassthroughAdapter } from '../../../storage/PassthroughAdapterFactory';

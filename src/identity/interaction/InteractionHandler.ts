@@ -1,4 +1,4 @@
-import type { KoaContextWithOIDC } from 'oidc-provider';
+import type { KoaContextWithOIDC } from '../../../templates/types/oidc-provider';
 import type { Operation } from '../../http/Operation';
 import type { Representation } from '../../http/representation/Representation';
 import { APPLICATION_JSON } from '../../util/ContentTypes';
