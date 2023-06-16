@@ -4,7 +4,6 @@
     {
       "comment": [
         "Sets all the relevant Solid-OIDC parameters.",
-        "dPoP is draft-01 since that is the latest version v6 of the OIDC library supports."
       ],
       "@id": "urn:solid-server:default:IdentityProviderFactory",
       "@type": "IdentityProviderFactory",
@@ -32,7 +31,7 @@
           "claimsParameter": { "enabled": true },
           "clientCredentials": { "enabled": true },
           "devInteractions": { "enabled": false },
-          "dPoP": { "enabled": true, "ack": "draft-03" },
+          "dPoP": { "enabled": true },
           "introspection": { "enabled": true },
           "registration": { "enabled": true },
           "revocation": { "enabled": true },
