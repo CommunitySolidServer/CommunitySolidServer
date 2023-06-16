@@ -2,6 +2,7 @@
 // import/no-unresolved can't handle jose imports
 // tsdoc/syntax can't handle {json} parameter
 import { randomBytes } from 'crypto';
+import type Provider from 'oidc-provider';
 import type { Account,
   Adapter,
   AsymmetricSigningAlgorithm,
@@ -11,7 +12,6 @@ import type { Account,
   ResourceServer,
   UnknownObject,
   errors } from 'oidc-provider';
-import { Provider } from 'oidc-provider';
 import type { Operation } from '../../http/Operation';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
@@ -146,7 +146,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     this.configureErrors(config);
 
     // Allow provider to interpret reverse proxy headers
-    const provider = new Provider(this.baseUrl, config);
+    const provider = new (await import('oidc-provider')).default(this.baseUrl, config);
     provider.proxy = true;
 
     this.captureErrorResponses(provider);
