@@ -25,6 +25,24 @@ function jestGithubRunnerSpecs() {
   };
 }
 
+// ESM libraries that need to be transformed so Jest can handle them
+const esModules = [
+  'oidc-provider',
+  'nanoid',
+  'got',
+  'quick-lru',
+  '@sindresorhus/is',
+  'p-cancelable',
+  '@szmarczak/http-timer',
+  'cacheable-request',
+  'normalize-url',
+  'responselike',
+  'lowercase-keys',
+  'mimic-response',
+  'form-data-encoder',
+  'cacheable-lookup',
+];
+
 module.exports = {
   transform: {
     '^.+\\.ts$': [ 'ts-jest', {
@@ -32,7 +50,11 @@ module.exports = {
         diagnostics: false,
         isolatedModules: true,
     }],
+    // This transformer converts ESM packages to CJS
+    '^.+node_modules.+\\.js$': 'jest-esm-transformer-2',
   },
+  // By default, node_modules are not transformed, but we want to transform the ESM packages
+  transformIgnorePatterns: [`/node_modules/(?!(${esModules.join('|')})/)`],
   testRegex: '/test/(unit|integration)/.*\\.test\\.ts$',
   moduleFileExtensions: [
     'ts',
