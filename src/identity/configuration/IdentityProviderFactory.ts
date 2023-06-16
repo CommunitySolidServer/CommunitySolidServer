@@ -145,9 +145,23 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Render errors with our own error handler
     this.configureErrors(config);
 
-    // Allow provider to interpret reverse proxy headers.
     // As oidc-provider is an ESM package and CSS is CJS, we have to use a dynamic import here.
-    const provider = new (await import('oidc-provider')).default(this.baseUrl, config);
+    // Unfortunately, there is a Node/Jest bug that causes segmentation faults when doing such an import in Jest:
+    // https://github.com/nodejs/node/issues/35889
+    // To work around that, we do the import differently, in case we are in a Jest test run.
+    // This can be detected via the env variables: https://jestjs.io/docs/environment-variables.
+    // There have been reports of `JEST_WORKER_ID` being undefined, so to be sure we check both.
+    let ctr: { default: new(issuer: string, configuration?: Configuration) => Provider };
+    // eslint-disable-next-line no-process-env
+    if (process.env.JEST_WORKER_ID ?? process.env.NODE_ENV === 'test') {
+      // eslint-disable-next-line no-undef
+      ctr = jest.requireActual('oidc-provider');
+    } else {
+      ctr = await import('oidc-provider');
+    }
+    const provider = new ctr.default(this.baseUrl, config);
+
+    // Allow provider to interpret reverse proxy headers.
     provider.proxy = true;
 
     this.captureErrorResponses(provider);

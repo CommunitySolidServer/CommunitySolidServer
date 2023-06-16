@@ -37,6 +37,8 @@ const routes = {
 };
 
 describe('An IdentityProviderFactory', (): void => {
+  let jestWorkerId: string | undefined;
+  let nodeEnv: string | undefined;
   let baseConfig: Configuration;
   const baseUrl = 'http://example.com/foo/';
   const oidcPath = '/oidc';
@@ -53,8 +55,24 @@ describe('An IdentityProviderFactory', (): void => {
   let responseWriter: jest.Mocked<ResponseWriter>;
   let factory: IdentityProviderFactory;
 
+  beforeAll(async(): Promise<void> => {
+    // We need to fool the IDP factory into thinking we are not in a test run,
+    // otherwise we can't mock the oidc-provider library due to the workaround in the code there.
+    jestWorkerId = process.env.JEST_WORKER_ID;
+    nodeEnv = process.env.NODE_ENV;
+    delete process.env.JEST_WORKER_ID;
+    delete process.env.NODE_ENV;
+  });
+
+  afterAll(async(): Promise<void> => {
+    process.env.JEST_WORKER_ID = jestWorkerId;
+    process.env.NODE_ENV = nodeEnv;
+  });
+
   beforeEach(async(): Promise<void> => {
-    baseConfig = { claims: { webid: [ 'webid', 'client_webid' ]}};
+    // Disabling devInteractions to prevent warnings when testing the path
+    // where we use the actual library instead of a mock.
+    baseConfig = { claims: { webid: [ 'webid', 'client_webid' ]}, features: { devInteractions: { enabled: false }}};
 
     ctx = {
       method: 'GET',
@@ -307,5 +325,13 @@ describe('An IdentityProviderFactory', (): void => {
     expect(ctx.accepts('something')).toBe('type');
     expect(oldAccept).toHaveBeenCalledTimes(1);
     expect(oldAccept).toHaveBeenLastCalledWith('something');
+  });
+
+  it('avoids dynamic imports when testing with Jest.', async(): Promise<void> => {
+    // Reset the env variable, so we can test the path where the dynamic import is not used
+    process.env.JEST_WORKER_ID = jestWorkerId;
+    const provider = await factory.getProvider() as any;
+    // We don't define this in our mock
+    expect(provider.app).toBeDefined();
   });
 });

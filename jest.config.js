@@ -46,7 +46,7 @@ const esModules = [
 module.exports = {
   transform: {
     '^.+\\.ts$': [ 'ts-jest', {
-        tsconfig: '<rootDir>/tsconfig.json',
+        tsconfig: '<rootDir>/test/tsconfig.json',
         diagnostics: false,
         isolatedModules: true,
     }],
