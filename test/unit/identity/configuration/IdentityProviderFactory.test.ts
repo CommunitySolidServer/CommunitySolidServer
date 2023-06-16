@@ -1,7 +1,6 @@
 import { Readable } from 'stream';
 import { exportJWK, generateKeyPair } from 'jose';
 import type * as Koa from 'koa';
-import type { errors, Configuration, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -16,12 +15,11 @@ import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueS
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
+import type { errors, Configuration, KoaContextWithOIDC } from '../../../../templates/types/oidc-provider';
 
 /* eslint-disable @typescript-eslint/naming-convention */
-jest.mock('oidc-provider', (): any => ({
-  Provider: jest.fn().mockImplementation((issuer: string, config: Configuration): any =>
-    ({ issuer, config, use: jest.fn() })),
-}));
+jest.mock('oidc-provider', (): any =>
+  jest.fn().mockImplementation((issuer: string, config: Configuration): any => ({ issuer, config, use: jest.fn() })));
 
 const routes = {
   authorization: '/foo/oidc/auth',

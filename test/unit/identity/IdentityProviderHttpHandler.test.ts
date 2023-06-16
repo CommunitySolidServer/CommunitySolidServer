@@ -1,4 +1,3 @@
-import type { Provider } from 'oidc-provider';
 import type { Operation } from '../../../src/http/Operation';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
@@ -16,6 +15,7 @@ import type {
 } from '../../../src/storage/conversion/RepresentationConverter';
 import { APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED } from '../../../src/util/ContentTypes';
 import { CONTENT_TYPE } from '../../../src/util/Vocabularies';
+import type Provider from '../../../templates/types/oidc-provider';
 
 describe('An IdentityProviderHttpHandler', (): void => {
   const request: HttpRequest = {} as any;

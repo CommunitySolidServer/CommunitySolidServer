@@ -1,5 +1,5 @@
 import assert from 'assert';
-import type { InteractionResults } from 'oidc-provider';
+import type { InteractionResults } from '../../../../../templates/types/oidc-provider';
 import type { Operation } from '../../../../http/Operation';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';

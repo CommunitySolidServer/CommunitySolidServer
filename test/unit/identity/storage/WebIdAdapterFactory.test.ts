@@ -1,8 +1,8 @@
 import fetch from 'cross-fetch';
-import type { Adapter } from 'oidc-provider';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import { WebIdAdapterFactory } from '../../../../src/identity/storage/WebIdAdapterFactory';
 import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
+import type { Adapter } from '../../../../templates/types/oidc-provider';
 
 jest.mock('cross-fetch');
 

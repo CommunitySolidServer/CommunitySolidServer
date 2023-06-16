@@ -1,10 +1,10 @@
-import type { Provider } from 'oidc-provider';
 import type { ProviderFactory } from '../../../../src/identity/configuration/ProviderFactory';
 import { ConsentHandler } from '../../../../src/identity/interaction/ConsentHandler';
 import type { Interaction } from '../../../../src/identity/interaction/InteractionHandler';
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { readJsonStream } from '../../../../src/util/StreamUtil';
+import type Provider from '../../../../templates/types/oidc-provider';
 import { createPostJsonOperation } from './email-password/handler/Util';
 
 const newGrantId = 'newGrantId';

@@ -3,7 +3,7 @@ import type {
   InteractionResults,
   KoaContextWithOIDC,
   UnknownObject,
-} from 'oidc-provider';
+} from '../../../templates/types/oidc-provider';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { APPLICATION_JSON } from '../../util/ContentTypes';

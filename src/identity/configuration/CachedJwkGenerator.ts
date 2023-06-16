@@ -1,7 +1,7 @@
 import { createPublicKey } from 'crypto';
 import type { KeyObject } from 'crypto';
 import { exportJWK, generateKeyPair, importJWK } from 'jose';
-import type { JWKS, AsymmetricSigningAlgorithm } from 'oidc-provider';
+import type { JWKS, AsymmetricSigningAlgorithm } from '../../../templates/types/oidc-provider';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { AlgJwk, JwkGenerator } from './JwkGenerator';
 

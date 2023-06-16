@@ -1,9 +1,9 @@
 import { generateKeyPair, importJWK, jwtVerify, SignJWT } from 'jose';
 import * as jose from 'jose';
-import type { JWKS } from 'oidc-provider';
 import { CachedJwkGenerator } from '../../../../src/identity/configuration/CachedJwkGenerator';
 import type { AlgJwk } from '../../../../src/identity/configuration/JwkGenerator';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
+import type { JWKS } from '../../../../templates/types/oidc-provider';
 
 describe('A CachedJwkGenerator', (): void => {
   const alg = 'ES256';

@@ -1,7 +1,7 @@
-import type { AdapterPayload } from 'oidc-provider';
 import type { ExpiringAdapter } from '../../../../src/identity/storage/ExpiringAdapterFactory';
 import { ExpiringAdapterFactory } from '../../../../src/identity/storage/ExpiringAdapterFactory';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
+import type { AdapterPayload } from '../../../../templates/types/oidc-provider';
 
 // Use fixed dates
 jest.useFakeTimers();
