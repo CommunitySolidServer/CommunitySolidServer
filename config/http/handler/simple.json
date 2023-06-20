@@ -11,6 +11,7 @@
       "handlers": [
         { "@id": "urn:solid-server:default:Middleware" },
         {
+          "@id": "urn:solid-server:simple:BaseHttpHandler",
           "@type": "WaterfallHandler",
           "handlers": [
             { "@id": "urn:solid-server:default:StaticAssetHandler" },
