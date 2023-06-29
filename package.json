@@ -172,7 +172,7 @@
     "@inrupt/solid-client-authn-core": "1.14.0",
     "@inrupt/solid-client-authn-node": "1.14.0",
     "@microsoft/tsdoc-config": "^0.16.2",
-    "@tsconfig/node14": "^1.0.3",
+    "@tsconfig/node14": "^14.1.0",
     "@types/cheerio": "^0.22.31",
     "@types/jest": "^29.5.1",
     "@types/set-cookie-parser": "^2.4.2",
