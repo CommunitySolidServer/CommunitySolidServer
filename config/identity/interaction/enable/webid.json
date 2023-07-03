@@ -29,7 +29,7 @@
       "templates": [{
         "@id": "urn:solid-server:default:LinkWebIdHtml",
         "@type": "HtmlViewEntry",
-        "filePath": "@css:templates/identity/account/link-webId.html.ejs",
+        "filePath": "@css:templates/identity/account/link-webid.html.ejs",
         "route": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
       }]
     },
