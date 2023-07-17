@@ -50,6 +50,15 @@
       "limit_unit": "bytes"
     },
     {
+      "comment": "Make it so the new pods are empty containers",
+      "@type": "Override",
+      "overrideInstance": { "@id": "urn:solid-server:default:PodResourcesGenerator" },
+      "overrideParameters": {
+        "@type": "StaticFolderGenerator",
+        "templateFolder": "@css:templates/root/empty"
+      }
+    },
+    {
       "@id": "urn:solid-server:default:SizeReporter",
       "@type": "FileSizeReporter",
       "ignoreFolders": [ "^/\\.internal$" ]

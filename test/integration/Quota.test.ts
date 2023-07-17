@@ -3,7 +3,7 @@ import type { Stats } from 'fs';
 import fetch from 'cross-fetch';
 import type { Response } from 'cross-fetch';
 import { ensureDir, pathExists } from 'fs-extra';
-import { joinFilePath, joinUrl } from '../../src';
+import { joinUrl } from '../../src';
 import type { App } from '../../src';
 import { register } from '../util/AccountUtil';
 import { getPort } from '../util/Util';
@@ -27,23 +27,6 @@ async function performSimplePutWithLength(path: string, length: number): Promise
 async function registerTestPods(baseUrl: string, pods: string[]): Promise<void> {
   for (const pod of pods) {
     await register(baseUrl, { podName: pod, email: `${pod}@example.ai`, password: 't' });
-  }
-}
-
-/* We just want a container with the correct metadata, everything else can be removed */
-async function clearInitialFiles(rootFilePath: string, pods: string[]): Promise<void> {
-  for (const pod of pods) {
-    const fileList = await fsPromises.readdir(joinFilePath(rootFilePath, pod));
-    for (const file of fileList) {
-      if (file !== '.meta') {
-        const path = joinFilePath(rootFilePath, pod, file);
-        if ((await fsPromises.stat(path)).isDirectory()) {
-          await fsPromises.rm(path, { recursive: true });
-        } else {
-          await fsPromises.unlink(path);
-        }
-      }
-    }
   }
 }
 
@@ -93,7 +76,6 @@ describe('A quota server', (): void => {
 
       // Initialize 2 pods
       await registerTestPods(baseUrl, [ podName1, podName2 ]);
-      await clearInitialFiles(rootFilePath, [ podName1, podName2 ]);
     });
 
     afterAll(async(): Promise<void> => {
@@ -179,7 +161,6 @@ describe('A quota server', (): void => {
 
       // Initialize 2 pods
       await registerTestPods(baseUrl, [ podName1, podName2 ]);
-      await clearInitialFiles(rootFilePath, [ podName1, podName2 ]);
     });
 
     afterAll(async(): Promise<void> => {
