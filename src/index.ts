@@ -206,10 +206,6 @@ export * from './init/final/Finalizable';
 export * from './init/final/FinalizableHandler';
 export * from './init/final/Finalizer';
 
-// Init/Setup
-export * from './init/setup/SetupHandler';
-export * from './init/setup/SetupHttpHandler';
-
 // Init/Cli
 export * from './init/cli/CliExtractor';
 export * from './init/cli/YargsCliExtractor';

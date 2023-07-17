@@ -36,12 +36,6 @@
           "HtmlViewHandler:_templates_value": { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
         }
       ]
-    },
-    {
-      "comment": "Root access is disabled when registration is enabled to prevent nested storage containers.",
-      "@id": "urn:solid-server:default:SetupHttpHandler",
-      "@type": "SetupHttpHandler",
-      "allowRootPod": false
     }
   ]
 }

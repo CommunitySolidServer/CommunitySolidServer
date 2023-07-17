@@ -3,7 +3,6 @@
   "import": [
     "css:config/app/main/default.json",
     "css:config/app/init/initialize-prefilled-root.json",
-    "css:config/app/setup/optional.json",
     "css:config/app/variables/default.json",
     "css:config/http/handler/default.json",
     "css:config/http/middleware/default.json",
