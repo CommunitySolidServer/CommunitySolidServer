@@ -23,6 +23,7 @@
     "css:config/ldp/modes/default.json",
     "css:config/storage/backend/pod-quota-file.json",
     "css:config/storage/key-value/resource-store.json",
+    "css:config/storage/location/pod.json",
     "css:config/storage/middleware/default.json",
     "css:config/util/auxiliary/acl.json",
     "css:config/util/identifiers/suffix.json",
