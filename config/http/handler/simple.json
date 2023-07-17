@@ -15,7 +15,6 @@
           "@type": "WaterfallHandler",
           "handlers": [
             { "@id": "urn:solid-server:default:StaticAssetHandler" },
-            { "@id": "urn:solid-server:default:SetupHandler" },
             { "@id": "urn:solid-server:default:StorageDescriptionHandler" },
             { "@id": "urn:solid-server:default:LdpHandler" }
           ]

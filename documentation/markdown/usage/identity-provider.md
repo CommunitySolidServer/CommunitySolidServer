@@ -134,7 +134,7 @@ To register a user, you can do a POST request with a JSON body containing the co
 
 Two fields here that are not covered on the HTML page above are `rootPod` and `template`.
 `rootPod` tells the server to put the pod in the root of the server instead of a location based on the `podName`.
-By default the server will reject requests where this is `true`, except during setup.
+By default the server will reject requests where this is `true`.
 `template` is only used by servers running the `config/dynamic.json` configuration,
 which is a very custom setup where every pod can have a different Components.js configuration,
 so this value can usually be ignored.
@@ -186,5 +186,3 @@ so they can be recreated when the server restarts.
 ### registration
 
 This setting allows you to enable/disable registration on the server.
-Disabling registration here does not disable registration during setup,
-meaning you can still use this server as an IDP with the account created there.

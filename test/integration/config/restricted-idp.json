@@ -3,7 +3,6 @@
   "import": [
     "css:config/app/main/default.json",
     "css:config/app/init/default.json",
-    "css:config/app/setup/disabled.json",
     "css:config/http/handler/default.json",
     "css:config/http/middleware/default.json",
     "css:config/http/notifications/websockets.json",

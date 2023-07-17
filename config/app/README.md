@@ -19,16 +19,6 @@ This is the entry point to the main server setup.
 * *default*: The main application. This should only be changed/replaced
   if you want to start from a different kind of class.
 
-## Setup
-
-Handles the setup page the first time the server is started.
-
-* *disabled*: Disables the setup page. Root container access will be impossible unless handled by the Init config above.
-              Registration and pod creation is still possible if that feature is enabled.
-* *optional*: Setup is available at `/setup` but the server can already be used.
-              Everyone can access the setup page so make sure to complete that as soon as possible.
-* *required*: All requests will be redirected to the setup page until setup is completed.
-
 ## Variables
 
 Handles parsing CLI parameters and assigning values to Components.js variables.

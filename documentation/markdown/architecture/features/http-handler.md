@@ -19,7 +19,6 @@ flowchart LR
   subgraph WaterfallHandlerArgs[" "]
     direction TB
     StaticAssetHandler("<strong>StaticAssetHandler</strong><br>StaticAssetHandler")
-    SetupHandler("<strong>SetupHandler</strong><br><i>HttpHandler</i>")
     OidcHandler("<strong>OidcHandler</strong><br><i>HttpHandler</i>")
     NotificationHttpHandler("<strong>NotificationHttpHandler</strong><br><i>HttpHandler</i>")
     StorageDescriptionHandler("<strong>StorageDescriptionHandler</strong><br><i>HttpHandler</i>")
@@ -28,8 +27,7 @@ flowchart LR
     LdpHandler("<strong>LdpHandler</strong><br><i>HttpHandler</i>")
   end
 
-  StaticAssetHandler --> SetupHandler
-  SetupHandler --> OidcHandler
+  StaticAssetHandler --> OidcHandler
   OidcHandler --> NotificationHttpHandler
   NotificationHttpHandler --> StorageDescriptionHandler
   StorageDescriptionHandler --> AuthResourceHttpHandler
@@ -51,17 +49,6 @@ The `urn:solid-server:default:StaticAssetHandler` matches exact URLs to static a
 An example of this is the favicon, where the `/favicon.ico` URL
 is directed to the favicon file at `/templates/images/favicon.ico`.
 It can also map entire folders to a specific path, such as `/.well-known/css/styles/` which contains all stylesheets.
-
-## SetupHandler
-
-The `urn:solid-server:default:SetupHandler` is responsible
-for redirecting all requests to `/setup` until setup is finished,
-thereby ensuring that setup needs to be finished before anything else can be done on the server,
-and handling the actual setup request that is sent to `/setup`.
-Once setup is finished, this handler will reject all requests and thus no longer be relevant.
-
-If the server is configured to not have setup enabled,
-the corresponding identifier will point to a handler that always rejects all requests.
 
 ## OidcHandler
 

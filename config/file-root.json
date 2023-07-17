@@ -3,7 +3,6 @@
   "import": [
     "css:config/app/main/default.json",
     "css:config/app/init/initialize-root.json",
-    "css:config/app/setup/disabled.json",
     "css:config/app/variables/default.json",
     "css:config/http/handler/default.json",
     "css:config/http/middleware/default.json",
@@ -22,23 +21,22 @@
     "css:config/ldp/metadata-parser/default.json",
     "css:config/ldp/metadata-writer/default.json",
     "css:config/ldp/modes/default.json",
-    "css:config/storage/backend/sparql.json",
-    "css:config/storage/key-value/memory.json",
+    "css:config/storage/backend/file.json",
+    "css:config/storage/key-value/resource-store.json",
     "css:config/storage/middleware/default.json",
     "css:config/util/auxiliary/acl.json",
     "css:config/util/identifiers/suffix.json",
     "css:config/util/index/default.json",
     "css:config/util/logging/winston.json",
     "css:config/util/representation-conversion/default.json",
-    "css:config/util/resource-locker/memory.json",
+    "css:config/util/resource-locker/file.json",
     "css:config/util/variables/default.json"
   ],
   "@graph": [
     {
       "comment": [
-        "A single-pod server that stores its resources in a SPARQL endpoint and uses WAC for authorization.",
-        "This server only supports RDF data. For this reason it can not use its resource store for internal key/value storage.",
-        "No setup is required and the root container is initialized to allow full access for everyone so make sure to change this."
+        "A Solid server that stores its resources on disk and uses WAC for authorization.",
+        "No registration and the root container is initialized to allow full access for everyone so make sure to change this."
       ]
     }
   ]
