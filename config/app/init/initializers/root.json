@@ -9,13 +9,14 @@
       "storageValue": true,
       "storage": { "@id": "urn:solid-server:default:SetupStorage" },
       "source": {
+        "@id": "urn:solid-server:default:RootContainerInitializer",
         "@type": "ContainerInitializer",
         "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
         "args_path": "/",
         "args_store": { "@id": "urn:solid-server:default:ResourceStore" },
         "args_generator": {
+          "@id": "urn:solid-server:default:RootFolderGenerator",
           "@type": "StaticFolderGenerator",
-          "templateFolder": "@css:templates/root/empty",
           "resourcesGenerator": { "@id": "urn:solid-server:default:TemplatedResourcesGenerator" }
         },
         "args_storageKey": "rootInitialized",

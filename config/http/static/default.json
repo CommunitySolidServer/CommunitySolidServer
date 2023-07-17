@@ -9,26 +9,35 @@
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "assets": [
         {
-          "StaticAssetHandler:_assets_key": "/favicon.ico",
-          "StaticAssetHandler:_assets_value": "@css:templates/images/favicon.ico"
+          "@id": "urn:solid-server:default:FaviconStaticAsset",
+          "@type": "StaticAssetEntry",
+          "relativeUrl": "/favicon.ico",
+          "filePath": "@css:templates/images/favicon.ico"
         },
         {
-          "StaticAssetHandler:_assets_key": "/.well-known/css/styles/",
-          "StaticAssetHandler:_assets_value": "@css:templates/styles/"
+          "@id": "urn:solid-server:default:StylesStaticAsset",
+          "@type": "StaticAssetEntry",
+          "relativeUrl": "/.well-known/css/styles/",
+          "filePath": "@css:templates/styles/"
         },
         {
-          "StaticAssetHandler:_assets_key": "/.well-known/css/fonts/",
-          "StaticAssetHandler:_assets_value": "@css:templates/fonts/"
+          "@id": "urn:solid-server:default:FontsStaticAsset",
+          "@type": "StaticAssetEntry",
+          "relativeUrl": "/.well-known/css/fonts/",
+          "filePath": "@css:templates/fonts/"
         },
         {
-          "StaticAssetHandler:_assets_key": "/.well-known/css/images/",
-          "StaticAssetHandler:_assets_value": "@css:templates/images/"
+          "@id": "urn:solid-server:default:ImagesStaticAsset",
+          "@type": "StaticAssetEntry",
+          "relativeUrl": "/.well-known/css/images/",
+          "filePath": "@css:templates/images/"
         },
         {
-          "StaticAssetHandler:_assets_key": "/.well-known/css/scripts/",
-          "StaticAssetHandler:_assets_value": "@css:templates/scripts/"
+          "@id": "urn:solid-server:default:ScriptsStaticAsset",
+          "@type": "StaticAssetEntry",
+          "relativeUrl": "/.well-known/css/scripts/",
+          "filePath": "@css:templates/scripts/"
         }
-
       ]
     }
   ]

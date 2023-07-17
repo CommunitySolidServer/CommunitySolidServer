@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "import": [
     "css:config/app/main/default.json",
-    "css:config/app/init/default.json",
+    "css:config/app/init/static-root.json",
     "css:config/app/setup/required.json",
     "css:config/app/variables/default.json",
     "css:config/http/handler/default.json",

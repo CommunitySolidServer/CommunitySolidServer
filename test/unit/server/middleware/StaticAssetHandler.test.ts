@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import fs from 'fs';
 import { PassThrough, Readable } from 'stream';
 import { createResponse } from 'node-mocks-http';
-import { StaticAssetHandler } from '../../../../src/server/middleware/StaticAssetHandler';
+import { StaticAssetEntry, StaticAssetHandler } from '../../../../src/server/middleware/StaticAssetHandler';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
@@ -12,17 +12,19 @@ const createReadStream = jest.spyOn(fs, 'createReadStream')
   .mockImplementation((): any => Readable.from([ 'file contents' ]));
 
 describe('A StaticAssetHandler', (): void => {
-  const handler = new StaticAssetHandler({
-    '/': '/assets/README.md',
-    '/foo/bar/style': '/assets/styles/bar.css',
-    '/foo/bar/main': '/assets/scripts/bar.js',
-    '/foo/bar/unknown': '/assets/bar.unknown',
-    '/foo/bar/cwd': 'paths/cwd.txt',
-    '/foo/bar/module': '@css:paths/module.txt',
-    '/foo/bar/document/': '/assets/document.txt',
-    '/foo/bar/folder/': '/assets/folders/1/',
-    '/foo/bar/folder/subfolder/': '/assets/folders/2/',
-  }, 'http://localhost:3000');
+  const assets = [
+    new StaticAssetEntry('/', '/assets/README.md'),
+    new StaticAssetEntry('/foo/bar/style', '/assets/styles/bar.css'),
+    new StaticAssetEntry('/foo/bar/main', '/assets/scripts/bar.js'),
+    new StaticAssetEntry('/foo/bar/unknown', '/assets/bar.unknown'),
+    new StaticAssetEntry('/foo/bar/cwd', 'paths/cwd.txt'),
+    new StaticAssetEntry('/foo/bar/module', '@css:paths/module.txt'),
+    new StaticAssetEntry('/foo/bar/document/', '/assets/document.txt'),
+    new StaticAssetEntry('/foo/bar/folder/', '/assets/folders/1/'),
+    new StaticAssetEntry('/foo/bar/folder/subfolder/', '/assets/folders/2/'),
+  ];
+
+  const handler = new StaticAssetHandler(assets, 'http://localhost:3000');
 
   afterEach(jest.clearAllMocks);
 
@@ -177,7 +179,7 @@ describe('A StaticAssetHandler', (): void => {
   });
 
   it('requires folders to be linked to URLs ending on a slash.', async(): Promise<void> => {
-    expect((): StaticAssetHandler => new StaticAssetHandler({ '/foo': '/bar/' }, 'http://example.com/'))
+    expect((): StaticAssetHandler => new StaticAssetHandler([ new StaticAssetEntry('/foo', '/bar/') ], 'http://example.com/'))
       .toThrow(InternalServerError);
   });
 
@@ -225,11 +227,11 @@ describe('A StaticAssetHandler', (): void => {
 
   it('caches responses when the expires option is set.', async(): Promise<void> => {
     jest.spyOn(Date, 'now').mockReturnValue(0);
-    const cachedHandler = new StaticAssetHandler({
-      '/foo/bar/style': '/assets/styles/bar.css',
-    }, 'http://localhost:3000', {
-      expires: 86400,
-    });
+    const cachedHandler = new StaticAssetHandler(
+      [ new StaticAssetEntry('/foo/bar/style', '/assets/styles/bar.css') ],
+      'http://localhost:3000',
+      { expires: 86400 },
+    );
     const request = { method: 'GET', url: '/foo/bar/style' };
     const response = createResponse();
     await cachedHandler.handleSafe({ request, response } as any);

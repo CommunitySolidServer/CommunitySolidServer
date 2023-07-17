@@ -12,6 +12,11 @@
       "handlers": [
         { "@id": "urn:solid-server:default:RootInitializer" }
       ]
+    },
+    {
+      "@id": "urn:solid-server:default:RootFolderGenerator",
+      "@type": "StaticFolderGenerator",
+      "templateFolder": "@css:templates/root/empty"
     }
   ]
 }

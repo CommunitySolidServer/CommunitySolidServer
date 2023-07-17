@@ -13,8 +13,19 @@ import { HttpHandler } from '../HttpHandler';
 import type { HttpRequest } from '../HttpRequest';
 
 /**
+ * Used to link file paths with relative URLs.
+ * By using a separate class instead of a key/value map it is easier to replace values in Components.js.
+ */
+export class StaticAssetEntry {
+  public constructor(
+    public readonly relativeUrl: string,
+    public readonly filePath: string,
+  ) { }
+}
+
+/**
  * Handler that serves static resources on specific paths.
- * Relative file paths are assumed to be relative to cwd.
+ * Relative file paths are assumed to be relative to the current working directory.
  * Relative file paths can be preceded by `@css:`, e.g. `@css:foo/bar`,
  * in case they need to be relative to the module root.
  * File paths ending in a slash assume the target is a folder and map all of its contents.
@@ -27,18 +38,17 @@ export class StaticAssetHandler extends HttpHandler {
 
   /**
    * Creates a handler for the provided static resources.
-   * @param assets - A mapping from URL paths to paths,
-   *  where URL paths ending in a slash are interpreted as entire folders.
+   * @param assets - A list of {@link StaticAssetEntry}.
    * @param baseUrl - The base URL of the server.
    * @param options - Cache expiration time in seconds.
    */
-  public constructor(assets: Record<string, string>, baseUrl: string, options: { expires?: number } = {}) {
+  public constructor(assets: StaticAssetEntry[], baseUrl: string, options: { expires?: number } = {}) {
     super();
     this.mappings = {};
     const rootPath = ensureTrailingSlash(new URL(baseUrl).pathname);
 
-    for (const [ url, path ] of Object.entries(assets)) {
-      this.mappings[trimLeadingSlashes(url)] = resolveAssetPath(path);
+    for (const { relativeUrl, filePath } of assets) {
+      this.mappings[trimLeadingSlashes(relativeUrl)] = resolveAssetPath(filePath);
     }
     this.pathMatcher = this.createPathMatcher(rootPath);
     this.expires = Number.isInteger(options.expires) ? Math.max(0, options.expires!) : 0;

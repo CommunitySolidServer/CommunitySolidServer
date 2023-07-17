@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "import": [
     "css:config/app/init/default.json",
-    "css:config/app/init/initializers/prefilled-root.json"
+    "css:config/app/init/initializers/root.json"
   ],
   "@graph": [
     {
@@ -12,6 +12,11 @@
       "handlers": [
         { "@id": "urn:solid-server:default:RootInitializer" }
       ]
+    },
+    {
+      "@id": "urn:solid-server:default:RootFolderGenerator",
+      "@type": "StaticFolderGenerator",
+      "templateFolder": "@css:templates/root/prefilled"
     }
   ]
 }
