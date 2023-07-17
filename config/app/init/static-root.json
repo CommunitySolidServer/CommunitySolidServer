@@ -10,8 +10,10 @@
       "@type": "StaticAssetHandler",
       "assets": [
         {
-          "StaticAssetHandler:_assets_key": "/",
-          "StaticAssetHandler:_assets_value": "@css:templates/root/prefilled/base/index.html"
+          "@id": "urn:solid-server:default:RootStaticAsset",
+          "@type": "StaticAssetEntry",
+          "relativeUrl": "/",
+          "filePath": "@css:templates/root/static/index.html"
         }
       ]
     }
