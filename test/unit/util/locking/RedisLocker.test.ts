@@ -79,7 +79,6 @@ const redis: jest.Mocked<Redis & RedisResourceLock & RedisReadWriteLock> = {
       if (typeof store.internal[key] !== 'undefined') {
         deletedEntries += 1;
       }
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete store.internal[key];
     }
     return deletedEntries;
