@@ -3,12 +3,6 @@
   "@graph": [
     {
       "comment": "Disable registration by not attaching a registration handler."
-    },
-    {
-      "comment": "If registration is disabled, the base URL of the server is the root storage.",
-      "@id": "urn:solid-server:default:StorageLocationStrategy",
-      "@type": "RootStorageLocationStrategy",
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
     }
   ]
 }

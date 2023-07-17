@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Determine root storage locations based on pod identifiers.",
+      "@id": "urn:solid-server:default:StorageLocationStrategy",
+      "@type": "PodStorageLocationStrategy",
+      "generator": { "@id": "urn:solid-server:default:IdentifierGenerator" }
+    }
+  ]
+}

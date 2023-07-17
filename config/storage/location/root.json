@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Set the base URL of the server as the root storage.",
+      "@id": "urn:solid-server:default:StorageLocationStrategy",
+      "@type": "RootStorageLocationStrategy",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    }
+  ]
+}

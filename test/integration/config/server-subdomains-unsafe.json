@@ -22,6 +22,7 @@
     "css:config/ldp/modes/default.json",
 
     "css:config/storage/key-value/memory.json",
+    "css:config/storage/location/root.json",
     "css:config/storage/middleware/default.json",
     "css:config/util/auxiliary/acl.json",
     "css:config/util/identifiers/subdomain.json",

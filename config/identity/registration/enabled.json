@@ -5,12 +5,6 @@
   ],
   "@graph": [
     {
-      "comment": "If registration is enabled, the pod locations will be root storages.",
-      "@id": "urn:solid-server:default:StorageLocationStrategy",
-      "@type": "PodStorageLocationStrategy",
-      "generator": { "@id": "urn:solid-server:default:IdentifierGenerator" }
-    },
-    {
       "@id": "urn:solid-server:auth:password:InteractionRouteHandler",
       "@type": "WaterfallHandler",
       "handlers": [
