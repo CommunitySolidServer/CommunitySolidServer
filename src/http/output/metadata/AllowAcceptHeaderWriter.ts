@@ -50,8 +50,12 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
 
     // POST is only allowed on containers.
     // Metadata only has the resource URI in case it has resource metadata.
-    if (this.isPostAllowed(metadata)) {
+    if (!this.isPostAllowed(metadata)) {
       allowedMethods.delete('POST');
+    }
+
+    if (!this.isPutAllowed(metadata)) {
+      allowedMethods.delete('PUT');
     }
 
     if (!this.isDeleteAllowed(metadata)) {
@@ -76,7 +80,14 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
    * otherwise it is just a blank node.
    */
   private isPostAllowed(metadata: RepresentationMetadata): boolean {
-    return metadata.has(RDF.terms.type, LDP.terms.Resource) && !isContainerPath(metadata.identifier.value);
+    return !metadata.has(RDF.terms.type, LDP.terms.Resource) || isContainerPath(metadata.identifier.value);
+  }
+
+  /**
+   * PUT is not allowed on existing containers.
+   */
+  private isPutAllowed(metadata: RepresentationMetadata): boolean {
+    return !metadata.has(RDF.terms.type, LDP.terms.Resource) || !isContainerPath(metadata.identifier.value);
   }
 
   /**
