@@ -2,13 +2,17 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Converts many RDF serialization to Quad objects.",
+      "comment": "Converts many RDF serialization to Quad objects. Caching notification related contexts to prevent too many requests.",
       "@id": "urn:solid-server:default:RdfToQuadConverter",
       "@type": "RdfToQuadConverter",
       "contexts": [
         {
           "RdfToQuadConverter:_contexts_key": "https://www.w3.org/ns/solid/notification/v1",
           "RdfToQuadConverter:_contexts_value": "@css:templates/contexts/notification.jsonld"
+        },
+        {
+          "RdfToQuadConverter:_contexts_key": "https://www.w3.org/ns/activitystreams",
+          "RdfToQuadConverter:_contexts_value": "@css:templates/contexts/activitystreams.jsonld"
         }
       ]
     }
