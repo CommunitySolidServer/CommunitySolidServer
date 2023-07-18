@@ -174,13 +174,15 @@ describe('AppRunner', (): void => {
 
       const createdApp = await new AppRunner().create(
         {
-          mainModulePath: joinFilePath(__dirname, '../../../'),
-          dumpErrorState: true,
-          logLevel: 'info',
+          loaderProperties: {
+            mainModulePath: joinFilePath(__dirname, '../../../'),
+            dumpErrorState: true,
+            logLevel: 'info',
+          },
+          config: joinFilePath(__dirname, '../../../config/default.json'),
+          variableBindings: variables,
+          shorthand,
         },
-        joinFilePath(__dirname, '../../../config/default.json'),
-        variables,
-        shorthand,
       );
       expect(createdApp).toBe(app);
 
@@ -189,6 +191,7 @@ describe('AppRunner', (): void => {
         dumpErrorState: true,
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
+        typeChecking: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
@@ -220,12 +223,14 @@ describe('AppRunner', (): void => {
       try {
         await new AppRunner().create(
           {
-            mainModulePath: joinFilePath(__dirname, '../../../'),
-            dumpErrorState: true,
-            logLevel: 'info',
+            loaderProperties: {
+              mainModulePath: joinFilePath(__dirname, '../../../'),
+              dumpErrorState: true,
+              logLevel: 'info',
+            },
+            config: joinFilePath(__dirname, '../../../config/default.json'),
+            variableBindings: variables,
           },
-          joinFilePath(__dirname, '../../../config/default.json'),
-          variables,
         );
       } catch (error: unknown) {
         caughtError = error as Error;
@@ -254,12 +259,14 @@ describe('AppRunner', (): void => {
       try {
         await new AppRunner().create(
           {
-            mainModulePath: joinFilePath(__dirname, '../../../'),
-            dumpErrorState: true,
-            logLevel: 'info',
+            loaderProperties: {
+              mainModulePath: joinFilePath(__dirname, '../../../'),
+              dumpErrorState: true,
+              logLevel: 'info',
+            },
+            config: joinFilePath(__dirname, '../../../config/default.json'),
+            variableBindings: variables,
           },
-          joinFilePath(__dirname, '../../../config/default.json'),
-          variables,
         );
       } catch (error: unknown) {
         caughtError = error as Error;
@@ -293,13 +300,15 @@ describe('AppRunner', (): void => {
 
       await new AppRunner().run(
         {
-          mainModulePath: joinFilePath(__dirname, '../../../'),
-          dumpErrorState: true,
-          logLevel: 'info',
+          loaderProperties: {
+            mainModulePath: joinFilePath(__dirname, '../../../'),
+            dumpErrorState: true,
+            logLevel: 'info',
+          },
+          config: joinFilePath(__dirname, '../../../config/default.json'),
+          variableBindings: variables,
+          shorthand,
         },
-        joinFilePath(__dirname, '../../../config/default.json'),
-        variables,
-        shorthand,
       );
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
@@ -307,6 +316,7 @@ describe('AppRunner', (): void => {
         dumpErrorState: true,
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
+        typeChecking: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
@@ -331,7 +341,6 @@ describe('AppRunner', (): void => {
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
-        dumpErrorState: true,
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
@@ -362,7 +371,6 @@ describe('AppRunner', (): void => {
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
-        dumpErrorState: true,
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
@@ -406,7 +414,6 @@ describe('AppRunner', (): void => {
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
-        dumpErrorState: true,
         logLevel: 'debug',
         mainModulePath: '/var/cwd/module/path',
         typeChecking: false,
@@ -463,7 +470,7 @@ describe('AppRunner', (): void => {
         caughtError = error as Error;
       }
       expect(caughtError.message).toMatch(/^Could not build the config files from .*default\.json/mu);
-      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+      expect(caughtError.message).toMatch(/^Error: Fatal/mu);
 
       expect(write).toHaveBeenCalledTimes(0);
       expect(exit).toHaveBeenCalledTimes(0);
@@ -479,7 +486,7 @@ describe('AppRunner', (): void => {
         caughtError = error as Error;
       }
       expect(caughtError.message).toMatch(/^Could not create the CLI resolver/mu);
-      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+      expect(caughtError.message).toMatch(/^Error: Fatal/mu);
 
       expect(write).toHaveBeenCalledTimes(0);
       expect(exit).toHaveBeenCalledTimes(0);
@@ -495,7 +502,7 @@ describe('AppRunner', (): void => {
         caughtError = error as Error;
       }
       expect(caughtError.message).toMatch(/^Could not parse the CLI parameters/mu);
-      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+      expect(caughtError.message).toMatch(/^Error: Fatal/mu);
 
       expect(write).toHaveBeenCalledTimes(0);
       expect(exit).toHaveBeenCalledTimes(0);
@@ -511,7 +518,7 @@ describe('AppRunner', (): void => {
         caughtError = error as Error;
       }
       expect(caughtError.message).toMatch(/^Could not resolve the shorthand values/mu);
-      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+      expect(caughtError.message).toMatch(/^Error: Fatal/mu);
 
       expect(write).toHaveBeenCalledTimes(0);
       expect(exit).toHaveBeenCalledTimes(0);
@@ -530,7 +537,7 @@ describe('AppRunner', (): void => {
         caughtError = error as Error;
       }
       expect(caughtError.message).toMatch(/^Could not create the server/mu);
-      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+      expect(caughtError.message).toMatch(/^Error: Fatal/mu);
 
       expect(write).toHaveBeenCalledTimes(0);
       expect(exit).toHaveBeenCalledTimes(0);
@@ -545,7 +552,7 @@ describe('AppRunner', (): void => {
       } catch (error: unknown) {
         caughtError = error as Error;
       }
-      expect(caughtError.message).toMatch(/^Cause: Unknown error: NotAnError$/mu);
+      expect(caughtError.message).toMatch(/^Unknown error: NotAnError$/mu);
 
       expect(write).toHaveBeenCalledTimes(0);
       expect(exit).toHaveBeenCalledTimes(0);
@@ -558,7 +565,6 @@ describe('AppRunner', (): void => {
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
-        dumpErrorState: true,
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
@@ -591,7 +597,6 @@ describe('AppRunner', (): void => {
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       // Check logLevel to be set to debug instead of default `info`
       expect(ComponentsManager.build).toHaveBeenCalledWith({
-        dumpErrorState: true,
         logLevel: 'debug',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
@@ -723,7 +728,7 @@ describe('AppRunner', (): void => {
         caughtError = error as Error;
       }
       expect(caughtError.message).toMatch(/^Could not start the server/mu);
-      expect(caughtError.message).toMatch(/^Cause: Fatal/mu);
+      expect(caughtError.message).toMatch(/^Error: Fatal/mu);
 
       expect(app.start).toHaveBeenCalledTimes(1);
 
@@ -743,7 +748,6 @@ describe('AppRunner', (): void => {
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
-        dumpErrorState: true,
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
@@ -776,7 +780,7 @@ describe('AppRunner', (): void => {
       await flushPromises();
 
       expect(write).toHaveBeenCalledTimes(1);
-      expect(write).toHaveBeenLastCalledWith(expect.stringMatching(/Cause: Fatal/mu));
+      expect(write).toHaveBeenLastCalledWith(expect.stringMatching(/Error: Fatal/mu));
 
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenLastCalledWith(1);

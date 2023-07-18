@@ -15,15 +15,15 @@ describe('A Solid server', (): void => {
 
   beforeAll(async(): Promise<void> => {
     // Using AppRunner here so it is also tested in an integration test
-    app = await new AppRunner().create(
-      {
+    app = await new AppRunner().create({
+      loaderProperties: {
         mainModulePath: resolveModulePath(''),
         logLevel: 'error',
         typeChecking: false,
       },
-      resolveModulePath('config/default.json'),
-      getDefaultVariables(port, baseUrl),
-    );
+      config: resolveModulePath('config/default.json'),
+      variableBindings: getDefaultVariables(port, baseUrl),
+    });
     await app.start();
   });
 
