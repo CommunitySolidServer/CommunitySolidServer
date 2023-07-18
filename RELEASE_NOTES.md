@@ -31,7 +31,7 @@ The following changes are relevant for v5 custom configs that replaced certain f
 
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 
-- ...
+- The `AppRunner` functions to create and start the server now take a singular arguments object as input.
 
 ## v6.0.0
 
