@@ -30,8 +30,7 @@ const stores: [string, any][] = [
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
-  // Switch to file locker after https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1452
-    configs: [ 'storage/backend/file.json', 'util/resource-locker/memory.json' ],
+    configs: [ 'storage/backend/file.json', 'util/resource-locker/file.json' ],
     teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
 ];
