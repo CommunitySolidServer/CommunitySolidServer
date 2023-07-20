@@ -53,7 +53,7 @@ describe('HeaderUtil', (): void => {
       ]);
     });
 
-    it('rejects Accept Headers with invalid types.', async(): Promise<void> => {
+    it('ignores Accept Headers with invalid types.', async(): Promise<void> => {
       expect(parseAccept('*')).toEqual([]);
       expect(parseAccept('"bad"/text')).toEqual([]);
       expect(parseAccept('*/\\bad')).toEqual([]);
@@ -62,12 +62,13 @@ describe('HeaderUtil', (): void => {
       }]);
     });
 
-    it('ignores the weight of Accept Headers with invalid q values.', async(): Promise<void> => {
+    it('ignores the weight of Accept Headers with q values it can not parse.', async(): Promise<void> => {
       expect(parseAccept('a/b; q=text')).toEqual([{
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
+      // Invalid Q value but can be parsed
       expect(parseAccept('a/b; q=0.1234')).toEqual([{
-        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
+        range: 'a/b', weight: 0.1234, parameters: { extension: {}, mediaType: {}},
       }]);
       expect(parseAccept('a/b; q=1.1')).toEqual([{
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
@@ -75,12 +76,15 @@ describe('HeaderUtil', (): void => {
       expect(parseAccept('a/b; q=1.000')).toEqual([{
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
+      expect(parseAccept('a/b; q=-5')).toEqual([{
+        range: 'a/b', weight: 0, parameters: { extension: {}, mediaType: {}},
+      }]);
       expect(parseAccept('a/b; q=0.123')).toEqual([{
         range: 'a/b', weight: 0.123, parameters: { extension: {}, mediaType: {}},
       }]);
     });
 
-    it('rejects Accept Headers with invalid parameters.', async(): Promise<void> => {
+    it('ignores Accept Headers with invalid parameters.', async(): Promise<void> => {
       expect(parseAccept('a/b; a')).toEqual([{
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
@@ -100,6 +104,12 @@ describe('HeaderUtil', (): void => {
       expect((): any => parseAccept('a/b; a="\\""')).not.toThrow();
       expect((): any => parseAccept('a/b; a="\\\u007F"')).toThrow('Invalid quoted string in header:');
     });
+
+    it('rejects invalid values when strict mode is enabled.', async(): Promise<void> => {
+      expect((): any => parseAccept('"bad"/text', true)).toThrow(BadRequestHttpError);
+      expect((): any => parseAccept('a/b; q=text', true)).toThrow(BadRequestHttpError);
+      expect((): any => parseAccept('a/b; a', true)).toThrow(BadRequestHttpError);
+    });
   });
 
   describe('#parseCharset', (): void => {
@@ -110,10 +120,14 @@ describe('HeaderUtil', (): void => {
       ]);
     });
 
-    it('rejects invalid Accept-Charset Headers.', async(): Promise<void> => {
+    it('ignores invalid Accept-Charset Headers.', async(): Promise<void> => {
       expect(parseAcceptCharset('a/b')).toEqual([]);
       expect(parseAcceptCharset('a; q=text')).toEqual([{ range: 'a', weight: 1 }]);
       expect(parseAcceptCharset('a; c=d')).toEqual([{ range: 'a', weight: 1 }]);
+    });
+
+    it('rejects invalid values when strict mode is enabled.', async(): Promise<void> => {
+      expect((): any => parseAcceptCharset('a/b', true)).toThrow(BadRequestHttpError);
     });
   });
 
@@ -130,10 +144,14 @@ describe('HeaderUtil', (): void => {
       ]);
     });
 
-    it('rejects invalid Accept-Encoding Headers.', async(): Promise<void> => {
+    it('ignores invalid Accept-Encoding Headers.', async(): Promise<void> => {
       expect(parseAcceptEncoding('a/b')).toEqual([]);
       expect(parseAcceptEncoding('a; q=text')).toEqual([{ range: 'a', weight: 1 }]);
       expect(parseAcceptCharset('a; c=d')).toEqual([{ range: 'a', weight: 1 }]);
+    });
+
+    it('rejects invalid values when strict mode is enabled.', async(): Promise<void> => {
+      expect((): any => parseAcceptEncoding('a/b', true)).toThrow(BadRequestHttpError);
     });
   });
 
@@ -146,7 +164,7 @@ describe('HeaderUtil', (): void => {
       ]);
     });
 
-    it('rejects invalid Accept-Language Headers.', async(): Promise<void> => {
+    it('ignores invalid Accept-Language Headers.', async(): Promise<void> => {
       expect(parseAcceptLanguage('a/b')).toEqual([]);
       expect(parseAcceptLanguage('05-a')).toEqual([]);
       expect(parseAcceptLanguage('a--05')).toEqual([]);
@@ -156,6 +174,10 @@ describe('HeaderUtil', (): void => {
 
       expect(parseAcceptLanguage('a; q=text')).toEqual([{ range: 'a', weight: 1 }]);
       expect(parseAcceptCharset('a; c=d')).toEqual([{ range: 'a', weight: 1 }]);
+    });
+
+    it('rejects invalid values when strict mode is enabled.', async(): Promise<void> => {
+      expect((): any => parseAcceptLanguage('a/b', true)).toThrow(BadRequestHttpError);
     });
   });
 
@@ -171,9 +193,13 @@ describe('HeaderUtil', (): void => {
       expect(parseAcceptDateTime('   ')).toEqual([]);
     });
 
-    it('rejects invalid Accept-DateTime Headers.', async(): Promise<void> => {
+    it('ignores invalid Accept-DateTime Headers.', async(): Promise<void> => {
       expect(parseAcceptDateTime('a/b')).toEqual([]);
       expect(parseAcceptDateTime('30 May 2007')).toEqual([]);
+    });
+
+    it('rejects invalid values when strict mode is enabled.', async(): Promise<void> => {
+      expect((): any => parseAcceptLanguage('a/b', true)).toThrow(BadRequestHttpError);
     });
   });
 

@@ -183,11 +183,40 @@ export function splitAndClean(input: string): string[] {
  * @returns true if q value is valid, false otherwise.
  */
 function isValidQValue(qvalue: string): boolean {
-  if (!/^(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue)) {
-    logger.warn(`Invalid q value: ${qvalue} does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`);
-    return false;
+  return /^(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue);
+}
+
+/**
+ * Converts a qvalue to a number.
+ * Returns 1 if the value is not a valid number or 1 if it is more than 1.
+ * Returns 0 if the value is negative.
+ * Otherwise, the parsed value is returned.
+ *
+ * @param qvalue - Value to convert.
+ */
+function parseQValue(qvalue: string): number {
+  const result = Number(qvalue);
+  if (Number.isNaN(result) || result >= 1) {
+    return 1;
   }
-  return true;
+  if (result < 0) {
+    return 0;
+  }
+  return result;
+}
+
+/**
+ * Logs a warning to indicate there was an invalid value.
+ * Throws a {@link BadRequestHttpError} in case `strict` is `true`.
+ *
+ * @param message - Message to log and potentially put in the error.
+ * @param strict - `true` if an error needs to be thrown.
+ */
+function handleInvalidValue(message: string, strict: boolean): void | never {
+  logger.warn(message);
+  if (strict) {
+    throw new BadRequestHttpError(message);
+  }
 }
 
 /**
@@ -196,10 +225,11 @@ function isValidQValue(qvalue: string): boolean {
  *
  * @param parameters - A list of split parameters (token [ "=" ( token / quoted-string ) ])
  * @param replacements - The double quoted strings that need to be replaced.
+ * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
  * @returns An array of name/value objects corresponding to the parameters.
  */
-export function parseParameters(parameters: string[], replacements: Record<string, string>):
+export function parseParameters(parameters: string[], replacements: Record<string, string>, strict = false):
 { name: string; value: string }[] {
   return parameters.reduce<{ name: string; value: string }[]>((acc, param): { name: string; value: string }[] => {
     const [ name, rawValue ] = param.split('=').map((str): string => str.trim());
@@ -208,10 +238,8 @@ export function parseParameters(parameters: string[], replacements: Record<strin
     // parameter  = token "=" ( token / quoted-string )
     // second part is optional for certain parameters
     if (!(token.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || token.test(rawValue)))) {
-      logger.warn(
-        `Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
-        `does not match (token ( "=" ( token / quoted-string ))?). `,
-      );
+      handleInvalidValue(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
+        `does not match (token ( "=" ( token / quoted-string ))?). `, strict);
       return acc;
     }
 
@@ -229,21 +257,24 @@ export function parseParameters(parameters: string[], replacements: Record<strin
  * Parses a single media range with corresponding parameters from an Accept header.
  * For every parameter value that is a double quoted string,
  * we check if it is a key in the replacements map.
- * If yes the value from the map gets inserted instead. Invalid q values and
- * parameter values are ignored and not returned.
+ * If yes the value from the map gets inserted instead.
+ * Invalid q values and parameter values are ignored and not returned.
  *
  * @param part - A string corresponding to a media range and its corresponding parameters.
  * @param replacements - The double quoted strings that need to be replaced.
+ * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
  * @returns {@link Accept | undefined} object corresponding to the header string, or
  * undefined if an invalid type or sub-type is detected.
  */
-function parseAcceptPart(part: string, replacements: Record<string, string>): Accept | undefined {
+function parseAcceptPart(part: string, replacements: Record<string, string>, strict: boolean): Accept | undefined {
   const [ range, ...parameters ] = part.split(';').map((param): string => param.trim());
 
   // No reason to test differently for * since we don't check if the type exists
   if (!mediaRange.test(range)) {
-    logger.warn(`Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`);
+    handleInvalidValue(
+      `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`, strict,
+    );
     return;
   }
 
@@ -256,13 +287,15 @@ function parseAcceptPart(part: string, replacements: Record<string, string>): Ac
     if (name === 'q') {
       // Extension parameters appear after the q value
       map = extensionParams;
-      if (isValidQValue(value)) {
-        weight = Number.parseFloat(value);
+      if (!isValidQValue(value)) {
+        handleInvalidValue(`Invalid q value for range ${range}: ${value
+        } does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`, strict);
       }
+      weight = parseQValue(value);
     } else {
       if (!value && map !== extensionParams) {
-        logger.warn(`Invalid Accept parameter ${name}: ` +
-          `Accept parameter values are not optional when preceding the q value`);
+        handleInvalidValue(`Invalid Accept parameter ${name}: ` +
+          `Accept parameter values are not optional when preceding the q value`, strict);
         return;
       }
       map[name] = value || '';
@@ -283,10 +316,11 @@ function parseAcceptPart(part: string, replacements: Record<string, string>): Ac
  * Parses an Accept-* header where each part is only a value and a weight, so roughly /.*(q=.*)?/ separated by commas.
  * The returned weights default to 1 if no q value is found or the q value is invalid.
  * @param input - Input header string.
+ * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
  * @returns An array of ranges and weights.
  */
-function parseNoParameters(input: string): AcceptHeader[] {
+function parseNoParameters(input: string, strict = false): AcceptHeader[] {
   const parts = splitAndClean(input);
 
   return parts.map((part): AcceptHeader => {
@@ -294,13 +328,15 @@ function parseNoParameters(input: string): AcceptHeader[] {
     const result = { range, weight: 1 };
     if (qvalue) {
       if (!qvalue.startsWith('q=')) {
-        logger.warn(`Only q parameters are allowed in ${input}`);
+        handleInvalidValue(`Only q parameters are allowed in ${input}`, strict);
         return result;
       }
       const val = qvalue.slice(2);
-      if (isValidQValue(val)) {
-        result.weight = Number.parseFloat(val);
+      if (!isValidQValue(val)) {
+        handleInvalidValue(`Invalid q value for range ${range}: ${val
+        } does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`, strict);
       }
+      result.weight = parseQValue(val);
     }
     return result;
   }).sort((left, right): number => right.weight - left.weight);
@@ -312,17 +348,18 @@ function parseNoParameters(input: string): AcceptHeader[] {
  * Parses an Accept header string.
  *
  * @param input - The Accept header string.
+ * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
  * @returns An array of {@link Accept} objects, sorted by weight. Accept parts
  * with invalid syntax are ignored and removed from the returned array.
  */
-export function parseAccept(input: string): Accept[] {
+export function parseAccept(input: string, strict = false): Accept[] {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
 
   return splitAndClean(result)
     .reduce<Accept[]>((acc, part): Accept[] => {
-    const partOrUndef = parseAcceptPart(part, replacements);
+    const partOrUndef = parseAcceptPart(part, replacements, strict);
 
     if (partOrUndef !== undefined) {
       acc.push(partOrUndef);
@@ -337,15 +374,18 @@ export function parseAccept(input: string): Accept[] {
  * Parses an Accept-Charset header string.
  *
  * @param input - The Accept-Charset header string.
+ * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
  * @returns An array of {@link AcceptCharset} objects, sorted by weight. Invalid ranges
  * are ignored and not returned.
  */
-export function parseAcceptCharset(input: string): AcceptCharset[] {
+export function parseAcceptCharset(input: string, strict = false): AcceptCharset[] {
   const results = parseNoParameters(input);
   return results.filter((result): boolean => {
     if (!token.test(result.range)) {
-      logger.warn(`Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`);
+      handleInvalidValue(
+        `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`, strict,
+      );
       return false;
     }
     return true;
@@ -356,15 +396,16 @@ export function parseAcceptCharset(input: string): AcceptCharset[] {
  * Parses an Accept-Encoding header string.
  *
  * @param input - The Accept-Encoding header string.
+ * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
  * @returns An array of {@link AcceptEncoding} objects, sorted by weight. Invalid ranges
  * are ignored and not returned.
  */
-export function parseAcceptEncoding(input: string): AcceptEncoding[] {
+export function parseAcceptEncoding(input: string, strict = false): AcceptEncoding[] {
   const results = parseNoParameters(input);
   return results.filter((result): boolean => {
     if (!token.test(result.range)) {
-      logger.warn(`Invalid Accept-Encoding range: ${result.range} does not match (charset / "*")`);
+      handleInvalidValue(`Invalid Accept-Encoding range: ${result.range} does not match (charset / "*")`, strict);
       return false;
     }
     return true;
@@ -375,17 +416,18 @@ export function parseAcceptEncoding(input: string): AcceptEncoding[] {
  * Parses an Accept-Language header string.
  *
  * @param input - The Accept-Language header string.
+ * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
  * @returns An array of {@link AcceptLanguage} objects, sorted by weight. Invalid ranges
  * are ignored and not returned.
  */
-export function parseAcceptLanguage(input: string): AcceptLanguage[] {
+export function parseAcceptLanguage(input: string, strict = false): AcceptLanguage[] {
   const results = parseNoParameters(input);
   return results.filter((result): boolean => {
     // (1*8ALPHA *("-" 1*8alphanum)) / "*"
     if (result.range !== '*' && !/^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$/u.test(result.range)) {
-      logger.warn(
-        `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`,
+      handleInvalidValue(
+        `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`, strict,
       );
       return false;
     }
@@ -400,17 +442,18 @@ const rfc1123Date = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (?:Jan|Feb|Mar|Apr|
  * Parses an Accept-DateTime header string.
  *
  * @param input - The Accept-DateTime header string.
+ * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
- * @returns An array with a single {@link AcceptDatetime} object, or an empty
- * array if a range in an invalid format is detected.
+ * @returns An array with a single {@link AcceptDatetime} object,
+ * or an empty array if a range in an invalid format is detected.
  */
-export function parseAcceptDateTime(input: string): AcceptDatetime[] {
+export function parseAcceptDateTime(input: string, strict = false): AcceptDatetime[] {
   const range = input.trim();
   if (!range) {
     return [];
   }
   if (!rfc1123Date.test(range)) {
-    logger.warn(`Invalid Accept-DateTime range: ${range} does not match the RFC1123 format`);
+    handleInvalidValue(`Invalid Accept-DateTime range: ${range} does not match the RFC1123 format`, strict);
     return [];
   }
   return [{ range, weight: 1 }];
