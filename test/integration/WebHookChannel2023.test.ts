@@ -5,7 +5,6 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import type { NamedNode } from 'n3';
 import { DataFactory, Parser, Store } from 'n3';
 import type { App } from '../../src/init/App';
-
 import { matchesAuthorizationScheme } from '../../src/util/HeaderUtil';
 import { joinUrl, trimTrailingSlashes } from '../../src/util/PathUtil';
 import { readJsonStream } from '../../src/util/StreamUtil';
@@ -36,8 +35,7 @@ const stores: [string, any][] = [
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
-    // Switch to file locker after https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1452
-    configs: [ 'storage/backend/file.json', 'util/resource-locker/memory.json' ],
+    configs: [ 'storage/backend/file.json', 'util/resource-locker/file.json' ],
     teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
 ];
