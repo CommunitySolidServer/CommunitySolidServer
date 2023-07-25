@@ -1,8 +1,53 @@
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { HttpError } from '../../../../src/util/errors/HttpError';
-import { createAggregateError, getStatusCode } from '../../../../src/util/errors/HttpErrorUtil';
-import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import {
+  createAggregateError,
+  errorTermsToMetadata,
+  extractErrorTerms,
+} from '../../../../src/util/errors/HttpErrorUtil';
+import { toPredicateTerm } from '../../../../src/util/TermUtil';
 
-describe('ErrorUtil', (): void => {
+describe('HttpErrorUtil', (): void => {
+  describe('#errorTermsToMetadata', (): void => {
+    it('creates a metadata object with the necessary triples.', async(): Promise<void> => {
+      const metadata = errorTermsToMetadata({
+        test: 'apple',
+        test2: 'pear',
+        not: undefined,
+      });
+      expect(metadata.quads()).toHaveLength(2);
+      expect(metadata.get(toPredicateTerm('urn:npm:solid:community-server:error-term:test'))?.value).toBe('apple');
+      expect(metadata.get(toPredicateTerm('urn:npm:solid:community-server:error-term:test2'))?.value).toBe('pear');
+    });
+
+    it('can add the necessary triples to existing metadata.', async(): Promise<void> => {
+      const metadata = new RepresentationMetadata();
+      const response = errorTermsToMetadata({
+        test: 'apple',
+        test2: 'pear',
+        not: undefined,
+      }, metadata);
+      expect(response).toBe(metadata);
+      expect(metadata.quads()).toHaveLength(2);
+      expect(metadata.get(toPredicateTerm('urn:npm:solid:community-server:error-term:test'))?.value).toBe('apple');
+      expect(metadata.get(toPredicateTerm('urn:npm:solid:community-server:error-term:test2'))?.value).toBe('pear');
+    });
+  });
+
+  describe('#extractErrorTerms', (): void => {
+    it('returns an object describing the terms.', async(): Promise<void> => {
+      const metadata = new RepresentationMetadata({
+        'urn:npm:solid:community-server:error-term:test': 'apple',
+        'urn:npm:solid:community-server:error-term:test2': 'pear',
+        'urn:npm:solid:community-server:other:test3': 'mango',
+      });
+      expect(extractErrorTerms(metadata)).toEqual({
+        test: 'apple',
+        test2: 'pear',
+      });
+    });
+  });
+
   describe('#createAggregateError', (): void => {
     const error401 = new HttpError(401, 'UnauthorizedHttpError');
     const error415 = new HttpError(415, 'UnsupportedMediaTypeHttpError');
@@ -48,16 +93,6 @@ describe('ErrorUtil', (): void => {
     it('joins the error messages if there are multiple.', async(): Promise<void> => {
       expect(createAggregateError([ error, error, error501 ]).message)
         .toBe('Multiple handler errors: noStatusCode, noStatusCode');
-    });
-  });
-
-  describe('#getStatusCode', (): void => {
-    it('returns the corresponding status code for HttpErrors.', async(): Promise<void> => {
-      expect(getStatusCode(new NotFoundHttpError())).toBe(404);
-    });
-
-    it('returns 500 for other errors.', async(): Promise<void> => {
-      expect(getStatusCode(new Error('404'))).toBe(500);
     });
   });
 });

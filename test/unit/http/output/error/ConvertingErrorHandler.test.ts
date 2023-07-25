@@ -11,6 +11,7 @@ import type {
   RepresentationConverter,
   RepresentationConverterArgs,
 } from '../../../../../src/storage/conversion/RepresentationConverter';
+import type { HttpError } from '../../../../../src/util/errors/HttpError';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 import { HTTP, XSD } from '../../../../../src/util/Vocabularies';
 import literal = DataFactory.literal;
@@ -33,7 +34,7 @@ async function expectValidArgs(args: RepresentationConverterArgs, stack?: string
 
 describe('A ConvertingErrorHandler', (): void => {
   // The error object can get modified by the handler
-  let error: Error;
+  let error: HttpError;
   let stack: string | undefined;
   const request = {} as HttpRequest;
   let converter: jest.Mocked<RepresentationConverter>;

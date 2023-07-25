@@ -2,6 +2,8 @@ import { promises as fsPromises } from 'fs';
 import type { TargetExtractor } from '../../../src/http/input/identifier/TargetExtractor';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
+import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
+import { extractErrorTerms } from '../../../src/util/errors/HttpErrorUtil';
 import {
   absoluteFilePath,
   createSubdomainRegexp,
@@ -218,8 +220,15 @@ describe('PathUtil', (): void => {
 
     it('errors if the target is outside of the server scope.', async(): Promise<void> => {
       targetExtractor.handleSafe.mockResolvedValueOnce({ path: 'http://somewhere.else/resource' });
-      await expect(getRelativeUrl(baseUrl, request, targetExtractor)).rejects
-        .toThrow(expect.objectContaining({ errorCode: 'E0001', details: { path: 'http://somewhere.else/resource' }}));
+      let error: unknown;
+      try {
+        await getRelativeUrl(baseUrl, request, targetExtractor);
+      } catch (err: unknown) {
+        error = err;
+      }
+      expect(error).toEqual(expect.objectContaining({ errorCode: 'E0001' }));
+      expect(BadRequestHttpError.isInstance(error)).toBe(true);
+      expect(extractErrorTerms((error as BadRequestHttpError).metadata)).toEqual({ path: 'http://somewhere.else/resource' });
     });
   });
 

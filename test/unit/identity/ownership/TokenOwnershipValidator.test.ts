@@ -5,6 +5,8 @@ import rdfDereferencer from 'rdf-dereference';
 import { v4 } from 'uuid';
 import { TokenOwnershipValidator } from '../../../../src/identity/ownership/TokenOwnershipValidator';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
+import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { SOLID } from '../../../../src/util/Vocabularies';
 const { literal, namedNode, quad } = DataFactory;
 
@@ -57,10 +59,16 @@ describe('A TokenOwnershipValidator', (): void => {
   it('errors if no token is stored in the storage.', async(): Promise<void> => {
     // Even if the token is in the WebId, it will error since it's not in the storage
     mockDereference(tokenTriple);
-    await expect(validator.handle({ webId })).rejects.toThrow(expect.objectContaining({
-      message: expect.stringContaining(tokenString),
-      details: { quad: tokenString },
-    }));
+    let error: unknown;
+    try {
+      await validator.handle({ webId });
+    } catch (err: unknown) {
+      error = err;
+    }
+    expect(error).toEqual(expect.objectContaining({ message: expect.stringContaining(tokenString) }));
+    expect(BadRequestHttpError.isInstance(error)).toBe(true);
+    expect(extractErrorTerms((error as BadRequestHttpError).metadata))
+      .toEqual({ quad: tokenString });
     expect(rdfDereferenceMock.dereference).toHaveBeenCalledTimes(0);
   });
 

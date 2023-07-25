@@ -3,10 +3,18 @@ import escapeStringRegexp from 'escape-string-regexp';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpResponse } from '../server/HttpResponse';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
+import type {
+  Accept,
+  AcceptCharset,
+  AcceptDatetime,
+  AcceptEncoding,
+  AcceptHeader,
+  AcceptLanguage,
+  LinkEntry,
+} from './Header';
+import { ContentType, SIMPLE_MEDIA_RANGE, QUOTED_STRING, QVALUE, TOKEN } from './Header';
 
 const logger = getLoggerFor('HeaderUtil');
-// Map used as a simple cache in the helper function matchesAuthorizationScheme.
-const authSchemeRegexCache: Map<string, RegExp> = new Map();
 
 // BNF based on https://tools.ietf.org/html/rfc7231
 //
@@ -16,124 +24,6 @@ const authSchemeRegexCache: Map<string, RegExp> = new Map();
 // Accept-Language = 1#( language-range [ weight ] )
 //
 // Content-Type = media-type
-// media-type = type "/" subtype *( OWS ";" OWS parameter )
-//
-// media-range    = ( "*/*"
-//                / ( type "/" "*" )
-//                / ( type "/" subtype )
-//                ) *( OWS ";" OWS parameter ) ; media type parameters
-// accept-params  = weight *( accept-ext )
-// accept-ext     = OWS ";" OWS token [ "=" ( token / quoted-string ) ] ; extension parameters
-//
-// weight = OWS ";" OWS "q=" qvalue
-// qvalue = ( "0" [ "." 0*3DIGIT ] )
-//        / ( "1" [ "." 0*3("0") ] )
-//
-// type       = token
-// subtype    = token
-// parameter  = token "=" ( token / quoted-string )
-//
-// quoted-string  = DQUOTE *( qdtext / quoted-pair ) DQUOTE
-// qdtext         = HTAB / SP / %x21 / %x23-5B / %x5D-7E / obs-text
-// obs-text       = %x80-FF
-// quoted-pair    = "\" ( HTAB / SP / VCHAR / obs-text )
-//
-// charset = token
-//
-// codings          = content-coding / "identity" / "*"
-// content-coding   = token
-//
-// language-range   = (1*8ALPHA *("-" 1*8alphanum)) / "*"
-// alphanum         = ALPHA / DIGIT
-//
-// Delimiters are chosen from the set of US-ASCII visual characters
-// not allowed in a token (DQUOTE and "(),/:;<=>?@[\]{}").
-// token          = 1*tchar
-// tchar          = "!" / "#" / "$" / "%" / "&" / "'" / "*"
-//                / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
-//                / DIGIT / ALPHA
-//                ; any VCHAR, except delimiters
-//
-
-// INTERFACES
-/**
- * General interface for all Accept* headers.
- */
-export interface AcceptHeader {
-  /** Requested range. Can be a specific value or `*`, matching all. */
-  range: string;
-  /** Weight of the preference [0, 1]. */
-  weight: number;
-}
-
-/**
- * Contents of an HTTP Accept header.
- * Range is type/subtype. Both can be `*`.
- */
-export interface Accept extends AcceptHeader {
-  parameters: {
-    /** Media type parameters. These are the parameters that came before the q value. */
-    mediaType: Record<string, string>;
-    /**
-     * Extension parameters. These are the parameters that came after the q value.
-     * Value will be an empty string if there was none.
-     */
-    extension: Record<string, string>;
-  };
-}
-
-/**
- * Contents of an HTTP Accept-Charset header.
- */
-export interface AcceptCharset extends AcceptHeader { }
-
-/**
- * Contents of an HTTP Accept-Encoding header.
- */
-export interface AcceptEncoding extends AcceptHeader { }
-
-/**
- * Contents of an HTTP Accept-Language header.
- */
-export interface AcceptLanguage extends AcceptHeader { }
-
-/**
- * Contents of an HTTP Accept-Datetime header.
- */
-export interface AcceptDatetime extends AcceptHeader { }
-
-/**
- * Contents of a HTTP Content-Type Header.
- * Optional parameters Record is included.
- */
-export class ContentType {
-  public constructor(public value: string, public parameters: Record<string, string> = {}) {}
-
-  /**
-   * Serialize this ContentType object to a ContentType header appropriate value string.
-   * @returns The value string, including parameters, if present.
-   */
-  public toHeaderValueString(): string {
-    return Object.entries(this.parameters)
-      .sort((entry1, entry2): number => entry1[0].localeCompare(entry2[0]))
-      .reduce((acc, entry): string => `${acc}; ${entry[0]}=${entry[1]}`, this.value);
-  }
-}
-
-export interface LinkEntryParameters extends Record<string, string> {
-  /** Required rel properties of Link entry */
-  rel: string;
-}
-
-export interface LinkEntry {
-  target: string;
-  parameters: LinkEntryParameters;
-}
-
-// REUSED REGEXES
-const tchar = /[a-zA-Z0-9!#$%&'*+-.^_`|~]/u;
-const token = new RegExp(`^${tchar.source}+$`, 'u');
-const mediaRange = new RegExp(`${tchar.source}+/${tchar.source}+`, 'u');
 
 // HELPER FUNCTIONS
 /**
@@ -150,7 +40,7 @@ export function transformQuotedStrings(input: string): { result: string; replace
   const replacements: Record<string, string> = {};
   const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
     // Not all characters allowed in quoted strings, see BNF above
-    if (!/^"(?:[\t !\u0023-\u005B\u005D-\u007E\u0080-\u00FF]|(?:\\[\t\u0020-\u007E\u0080-\u00FF]))*"$/u.test(match)) {
+    if (!QUOTED_STRING.test(match)) {
       logger.warn(`Invalid quoted string in header: ${match}`);
       throw new BadRequestHttpError(`Invalid quoted string in header: ${match}`);
     }
@@ -173,17 +63,6 @@ export function splitAndClean(input: string): string[] {
   return input.split(',')
     .map((part): string => part.trim())
     .filter((part): boolean => part.length > 0);
-}
-
-/**
- * Checks if the input string matches the qvalue regex.
- *
- * @param qvalue - Input qvalue string (so "q=....").
- *
- * @returns true if q value is valid, false otherwise.
- */
-function isValidQValue(qvalue: string): boolean {
-  return /^(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue);
 }
 
 /**
@@ -237,7 +116,7 @@ export function parseParameters(parameters: string[], replacements: Record<strin
     // Test replaced string for easier check
     // parameter  = token "=" ( token / quoted-string )
     // second part is optional for certain parameters
-    if (!(token.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || token.test(rawValue)))) {
+    if (!(TOKEN.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || TOKEN.test(rawValue)))) {
       handleInvalidValue(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
         `does not match (token ( "=" ( token / quoted-string ))?). `, strict);
       return acc;
@@ -271,7 +150,7 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
   const [ range, ...parameters ] = part.split(';').map((param): string => param.trim());
 
   // No reason to test differently for * since we don't check if the type exists
-  if (!mediaRange.test(range)) {
+  if (!SIMPLE_MEDIA_RANGE.test(range)) {
     handleInvalidValue(
       `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`, strict,
     );
@@ -287,7 +166,7 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
     if (name === 'q') {
       // Extension parameters appear after the q value
       map = extensionParams;
-      if (!isValidQValue(value)) {
+      if (!QVALUE.test(value)) {
         handleInvalidValue(`Invalid q value for range ${range}: ${value
         } does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`, strict);
       }
@@ -332,7 +211,7 @@ function parseNoParameters(input: string, strict = false): AcceptHeader[] {
         return result;
       }
       const val = qvalue.slice(2);
-      if (!isValidQValue(val)) {
+      if (!QVALUE.test(val)) {
         handleInvalidValue(`Invalid q value for range ${range}: ${val
         } does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`, strict);
       }
@@ -382,7 +261,7 @@ export function parseAccept(input: string, strict = false): Accept[] {
 export function parseAcceptCharset(input: string, strict = false): AcceptCharset[] {
   const results = parseNoParameters(input);
   return results.filter((result): boolean => {
-    if (!token.test(result.range)) {
+    if (!TOKEN.test(result.range)) {
       handleInvalidValue(
         `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`, strict,
       );
@@ -404,7 +283,7 @@ export function parseAcceptCharset(input: string, strict = false): AcceptCharset
 export function parseAcceptEncoding(input: string, strict = false): AcceptEncoding[] {
   const results = parseNoParameters(input);
   return results.filter((result): boolean => {
-    if (!token.test(result.range)) {
+    if (!TOKEN.test(result.range)) {
       handleInvalidValue(`Invalid Accept-Encoding range: ${result.range} does not match (charset / "*")`, strict);
       return false;
     }
@@ -495,7 +374,7 @@ export function parseContentType(input: string): ContentType {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
   const [ value, ...params ] = result.split(';').map((str): string => str.trim());
-  if (!mediaRange.test(value)) {
+  if (!SIMPLE_MEDIA_RANGE.test(value)) {
     logger.warn(`Invalid content-type: ${value}`);
     throw new BadRequestHttpError(`Invalid content-type: ${value} does not match ( token "/" token )`);
   }
@@ -595,6 +474,8 @@ export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
   return links;
 }
 
+// Map used as a simple cache in the helper function matchesAuthorizationScheme.
+const authSchemeRegexCache: Map<string, RegExp> = new Map();
 /**
  * Checks if the value of an HTTP Authorization header matches a specific scheme (e.g. Basic, Bearer, etc).
  *

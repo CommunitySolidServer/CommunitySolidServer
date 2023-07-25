@@ -5,6 +5,7 @@ import type { TargetExtractor } from '../http/input/identifier/TargetExtractor';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
+import { errorTermsToMetadata } from './errors/HttpErrorUtil';
 
 /**
  * Changes a potential Windows path into a POSIX path.
@@ -235,7 +236,7 @@ Promise<string> {
   const target = await targetExtractor.handleSafe({ request });
   if (!target.path.startsWith(baseUrl)) {
     throw new BadRequestHttpError(`The identifier ${target.path} is outside the configured identifier space.`,
-      { errorCode: 'E0001', details: { path: target.path }});
+      { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: target.path }) });
   }
   return target.path.slice(baseUrl.length - 1);
 }

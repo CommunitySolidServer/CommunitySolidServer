@@ -1,8 +1,7 @@
 import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { InternalServerError } from '../../util/errors/InternalServerError';
-import { ContentType, parseContentType } from '../../util/HeaderUtil';
+import { ContentType, SIMPLE_MEDIA_RANGE } from '../../util/Header';
 import { toNamedTerm, toObjectTerm, isTerm, toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
@@ -67,18 +66,18 @@ export class RepresentationMetadata {
    * @param identifier - Identifier of the resource relevant to this metadata.
    * @param contentType - Override for the content type of the representation.
    */
-  public constructor(identifier?: MetadataIdentifier, contentType?: string);
+  public constructor(identifier?: MetadataIdentifier, contentType?: string | ContentType);
 
   /**
    * @param metadata - Starts as a copy of the input metadata.
    * @param contentType - Override for the content type of the representation.
    */
-  public constructor(metadata?: RepresentationMetadata, contentType?: string);
+  public constructor(metadata?: RepresentationMetadata, contentType?: string | ContentType);
 
   /**
    * @param contentType - The content type of the representation.
    */
-  public constructor(contentType?: string);
+  public constructor(contentType?: string | ContentType);
 
   /**
    * @param metadata - Metadata values (defaulting to content type if a string)
@@ -86,8 +85,8 @@ export class RepresentationMetadata {
   public constructor(metadata?: RepresentationMetadata | MetadataRecord | string);
 
   public constructor(
-    input?: MetadataIdentifier | RepresentationMetadata | MetadataRecord | string,
-    overrides?: MetadataRecord | string,
+    input?: MetadataIdentifier | RepresentationMetadata | MetadataRecord | ContentType | string,
+    overrides?: MetadataRecord | string | ContentType,
   ) {
     this.store = new Store();
     if (isResourceIdentifier(input)) {
@@ -105,6 +104,8 @@ export class RepresentationMetadata {
     if (overrides) {
       if (typeof overrides === 'string') {
         this.contentType = overrides;
+      } else if (overrides instanceof ContentType) {
+        this.contentTypeObject = overrides;
       } else {
         this.setOverrides(overrides);
       }
@@ -313,7 +314,8 @@ export class RepresentationMetadata {
     }
     if (terms.length > 1) {
       this.logger.error(`Multiple results for ${predicate.value}`);
-      throw new InternalServerError(
+      // We can not use an `InternalServerError` here as otherwise errors and metadata files would depend on each other
+      throw new Error(
         `Multiple results for ${predicate.value}`,
       );
     }
@@ -344,7 +346,16 @@ export class RepresentationMetadata {
     }
 
     if (typeof input === 'string') {
-      input = parseContentType(input);
+      // Simple check to estimate if this is a simple content type.
+      // If not, mention that the `contentTypeObject` should be used instead.
+      // Not calling `parseContentType` here as that would cause a dependency loop with `HttpError`.
+      if (!SIMPLE_MEDIA_RANGE.test(input)) {
+        // Not using an HttpError as HttpError depends on metadata
+        throw new Error(
+          'Only simple content types can be set by string. Use the `contentTypeObject` function for complexer types.',
+        );
+      }
+      input = new ContentType(input);
     }
 
     for (const [ key, value ] of Object.entries(input.parameters)) {

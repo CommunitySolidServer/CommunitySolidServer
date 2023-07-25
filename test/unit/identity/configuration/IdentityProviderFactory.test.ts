@@ -14,6 +14,7 @@ import type { Interaction, InteractionHandler } from '../../../../src/identity/i
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
+import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -269,12 +270,12 @@ describe('An IdentityProviderFactory', (): void => {
         name: 'BadRequestHttpError',
         message: 'Unknown client, you might need to clear the local storage on the client.',
         errorCode: 'E0003',
-        details: {
-          client_id: 'CLIENT_ID',
-          redirect_uri: 'REDIRECT_URI',
-        },
       }),
       request: ctx.req });
+    expect(extractErrorTerms(errorHandler.handleSafe.mock.calls[0][0].error.metadata)).toEqual({
+      client_id: 'CLIENT_ID',
+      redirect_uri: 'REDIRECT_URI',
+    });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
   });

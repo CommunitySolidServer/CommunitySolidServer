@@ -9,6 +9,7 @@ import { RepresentationMetadata } from '../../../../../src/http/representation/R
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
+import { ContentType } from '../../../../../src/util/Header';
 import { guardedStreamFrom } from '../../../../../src/util/StreamUtil';
 const { namedNode, quad } = DataFactory;
 
@@ -24,11 +25,10 @@ describe('A SparqlUpdateBodyParser', (): void => {
     await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
     input.metadata.contentType = 'text/plain';
     await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
-    input.metadata.contentType = 'application/sparql-update;charset=utf-8';
+    const contentType = new ContentType('application/sparql-update');
+    input.metadata.contentTypeObject = contentType;
     await expect(bodyParser.canHandle(input)).resolves.toBeUndefined();
-    input.metadata.contentType = 'application/sparql-update ; foo=bar';
-    await expect(bodyParser.canHandle(input)).resolves.toBeUndefined();
-    input.metadata.contentType = 'application/sparql-update';
+    contentType.parameters = { charset: 'utf-8' };
     await expect(bodyParser.canHandle(input)).resolves.toBeUndefined();
   });
 

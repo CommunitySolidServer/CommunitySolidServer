@@ -1,4 +1,4 @@
-import { assertError, createErrorMessage, isError } from '../../../../src/util/errors/ErrorUtil';
+import { createErrorMessage, isError } from '../../../../src/util/errors/ErrorUtil';
 
 describe('ErrorUtil', (): void => {
   describe('#isError', (): void => {
@@ -16,16 +16,6 @@ describe('ErrorUtil', (): void => {
 
     it('returns false on other values.', async(): Promise<void> => {
       expect(isError('apple')).toBe(false);
-    });
-  });
-
-  describe('#assertError', (): void => {
-    it('returns undefined on native errors.', async(): Promise<void> => {
-      expect(assertError(new Error('error'))).toBeUndefined();
-    });
-
-    it('throws on other values.', async(): Promise<void> => {
-      expect((): void => assertError('apple')).toThrow('apple');
     });
   });
 

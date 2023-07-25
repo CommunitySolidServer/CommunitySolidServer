@@ -1,10 +1,6 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
-import { getStatusCode } from '../../../util/errors/HttpErrorUtil';
 import { guardedStreamFrom } from '../../../util/StreamUtil';
-import { toLiteral } from '../../../util/TermUtil';
-import { HTTP, XSD } from '../../../util/Vocabularies';
-import { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import type { ResponseDescription } from '../response/ResponseDescription';
 import type { ErrorHandlerArgs } from './ErrorHandler';
 import { ErrorHandler } from './ErrorHandler';
@@ -32,17 +28,15 @@ export class SafeErrorHandler extends ErrorHandler {
       this.logger.debug(`Recovering from error handler failure: ${createErrorMessage(error)}`);
     }
     const { error } = input;
-    const statusCode = getStatusCode(error);
-    const metadata = new RepresentationMetadata('text/plain');
-    metadata.add(HTTP.terms.statusCodeNumber, toLiteral(statusCode, XSD.terms.integer));
+    error.metadata.contentType = 'text/plain';
 
     const text = typeof error.stack === 'string' && this.showStackTrace ?
       `${error.stack}\n` :
       `${error.name}: ${error.message}\n`;
 
     return {
-      statusCode,
-      metadata,
+      statusCode: error.statusCode,
+      metadata: error.metadata,
       data: guardedStreamFrom(text),
     };
   }

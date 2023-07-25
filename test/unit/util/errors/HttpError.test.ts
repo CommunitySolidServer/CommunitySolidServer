@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { DataFactory } from 'n3';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { ForbiddenHttpError } from '../../../../src/util/errors/ForbiddenHttpError';
@@ -15,9 +15,7 @@ import { PreconditionFailedHttpError } from '../../../../src/util/errors/Precond
 import { UnauthorizedHttpError } from '../../../../src/util/errors/UnauthorizedHttpError';
 import { UnprocessableEntityHttpError } from '../../../../src/util/errors/UnprocessableEntityHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { SOLID_ERROR } from '../../../../src/util/Vocabularies';
-
-const { literal, namedNode, quad } = DataFactory;
+import { HTTP, SOLID_ERROR } from '../../../../src/util/Vocabularies';
 
 describe('HttpError', (): void => {
   const errors: [string, number, HttpErrorClass][] = [
@@ -39,7 +37,7 @@ describe('HttpError', (): void => {
     const options = {
       cause: new Error('cause'),
       errorCode: 'E1234',
-      details: {},
+      metadata: new RepresentationMetadata(),
     };
     const instance = new constructor('my message', options);
 
@@ -75,15 +73,11 @@ describe('HttpError', (): void => {
       expect(new constructor().errorCode).toBe(`H${statusCode}`);
     });
 
-    it('sets the details.', (): void => {
-      expect(instance.details).toBe(options.details);
-    });
-
-    it('generates metadata.', (): void => {
-      const subject = namedNode('subject');
-      expect(instance.generateMetadata(subject)).toBeRdfIsomorphic([
-        quad(subject, SOLID_ERROR.terms.errorResponse, constructor.uri),
-      ]);
+    it('sets the metadata.', (): void => {
+      expect(instance.metadata).toBe(options.metadata);
+      expect(instance.metadata.get(SOLID_ERROR.terms.errorResponse)?.value)
+        .toBe(`${SOLID_ERROR.namespace}H${statusCode}`);
+      expect(instance.metadata.get(HTTP.terms.statusCodeNumber)?.value).toBe(`${statusCode}`);
     });
   });
 
@@ -92,7 +86,6 @@ describe('HttpError', (): void => {
     const options = {
       cause: new Error('cause'),
       errorCode: 'E1234',
-      details: { some: 'detail' },
     };
     const instance = new MethodNotAllowedHttpError([ 'GET' ], 'my message', options);
 
@@ -107,11 +100,10 @@ describe('HttpError', (): void => {
       expect(instance.errorCode).toBe(options.errorCode);
       expect(new MethodNotAllowedHttpError([ 'GET' ]).errorCode).toBe(`H${405}`);
 
-      const subject = namedNode('subject');
-      expect(instance.generateMetadata(subject)).toBeRdfIsomorphic([
-        quad(subject, SOLID_ERROR.terms.errorResponse, MethodNotAllowedHttpError.uri),
-        quad(subject, SOLID_ERROR.terms.disallowedMethod, literal('GET')),
-      ]);
+      expect(instance.metadata.get(SOLID_ERROR.terms.errorResponse)?.value)
+        .toBe(`${SOLID_ERROR.namespace}H405`);
+      expect(instance.metadata.get(HTTP.terms.statusCodeNumber)?.value).toBe('405');
+      expect(instance.metadata.get(SOLID_ERROR.terms.disallowedMethod)?.value).toBe('GET');
     });
   });
 });

@@ -1,5 +1,7 @@
+import { DataFactory } from 'n3';
+import { SOLID_HTTP } from '../Vocabularies';
 import type { HttpErrorClass, HttpErrorOptions } from './HttpError';
-import { generateHttpErrorClass, HttpError } from './HttpError';
+import { generateHttpErrorUri, HttpError } from './HttpError';
 
 /**
  * An error corresponding to a 3xx status code.
@@ -11,6 +13,7 @@ export class RedirectHttpError<TCode extends number = number> extends HttpError<
   public constructor(statusCode: TCode, name: string, location: string, message?: string, options?: HttpErrorOptions) {
     super(statusCode, name, message, options);
     this.location = location;
+    this.metadata.add(SOLID_HTTP.terms.location, DataFactory.namedNode(location));
   }
 
   public static isInstance(error: any): error is RedirectHttpError {
@@ -35,16 +38,12 @@ export function generateRedirectHttpErrorClass<TCode extends number>(
   code: TCode,
   name: string,
 ): RedirectHttpErrorClass<TCode> {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  const BaseClass = generateHttpErrorClass(code, name);
-
-  // Need to extend `BaseClass` instead of `RedirectHttpError` to have the required static methods
-  return class SpecificRedirectHttpError extends BaseClass implements RedirectHttpError {
-    public readonly location: string;
+  return class SpecificRedirectHttpError extends RedirectHttpError<TCode> {
+    public static readonly statusCode = code;
+    public static readonly uri = generateHttpErrorUri(code);
 
     public constructor(location: string, message?: string, options?: HttpErrorOptions) {
-      super(message, options);
-      this.location = location;
+      super(code, name, location, message, options);
     }
 
     public static isInstance(error: any): error is SpecificRedirectHttpError {
