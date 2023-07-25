@@ -18,7 +18,7 @@ import literal = DataFactory.literal;
 
 const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
 
-async function expectValidArgs(args: RepresentationConverterArgs, stack?: string): Promise<void> {
+async function expectValidArgs(args: RepresentationConverterArgs, stack?: string, cause?: Error): Promise<void> {
   expect(args.preferences).toBe(preferences);
   expect(args.representation.metadata.get(HTTP.terms.statusCodeNumber))
     .toEqualRdfTerm(literal(404, XSD.terms.integer));
@@ -30,11 +30,13 @@ async function expectValidArgs(args: RepresentationConverterArgs, stack?: string
   const resultError = errorArray[0];
   expect(resultError).toMatchObject({ name: 'NotFoundHttpError', message: 'not here' });
   expect(resultError.stack).toBe(stack);
+  expect(resultError.cause).toBe(cause);
 }
 
 describe('A ConvertingErrorHandler', (): void => {
   // The error object can get modified by the handler
   let error: HttpError;
+  const cause = new Error('cause');
   let stack: string | undefined;
   const request = {} as HttpRequest;
   let converter: jest.Mocked<RepresentationConverter>;
@@ -42,7 +44,7 @@ describe('A ConvertingErrorHandler', (): void => {
   let handler: ConvertingErrorHandler;
 
   beforeEach(async(): Promise<void> => {
-    error = new NotFoundHttpError('not here');
+    error = new NotFoundHttpError('not here', { cause });
     ({ stack } = error);
     converter = {
       canHandle: jest.fn(),
@@ -89,7 +91,7 @@ describe('A ConvertingErrorHandler', (): void => {
     expect((await prom).metadata?.contentType).toBe('text/turtle');
     expect(converter.handle).toHaveBeenCalledTimes(1);
     const args = (converter.handle as jest.Mock).mock.calls[0][0] as RepresentationConverterArgs;
-    await expectValidArgs(args, stack);
+    await expectValidArgs(args, stack, cause);
   });
 
   it('uses the handleSafe function of the converter during its own handleSafe call.', async(): Promise<void> => {
@@ -98,10 +100,10 @@ describe('A ConvertingErrorHandler', (): void => {
     expect((await prom).metadata?.contentType).toBe('text/turtle');
     expect(converter.handleSafe).toHaveBeenCalledTimes(1);
     const args = (converter.handleSafe as jest.Mock).mock.calls[0][0] as RepresentationConverterArgs;
-    await expectValidArgs(args, stack);
+    await expectValidArgs(args, stack, cause);
   });
 
-  it('hides the stack trace if the option is disabled.', async(): Promise<void> => {
+  it('hides the stack trace and cause if the option is disabled.', async(): Promise<void> => {
     handler = new ConvertingErrorHandler(converter, preferenceParser);
     const prom = handler.handle({ error, request });
     await expect(prom).resolves.toMatchObject({ statusCode: 404 });

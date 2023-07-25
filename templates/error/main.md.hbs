@@ -12,7 +12,19 @@ _No further details available._
 {{/if}}
 
 {{#if stack}}
-```  
+```
 {{ stack }}
 ```
+{{/if}}
+
+{{#if cause}}
+## Cause
+{{#if cause.message}}
+{{ cause.message }}
+{{/if}}
+{{#if cause.stack}}
+```
+{{ cause.stack }}
+```
+{{/if}}
 {{/if}}

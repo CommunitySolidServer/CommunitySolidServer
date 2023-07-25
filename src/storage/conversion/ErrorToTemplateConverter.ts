@@ -75,8 +75,8 @@ export class ErrorToTemplateConverter extends BaseTypedRepresentationConverter {
     }
 
     // Render the main template, embedding the rendered error description
-    const { name, message, stack } = error;
-    const contents = { name, message, stack, description };
+    const { name, message, stack, cause } = error;
+    const contents = { name, message, stack, description, cause };
     const rendered = await this.templateEngine
       .handleSafe({ contents, template: { templateFile: this.mainTemplatePath }});
 

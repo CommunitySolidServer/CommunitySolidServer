@@ -99,4 +99,66 @@ describe('An ErrorToJsonConverter', (): void => {
       details: {},
     });
   });
+
+  it('can handle non-error causes.', async(): Promise<void> => {
+    const error = new BadRequestHttpError('error text', { cause: 'not an error' });
+    const representation = new BasicRepresentation([ error ], 'internal/error', false);
+    const prom = converter.handle({ identifier, representation, preferences });
+    await expect(prom).resolves.toBeDefined();
+    const result = await prom;
+    expect(result.binary).toBe(true);
+    expect(result.metadata.contentType).toBe('application/json');
+    await expect(readJsonStream(result.data)).resolves.toEqual({
+      name: 'BadRequestHttpError',
+      message: 'error text',
+      statusCode: 400,
+      errorCode: 'H400',
+      stack: error.stack,
+      details: {},
+      cause: 'not an error',
+    });
+  });
+
+  it('ignores non-error causes that cannot be parsed.', async(): Promise<void> => {
+    const error = new BadRequestHttpError('error text', { cause: BigInt(5) });
+    const representation = new BasicRepresentation([ error ], 'internal/error', false);
+    const prom = converter.handle({ identifier, representation, preferences });
+    await expect(prom).resolves.toBeDefined();
+    const result = await prom;
+    expect(result.binary).toBe(true);
+    expect(result.metadata.contentType).toBe('application/json');
+    await expect(readJsonStream(result.data)).resolves.toEqual({
+      name: 'BadRequestHttpError',
+      message: 'error text',
+      statusCode: 400,
+      errorCode: 'H400',
+      stack: error.stack,
+      details: {},
+      cause: {},
+    });
+  });
+
+  it('can handle non-HTTP errors as cause.', async(): Promise<void> => {
+    const cause = new Error('error');
+    const error = new BadRequestHttpError('error text', { cause });
+    const representation = new BasicRepresentation([ error ], 'internal/error', false);
+    const prom = converter.handle({ identifier, representation, preferences });
+    await expect(prom).resolves.toBeDefined();
+    const result = await prom;
+    expect(result.binary).toBe(true);
+    expect(result.metadata.contentType).toBe('application/json');
+    await expect(readJsonStream(result.data)).resolves.toEqual({
+      name: 'BadRequestHttpError',
+      message: 'error text',
+      statusCode: 400,
+      errorCode: 'H400',
+      stack: error.stack,
+      details: {},
+      cause: {
+        name: 'Error',
+        message: 'error',
+        stack: cause.stack,
+      },
+    });
+  });
 });

@@ -13,6 +13,7 @@ describe('An ErrorToTemplateConverter', (): void => {
   const extension = '.html';
   const contentType = 'text/html';
   const errorCode = 'E0001';
+  const cause = new Error('cause');
   let templateEngine: jest.Mocked<TemplateEngine>;
   let converter: ErrorToTemplateConverter;
   const preferences = {};
@@ -47,7 +48,7 @@ describe('An ErrorToTemplateConverter', (): void => {
   });
 
   it('calls the template engine with all HTTP error fields.', async(): Promise<void> => {
-    const error = new BadRequestHttpError('error text');
+    const error = new BadRequestHttpError('error text', { cause });
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     templateEngine.handleSafe.mockRejectedValueOnce(new Error('error-specific template not found'));
@@ -63,7 +64,7 @@ describe('An ErrorToTemplateConverter', (): void => {
       template: { templatePath: '/templates/codes', templateFile: 'H400.html' },
     });
     expect(templateEngine.handleSafe).toHaveBeenNthCalledWith(2, {
-      contents: { name: 'BadRequestHttpError', message: 'error text', stack: error.stack },
+      contents: { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, cause: error.cause },
       template: { templateFile: mainTemplatePath },
     });
   });
