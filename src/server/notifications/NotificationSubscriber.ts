@@ -100,7 +100,8 @@ export class NotificationSubscriber extends OperationHttpHandler {
       });
       channel = await this.channelType.initChannel(await readableToQuads(quadStream.data), credentials);
     } catch (error: unknown) {
-      throw new UnprocessableEntityHttpError(`Unable to process notification channel: ${createErrorMessage(error)}`);
+      throw new UnprocessableEntityHttpError(`Unable to process notification channel: ${createErrorMessage(error)}`,
+        { cause: error });
     }
 
     if (this.maxDuration) {

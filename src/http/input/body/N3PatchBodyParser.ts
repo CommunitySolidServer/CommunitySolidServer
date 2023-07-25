@@ -32,7 +32,7 @@ export class N3PatchBodyParser extends BodyParser {
     try {
       store = new Store(parser.parse(n3));
     } catch (error: unknown) {
-      throw new BadRequestHttpError(`Invalid N3: ${createErrorMessage(error)}`);
+      throw new BadRequestHttpError(`Invalid N3: ${createErrorMessage(error)}`, { cause: error });
     }
 
     // Solid, §5.3.1: "A patch resource MUST contain a triple ?patch rdf:type solid:InsertDeletePatch."
