@@ -27,7 +27,7 @@ Doing a GET to `http://localhost:3000/.well-known/solid` then gives the followin
 <http://localhost:3000/.well-known/solid>
     a                   <http://www.w3.org/ns/pim/space#Storage> ;
     notify:subscription <http://localhost:3000/.notifications/WebSocketChannel2023/> ,
-                        <http://localhost:3000/.notifications/WebHookChannel2023/> .
+                        <http://localhost:3000/.notifications/WebhookChannel2023/> .
 <http://localhost:3000/.notifications/WebSocketChannel2023/>
     notify:channelType  notify:WebSocketChannel2023 ;
     notify:feature      notify:accept ,
@@ -35,8 +35,8 @@ Doing a GET to `http://localhost:3000/.well-known/solid` then gives the followin
                         notify:rate ,
                         notify:startAt ,
                         notify:state .
-<http://localhost:3000/.notifications/WebSocketChannel2023/>
-    notify:channelType  notify:WebHookChannel2023;
+<http://localhost:3000/.notifications/WebhookChannel2023/>
+    notify:channelType  notify:WebhookChannel2023;
     notify:feature      notify:accept ,
                         notify:endAt ,
                         notify:rate ,
@@ -61,7 +61,7 @@ Requests without `Read` permission will be rejected.
 
 There are currently up to two supported ways to get notifications in CSS, depending on your configuration:
 the notification channel types [`WebSocketChannel2023`](https://solid.github.io/notifications/websocket-channel-2023);
-and [`WebHookChannel2023`](https://solid.github.io/notifications/webhook-channel-2023).
+and [`WebhookChannel2023`](https://solid.github.io/notifications/webhook-channel-2023).
 
 ### WebSockets
 
@@ -98,30 +98,30 @@ const ws = new WebSocket(receiveFrom);
 ws.on('message', (notification) => console.log(notification));
 ```
 
-### WebHooks
+### Webhooks
 
 Similar to the WebSocket subscription, below is sample JSON-LD
-that would be sent to `http://localhost:3000/.notifications/WebHookChannel2023/`:
+that would be sent to `http://localhost:3000/.notifications/WebhookChannel2023/`:
 
 ```json
 {
   "@context": [ "https://www.w3.org/ns/solid/notification/v1" ],
-  "type": "http://www.w3.org/ns/solid/notifications#WebHookChannel2023",
+  "type": "http://www.w3.org/ns/solid/notifications#WebhookChannel2023",
   "topic": "http://localhost:3000/foo",
   "sendTo": "https://example.com/webhook"
 }
 ```
 
 Note that this document has an additional `sendTo` field.
-This is the WebHook URL of your server, the URL to which you want the notifications to be sent.
+This is the Webhook URL of your server, the URL to which you want the notifications to be sent.
 
 The response would then be something like this:
 
 ```json
 {
   "@context": [ "https://www.w3.org/ns/solid/notification/v1" ],
-  "id": "http://localhost:3000/.notifications/WebHookChannel2023/eeaf2c17-699a-4e53-8355-e91d13807e5f",
-  "type": "http://www.w3.org/ns/solid/notifications#WebHookChannel2023",
+  "id": "http://localhost:3000/.notifications/WebhookChannel2023/eeaf2c17-699a-4e53-8355-e91d13807e5f",
+  "type": "http://www.w3.org/ns/solid/notifications#WebhookChannel2023",
   "topic": "http://localhost:3000/foo",
   "sendTo": "https://example.com/webhook"
 }

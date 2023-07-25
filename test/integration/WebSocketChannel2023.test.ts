@@ -30,8 +30,7 @@ const stores: [string, any][] = [
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
-  // Switch to file locker after https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1452
-    configs: [ 'storage/backend/file.json', 'util/resource-locker/memory.json' ],
+    configs: [ 'storage/backend/file.json', 'util/resource-locker/file.json' ],
     teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
 ];
@@ -86,9 +85,9 @@ describe.each(stores)('A server supporting WebSocketChannel2023 using %s', (name
     const quads = new Store(new Parser().parse(await response.text()));
 
     // Find the notification channel for websockets
-    const subscriptions = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.subscription, null);
+    const subscriptions = quads.getObjects(null, NOTIFY.terms.subscription, null);
     const websocketSubscriptions = subscriptions.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebSocketChannel2023`)),
+      quad(channel as NamedNode, NOTIFY.terms.channelType, NOTIFY.terms.WebSocketChannel2023),
     ));
     expect(websocketSubscriptions).toHaveLength(1);
     subscriptionUrl = websocketSubscriptions[0].value;

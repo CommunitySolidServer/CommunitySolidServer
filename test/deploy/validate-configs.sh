@@ -25,7 +25,7 @@ else
 fi
 printf " - %s\n" "${CONFIG_ARRAY[@]}"
 
-mkdir -p test/tmp/data 
+mkdir -p test/tmp/data
 echo "$TEST_NAME - Building and installing package"
 npm pack --loglevel warn
 npm install -g solid-community-server-*.tgz --loglevel warn
@@ -72,7 +72,7 @@ run_server_with_config () {
     cat test/tmp/"$CONFIG_NAME"
   else
     echo "$TEST_NAME($CONFIG_NAME) - Attempting HTTP access to the server"
-    if curl -sfkI -X GET --retry 15 --retry-connrefused --retry-delay 1 $CSS_BASE_URL > test/tmp/"$CONFIG_NAME"-curl; then
+    if curl -sfkI -X GET --retry 15 --retry-connrefused --retry-delay 5 $CSS_BASE_URL > test/tmp/"$CONFIG_NAME"-curl; then
       echo "$TEST_NAME($CONFIG_NAME) - SUCCESS: server reached"
       FAILURE=0
     else

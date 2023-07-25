@@ -1,10 +1,10 @@
-# Releasing a new version
+# Releasing a new major version
 
 This is only relevant if you are a developer with push access responsible for doing a new release.
 
 Steps to follow:
 
-* Merge `main` into `versions/x.0.0`.
+* Merge `main` into `versions/next-major`.
 * Verify if there are issues when upgrading an existing installation to the new version.
     * Can the data still be accessed?
     * Does authentication still work?
@@ -15,7 +15,7 @@ Steps to follow:
     * Automatically updates Components.js references to the new version.
       Committed with `chore(release): Update configs to vx.0.0`.
     * Updates the `package.json`, and generates the new entries in `CHANGELOG.md`.
-      Commited with `chore(release): Release version vx.0.0 of the npm package`
+      Commits with `chore(release): Release version vx.0.0 of the npm package`
     * Optionally run `npx commit-and-tag-version -r major --dry-run` to preview the commands that will be run
       and the changes to `CHANGELOG.md`.
 * The `postrelease` script will now prompt you to manually edit the `CHANGELOG.md`.
@@ -24,19 +24,25 @@ Steps to follow:
       Documentation can be removed.
     * Press any key in your terminal when your changes are ready.
     * The `postrelease` script will amend the release commit, create an annotated tag and push changes to origin.
-* Merge `versions/x.0.0` into `main` and push.
+* Merge `versions/next-major` into `main` and push.
 * Do a GitHub release.
 * `npm publish`
-    * Check if there is a `next` tag that needs to be replaced.
+    * `npm dist-tag add @solid/community-server@x.0.0 next`
 * Rename the `versions/x.0.0` branch to the next version.
-* Update `.github/workflows/schedule.yml` and `.github/dependabot.yml` to point at the new branch.
 * Potentially upgrade dependent repositories:
     * Recipes at <https://github.com/CommunitySolidServer/recipes/>
     * Tutorials at <https://github.com/CommunitySolidServer/tutorials/>
+    * Generator at <https://github.com/CommunitySolidServer/configuration-generator/>
+    * Hello world component at <https://github.com/CommunitySolidServer/hello-world-component/>
 
-Changes when doing a pre-release of a major version:
+## Changes when doing a pre-release
 
 * Version with `npm run release -- -r major --prerelease alpha`
-* Do not merge `versions/x.0.0` into `main`.
+* Do not merge `versions/next-major` into `main`.
 * Publish with `npm publish --tag next`.
 * Do not update the branch or anything related.
+
+## Changes when doing a minor release
+
+* Version with `npm run release -- -r minor`
+* Do not merge `versions/next-major` into `main`.

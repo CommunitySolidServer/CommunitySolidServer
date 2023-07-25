@@ -5,7 +5,6 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import type { NamedNode } from 'n3';
 import { DataFactory, Parser, Store } from 'n3';
 import type { App } from '../../src/init/App';
-
 import { matchesAuthorizationScheme } from '../../src/util/HeaderUtil';
 import { joinUrl, trimTrailingSlashes } from '../../src/util/PathUtil';
 import { readJsonStream } from '../../src/util/StreamUtil';
@@ -21,14 +20,13 @@ import {
   removeFolder,
 } from './Config';
 import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
 
 const port = getPort('WebHookChannel2023');
 const baseUrl = `http://localhost:${port}/`;
 const clientPort = getPort('WebHookChannel2023-client');
 const target = `http://localhost:${clientPort}/`;
 const webId = 'http://example.com/card/#me';
-const notificationType = NOTIFY.WebHookChannel2023;
+const notificationType = NOTIFY.WebhookChannel2023;
 
 const rootFilePath = getTestFolder('WebHookChannel2023');
 const stores: [string, any][] = [
@@ -37,8 +35,7 @@ const stores: [string, any][] = [
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
-    // Switch to file locker after https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1452
-    configs: [ 'storage/backend/file.json', 'util/resource-locker/memory.json' ],
+    configs: [ 'storage/backend/file.json', 'util/resource-locker/file.json' ],
     teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
 ];
@@ -97,9 +94,9 @@ describe.each(stores)('A server supporting WebHookChannel2023 using %s', (name, 
     const quads = new Store(new Parser().parse(await response.text()));
 
     // Find the notification channel for websockets
-    const subscriptions = quads.getObjects(storageDescriptionUrl, NOTIFY.terms.subscription, null);
+    const subscriptions = quads.getObjects(null, NOTIFY.terms.subscription, null);
     const webhookSubscriptions = subscriptions.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, NOTIFY.terms.channelType, namedNode(`${NOTIFY.namespace}WebHookChannel2023`)),
+      quad(channel as NamedNode, NOTIFY.terms.channelType, NOTIFY.terms.WebhookChannel2023),
     ));
     expect(webhookSubscriptions).toHaveLength(1);
     subscriptionUrl = webhookSubscriptions[0].value;

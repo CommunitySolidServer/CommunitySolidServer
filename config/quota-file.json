@@ -38,6 +38,7 @@
       "comment": "A server that stores its resources on disk while enforcing quota."
     },
     {
+      "comment": "Sets the maximum size of a single pod to 7KB.",
       "@id": "urn:solid-server:default:QuotaStrategy",
       "@type": "PodQuotaStrategy",
       "limit_amount": 7000,

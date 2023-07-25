@@ -39,7 +39,8 @@ module.exports = {
     'js',
   ],
   testEnvironment: 'node',
-  setupFilesAfterEnv: [ 'jest-rdf', '<rootDir>/test/util/SetupTests.ts' ],
+  globalSetup: '<rootDir>/test/util/SetupTests.ts',
+  setupFilesAfterEnv: [ 'jest-rdf' ],
   collectCoverage: false,
   // See https://github.com/matthieubosquet/ts-dpop/issues/13
   moduleNameMapper: {

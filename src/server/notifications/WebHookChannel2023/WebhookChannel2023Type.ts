@@ -14,7 +14,7 @@ export interface WebhookChannel2023 extends NotificationChannel {
   /**
    * The "WebHookChannel2023" type.
    */
-  type: typeof NOTIFY.WebHookChannel2023;
+  type: typeof NOTIFY.WebhookChannel2023;
   /**
    * Where the notifications have to be sent.
    */
@@ -22,7 +22,7 @@ export interface WebhookChannel2023 extends NotificationChannel {
 }
 
 export function isWebHook2023Channel(channel: NotificationChannel): channel is WebhookChannel2023 {
-  return channel.type === NOTIFY.WebHookChannel2023;
+  return channel.type === NOTIFY.WebhookChannel2023;
 }
 
 /**
@@ -47,7 +47,7 @@ export class WebhookChannel2023Type extends BaseChannelType {
    */
   public constructor(route: InteractionRoute, webIdRoute: InteractionRoute, stateHandler: StateHandler,
     features?: string[]) {
-    super(NOTIFY.terms.WebHookChannel2023,
+    super(NOTIFY.terms.WebhookChannel2023,
       route,
       features,
       [{ path: NOTIFY.sendTo, minCount: 1, maxCount: 1 }]);
@@ -62,7 +62,7 @@ export class WebhookChannel2023Type extends BaseChannelType {
 
     return {
       ...channel,
-      type: NOTIFY.WebHookChannel2023,
+      type: NOTIFY.WebhookChannel2023,
       sendTo: sendTo.value,
     };
   }

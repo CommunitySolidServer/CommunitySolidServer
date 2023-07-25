@@ -49,36 +49,33 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     expect(headers['accept-post']).toBeUndefined();
   });
 
-  it('returns all methods for an empty container.', async(): Promise<void> => {
+  it('returns all methods except PUT for an empty container.', async(): Promise<void> => {
     await expect(writer.handleSafe({ response, metadata: emptyContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
     expect(new Set((headers.allow as string).split(', ')))
-      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'PUT', 'POST', 'PATCH', 'DELETE' ]));
+      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH', 'DELETE' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
-    expect(headers['accept-put']).toBe('*/*');
     expect(headers['accept-post']).toBe('*/*');
   });
 
-  it('returns all methods except DELETE for a non-empty container.', async(): Promise<void> => {
+  it('returns all methods except PUT/DELETE for a non-empty container.', async(): Promise<void> => {
     await expect(writer.handleSafe({ response, metadata: fullContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
     expect(new Set((headers.allow as string).split(', ')))
-      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'PUT', 'POST', 'PATCH' ]));
+      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
-    expect(headers['accept-put']).toBe('*/*');
     expect(headers['accept-post']).toBe('*/*');
   });
 
-  it('returns all methods except DELETE for a storage container.', async(): Promise<void> => {
+  it('returns all methods except PUT/DELETE for a storage container.', async(): Promise<void> => {
     await expect(writer.handleSafe({ response, metadata: storageContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
     expect(new Set((headers.allow as string).split(', ')))
-      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'PUT', 'POST', 'PATCH' ]));
+      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
-    expect(headers['accept-put']).toBe('*/*');
     expect(headers['accept-post']).toBe('*/*');
   });
 
