@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { errorTermsToMetadata } from '../../util/errors/HttpErrorUtil';
 import { fetchDataset } from '../../util/FetchUtil';
 import { SOLID } from '../../util/Vocabularies';
 import { OwnershipValidator } from './OwnershipValidator';
@@ -89,6 +90,6 @@ export class TokenOwnershipValidator extends OwnershipValidator {
       'You can remove this triple again after validation.',
     ].join(' ');
     const details = { quad: `<${webId}> <${SOLID.oidcIssuerRegistrationToken}> "${token}".` };
-    throw new BadRequestHttpError(errorMessage, { details });
+    throw new BadRequestHttpError(errorMessage, { metadata: errorTermsToMetadata(details) });
   }
 }

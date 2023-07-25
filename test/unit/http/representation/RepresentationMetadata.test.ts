@@ -2,8 +2,8 @@ import 'jest-rdf';
 import type { BlankNode } from 'n3';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
-import { ContentType } from '../../../../src';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import { ContentType } from '../../../../src/util/Header';
 import { CONTENT_TYPE_TERM, SOLID_META, RDFS } from '../../../../src/util/Vocabularies';
 const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
@@ -308,14 +308,14 @@ describe('A RepresentationMetadata', (): void => {
     it('has a shorthand for Content-Type as string.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
-      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
-      expect(metadata.contentTypeObject).toEqual({
-        value: 'text/plain',
-        parameters: {
-          charset: 'utf-8',
-          test: 'value1',
-        },
-      });
+      metadata.contentType = 'text/plain';
+      expect(metadata.contentTypeObject).toEqual({ value: 'text/plain', parameters: {}});
+    });
+
+    it('errors trying to set a Content-Type with parameters using a string.', async(): Promise<void> => {
+      expect((): void => {
+        metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      }).toThrow(Error);
     });
 
     it('has a shorthand for Content-Type as object.', async(): Promise<void> => {
@@ -341,7 +341,10 @@ describe('A RepresentationMetadata', (): void => {
     it('can properly clear the Content-Type parameters explicitly.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
-      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      metadata.contentTypeObject = new ContentType('text/plain', {
+        charset: 'utf-8',
+        test: 'value1',
+      });
       metadata.contentType = undefined;
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
@@ -353,7 +356,10 @@ describe('A RepresentationMetadata', (): void => {
     it('can properly clear the Content-Type parameters implicitly.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
-      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      metadata.contentTypeObject = new ContentType('text/plain', {
+        charset: 'utf-8',
+        test: 'value1',
+      });
       metadata.contentType = 'text/turtle';
       expect(metadata.contentType).toBe('text/turtle');
       expect(metadata.contentTypeObject).toEqual({
@@ -368,7 +374,10 @@ describe('A RepresentationMetadata', (): void => {
     it('can return invalid parameters when too many quads are present.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
-      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      metadata.contentTypeObject = new ContentType('text/plain', {
+        charset: 'utf-8',
+        test: 'value1',
+      });
       const param = metadata.quads(null, SOLID_META.terms.value)[0].subject;
       metadata.addQuad(param as BlankNode, SOLID_META.terms.value, 'anomaly');
       expect(metadata.contentTypeObject?.parameters).toMatchObject({ invalid: '' });

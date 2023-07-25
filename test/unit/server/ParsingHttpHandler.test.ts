@@ -4,12 +4,11 @@ import type { ErrorHandler } from '../../../src/http/output/error/ErrorHandler';
 import { ResponseDescription } from '../../../src/http/output/response/ResponseDescription';
 import type { ResponseWriter } from '../../../src/http/output/ResponseWriter';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
-import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import type { OperationHttpHandler } from '../../../src/server/OperationHttpHandler';
 import { ParsingHttpHandler } from '../../../src/server/ParsingHttpHandler';
-import { HttpError } from '../../../src/util/errors/HttpError';
+import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 
 describe('A ParsingHttpHandler', (): void => {
   const request: HttpRequest = {} as any;
@@ -57,7 +56,7 @@ describe('A ParsingHttpHandler', (): void => {
   });
 
   it('calls the error handler if something goes wrong.', async(): Promise<void> => {
-    const error = new Error('bad data');
+    const error = new BadRequestHttpError('bad data');
     source.handleSafe.mockRejectedValueOnce(error);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
@@ -66,16 +65,14 @@ describe('A ParsingHttpHandler', (): void => {
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: errorResponse });
   });
 
-  it('adds error metadata if able.', async(): Promise<void> => {
-    const error = new HttpError(0, 'error');
+  it('creates an InternalServerError if th error was not an HttpError.', async(): Promise<void> => {
+    const error = new Error('bad data');
     source.handleSafe.mockRejectedValueOnce(error);
-    const metaResponse = new ResponseDescription(0, new RepresentationMetadata());
-    errorHandler.handleSafe.mockResolvedValueOnce(metaResponse);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, request });
+    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith(expect.objectContaining({ request }));
+    expect(errorHandler.handleSafe.mock.calls[0][0].error.cause).toBe(error);
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: metaResponse });
-    expect(metaResponse.metadata?.quads()).toHaveLength(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: errorResponse });
   });
 });

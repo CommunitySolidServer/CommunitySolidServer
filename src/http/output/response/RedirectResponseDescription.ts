@@ -1,7 +1,6 @@
 import { DataFactory } from 'n3';
 import type { RedirectHttpError } from '../../../util/errors/RedirectHttpError';
 import { SOLID_HTTP } from '../../../util/Vocabularies';
-import { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { ResponseDescription } from './ResponseDescription';
 
 /**
@@ -9,7 +8,7 @@ import { ResponseDescription } from './ResponseDescription';
  */
 export class RedirectResponseDescription extends ResponseDescription {
   public constructor(error: RedirectHttpError) {
-    const metadata = new RepresentationMetadata({ [SOLID_HTTP.location]: DataFactory.namedNode(error.location) });
-    super(error.statusCode, metadata);
+    error.metadata.set(SOLID_HTTP.terms.location, DataFactory.namedNode(error.location));
+    super(error.statusCode, error.metadata);
   }
 }

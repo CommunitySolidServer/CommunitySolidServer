@@ -1,5 +1,5 @@
 import type { HttpRequest } from '../../../server/HttpRequest';
-import type { AcceptHeader } from '../../../util/HeaderUtil';
+import type { AcceptHeader } from '../../../util/Header';
 import {
   parseAccept,
   parseAcceptCharset,

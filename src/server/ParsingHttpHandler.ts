@@ -3,8 +3,9 @@ import type { ErrorHandler } from '../http/output/error/ErrorHandler';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import type { ResponseWriter } from '../http/output/ResponseWriter';
 import { getLoggerFor } from '../logging/LogUtil';
-import { assertError } from '../util/errors/ErrorUtil';
+import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { HttpError } from '../util/errors/HttpError';
+import { InternalServerError } from '../util/errors/InternalServerError';
 import type { HttpHandlerInput } from './HttpHandler';
 import { HttpHandler } from './HttpHandler';
 import type { HttpRequest } from './HttpRequest';
@@ -81,12 +82,11 @@ export class ParsingHttpHandler extends HttpHandler {
    * Handles the error output correctly based on the preferences.
    */
   protected async handleError(error: unknown, request: HttpRequest): Promise<ResponseDescription> {
-    assertError(error);
-    const result = await this.errorHandler.handleSafe({ error, request });
-    if (HttpError.isInstance(error) && result.metadata) {
-      const quads = error.generateMetadata(result.metadata.identifier);
-      result.metadata.addQuads(quads);
+    if (!HttpError.isInstance(error)) {
+      error = new InternalServerError(`Received unexpected non-HttpError: ${createErrorMessage(error)}`,
+        { cause: error });
     }
-    return result;
+
+    return this.errorHandler.handleSafe({ error: error as HttpError, request });
   }
 }

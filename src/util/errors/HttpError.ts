@@ -1,14 +1,13 @@
-import { DataFactory } from 'n3';
-import type { NamedNode, Quad, Quad_Subject } from 'rdf-js';
-import { toNamedTerm } from '../TermUtil';
-import { SOLID_ERROR } from '../Vocabularies';
+import type { NamedNode } from 'rdf-js';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import { toLiteral, toNamedTerm } from '../TermUtil';
+import { HTTP, SOLID_ERROR, XSD } from '../Vocabularies';
 import { isError } from './ErrorUtil';
-import quad = DataFactory.quad;
 
 export interface HttpErrorOptions {
   cause?: unknown;
   errorCode?: string;
-  details?: NodeJS.Dict<unknown>;
+  metadata?: RepresentationMetadata;
 }
 
 /**
@@ -26,7 +25,7 @@ export class HttpError<T extends number = number> extends Error implements HttpE
   public readonly statusCode: T;
   public readonly cause?: unknown;
   public readonly errorCode: string;
-  public readonly details?: NodeJS.Dict<unknown>;
+  public readonly metadata: RepresentationMetadata;
 
   /**
    * Creates a new HTTP error. Subclasses should call this with their fixed status code.
@@ -41,23 +40,20 @@ export class HttpError<T extends number = number> extends Error implements HttpE
     this.name = name;
     this.cause = options.cause;
     this.errorCode = options.errorCode ?? `H${statusCode}`;
-    this.details = options.details;
+    this.metadata = options.metadata ?? new RepresentationMetadata();
+    this.generateMetadata();
   }
 
   public static isInstance(error: any): error is HttpError {
-    return isError(error) && typeof (error as any).statusCode === 'number';
+    return isError(error) && typeof (error as any).statusCode === 'number' && (error as any).metadata;
   }
 
   /**
-   * Returns quads representing metadata relevant to this error.
+   * Initializes the error metadata.
    */
-  public generateMetadata(subject: Quad_Subject | string): Quad[] {
-    // The reason we have this here instead of the generate function below
-    // is because we still want errors created with `new HttpError` to be treated identical
-    // as errors created with the constructor of the error class corresponding to that specific status code.
-    return [
-      quad(toNamedTerm(subject), SOLID_ERROR.terms.errorResponse, generateHttpErrorUri(this.statusCode)),
-    ];
+  protected generateMetadata(): void {
+    this.metadata.add(SOLID_ERROR.terms.errorResponse, generateHttpErrorUri(this.statusCode));
+    this.metadata.add(HTTP.terms.statusCodeNumber, toLiteral(this.statusCode, XSD.terms.integer));
   }
 }
 

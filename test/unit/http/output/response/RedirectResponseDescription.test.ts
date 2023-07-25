@@ -8,6 +8,7 @@ describe('A RedirectResponseDescription', (): void => {
   it('has status the code and location of the error.', async(): Promise<void> => {
     const description = new RedirectResponseDescription(error);
     expect(description.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe(error.location);
+    expect(description.metadata).toBe(error.metadata);
     expect(description.statusCode).toBe(error.statusCode);
   });
 });

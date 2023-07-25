@@ -1,9 +1,10 @@
 import type { HttpRequest } from '../../../server/HttpRequest';
+import type { HttpError } from '../../../util/errors/HttpError';
 import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import type { ResponseDescription } from '../response/ResponseDescription';
 
 export interface ErrorHandlerArgs {
-  error: Error;
+  error: HttpError;
   request: HttpRequest;
 }
 

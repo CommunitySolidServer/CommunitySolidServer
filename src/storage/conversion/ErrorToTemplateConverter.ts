@@ -2,7 +2,8 @@ import assert from 'assert';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { INTERNAL_ERROR } from '../../util/ContentTypes';
-import { HttpError } from '../../util/errors/HttpError';
+import type { HttpError } from '../../util/errors/HttpError';
+import { extractErrorTerms } from '../../util/errors/HttpErrorUtil';
 import { resolveModulePath } from '../../util/PathUtil';
 import { getSingleItem } from '../../util/StreamUtil';
 import { isValidFileName } from '../../util/StringUtil';
@@ -57,19 +58,20 @@ export class ErrorToTemplateConverter extends BaseTypedRepresentationConverter {
   }
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
-    const error = await getSingleItem(representation.data) as Error;
+    const error = await getSingleItem(representation.data) as HttpError;
 
     // Render the error description using an error-specific template
     let description: string | undefined;
-    if (HttpError.isInstance(error)) {
-      try {
-        const templateFile = `${error.errorCode}${this.extension}`;
-        assert(isValidFileName(templateFile), 'Invalid error template name');
-        description = await this.templateEngine.handleSafe({ contents: error.details ?? {},
-          template: { templateFile, templatePath: this.codeTemplatesPath }});
-      } catch {
-        // In case no template is found, or rendering errors, we still want to convert
-      }
+    try {
+      const templateFile = `${error.errorCode}${this.extension}`;
+      assert(isValidFileName(templateFile), 'Invalid error template name');
+      // Filter out the error terms to pass to the template
+      description = await this.templateEngine.handleSafe({
+        contents: extractErrorTerms(error.metadata),
+        template: { templateFile, templatePath: this.codeTemplatesPath },
+      });
+    } catch {
+      // In case no template is found, or rendering errors, we still want to convert
     }
 
     // Render the main template, embedding the rendered error description

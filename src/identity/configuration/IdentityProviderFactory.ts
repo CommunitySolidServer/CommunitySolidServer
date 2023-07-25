@@ -20,6 +20,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import type { HttpError } from '../../util/errors/HttpError';
+import { errorTermsToMetadata } from '../../util/errors/HttpErrorUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { OAuthHttpError } from '../../util/errors/OAuthHttpError';
 import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
@@ -398,10 +399,10 @@ export class IdentityProviderFactory implements ProviderFactory {
         const unknownClientError = new BadRequestHttpError(
           'Unknown client, you might need to clear the local storage on the client.', {
             errorCode: 'E0003',
-            details: {
-              client_id: ctx.request.query.client_id,
-              redirect_uri: ctx.request.query.redirect_uri,
-            },
+            metadata: errorTermsToMetadata({
+              client_id: ctx.request.query.client_id as string,
+              redirect_uri: ctx.request.query.redirect_uri as string,
+            }),
           },
         );
         unknownClientError.stack = oidcError.stack;

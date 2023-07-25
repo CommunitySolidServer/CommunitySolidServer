@@ -253,8 +253,15 @@ export const SOLID_AS = createVocabulary('urn:npm:solid:community-server:activit
 
 export const SOLID_ERROR = createVocabulary('urn:npm:solid:community-server:error:',
   'disallowedMethod',
+  'errorCode',
   'errorResponse',
   'stack',
+);
+
+// Used to pass parameters to error templates
+export const SOLID_ERROR_TERM = createVocabulary('urn:npm:solid:community-server:error-term:',
+  // Identifier of the resource responsible for the error
+  'path',
 );
 
 export const SOLID_HTTP = createVocabulary('urn:npm:solid:community-server:http:',

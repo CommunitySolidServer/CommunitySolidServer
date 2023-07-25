@@ -1,7 +1,7 @@
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
-import { ContentType,
-  addHeader,
+import { ContentType } from '../../../src/util/Header';
+import { addHeader,
   hasScheme,
   matchesAuthorizationScheme,
   parseAccept,

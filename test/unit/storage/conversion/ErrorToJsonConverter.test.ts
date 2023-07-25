@@ -1,6 +1,7 @@
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ErrorToJsonConverter } from '../../../../src/storage/conversion/ErrorToJsonConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { errorTermsToMetadata } from '../../../../src/util/errors/HttpErrorUtil';
 import type { OAuthErrorFields } from '../../../../src/util/errors/OAuthHttpError';
 import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
 import { readJsonStream } from '../../../../src/util/StreamUtil';
@@ -28,11 +29,13 @@ describe('An ErrorToJsonConverter', (): void => {
       statusCode: 400,
       errorCode: 'H400',
       stack: error.stack,
+      details: {},
     });
   });
 
   it('copies the HttpError details.', async(): Promise<void> => {
-    const error = new BadRequestHttpError('error text', { details: { important: 'detail' }});
+    const metadata = errorTermsToMetadata({ important: 'detail' });
+    const error = new BadRequestHttpError('error text', { metadata });
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     await expect(prom).resolves.toBeDefined();
@@ -75,11 +78,13 @@ describe('An ErrorToJsonConverter', (): void => {
       error_description: 'error_description',
       scope: 'scope',
       state: 'state',
+      details: {},
     });
   });
 
-  it('does not copy the details if they are not serializable.', async(): Promise<void> => {
-    const error = new BadRequestHttpError('error text', { details: { object: BigInt(1) }});
+  it('only adds stack if it is defined.', async(): Promise<void> => {
+    const error = new BadRequestHttpError('error text');
+    delete error.stack;
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     await expect(prom).resolves.toBeDefined();
@@ -91,39 +96,7 @@ describe('An ErrorToJsonConverter', (): void => {
       message: 'error text',
       statusCode: 400,
       errorCode: 'H400',
-      stack: error.stack,
-    });
-  });
-
-  it('defaults to status code 500 for non-HTTP errors.', async(): Promise<void> => {
-    const error = new Error('error text');
-    const representation = new BasicRepresentation([ error ], 'internal/error', false);
-    const prom = converter.handle({ identifier, representation, preferences });
-    await expect(prom).resolves.toBeDefined();
-    const result = await prom;
-    expect(result.binary).toBe(true);
-    expect(result.metadata.contentType).toBe('application/json');
-    await expect(readJsonStream(result.data)).resolves.toEqual({
-      name: 'Error',
-      message: 'error text',
-      statusCode: 500,
-      stack: error.stack,
-    });
-  });
-
-  it('only adds stack if it is defined.', async(): Promise<void> => {
-    const error = new Error('error text');
-    delete error.stack;
-    const representation = new BasicRepresentation([ error ], 'internal/error', false);
-    const prom = converter.handle({ identifier, representation, preferences });
-    await expect(prom).resolves.toBeDefined();
-    const result = await prom;
-    expect(result.binary).toBe(true);
-    expect(result.metadata.contentType).toBe('application/json');
-    await expect(readJsonStream(result.data)).resolves.toEqual({
-      name: 'Error',
-      message: 'error text',
-      statusCode: 500,
+      details: {},
     });
   });
 });

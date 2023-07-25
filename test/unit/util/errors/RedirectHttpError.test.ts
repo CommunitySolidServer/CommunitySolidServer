@@ -7,6 +7,7 @@ import { RedirectHttpError } from '../../../../src/util/errors/RedirectHttpError
 import type { RedirectHttpErrorClass } from '../../../../src/util/errors/RedirectHttpError';
 import { SeeOtherHttpError } from '../../../../src/util/errors/SeeOtherHttpError';
 import { TemporaryRedirectHttpError } from '../../../../src/util/errors/TemporaryRedirectHttpError';
+import { HTTP, SOLID_ERROR, SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 // Used to make sure the RedirectHttpError constructor also gets called in a test.
 class FixedRedirectHttpError extends RedirectHttpError {
@@ -70,7 +71,10 @@ describe('RedirectHttpError', (): void => {
     });
 
     it('sets the details.', (): void => {
-      expect(instance.details).toBe(options.details);
+      expect(instance.metadata.get(SOLID_ERROR.terms.errorResponse)?.value)
+        .toBe(`${SOLID_ERROR.namespace}H${statusCode}`);
+      expect(instance.metadata.get(HTTP.terms.statusCodeNumber)?.value).toBe(`${statusCode}`);
+      expect(instance.metadata.get(SOLID_HTTP.terms.location)?.value).toBe(location);
     });
   });
 });

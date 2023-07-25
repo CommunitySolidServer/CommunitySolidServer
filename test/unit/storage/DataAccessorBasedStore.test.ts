@@ -20,6 +20,7 @@ import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { PreconditionFailedHttpError } from '../../../src/util/errors/PreconditionFailedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
+import { ContentType } from '../../../src/util/Header';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
@@ -673,7 +674,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add(
         SOLID_META.terms.preserve, namedNode(metaResourceID.path), SOLID_META.terms.ResponseMetadata,
       );
-      representation.metadata.contentType = 'text/plain; charset=UTF-8';
+      representation.metadata.contentTypeObject = new ContentType('text/plain', { charset: 'UTF-8' });
       await store.setRepresentation(resourceID, representation);
       const { metadata } = accessor.data[resourceID.path];
       expect(metadata.quads(null, RDF.terms.type)).toHaveLength(2);

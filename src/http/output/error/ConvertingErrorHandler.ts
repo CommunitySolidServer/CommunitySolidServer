@@ -3,13 +3,9 @@ import type {
   RepresentationConverterArgs,
 } from '../../../storage/conversion/RepresentationConverter';
 import { INTERNAL_ERROR } from '../../../util/ContentTypes';
-import { getStatusCode } from '../../../util/errors/HttpErrorUtil';
-import { toLiteral } from '../../../util/TermUtil';
-import { HTTP, XSD } from '../../../util/Vocabularies';
 import type { PreferenceParser } from '../../input/preferences/PreferenceParser';
 import { BasicRepresentation } from '../../representation/BasicRepresentation';
 import type { Representation } from '../../representation/Representation';
-import { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import type { ResponseDescription } from '../response/ResponseDescription';
 import type { ErrorHandlerArgs } from './ErrorHandler';
 import { ErrorHandler } from './ErrorHandler';
@@ -64,11 +60,13 @@ export class ConvertingErrorHandler extends ErrorHandler {
    * Prepares the arguments used by all functions.
    */
   private async extractErrorDetails({ error, request }: ErrorHandlerArgs): Promise<PreparedArguments> {
-    const statusCode = getStatusCode(error);
-    const representation = this.toRepresentation(error, statusCode);
+    if (!this.showStackTrace) {
+      delete error.stack;
+    }
+    const representation = new BasicRepresentation([ error ], error.metadata, INTERNAL_ERROR, false);
     const identifier = { path: representation.metadata.identifier.value };
     const preferences = await this.preferenceParser.handle({ request });
-    return { statusCode, conversionArgs: { identifier, representation, preferences }};
+    return { statusCode: error.statusCode, conversionArgs: { identifier, representation, preferences }};
   }
 
   /**
@@ -80,21 +78,5 @@ export class ConvertingErrorHandler extends ErrorHandler {
       metadata: converted.metadata,
       data: converted.data,
     };
-  }
-
-  /**
-   * Creates a Representation based on the given error.
-   * Content type will be internal/error.
-   * The status code is used for metadata.
-   */
-  private toRepresentation(error: Error, statusCode: number): Representation {
-    const metadata = new RepresentationMetadata(INTERNAL_ERROR);
-    metadata.add(HTTP.terms.statusCodeNumber, toLiteral(statusCode, XSD.terms.integer));
-
-    if (!this.showStackTrace) {
-      delete error.stack;
-    }
-
-    return new BasicRepresentation([ error ], metadata, false);
   }
 }

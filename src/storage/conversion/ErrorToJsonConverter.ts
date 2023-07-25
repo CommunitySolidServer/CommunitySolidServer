@@ -1,7 +1,8 @@
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { APPLICATION_JSON, INTERNAL_ERROR } from '../../util/ContentTypes';
-import { HttpError } from '../../util/errors/HttpError';
+import type { HttpError } from '../../util/errors/HttpError';
+import { extractErrorTerms } from '../../util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../util/errors/OAuthHttpError';
 import { getSingleItem } from '../../util/StreamUtil';
 import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
@@ -16,32 +17,19 @@ export class ErrorToJsonConverter extends BaseTypedRepresentationConverter {
   }
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
-    const error = await getSingleItem(representation.data) as Error;
+    const error = await getSingleItem(representation.data) as HttpError;
 
     const result: Record<string, any> = {
       name: error.name,
       message: error.message,
+      statusCode: error.statusCode,
+      errorCode: error.errorCode,
+      details: extractErrorTerms(error.metadata),
     };
 
     // OAuth errors responses require additional fields
     if (OAuthHttpError.isInstance(error)) {
       Object.assign(result, error.mandatoryFields);
-    }
-
-    if (HttpError.isInstance(error)) {
-      result.statusCode = error.statusCode;
-      result.errorCode = error.errorCode;
-      if (error.details) {
-        try {
-          // The details might not be serializable
-          JSON.stringify(error.details);
-          result.details = error.details;
-        } catch {
-          // Do not store the details
-        }
-      }
-    } else {
-      result.statusCode = 500;
     }
 
     if (error.stack) {

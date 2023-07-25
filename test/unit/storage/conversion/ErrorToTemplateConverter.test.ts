@@ -1,6 +1,7 @@
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ErrorToTemplateConverter } from '../../../../src/storage/conversion/ErrorToTemplateConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { errorTermsToMetadata } from '../../../../src/util/errors/HttpErrorUtil';
 import { resolveModulePath } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
@@ -91,7 +92,8 @@ describe('An ErrorToTemplateConverter', (): void => {
   });
 
   it('adds additional information if an error code description is found.', async(): Promise<void> => {
-    const error = new BadRequestHttpError('error text', { errorCode, details: { key: 'val' }});
+    const metadata = errorTermsToMetadata({ key: 'val' });
+    const error = new BadRequestHttpError('error text', { errorCode, metadata });
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     await expect(prom).resolves.toBeDefined();
@@ -154,8 +156,9 @@ describe('An ErrorToTemplateConverter', (): void => {
   });
 
   it('has default template options.', async(): Promise<void> => {
+    const metadata = errorTermsToMetadata({ key: 'val' });
     converter = new ErrorToTemplateConverter(templateEngine);
-    const error = new BadRequestHttpError('error text', { errorCode, details: { key: 'val' }});
+    const error = new BadRequestHttpError('error text', { errorCode, metadata });
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     await expect(prom).resolves.toBeDefined();
