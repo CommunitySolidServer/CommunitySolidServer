@@ -1,4 +1,4 @@
-import { getETag } from '../../storage/Conditions';
+import { getETag } from '../../storage/conditions/Conditions';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { assertReadConditions } from '../../util/ResourceUtil';

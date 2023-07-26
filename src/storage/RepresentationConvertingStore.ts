@@ -4,7 +4,7 @@ import type { RepresentationPreferences } from '../http/representation/Represent
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import { PassthroughConverter } from './conversion/PassthroughConverter';
 import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import { PassthroughStore } from './PassthroughStore';

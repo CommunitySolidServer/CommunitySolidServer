@@ -1,8 +1,8 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
-import type { BasicConditionsOptions } from '../../../storage/BasicConditions';
-import { BasicConditions } from '../../../storage/BasicConditions';
-import type { Conditions } from '../../../storage/Conditions';
+import type { BasicConditionsOptions } from '../../../storage/conditions/BasicConditions';
+import { BasicConditions } from '../../../storage/conditions/BasicConditions';
+import type { Conditions } from '../../../storage/conditions/Conditions';
 import { splitCommaSeparated } from '../../../util/StringUtil';
 import { ConditionsParser } from './ConditionsParser';
 

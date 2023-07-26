@@ -9,7 +9,7 @@ import type { Representation } from '../../../src/http/representation/Representa
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
-import { BasicConditions } from '../../../src/storage/BasicConditions';
+import { BasicConditions } from '../../../src/storage/conditions/BasicConditions';
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';

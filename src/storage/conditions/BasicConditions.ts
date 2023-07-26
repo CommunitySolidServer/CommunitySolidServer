@@ -1,5 +1,5 @@
-import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
-import { DC } from '../util/Vocabularies';
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import { DC } from '../../util/Vocabularies';
 import { getETag, sameResourceState } from './Conditions';
 import type { Conditions } from './Conditions';
 

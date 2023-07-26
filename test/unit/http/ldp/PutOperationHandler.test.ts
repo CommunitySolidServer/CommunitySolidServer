@@ -2,7 +2,7 @@ import { PutOperationHandler } from '../../../../src/http/ldp/PutOperationHandle
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
-import { BasicConditions } from '../../../../src/storage/BasicConditions';
+import { BasicConditions } from '../../../../src/storage/conditions/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';

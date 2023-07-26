@@ -2,7 +2,7 @@ import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import { PassthroughStore } from './PassthroughStore';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 

@@ -4,7 +4,7 @@ import type { RepresentationMetadata } from '../http/representation/Representati
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { IdentifierMap } from '../util/map/IdentifierMap';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import type { ResourceSet } from './ResourceSet';
 
 /**

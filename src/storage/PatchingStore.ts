@@ -1,7 +1,7 @@
 import type { Patch } from '../http/representation/Patch';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import { PassthroughStore } from './PassthroughStore';
 import type { PatchHandler } from './patch/PatchHandler';
 import type { ResourceStore, ChangeMap } from './ResourceStore';

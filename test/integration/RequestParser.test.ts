@@ -9,7 +9,7 @@ import { ContentTypeParser } from '../../src/http/input/metadata/ContentTypePars
 import { AcceptPreferenceParser } from '../../src/http/input/preferences/AcceptPreferenceParser';
 import { RepresentationMetadata } from '../../src/http/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../src/server/HttpRequest';
-import { BasicConditions } from '../../src/storage/BasicConditions';
+import { BasicConditions } from '../../src/storage/conditions/BasicConditions';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 
 describe('A BasicRequestParser with simple input parsers', (): void => {

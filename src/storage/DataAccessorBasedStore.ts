@@ -44,7 +44,7 @@ import {
   AS,
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 import namedNode = DataFactory.namedNode;
 

@@ -1,6 +1,6 @@
-import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
-import { getETag, sameResourceState } from '../../../src/storage/Conditions';
-import { CONTENT_TYPE, DC } from '../../../src/util/Vocabularies';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import { getETag, sameResourceState } from '../../../../src/storage/conditions/Conditions';
+import { CONTENT_TYPE, DC } from '../../../../src/util/Vocabularies';
 
 describe('Conditions', (): void => {
   describe('#getETag', (): void => {

@@ -5,7 +5,7 @@ import type { RepresentationPreferences } from '../http/representation/Represent
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { BaseActivityEmitter } from '../server/notifications/ActivityEmitter';
 import { AS, SOLID_AS } from '../util/Vocabularies';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 // The ActivityStream terms for which we emit an event

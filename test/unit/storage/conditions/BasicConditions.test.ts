@@ -1,7 +1,7 @@
-import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
-import { BasicConditions } from '../../../src/storage/BasicConditions';
-import { getETag } from '../../../src/storage/Conditions';
-import { CONTENT_TYPE, DC } from '../../../src/util/Vocabularies';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import { BasicConditions } from '../../../../src/storage/conditions/BasicConditions';
+import { getETag } from '../../../../src/storage/conditions/Conditions';
+import { CONTENT_TYPE, DC } from '../../../../src/util/Vocabularies';
 
 function getMetadata(modified: Date, type = 'application/ld+json'): RepresentationMetadata {
   return new RepresentationMetadata({

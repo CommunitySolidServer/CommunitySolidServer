@@ -1,7 +1,7 @@
 import { DeleteOperationHandler } from '../../../../src/http/ldp/DeleteOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
-import { BasicConditions } from '../../../../src/storage/BasicConditions';
+import { BasicConditions } from '../../../../src/storage/conditions/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
