@@ -1,6 +1,8 @@
+import { getETag } from '../../storage/Conditions';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { assertReadConditions } from '../../util/ResourceUtil';
+import { HH } from '../../util/Vocabularies';
 import { OkResponseDescription } from '../output/response/OkResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
@@ -33,6 +35,10 @@ export class HeadOperationHandler extends OperationHandler {
     // Check whether the cached representation is still valid or it is necessary to send a new representation.
     // Generally it doesn't make much sense to use condition headers with a HEAD request, but it should be supported.
     assertReadConditions(body, operation.conditions);
+
+    // Add the ETag of the returned representation
+    const etag = getETag(body.metadata);
+    body.metadata.set(HH.terms.etag, etag);
 
     return new OkResponseDescription(body.metadata);
   }

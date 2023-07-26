@@ -1,6 +1,8 @@
+import { getETag } from '../../storage/Conditions';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { assertReadConditions } from '../../util/ResourceUtil';
+import { HH } from '../../util/Vocabularies';
 import { OkResponseDescription } from '../output/response/OkResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
@@ -29,6 +31,10 @@ export class GetOperationHandler extends OperationHandler {
 
     // Check whether the cached representation is still valid or it is necessary to send a new representation
     assertReadConditions(body, operation.conditions);
+
+    // Add the ETag of the returned representation
+    const etag = getETag(body.metadata);
+    body.metadata.set(HH.terms.etag, etag);
 
     return new OkResponseDescription(body.metadata, body.data);
   }

@@ -1,7 +1,6 @@
 import type { HttpResponse } from '../../../server/HttpResponse';
-import { getETag } from '../../../storage/Conditions';
 import { addHeader } from '../../../util/HeaderUtil';
-import { DC } from '../../../util/Vocabularies';
+import { DC, HH } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataWriter } from './MetadataWriter';
 
@@ -15,9 +14,9 @@ export class ModifiedMetadataWriter extends MetadataWriter {
       const date = new Date(modified.value);
       addHeader(input.response, 'Last-Modified', date.toUTCString());
     }
-    const etag = getETag(input.metadata);
+    const etag = input.metadata.get(HH.terms.etag);
     if (etag) {
-      addHeader(input.response, 'ETag', etag);
+      addHeader(input.response, 'ETag', etag.value);
     }
   }
 }
