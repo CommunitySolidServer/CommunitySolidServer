@@ -1,4 +1,4 @@
-import { sameResourceState } from '../../storage/Conditions';
+import { sameResourceState } from '../../storage/conditions/Conditions';
 import type { NotificationGenerator } from './generate/NotificationGenerator';
 import type { NotificationEmitter } from './NotificationEmitter';
 import type { NotificationHandlerInput } from './NotificationHandler';

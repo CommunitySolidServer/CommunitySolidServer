@@ -1,4 +1,4 @@
-import { getETag } from '../../../storage/Conditions';
+import { getETag } from '../../../storage/conditions/Conditions';
 import type { ResourceStore } from '../../../storage/ResourceStore';
 import { InternalServerError } from '../../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';

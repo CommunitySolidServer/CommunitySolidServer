@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { isContainerIdentifier } from '../util/PathUtil';
 import { isValidFileName } from '../util/StringUtil';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import { cleanPreferences, matchesMediaType } from './conversion/ConversionUtil';
 import { PassthroughStore } from './PassthroughStore';
 import type { ResourceStore } from './ResourceStore';

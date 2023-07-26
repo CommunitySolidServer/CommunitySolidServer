@@ -4,7 +4,7 @@ import type { RepresentationPreferences } from '../http/representation/Represent
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 import type { RouterRule } from './routing/RouterRule';
 

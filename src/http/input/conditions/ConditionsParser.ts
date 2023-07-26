@@ -1,5 +1,5 @@
 import type { HttpRequest } from '../../../server/HttpRequest';
-import type { Conditions } from '../../../storage/Conditions';
+import type { Conditions } from '../../../storage/conditions/Conditions';
 import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 
 /**

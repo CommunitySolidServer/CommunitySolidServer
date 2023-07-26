@@ -372,6 +372,10 @@ export * from './storage/accessors/PassthroughDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
 export * from './storage/accessors/ValidatingDataAccessor';
 
+// Storage/Conditions
+export * from './storage/conditions/BasicConditions';
+export * from './storage/conditions/Conditions';
+
 // Storage/Conversion
 export * from './storage/conversion/BaseTypedRepresentationConverter';
 export * from './storage/conversion/ChainedConverter';
@@ -442,9 +446,7 @@ export * from './storage/validators/QuotaValidator';
 // Storage
 export * from './storage/AtomicResourceStore';
 export * from './storage/BaseResourceStore';
-export * from './storage/BasicConditions';
 export * from './storage/CachedResourceSet';
-export * from './storage/Conditions';
 export * from './storage/DataAccessorBasedStore';
 export * from './storage/IndexRepresentationStore';
 export * from './storage/LockingResourceStore';

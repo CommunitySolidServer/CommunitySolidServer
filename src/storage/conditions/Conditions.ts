@@ -1,5 +1,5 @@
-import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
-import { DC } from '../util/Vocabularies';
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import { DC } from '../../util/Vocabularies';
 
 /**
  * The conditions of an HTTP conditional request.

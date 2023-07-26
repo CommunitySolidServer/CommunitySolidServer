@@ -4,7 +4,7 @@ import type { NamedNode, Literal } from 'n3';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
-import type { Conditions } from '../../../src/storage/Conditions';
+import type { Conditions } from '../../../src/storage/conditions/Conditions';
 import { NotModifiedHttpError } from '../../../src/util/errors/NotModifiedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
 import {

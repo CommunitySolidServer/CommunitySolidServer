@@ -3,7 +3,7 @@ import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
-import type { Conditions } from '../storage/Conditions';
+import type { Conditions } from '../storage/conditions/Conditions';
 import { NotModifiedHttpError } from './errors/NotModifiedHttpError';
 import { guardedStreamFrom } from './StreamUtil';
 import { toLiteral } from './TermUtil';

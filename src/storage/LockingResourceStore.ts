@@ -9,7 +9,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteLocker';
 import { endOfStream } from '../util/StreamUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';
-import type { Conditions } from './Conditions';
+import type { Conditions } from './conditions/Conditions';
 import type { ResourceStore, ChangeMap } from './ResourceStore';
 
 /**

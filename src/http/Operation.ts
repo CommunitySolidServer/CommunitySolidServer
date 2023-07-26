@@ -1,4 +1,4 @@
-import type { Conditions } from '../storage/Conditions';
+import type { Conditions } from '../storage/conditions/Conditions';
 import type { Representation } from './representation/Representation';
 import type { RepresentationPreferences } from './representation/RepresentationPreferences';
 import type { ResourceIdentifier } from './representation/ResourceIdentifier';
