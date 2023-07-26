@@ -171,6 +171,7 @@ export const FOAF = createVocabulary('http://xmlns.com/foaf/0.1/',
 
 export const HH = createVocabulary('http://www.w3.org/2011/http-headers#',
   'content-length',
+  'etag',
 );
 
 export const HTTP = createVocabulary('http://www.w3.org/2011/http#',
