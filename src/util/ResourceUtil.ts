@@ -4,10 +4,11 @@ import { BasicRepresentation } from '../http/representation/BasicRepresentation'
 import type { Representation } from '../http/representation/Representation';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { Conditions } from '../storage/conditions/Conditions';
+import type { ETagHandler } from '../storage/conditions/ETagHandler';
 import { NotModifiedHttpError } from './errors/NotModifiedHttpError';
 import { guardedStreamFrom } from './StreamUtil';
 import { toLiteral } from './TermUtil';
-import { CONTENT_TYPE_TERM, DC, LDP, RDF, SOLID_META, XSD } from './Vocabularies';
+import { CONTENT_TYPE_TERM, DC, HH, LDP, RDF, SOLID_META, XSD } from './Vocabularies';
 import namedNode = DataFactory.namedNode;
 
 /**
@@ -70,7 +71,8 @@ export async function cloneRepresentation(representation: Representation): Promi
 
 /**
  * Verify whether the given {@link Representation} matches the given conditions.
- * If not, destroy the data stream and throw a {@link NotModifiedHttpError}.
+ * If true, add the corresponding ETag to the body metadata.
+ * If not, destroy the data stream and throw a {@link NotModifiedHttpError} with the same ETag.
  * If `conditions` is not defined, nothing will happen.
  *
  * This uses the strict conditions check which takes the content type into account;
@@ -81,11 +83,14 @@ export async function cloneRepresentation(representation: Representation): Promi
  * this is why we have to check ETags after content negotiation.
  *
  * @param body - The representation to compare the conditions against.
+ * @param eTagHandler - Used to generate the ETag to return with the 304 response.
  * @param conditions - The conditions to assert.
  */
-export function assertReadConditions(body: Representation, conditions?: Conditions): void {
+export function assertReadConditions(body: Representation, eTagHandler: ETagHandler, conditions?: Conditions): void {
+  const eTag = eTagHandler.getETag(body.metadata);
   if (conditions && !conditions.matchesMetadata(body.metadata, true)) {
     body.data.destroy();
-    throw new NotModifiedHttpError();
+    throw new NotModifiedHttpError(eTag);
   }
+  body.metadata.set(HH.terms.etag, eTag);
 }

@@ -15,11 +15,10 @@ import { PreconditionFailedHttpError } from '../../../../src/util/errors/Precond
 import { UnauthorizedHttpError } from '../../../../src/util/errors/UnauthorizedHttpError';
 import { UnprocessableEntityHttpError } from '../../../../src/util/errors/UnprocessableEntityHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { HTTP, SOLID_ERROR } from '../../../../src/util/Vocabularies';
+import { HH, HTTP, SOLID_ERROR } from '../../../../src/util/Vocabularies';
 
 describe('HttpError', (): void => {
   const errors: [string, number, HttpErrorClass][] = [
-    [ 'NotModifiedHttpError', 304, NotModifiedHttpError ],
     [ 'BadRequestHttpError', 400, BadRequestHttpError ],
     [ 'UnauthorizedHttpError', 401, UnauthorizedHttpError ],
     [ 'ForbiddenHttpError', 403, ForbiddenHttpError ],
@@ -104,6 +103,32 @@ describe('HttpError', (): void => {
         .toBe(`${SOLID_ERROR.namespace}H405`);
       expect(instance.metadata.get(HTTP.terms.statusCodeNumber)?.value).toBe('405');
       expect(instance.metadata.get(SOLID_ERROR.terms.disallowedMethod)?.value).toBe('GET');
+    });
+  });
+
+  describe('NotModifiedHttpError', (): void => {
+    const eTag = 'ETAG';
+    const options = {
+      cause: new Error('cause'),
+      errorCode: 'E1234',
+    };
+    const instance = new NotModifiedHttpError(eTag, 'my message', options);
+
+    it('is valid.', async(): Promise<void> => {
+      expect(new NotModifiedHttpError().metadata.get(HH.terms.etag)).toBeUndefined();
+      expect(NotModifiedHttpError.isInstance(instance)).toBe(true);
+      expect(NotModifiedHttpError.uri).toEqualRdfTerm(generateHttpErrorUri(304));
+      expect(instance.name).toBe('NotModifiedHttpError');
+      expect(instance.statusCode).toBe(304);
+      expect(instance.message).toBe('my message');
+      expect(instance.cause).toBe(options.cause);
+      expect(instance.errorCode).toBe(options.errorCode);
+      expect(new NotModifiedHttpError().errorCode).toBe(`H${304}`);
+
+      expect(instance.metadata.get(SOLID_ERROR.terms.errorResponse)?.value)
+        .toBe(`${SOLID_ERROR.namespace}H304`);
+      expect(instance.metadata.get(HTTP.terms.statusCodeNumber)?.value).toBe('304');
+      expect(instance.metadata.get(HH.terms.etag)?.value).toBe(eTag);
     });
   });
 });
