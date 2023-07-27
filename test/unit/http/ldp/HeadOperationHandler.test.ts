@@ -68,7 +68,14 @@ describe('A HeadOperationHandler', (): void => {
 
   it('returns a 304 if the conditions do not match.', async(): Promise<void> => {
     conditions.matchesMetadata.mockReturnValue(false);
-    await expect(handler.handle({ operation })).rejects.toThrow(NotModifiedHttpError);
-    expect(data.destroy).toHaveBeenCalledTimes(2);
+    let error: unknown;
+    try {
+      await handler.handle({ operation });
+    } catch (err: unknown) {
+      error = err;
+    }
+    expect(NotModifiedHttpError.isInstance(error)).toBe(true);
+    expect((error as NotModifiedHttpError).metadata.get(HH.terms.etag)?.value).toBe('ETag');
+    expect(data.destroy).toHaveBeenCalledTimes(1);
   });
 });

@@ -182,6 +182,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
       headers: { 'if-none-match': eTag! },
     });
     expect(response.status).toBe(304);
+    expect(response.headers.get('etag')).toBe(eTag);
 
     // HEAD fails because of header
     response = await fetch(baseUrl, {
@@ -189,6 +190,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
       headers: { 'if-none-match': eTag! },
     });
     expect(response.status).toBe(304);
+    expect(response.headers.get('etag')).toBe(eTag);
 
     // GET succeeds if the ETag header doesn't match
     response = await fetch(baseUrl, {
@@ -236,8 +238,10 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     // Both ETags can be used on the same resource
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'text/turtle' }});
     expect(response.status).toBe(304);
+    expect(response.headers.get('etag')).toBe(eTagTurtle);
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagJson!, accept: 'application/ld+json' }});
     expect(response.status).toBe(304);
+    expect(response.headers.get('etag')).toBe(eTagJson);
 
     // But not for the other representation
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'application/ld+json' }});
