@@ -5,6 +5,7 @@ import {
   AddRemoveNotificationGenerator,
 } from '../../../../../src/server/notifications/generate/AddRemoveNotificationGenerator';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
+import type { ETagHandler } from '../../../../../src/storage/conditions/ETagHandler';
 import type { ResourceStore } from '../../../../../src/storage/ResourceStore';
 import { AS, CONTENT_TYPE, DC, LDP, RDF } from '../../../../../src/util/Vocabularies';
 
@@ -18,6 +19,7 @@ describe('An AddRemoveNotificationGenerator', (): void => {
   };
   let metadata: RepresentationMetadata;
   let store: jest.Mocked<ResourceStore>;
+  let eTagHandler: jest.Mocked<ETagHandler>;
   let generator: AddRemoveNotificationGenerator;
 
   beforeEach(async(): Promise<void> => {
@@ -33,7 +35,13 @@ describe('An AddRemoveNotificationGenerator', (): void => {
       getRepresentation: jest.fn().mockResolvedValue(new BasicRepresentation('', responseMetadata)),
     } as any;
 
-    generator = new AddRemoveNotificationGenerator(store);
+    eTagHandler = {
+      getETag: jest.fn().mockReturnValue('ETag'),
+      matchesETag: jest.fn(),
+      sameResourceState: jest.fn(),
+    };
+
+    generator = new AddRemoveNotificationGenerator(store, eTagHandler);
   });
 
   it('only handles Add/Remove activities.', async(): Promise<void> => {
@@ -73,7 +81,7 @@ describe('An AddRemoveNotificationGenerator', (): void => {
       type: 'Add',
       object: 'http://example.com/foo',
       target: 'http://example.com/',
-      state: expect.stringMatching(/"\d+-text\/turtle"/u),
+      state: 'ETag',
       published: date,
     });
 

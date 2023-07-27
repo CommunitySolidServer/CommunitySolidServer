@@ -374,7 +374,9 @@ export * from './storage/accessors/ValidatingDataAccessor';
 
 // Storage/Conditions
 export * from './storage/conditions/BasicConditions';
+export * from './storage/conditions/BasicETagHandler';
 export * from './storage/conditions/Conditions';
+export * from './storage/conditions/ETagHandler';
 
 // Storage/Conversion
 export * from './storage/conversion/BaseTypedRepresentationConverter';

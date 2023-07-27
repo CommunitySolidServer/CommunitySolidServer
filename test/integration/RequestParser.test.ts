@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
-import { SingleRootIdentifierStrategy } from '../../src';
+import { BasicETagHandler, SingleRootIdentifierStrategy } from '../../src';
 import { BasicRequestParser } from '../../src/http/input/BasicRequestParser';
 import { RawBodyParser } from '../../src/http/input/body/RawBodyParser';
 import { BasicConditionsParser } from '../../src/http/input/conditions/BasicConditionsParser';
@@ -9,7 +9,6 @@ import { ContentTypeParser } from '../../src/http/input/metadata/ContentTypePars
 import { AcceptPreferenceParser } from '../../src/http/input/preferences/AcceptPreferenceParser';
 import { RepresentationMetadata } from '../../src/http/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../src/server/HttpRequest';
-import { BasicConditions } from '../../src/storage/conditions/BasicConditions';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 
 describe('A BasicRequestParser with simple input parsers', (): void => {
@@ -17,7 +16,7 @@ describe('A BasicRequestParser with simple input parsers', (): void => {
   const targetExtractor = new OriginalUrlExtractor({ identifierStrategy });
   const preferenceParser = new AcceptPreferenceParser();
   const metadataParser = new ContentTypeParser();
-  const conditionsParser = new BasicConditionsParser();
+  const conditionsParser = new BasicConditionsParser(new BasicETagHandler());
   const bodyParser = new RawBodyParser();
   const requestParser = new BasicRequestParser(
     { targetExtractor, preferenceParser, metadataParser, conditionsParser, bodyParser },
@@ -45,7 +44,7 @@ describe('A BasicRequestParser with simple input parsers', (): void => {
         type: { 'text/turtle': 0.8 },
         language: { 'en-gb': 1, en: 0.5 },
       },
-      conditions: new BasicConditions({
+      conditions: expect.objectContaining({
         unmodifiedSince: new Date('2015-10-21T07:28:00.000Z'),
         notMatchesETag: [ '12345' ],
       }),

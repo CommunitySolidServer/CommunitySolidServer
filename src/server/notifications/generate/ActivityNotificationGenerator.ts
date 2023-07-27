@@ -1,4 +1,4 @@
-import { getETag } from '../../../storage/conditions/Conditions';
+import type { ETagHandler } from '../../../storage/conditions/ETagHandler';
 import type { ResourceStore } from '../../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';
 import { AS } from '../../../util/Vocabularies';
@@ -13,10 +13,12 @@ import { NotificationGenerator } from './NotificationGenerator';
  */
 export class ActivityNotificationGenerator extends NotificationGenerator {
   private readonly store: ResourceStore;
+  private readonly eTagHandler: ETagHandler;
 
-  public constructor(store: ResourceStore) {
+  public constructor(store: ResourceStore, eTagHandler: ETagHandler) {
     super();
     this.store = store;
+    this.eTagHandler = eTagHandler;
   }
 
   public async canHandle({ activity }: NotificationHandlerInput): Promise<void> {
@@ -28,8 +30,7 @@ export class ActivityNotificationGenerator extends NotificationGenerator {
   public async handle({ topic, activity }: NotificationHandlerInput): Promise<Notification> {
     const representation = await this.store.getRepresentation(topic, {});
     representation.data.destroy();
-
-    const state = getETag(representation.metadata);
+    const state = this.eTagHandler.getETag(representation.metadata);
 
     return {
       '@context': [

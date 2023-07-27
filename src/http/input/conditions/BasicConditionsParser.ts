@@ -3,11 +3,12 @@ import type { HttpRequest } from '../../../server/HttpRequest';
 import type { BasicConditionsOptions } from '../../../storage/conditions/BasicConditions';
 import { BasicConditions } from '../../../storage/conditions/BasicConditions';
 import type { Conditions } from '../../../storage/conditions/Conditions';
+import type { ETagHandler } from '../../../storage/conditions/ETagHandler';
 import { splitCommaSeparated } from '../../../util/StringUtil';
 import { ConditionsParser } from './ConditionsParser';
 
 /**
- * Creates a Conditions object based on the the following headers:
+ * Creates a Conditions object based on the following headers:
  *  - If-Modified-Since
  *  - If-Unmodified-Since
  *  - If-Match
@@ -17,6 +18,13 @@ import { ConditionsParser } from './ConditionsParser';
  */
 export class BasicConditionsParser extends ConditionsParser {
   protected readonly logger = getLoggerFor(this);
+
+  protected readonly eTagHandler: ETagHandler;
+
+  public constructor(eTagHandler: ETagHandler) {
+    super();
+    this.eTagHandler = eTagHandler;
+  }
 
   public async handle(request: HttpRequest): Promise<Conditions | undefined> {
     const options: BasicConditionsOptions = {
@@ -38,7 +46,7 @@ export class BasicConditionsParser extends ConditionsParser {
     // Only return a Conditions object if there is at least one condition; undefined otherwise
     this.logger.debug(`Found the following conditions: ${JSON.stringify(options)}`);
     if (Object.values(options).some((val): boolean => typeof val !== 'undefined')) {
-      return new BasicConditions(options);
+      return new BasicConditions(this.eTagHandler, options);
     }
   }
 

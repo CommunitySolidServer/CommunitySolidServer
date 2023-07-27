@@ -1,4 +1,4 @@
-import { getETag } from '../../storage/conditions/Conditions';
+import type { ETagHandler } from '../../storage/conditions/ETagHandler';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { assertReadConditions } from '../../util/ResourceUtil';
@@ -14,10 +14,12 @@ import { OperationHandler } from './OperationHandler';
  */
 export class HeadOperationHandler extends OperationHandler {
   private readonly store: ResourceStore;
+  private readonly eTagHandler: ETagHandler;
 
-  public constructor(store: ResourceStore) {
+  public constructor(store: ResourceStore, eTagHandler: ETagHandler) {
     super();
     this.store = store;
+    this.eTagHandler = eTagHandler;
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -37,7 +39,7 @@ export class HeadOperationHandler extends OperationHandler {
     assertReadConditions(body, operation.conditions);
 
     // Add the ETag of the returned representation
-    const etag = getETag(body.metadata);
+    const etag = this.eTagHandler.getETag(body.metadata);
     body.metadata.set(HH.terms.etag, etag);
 
     return new OkResponseDescription(body.metadata);

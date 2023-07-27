@@ -2,7 +2,7 @@ import { PutOperationHandler } from '../../../../src/http/ldp/PutOperationHandle
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
-import { BasicConditions } from '../../../../src/storage/conditions/BasicConditions';
+import type { Conditions } from '../../../../src/storage/conditions/Conditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';
@@ -13,7 +13,7 @@ import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 describe('A PutOperationHandler', (): void => {
   let operation: Operation;
   let body: Representation;
-  const conditions = new BasicConditions({});
+  const conditions: Conditions = { matchesMetadata: jest.fn() };
   let store: jest.Mocked<ResourceStore>;
   let handler: PutOperationHandler;
   const metaStrategy = new SimpleSuffixStrategy('.meta');
