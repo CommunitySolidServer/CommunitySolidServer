@@ -15,15 +15,13 @@
             { "@type": "DeleteNotificationGenerator" },
             {
               "@type": "AddRemoveNotificationGenerator",
-              "store": {
-                "@id": "urn:solid-server:default:ResourceStore"
-              }
+              "store": { "@id": "urn:solid-server:default:ResourceStore" },
+              "eTagHandler": { "@id": "urn:solid-server:default:ETagHandler" }
             },
             {
               "@type": "ActivityNotificationGenerator",
-              "store": {
-                "@id": "urn:solid-server:default:ResourceStore"
-              }
+              "store": { "@id": "urn:solid-server:default:ResourceStore" },
+              "eTagHandler": { "@id": "urn:solid-server:default:ETagHandler" }
             }
           ]
         }

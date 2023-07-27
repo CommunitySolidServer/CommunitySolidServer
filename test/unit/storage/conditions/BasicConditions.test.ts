@@ -1,89 +1,95 @@
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { BasicConditions } from '../../../../src/storage/conditions/BasicConditions';
-import { getETag } from '../../../../src/storage/conditions/Conditions';
-import { CONTENT_TYPE, DC } from '../../../../src/util/Vocabularies';
-
-function getMetadata(modified: Date, type = 'application/ld+json'): RepresentationMetadata {
-  return new RepresentationMetadata({
-    [DC.modified]: `${modified.toISOString()}`,
-    [CONTENT_TYPE]: type,
-  });
-}
+import type { ETagHandler } from '../../../../src/storage/conditions/ETagHandler';
+import { DC } from '../../../../src/util/Vocabularies';
 
 describe('A BasicConditions', (): void => {
   const now = new Date(2020, 10, 20);
   const tomorrow = new Date(2020, 10, 21);
   const yesterday = new Date(2020, 10, 19);
-  const turtleTag = getETag(getMetadata(now, 'text/turtle'))!;
-  const jsonLdTag = getETag(getMetadata(now))!;
+  const eTag = `"${now.getTime()}-text/turtle"`;
+  let eTagHandler: jest.Mocked<ETagHandler>;
+  let metadata: RepresentationMetadata;
+
+  beforeEach(async(): Promise<void> => {
+    eTagHandler = {
+      getETag: jest.fn(),
+      matchesETag: jest.fn().mockReturnValue(true),
+      sameResourceState: jest.fn(),
+    };
+
+    metadata = new RepresentationMetadata({ [DC.modified]: `${now.toISOString()}` });
+  });
 
   it('copies the input parameters.', async(): Promise<void> => {
     const eTags = [ '123456', 'abcdefg' ];
     const options = { matchesETag: eTags, notMatchesETag: eTags, modifiedSince: now, unmodifiedSince: now };
-    expect(new BasicConditions(options)).toMatchObject(options);
+    expect(new BasicConditions(eTagHandler, options)).toMatchObject(options);
   });
 
   it('always returns false if notMatchesETag contains *.', async(): Promise<void> => {
-    const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+    const conditions = new BasicConditions(eTagHandler, { notMatchesETag: [ '*' ]});
     expect(conditions.matchesMetadata(new RepresentationMetadata())).toBe(false);
   });
 
-  it('requires matchesETag to match the provided ETag timestamp.', async(): Promise<void> => {
-    const conditions = new BasicConditions({ matchesETag: [ turtleTag ]});
-    expect(conditions.matchesMetadata(getMetadata(yesterday))).toBe(false);
-    expect(conditions.matchesMetadata(getMetadata(now))).toBe(true);
+  it('requires matchesETag to match the provided ETag with the metadata.', async(): Promise<void> => {
+    const conditions = new BasicConditions(eTagHandler, { matchesETag: [ eTag ]});
+    expect(conditions.matchesMetadata(metadata)).toBe(true);
+    expect(eTagHandler.matchesETag).toHaveBeenCalledTimes(1);
+    expect(eTagHandler.matchesETag).toHaveBeenLastCalledWith(metadata, eTag, false);
+
+    eTagHandler.matchesETag.mockReturnValue(false);
+    expect(conditions.matchesMetadata(metadata)).toBe(false);
+    expect(eTagHandler.matchesETag).toHaveBeenCalledTimes(2);
+    expect(eTagHandler.matchesETag).toHaveBeenLastCalledWith(metadata, eTag, false);
   });
 
-  it('requires matchesETag to match the exact provided ETag in strict mode.', async(): Promise<void> => {
-    const turtleConditions = new BasicConditions({ matchesETag: [ turtleTag ]});
-    const jsonLdConditions = new BasicConditions({ matchesETag: [ jsonLdTag ]});
-    expect(turtleConditions.matchesMetadata(getMetadata(now), true)).toBe(false);
-    expect(jsonLdConditions.matchesMetadata(getMetadata(now), true)).toBe(true);
+  it('calls the ETagHandler in strict mode if required.', async(): Promise<void> => {
+    const conditions = new BasicConditions(eTagHandler, { matchesETag: [ eTag ]});
+    expect(conditions.matchesMetadata(metadata, true)).toBe(true);
+    expect(eTagHandler.matchesETag).toHaveBeenCalledTimes(1);
+    expect(eTagHandler.matchesETag).toHaveBeenLastCalledWith(metadata, eTag, true);
   });
 
   it('supports all ETags if matchesETag contains *.', async(): Promise<void> => {
-    const conditions = new BasicConditions({ matchesETag: [ '*' ]});
-    expect(conditions.matchesMetadata(getMetadata(yesterday))).toBe(true);
-    expect(conditions.matchesMetadata(getMetadata(now))).toBe(true);
+    eTagHandler.matchesETag.mockReturnValue(false);
+    const conditions = new BasicConditions(eTagHandler, { matchesETag: [ '*' ]});
+    expect(conditions.matchesMetadata(metadata, true)).toBe(true);
+    expect(eTagHandler.matchesETag).toHaveBeenCalledTimes(0);
   });
 
-  it('requires notMatchesETag to not match the provided ETag timestamp.', async(): Promise<void> => {
-    const conditions = new BasicConditions({ notMatchesETag: [ turtleTag ]});
-    expect(conditions.matchesMetadata(getMetadata(yesterday))).toBe(true);
-    expect(conditions.matchesMetadata(getMetadata(now))).toBe(false);
-  });
+  it('requires notMatchesETag to not match the provided ETag with the metadata.', async(): Promise<void> => {
+    const conditions = new BasicConditions(eTagHandler, { notMatchesETag: [ eTag ]});
+    expect(conditions.matchesMetadata(metadata)).toBe(false);
+    expect(eTagHandler.matchesETag).toHaveBeenCalledTimes(1);
+    expect(eTagHandler.matchesETag).toHaveBeenLastCalledWith(metadata, eTag, false);
 
-  it('requires notMatchesETag to not match the exact provided ETag in strict mode.', async(): Promise<void> => {
-    const turtleConditions = new BasicConditions({ notMatchesETag: [ turtleTag ]});
-    const jsonLdConditions = new BasicConditions({ notMatchesETag: [ jsonLdTag ]});
-    expect(turtleConditions.matchesMetadata(getMetadata(now), true)).toBe(true);
-    expect(jsonLdConditions.matchesMetadata(getMetadata(now), true)).toBe(false);
+    eTagHandler.matchesETag.mockReturnValue(false);
+    expect(conditions.matchesMetadata(metadata)).toBe(true);
+    expect(eTagHandler.matchesETag).toHaveBeenCalledTimes(2);
+    expect(eTagHandler.matchesETag).toHaveBeenLastCalledWith(metadata, eTag, false);
   });
 
   it('requires lastModified to be after modifiedSince.', async(): Promise<void> => {
-    const conditions = new BasicConditions({ modifiedSince: now });
-    expect(conditions.matchesMetadata(getMetadata(yesterday))).toBe(false);
-    expect(conditions.matchesMetadata(getMetadata(tomorrow))).toBe(true);
-  });
+    const conditions = new BasicConditions(eTagHandler, { modifiedSince: now });
+    metadata.set(DC.terms.modified, yesterday.toISOString());
+    expect(conditions.matchesMetadata(metadata)).toBe(false);
 
-  it('requires lastModified to be before unmodifiedSince.', async(): Promise<void> => {
-    const conditions = new BasicConditions({ unmodifiedSince: now });
-    expect(conditions.matchesMetadata(getMetadata(yesterday))).toBe(true);
-    expect(conditions.matchesMetadata(getMetadata(tomorrow))).toBe(false);
-  });
-
-  it('matches if no date is found in the metadata.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
-    const conditions = new BasicConditions({
-      modifiedSince: yesterday,
-      unmodifiedSince: tomorrow,
-      notMatchesETag: [ '123456' ],
-    });
+    metadata.set(DC.terms.modified, tomorrow.toISOString());
     expect(conditions.matchesMetadata(metadata)).toBe(true);
   });
 
+  it('requires lastModified to be before unmodifiedSince.', async(): Promise<void> => {
+    const conditions = new BasicConditions(eTagHandler, { unmodifiedSince: now });
+    metadata.set(DC.terms.modified, yesterday.toISOString());
+    expect(conditions.matchesMetadata(metadata)).toBe(true);
+
+    metadata.set(DC.terms.modified, tomorrow.toISOString());
+    expect(conditions.matchesMetadata(metadata)).toBe(false);
+  });
+
   it('checks if matchesETag contains * for resources that do not exist.', async(): Promise<void> => {
-    expect(new BasicConditions({ matchesETag: [ '*' ]}).matchesMetadata()).toBe(false);
-    expect(new BasicConditions({}).matchesMetadata()).toBe(true);
+    expect(new BasicConditions(eTagHandler, { matchesETag: [ '*' ]}).matchesMetadata()).toBe(false);
+    expect(new BasicConditions(eTagHandler, {}).matchesMetadata()).toBe(true);
   });
 });

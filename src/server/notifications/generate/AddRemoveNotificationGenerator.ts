@@ -1,4 +1,4 @@
-import { getETag } from '../../../storage/conditions/Conditions';
+import type { ETagHandler } from '../../../storage/conditions/ETagHandler';
 import type { ResourceStore } from '../../../storage/ResourceStore';
 import { InternalServerError } from '../../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';
@@ -15,10 +15,12 @@ import { NotificationGenerator } from './NotificationGenerator';
  */
 export class AddRemoveNotificationGenerator extends NotificationGenerator {
   private readonly store: ResourceStore;
+  private readonly eTagHandler: ETagHandler;
 
-  public constructor(store: ResourceStore) {
+  public constructor(store: ResourceStore, eTagHandler: ETagHandler) {
     super();
     this.store = store;
+    this.eTagHandler = eTagHandler;
   }
 
   public async canHandle({ activity }: NotificationHandlerInput): Promise<void> {
@@ -30,8 +32,8 @@ export class AddRemoveNotificationGenerator extends NotificationGenerator {
   public async handle({ activity, topic, metadata }: NotificationHandlerInput): Promise<Notification> {
     const representation = await this.store.getRepresentation(topic, {});
     representation.data.destroy();
+    const state = this.eTagHandler.getETag(representation.metadata);
 
-    const state = getETag(representation.metadata);
     const objects = metadata?.getAll(AS.terms.object);
     if (!objects || objects.length === 0) {
       throw new InternalServerError(`Missing as:object metadata for ${activity?.value} activity on ${topic.path}`);

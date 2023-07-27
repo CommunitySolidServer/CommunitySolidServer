@@ -10,7 +10,8 @@
         "@type": "ComposedNotificationHandler",
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
         "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
-        "emitter": { "@id": "urn:solid-server:default:WebHookEmitter" }
+        "emitter": { "@id": "urn:solid-server:default:WebHookEmitter" },
+        "eTagHandler": { "@id": "urn:solid-server:default:ETagHandler" }
       }
     },
     {

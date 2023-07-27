@@ -2,6 +2,7 @@ import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory, Store } from 'n3';
+import type { Conditions } from '../../../src';
 import { CONTENT_TYPE_TERM } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
@@ -9,7 +10,6 @@ import type { Representation } from '../../../src/http/representation/Representa
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
-import { BasicConditions } from '../../../src/storage/conditions/BasicConditions';
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
@@ -103,6 +103,7 @@ describe('A DataAccessorBasedStore', (): void => {
   let auxiliaryStrategy: AuxiliaryStrategy;
   let containerMetadata: RepresentationMetadata;
   let representation: Representation;
+  const failingConditions: Conditions = { matchesMetadata: (): boolean => false };
   const resourceData = 'text';
   const metadataStrategy = new SimpleSuffixStrategy('.meta');
 
@@ -256,8 +257,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
       const resourceID = { path: root };
-      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
-      await expect(store.addResource(resourceID, representation, conditions))
+      await expect(store.addResource(resourceID, representation, failingConditions))
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
@@ -417,8 +417,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       await store.setRepresentation(resourceID, representation);
-      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
-      await expect(store.setRepresentation(resourceID, representation, conditions))
+      await expect(store.setRepresentation(resourceID, representation, failingConditions))
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
@@ -697,15 +696,13 @@ describe('A DataAccessorBasedStore', (): void => {
   describe('modifying a Representation', (): void => {
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
       const resourceID = { path: root };
-      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
-      await expect(store.modifyResource(resourceID, representation, conditions))
+      await expect(store.modifyResource(resourceID, representation, failingConditions))
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
     it('throws a 412 if the conditions are not matched on resources that do not exist.', async(): Promise<void> => {
       const resourceID = { path: `${root}notHere` };
-      const conditions = new BasicConditions({ matchesETag: [ '*' ]});
-      await expect(store.modifyResource(resourceID, representation, conditions))
+      await expect(store.modifyResource(resourceID, representation, failingConditions))
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
@@ -715,8 +712,7 @@ describe('A DataAccessorBasedStore', (): void => {
       });
 
       const resourceID = { path: root };
-      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
-      await expect(store.modifyResource(resourceID, representation, conditions))
+      await expect(store.modifyResource(resourceID, representation, failingConditions))
         .rejects.toThrow('error');
     });
 
@@ -764,8 +760,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
       const resourceID = { path: root };
-      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
-      await expect(store.deleteResource(resourceID, conditions))
+      await expect(store.deleteResource(resourceID, failingConditions))
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 

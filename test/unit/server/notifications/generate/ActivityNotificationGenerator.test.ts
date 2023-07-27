@@ -5,6 +5,7 @@ import {
   ActivityNotificationGenerator,
 } from '../../../../../src/server/notifications/generate/ActivityNotificationGenerator';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
+import type { ETagHandler } from '../../../../../src/storage/conditions/ETagHandler';
 import type { ResourceStore } from '../../../../../src/storage/ResourceStore';
 import { AS, CONTENT_TYPE, DC, LDP, RDF } from '../../../../../src/util/Vocabularies';
 
@@ -23,6 +24,7 @@ describe('An ActivityNotificationGenerator', (): void => {
     [CONTENT_TYPE]: 'text/turtle',
   });
   let store: jest.Mocked<ResourceStore>;
+  let eTagHandler: jest.Mocked<ETagHandler>;
   let generator: ActivityNotificationGenerator;
 
   beforeEach(async(): Promise<void> => {
@@ -30,7 +32,13 @@ describe('An ActivityNotificationGenerator', (): void => {
       getRepresentation: jest.fn().mockResolvedValue(new BasicRepresentation('', metadata)),
     } as any;
 
-    generator = new ActivityNotificationGenerator(store);
+    eTagHandler = {
+      getETag: jest.fn().mockReturnValue('ETag'),
+      matchesETag: jest.fn(),
+      sameResourceState: jest.fn(),
+    };
+
+    generator = new ActivityNotificationGenerator(store, eTagHandler);
   });
 
   it('only handles defined activities.', async(): Promise<void> => {
@@ -52,7 +60,7 @@ describe('An ActivityNotificationGenerator', (): void => {
       id: `urn:${ms}:http://example.com/foo`,
       type: 'Update',
       object: 'http://example.com/foo',
-      state: expect.stringMatching(/"\d+-text\/turtle"/u),
+      state: 'ETag',
       published: date,
     });
 

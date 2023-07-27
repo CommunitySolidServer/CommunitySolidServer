@@ -1,7 +1,7 @@
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { DC } from '../../util/Vocabularies';
-import { getETag, sameResourceState } from './Conditions';
 import type { Conditions } from './Conditions';
+import type { ETagHandler } from './ETagHandler';
 
 export interface BasicConditionsOptions {
   matchesETag?: string[];
@@ -14,12 +14,16 @@ export interface BasicConditionsOptions {
  * Stores all the relevant Conditions values and matches them based on RFC7232.
  */
 export class BasicConditions implements Conditions {
+  protected readonly eTagHandler: ETagHandler;
+
   public readonly matchesETag?: string[];
   public readonly notMatchesETag?: string[];
   public readonly modifiedSince?: Date;
   public readonly unmodifiedSince?: Date;
 
-  public constructor(options: BasicConditionsOptions) {
+  public constructor(eTagHandler: ETagHandler, options: BasicConditionsOptions) {
+    this.eTagHandler = eTagHandler;
+
     this.matchesETag = options.matchesETag;
     this.notMatchesETag = options.notMatchesETag;
     this.modifiedSince = options.modifiedSince;
@@ -39,21 +43,12 @@ export class BasicConditions implements Conditions {
       return false;
     }
 
-    const eTag = getETag(metadata);
-    if (eTag) {
-      // Helper function to see if an ETag matches the provided metadata
-      // eslint-disable-next-line func-style
-      let eTagMatches = (tag: string): boolean => sameResourceState(tag, eTag);
-      if (strict) {
-        eTagMatches = (tag: string): boolean => tag === eTag;
-      }
-
-      if (this.matchesETag && !this.matchesETag.includes('*') && !this.matchesETag.some(eTagMatches)) {
-        return false;
-      }
-      if (this.notMatchesETag?.some(eTagMatches)) {
-        return false;
-      }
+    const eTagMatches = (tag: string): boolean => this.eTagHandler.matchesETag(metadata, tag, Boolean(strict));
+    if (this.matchesETag && !this.matchesETag.includes('*') && !this.matchesETag.some(eTagMatches)) {
+      return false;
+    }
+    if (this.notMatchesETag?.some(eTagMatches)) {
+      return false;
     }
 
     // In practice, this will only be undefined on a backend

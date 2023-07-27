@@ -1,4 +1,4 @@
-import { sameResourceState } from '../../storage/conditions/Conditions';
+import type { ETagHandler } from '../../storage/conditions/ETagHandler';
 import type { NotificationGenerator } from './generate/NotificationGenerator';
 import type { NotificationEmitter } from './NotificationEmitter';
 import type { NotificationHandlerInput } from './NotificationHandler';
@@ -9,6 +9,7 @@ export interface ComposedNotificationHandlerArgs {
   generator: NotificationGenerator;
   serializer: NotificationSerializer;
   emitter: NotificationEmitter;
+  eTagHandler: ETagHandler;
 }
 
 /**
@@ -21,12 +22,14 @@ export class ComposedNotificationHandler extends NotificationHandler {
   private readonly generator: NotificationGenerator;
   private readonly serializer: NotificationSerializer;
   private readonly emitter: NotificationEmitter;
+  private readonly eTagHandler: ETagHandler;
 
   public constructor(args: ComposedNotificationHandlerArgs) {
     super();
     this.generator = args.generator;
     this.serializer = args.serializer;
     this.emitter = args.emitter;
+    this.eTagHandler = args.eTagHandler;
   }
 
   public async canHandle(input: NotificationHandlerInput): Promise<void> {
@@ -38,7 +41,8 @@ export class ComposedNotificationHandler extends NotificationHandler {
 
     const { state } = input.channel;
     // In case the state matches there is no need to send the notification
-    if (typeof state === 'string' && notification.state && sameResourceState(state, notification.state)) {
+    if (typeof state === 'string' && notification.state &&
+      this.eTagHandler.sameResourceState(state, notification.state)) {
       return;
     }
 

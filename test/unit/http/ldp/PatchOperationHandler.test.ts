@@ -2,7 +2,7 @@ import { PatchOperationHandler } from '../../../../src/http/ldp/PatchOperationHa
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
-import { BasicConditions } from '../../../../src/storage/conditions/BasicConditions';
+import type { Conditions } from '../../../../src/storage/conditions/Conditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
@@ -11,7 +11,7 @@ import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 describe('A PatchOperationHandler', (): void => {
   let operation: Operation;
   let body: Representation;
-  const conditions = new BasicConditions({});
+  const conditions: Conditions = { matchesMetadata: jest.fn() };
   let store: jest.Mocked<ResourceStore>;
   let handler: PatchOperationHandler;
 
