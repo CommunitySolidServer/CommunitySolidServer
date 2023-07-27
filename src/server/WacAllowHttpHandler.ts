@@ -8,6 +8,7 @@ import { AccessMode } from '../authorization/permissions/Permissions';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../logging/LogUtil';
+import { NotModifiedHttpError } from '../util/errors/NotModifiedHttpError';
 import { ACL, AUTH } from '../util/Vocabularies';
 import type { OperationHttpHandlerInput } from './OperationHttpHandler';
 import { OperationHttpHandler } from './OperationHttpHandler';
@@ -47,7 +48,18 @@ export class WacAllowHttpHandler extends OperationHttpHandler {
 
   public async handle(input: OperationHttpHandlerInput): Promise<ResponseDescription> {
     const { request, operation } = input;
-    const response = await this.operationHandler.handleSafe(input);
+    let response: ResponseDescription | NotModifiedHttpError;
+    try {
+      response = await this.operationHandler.handleSafe(input);
+    } catch (error: unknown) {
+      // WAC-Allow headers need to be added to 304 responses
+      // as the value can differ even if the representation is the same.
+      if (NotModifiedHttpError.isInstance(error)) {
+        response = error;
+      } else {
+        throw error;
+      }
+    }
     const { metadata } = response;
 
     // WAC-Allow is only needed for HEAD/GET requests
@@ -79,6 +91,10 @@ export class WacAllowHttpHandler extends OperationHttpHandler {
 
       this.logger.debug('Adding WAC-Allow metadata');
       this.addWacAllowMetadata(metadata, everyone, user);
+    }
+
+    if (NotModifiedHttpError.isInstance(response)) {
+      throw response;
     }
 
     return response;

@@ -11,6 +11,7 @@ import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import type { OperationHttpHandler } from '../../../src/server/OperationHttpHandler';
 import { WacAllowHttpHandler } from '../../../src/server/WacAllowHttpHandler';
+import { NotModifiedHttpError } from '../../../src/util/errors/NotModifiedHttpError';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 import { ACL, AUTH } from '../../../src/util/Vocabularies';
 
@@ -75,6 +76,43 @@ describe('A WacAllowHttpHandler', (): void => {
       credentials: await credentialsExtractor.handleSafe.mock.results[0].value,
       requestedModes: await modesExtractor.handleSafe.mock.results[0].value,
     });
+  });
+
+  it('adds permission metadata for 304 responses.', async(): Promise<void> => {
+    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
+      [[ target, { read: true, write: true, append: false }]],
+    ));
+
+    source.handleSafe.mockRejectedValueOnce(new NotModifiedHttpError());
+    let error: unknown;
+    try {
+      await handler.handle({ operation, request, response });
+    } catch (err: unknown) {
+      error = err;
+    }
+    expect(NotModifiedHttpError.isInstance(error)).toBe(true);
+    expect((error as NotModifiedHttpError).metadata.getAll(AUTH.terms.userMode))
+      .toEqualRdfTermArray([ ACL.terms.Read, ACL.terms.Write ]);
+    expect((error as NotModifiedHttpError).metadata.getAll(AUTH.terms.publicMode))
+      .toEqualRdfTermArray([ ACL.terms.Read, ACL.terms.Write ]);
+
+    expect(source.handleSafe).toHaveBeenCalledTimes(1);
+    expect(source.handleSafe).toHaveBeenLastCalledWith({ operation, request, response });
+    expect(credentialsExtractor.handleSafe).toHaveBeenCalledTimes(1);
+    expect(credentialsExtractor.handleSafe).toHaveBeenLastCalledWith(request);
+    expect(modesExtractor.handleSafe).toHaveBeenCalledTimes(1);
+    expect(modesExtractor.handleSafe).toHaveBeenLastCalledWith(operation);
+    expect(permissionReader.handleSafe).toHaveBeenCalledTimes(1);
+    expect(permissionReader.handleSafe).toHaveBeenLastCalledWith({
+      credentials: await credentialsExtractor.handleSafe.mock.results[0].value,
+      requestedModes: await modesExtractor.handleSafe.mock.results[0].value,
+    });
+  });
+
+  it('rethrows errors.', async(): Promise<void> => {
+    const error = new Error('bad data');
+    source.handleSafe.mockRejectedValueOnce(error);
+    await expect(handler.handle({ operation, request, response })).rejects.toThrow(error);
   });
 
   it('determines public permissions separately in case of an authenticated request.', async(): Promise<void> => {
