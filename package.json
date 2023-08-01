@@ -143,7 +143,7 @@
     "jose": "^4.14.1",
     "jsonld-context-parser": "^2.3.0",
     "lodash.orderby": "^4.6.0",
-    "marked": "^4.3.0",
+    "marked": "^6.0.0",
     "mime-types": "^2.1.35",
     "n3": "^1.16.4",
     "nodemailer": "^6.9.1",
