@@ -9,41 +9,33 @@
     A <em>WebID</em> is a unique identifier for you
     in the form of a URL.
     <br>
-    You WebID lets you log in to Solid apps
+    You WebID lets you log in to Tribes and other Solid apps
     and access non-public data in Pods.
   </p>
-  <ol>
-    <li class="radio">
-      <label>
-        <input type="radio" id="createWebIdOn" name="createWebId" value="on"<%
+  <div class="mb-3 form-check">
+    <input type="radio" class="form-check-input" id="createWebIdOn" name="createWebId" value="on"<%
         if (isBlankForm || prefilled.createWebId) { %> checked<% } %>>
-        Create a new WebID for my Pod.
-      </label>
-      <p id="createWebIdForm">
-        Please also create a Pod below, since your WebID will be stored there.
-      </p>
-    </li>
-    <li class="radio">
-      <label>
-        <input type="radio" id="createWebIdOff" name="createWebId" value=""<%
-        if (!isBlankForm && !prefilled.createWebId) { %> checked<% } %>>
-        Use my existing WebID to access my Pod.
-      </label>
-      <ol id="existingWebIdForm">
-        <li>
-          <label for="webId">Existing WebID:</label>
-          <input id="webId" type="text" name="webId" value="<%= prefilled.webId || '' %>">
-        </li>
-        <li class="checkbox">
-          <label>
-            <input type="checkbox" id="register" name="register"<%
-            if (isBlankForm || prefilled.register) { %> checked<% } %>>
-            Use my new account to log in with this WebID.
-          </label>
-        </li>
-      </ol>
-    </li>
-  </ol>
+    <label class="form-check-label" for="createWebId">Create a new WebID for my Pod.</label>
+    <p id="createWebIdForm">
+      Please also create a Pod below, since your WebID will be stored there.
+    </p>
+  </div>
+  <div class="mb-3 form-check">
+    <input class="form-check-input" type="radio" id="createWebIdOff" name="createWebId" value=""<%
+    if (!isBlankForm && !prefilled.createWebId) { %> checked<% } %>>
+    <label class="form-check-label" for="createWebId">Use my existing WebID to access my Pod.</label>
+    <div id="existingWebIdForm">
+      <div class="mb-3">
+        <label for="webId">Existing WebID:</label>
+        <input id="webId" class="form-control" type="text" name="webId" value="<%= prefilled.webId || '' %>">
+      </div>
+      <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="register" name="register"<%
+          if (isBlankForm || prefilled.register) { %> checked<% } %>>
+          <label class="form-check-label" for="register">Use my new account to log in with this WebID.</label>
+      </div>
+    </div>
+  </div>
 </fieldset>
 
 <fieldset>
@@ -51,23 +43,19 @@
   <p>
     A Pod is a storage place for your data.
   </p>
-  <ol>
-    <li class="checkbox">
-      <label>
-        <input type="checkbox" id="createPod" name="createPod"<%
+  <div>
+    <div class="form-checkbox form-check mb-3">
+      <input type="checkbox" class="form-check-input" id="createPod" name="createPod"<%
         if (isBlankForm || prefilled.createPod) { %> checked<% } %>>
-        Create a new Pod with my WebID as owner<% if (locals.allowRootPod) { %> in the root<% } %>.
-      </label>
-      <ol id="createPodForm">
-        <% if (!locals.allowRootPod) { %>
-        <li id="podNameForm">
+      <label class="form-check-label">Create a new Pod with my WebID as owner<% if (locals.allowRootPod) { %> in the root<% } %>.</label>
+    </div>
+    <div id="createPodForm" class="mb-3">
+      <% if (!locals.allowRootPod) { %>
           <label for="podName">Pod name:</label>
-          <input id="podName" type="text" name="podName" value="<%= prefilled.podName || '' %>">
-        </li>
-        <% } %>
-      </ol>
-    </li>
-  </ol>
+          <input id="podName" class="form-control" type="text" name="podName" value="<%= prefilled.podName || '' %>">
+      <% } %>
+    </div>
+  </div>
 </fieldset>
 
 <fieldset>
@@ -76,22 +64,20 @@
     <p>
       Choose the credentials you want to use to log in to this server in the future.
     </p>
-    <ol>
-      <li>
+    <div class="mb-3">
         <label for="email">Email:</label>
-        <input id="email" type="text" name="email" value="<%= prefilled.email || '' %>" >
-      </li>
-    </ol>
-    <ol id="passwordForm">
-      <li>
+        <input id="email" class="form-control" type="text" name="email" value="<%= prefilled.email || '' %>" >
+    <div>
+    <div id="passwordForm">
+      <div>
         <label for="password">Password:</label>
-        <input id="password" type="password" name="password">
-      </li>
-      <li>
+        <input class="form-control" id="password" type="password" name="password">
+      </div>
+      <div>
         <label for="confirmPassword">Confirm password:</label>
-        <input id="confirmPassword" type="password" name="confirmPassword">
-      </li>
-    </ol>
+        <input class="form-control" id="confirmPassword" type="password" name="confirmPassword">
+      </div>
+    </div>
   </div>
 </fieldset>
 

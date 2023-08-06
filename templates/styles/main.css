@@ -12,8 +12,8 @@
 }
 
 html {
-  --solid-purple: #7c4dff;
-  --solid-blue: #18a9e6;
+  --solid-purple: #F05365;
+  --solid-blue: #42cafd;
   --solid-dark: #162542;
   --solid-gray: #6a6a6a;
 
@@ -35,8 +35,8 @@ body, input, button {
 body {
   box-sizing: border-box;
   max-width: 780px;
-  margin: 2em auto;
-  padding: 2em 3em 1em;
+  /* margin: 2em auto;
+  padding: 2em 3em 1em; */
 
   background: white;
   box-shadow: 5px 5px 2px rgba(0, 0, 0, .1);
@@ -45,16 +45,16 @@ body {
 @media (max-width: 800px) {
   body {
     margin: 0;
-    padding: 1em 2em;
+    /* padding: 1em 2em; */
   }
 }
 
 header {
   margin: 1em 0 2em;
 
-  display: grid;
+  /* display: grid;
   grid-template-columns: [logo] 5em [title] auto;
-  grid-gap: 1.5em;
+  grid-gap: 1.5em; */
   align-items: center;
 }
 header h1 {
@@ -181,29 +181,26 @@ fieldset > fieldset > legend {
 fieldset ol {
   list-style: none;
   margin: 0;
-  padding: 0 0 0 2em;
+  /* padding: 0 0 0 2em; */
 }
 fieldset ol ol {
   margin: 0 0 1em .5em;
 }
-fieldset ol li:not(.checkbox, .radio) {
-  display: grid;
+fieldset div div:not(.checkbox, .radio) {
+  /* display: grid;
   grid-template-columns: 10em auto;
-  grid-gap: 1em;
+  grid-gap: 1em; */
   align-items: center;
 }
-fieldset ol ol li:not(.checkbox, .radio) {
-  grid-template-columns: 7.5em auto;
-}
-fieldset li label {
+fieldset div label {
   font-weight: 600;
   cursor: pointer;
 }
-fieldset li li label {
+fieldset div div label {
   font-weight: 500;
 }
-fieldset li.checkbox > label > input,
-fieldset li.radio > label > input {
+fieldset li.checkbox input,
+fieldset li.radio input {
   margin: 0 .5em 0 0;
 }
 fieldset li p {

@@ -1,5 +1,11 @@
 # Community Solid Server
 
+## Tribes Edition
+
+Edition for Tribes use-cases.
+
+- **Version:** 1.0.1
+
 <img src="https://raw.githubusercontent.com/CommunitySolidServer/CommunitySolidServer/main/templates/images/solid.svg"
  alt="[Solid logo]" height="150" align="right"/>
 

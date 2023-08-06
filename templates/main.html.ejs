@@ -4,21 +4,29 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title><%= extractTitle(htmlBody) %></title>
+  <link rel="stylesheet" href="<%= baseUrl -%>.well-known/css/styles/bootstrap-grid.css" type="text/css">
+  <link rel="stylesheet" href="<%= baseUrl -%>.well-known/css/styles/bootstrap-utilities.css" type="text/css">
+  <link rel="stylesheet" href="<%= baseUrl -%>.well-known/css/styles/bootstrap.min.css" type="text/css">
   <link rel="stylesheet" href="<%= baseUrl -%>.well-known/css/styles/main.css" type="text/css">
   <script type="text/javascript" src="<%= baseUrl -%>.well-known/css/scripts/util.js"></script>
 </head>
 <body>
-  <header>
-    <a href="<%= baseUrl %>"><img src="<%= baseUrl -%>.well-known/css/images/solid.svg" alt="[Solid logo]" /></a>
-    <h1>Community Solid Server</h1>
-  </header>
-  <main>
+    <div class="container-fluid text-center">
+      <div class="row">
+        <div class="col-sm-2 col-12 p-3">
+          <a href="<%= baseUrl %>"><img src="<%= baseUrl -%>.well-known/css/images/tribes.svg" alt="[Tribes logo]" class="img-fluid"/></a>
+        </div>
+        <div class="col-12 col-sm-8">
+          <h1>Tribes Solid Server</h1>
+        </div>
+      </div>
+    </div>
+  <main class="container-fluid">
     <%- htmlBody %>
   </main>
   <footer>
     <p>
-      ©2019–2023 <a href="https://inrupt.com/">Inrupt Inc.</a>
-      and <a href="https://www.imec-int.com/">imec</a>
+      ©2023 <a href="https://tribes.app/">Tribes Interactive LLC.</a>
     </p>
   </footer>
 </body>

@@ -5,19 +5,18 @@
 
     <fieldset>
       <legend>Your account</legend>
-      <ol>
-        <li>
+        <div>
           <label for="email">Email</label>
-          <input id="email" type="email" name="email" autofocus>
-        </li>
-        <li>
+          <input class="form-control" id="email" type="email" name="email" autofocus>
+        </div>
+        <div>
           <label for="password">Password</label>
-          <input id="password" type="password" name="password">
-        </li>
-        <li class="checkbox">
-          <label><input type="checkbox" name="remember" value="yes" checked>Stay logged in</label>
-        </li>
-      </ol>
+          <input class="form-control" id="password" type="password" name="password">
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="remember" value="yes" checked>
+          <label class="form-check-input">Stay logged in</label>
+        <div>
     </fieldset>
 
     <p class="actions"><button type="submit" name="submit">Log in</button></p>
