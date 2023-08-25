@@ -16,6 +16,7 @@
         "source": {
           "@id": "urn:solid-server:default:CreatePasswordLoginHandler",
           "@type": "CreatePasswordLoginHandler",
+          "createAccountHandler": { "@id": "urn:solid-server:default:CreateAccountHandler" },
           "createPasswordHandler": { "@id": "urn:solid-server:default:CreatePasswordHandler" },
           "createPodHandler": { "@id": "urn:solid-server:default:CreatePodHandler" },
           "passwordLoginHandler": { "@id": "urn:solid-server:default:PasswordLoginHandler" }

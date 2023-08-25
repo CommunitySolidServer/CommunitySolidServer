@@ -7,6 +7,7 @@ import { parseSchema, validateWithError } from '../YupUtil';
 import { CreatePasswordHandler } from './CreatePasswordHandler';
 import { CreatePodHandler } from '../pod/CreatePodHandler';
 import { PasswordLoginHandler } from './PasswordLoginHandler';
+import { CreateAccountHandler } from '../account/CreateAccountHandler';
 
 const inSchema = object({
   // Store e-mail addresses in lower case
@@ -18,6 +19,7 @@ const inSchema = object({
 });
 
 export interface CreatePasswordLoginHandlerArgs {
+  createAccountHandler: CreateAccountHandler;
   createPasswordHandler: CreatePasswordHandler;
   createPodHandler: CreatePodHandler;
   passwordLoginHandler: PasswordLoginHandler;
@@ -29,12 +31,14 @@ export interface CreatePasswordLoginHandlerArgs {
 export class CreatePasswordLoginHandler extends JsonInteractionHandler implements JsonView {
   protected readonly logger = getLoggerFor(this);
 
+  private readonly createAccountHandler: CreateAccountHandler;
   private readonly createPasswordHandler: CreatePasswordHandler;
   private readonly createPodHandler: CreatePodHandler;
   private readonly passwordLoginHandler: PasswordLoginHandler;
 
   public constructor(args: CreatePasswordLoginHandlerArgs) {
     super();
+    this.createAccountHandler = args.createAccountHandler;
     this.createPasswordHandler = args.createPasswordHandler;
     this.createPodHandler = args.createPodHandler;
     this.passwordLoginHandler = args.passwordLoginHandler;
@@ -47,12 +51,15 @@ export class CreatePasswordLoginHandler extends JsonInteractionHandler implement
   public async handle(input: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
     console.log("Handling thing.");
     await validateWithError(inSchema, input.json);
+    console.log(0);
+    const accountResponse = await this.createAccountHandler.login();
+    const newInput = { ...input, accountId: accountResponse.json.accountId };
     console.log(1);
-    await this.createPasswordHandler.handleSafe(input);
+    await this.createPasswordHandler.handleSafe(newInput);
     console.log(2);
-    await this.createPodHandler.handleSafe(input);
+    await this.createPodHandler.handleSafe(newInput);
     console.log(3);
-    const toReturn = await this.passwordLoginHandler.handleSafe(input);
+    const toReturn = await this.passwordLoginHandler.handleSafe(newInput);
     console.log(toReturn);
     return toReturn;
   }
