@@ -5,7 +5,8 @@
     "css:config/identity/interaction/routing/password/forgot.json",
     "css:config/identity/interaction/routing/password/login.json",
     "css:config/identity/interaction/routing/password/reset.json",
-    "css:config/identity/interaction/routing/password/resource.json"
+    "css:config/identity/interaction/routing/password/resource.json",
+    "css:config/identity/interaction/routing/password/create-login.json"
   ],
   "@graph": []
 }

@@ -26,6 +26,10 @@
           {
             "PromptHandler:_promptRoutes_key": "consent",
             "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:default:OidcConsentRoute" }
+          },
+          {
+            "PromptHandler:_promptRoutes_key": "create",
+            "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:default:CreateLoginPasswordRoute" }
           }
         ]
       }

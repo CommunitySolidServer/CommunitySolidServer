@@ -1,0 +1,33 @@
+<h1>Sign Up</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Create an Accout</p>
+    <ol>
+      <li>
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" autofocus>
+      </li>
+      <li>
+        <label for="password">Password:</label>
+        <input id="password" type="password" name="password">
+      </li>
+      <li>
+        <label for="confirmPassword">Confirm password:</label>
+        <input id="confirmPassword" type="password" name="confirmPassword">
+      </li>
+      <li>
+        <label for="name">Pod Name:</label>
+        <input id="name" type="text" name="name">
+      </li>
+      <li class="checkbox">
+        <label><input type="checkbox" name="remember" value="true" checked>Stay logged in</label>
+      </li>
+    </ol>
+  </fieldset>
+
+  <ul class="actions">
+    <li><button type="submit" name="submit">Sign Up</button></li>
+  </ul>
+</form>

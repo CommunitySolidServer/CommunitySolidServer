@@ -191,6 +191,7 @@ export * from './identity/interaction/password/util/PasswordStore';
 
 // Identity/Interaction/Password
 export * from './identity/interaction/password/CreatePasswordHandler';
+export * from './identity/interaction/password/CreatePasswordLoginHandler';
 export * from './identity/interaction/password/DeletePasswordHandler';
 export * from './identity/interaction/password/ForgotPasswordHandler';
 export * from './identity/interaction/password/PasswordLoginHandler';

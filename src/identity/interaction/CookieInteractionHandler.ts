@@ -46,6 +46,7 @@ export class CookieInteractionHandler extends JsonInteractionHandler {
     // Not reusing the account ID from the input,
     // as that could potentially belong to a different account if this is a new login action.
     const accountId = await this.cookieStore.get(cookie);
+    console.log("Got account ID", accountId);
 
     // Only refresh the cookie if it points to an account that exists and wants to be remembered
     if (!accountId) {

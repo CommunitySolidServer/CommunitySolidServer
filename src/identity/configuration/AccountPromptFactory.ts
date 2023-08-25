@@ -13,6 +13,8 @@ import DefaultPolicy = interactionPolicy.DefaultPolicy;
 type OIDCContext = NonNullable<KoaContextWithOIDC['oidc']['entities']['OIDCContext']>;
 type ExtendedContext = OIDCContext & { internalAccountId?: string };
 
+
+
 /**
  * Creates the prompt necessary to ensure a user is logged in with their account when doing an OIDC interaction.
  * This is done by checking the presence of the account-related cookie.
@@ -37,6 +39,7 @@ export class AccountPromptFactory extends PromptFactory {
   public async handle(policy: DefaultPolicy): Promise<void> {
     this.addAccountPrompt(policy);
     this.addWebIdVerificationPrompt(policy);
+    this.addCreatePrompt(policy);
   }
 
   private addAccountPrompt(policy: DefaultPolicy): void {
@@ -89,5 +92,10 @@ export class AccountPromptFactory extends PromptFactory {
       throw new InternalServerError('Missing default login policy');
     }
     loginPrompt.checks.add(check);
+  }
+
+  private addCreatePrompt(policy: DefaultPolicy): void {
+    const checkPrompt = new Prompt({ name: "create", requestable: true });
+    policy.add(checkPrompt, 0);
   }
 }

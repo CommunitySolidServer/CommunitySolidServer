@@ -23,7 +23,6 @@ import { joinFilePath, readPackageJson } from '../src/util/PathUtil';
  * @param  version - Semantic version to change to
  */
 async function replaceComponentVersion(filePath: string, regex: RegExp, version: string): Promise<void> {
-  console.log(`Replacing version in ${filePath}`);
   const data = await readFile(filePath, 'utf8');
   const result = data.replace(regex, `$1^${version}`);
   return writeFile(filePath, result, 'utf8');
@@ -62,8 +61,6 @@ async function getFilePaths(path: string, regex: RegExp): Promise<string[]> {
 async function upgradeConfig(): Promise<void> {
   const pkg = await readPackageJson();
   const major = pkg.version.split('.')[0];
-
-  console.log(`Changing ${pkg['lsd:module']} references to ${major}.0.0\n`);
 
   const configs = await getFilePaths('config/', /.+\.json/u);
   configs.push(...await getFilePaths('test/integration/config/', /.+\.json/u));

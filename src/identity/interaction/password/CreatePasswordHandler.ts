@@ -43,7 +43,9 @@ export class CreatePasswordHandler extends JsonInteractionHandler<OutType> imple
   }
 
   public async handle({ accountId, json }: JsonInteractionHandlerInput): Promise<JsonRepresentation<OutType>> {
+    console.log("Before account", accountId);
     const account = await getRequiredAccount(this.accountStore, accountId);
+    console.log("After account");
 
     // Email will be in lowercase
     const { email, password } = await validateWithError(inSchema, json);

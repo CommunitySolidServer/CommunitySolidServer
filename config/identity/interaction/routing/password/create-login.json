@@ -1,0 +1,43 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the password login interaction for the create prompt",
+      "@id": "urn:solid-server:default:CreateLoginPasswordRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:CreateLoginPasswordRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:LoginRoute" },
+        "relativePath": "create/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:CreatePasswordLoginHandler",
+          "@type": "CreatePasswordLoginHandler",
+          "createPasswordHandler": { "@id": "urn:solid-server:default:CreatePasswordHandler" },
+          "createPodHandler": { "@id": "urn:solid-server:default:CreatePodHandler" },
+          "passwordLoginHandler": { "@id": "urn:solid-server:default:PasswordLoginHandler" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:CreateLoginPasswordRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:CreatePasswordLoginHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/password/create-login.html.ejs",
+        "route": { "@id": "urn:solid-server:default:CreateLoginPasswordRoute" }
+      }]
+    }
+  ]
+}
