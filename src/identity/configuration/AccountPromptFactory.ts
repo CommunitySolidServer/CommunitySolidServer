@@ -95,7 +95,7 @@ export class AccountPromptFactory extends PromptFactory {
   }
 
   private addCreatePrompt(policy: DefaultPolicy): void {
-    const checkPrompt = new Prompt({ name: "create", requestable: true });
-    policy.add(checkPrompt, 0);
+    const createPrompt = new Prompt({ name: "create", requestable: true });
+    policy.add(createPrompt, 0);
   }
 }

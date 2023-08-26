@@ -31,6 +31,15 @@
     },
 
     {
+      "@id": "urn:solid-server:default:PasswordControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+          "ControlHandler:_controls_key": "create-login",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:CreateLoginPasswordRoute" }
+      }]
+    },
+
+    {
       "@id": "urn:solid-server:default:HtmlViewHandler",
       "@type": "HtmlViewHandler",
       "templates": [{
@@ -39,6 +48,16 @@
         "filePath": "@css:templates/identity/password/create-login.html.ejs",
         "route": { "@id": "urn:solid-server:default:CreateLoginPasswordRoute" }
       }]
+    },
+    {
+      "ControlHandler:_controls_value": {
+        "@id": "urn:solid-server:default:PasswordHtmlControlHandler",
+        "@type": "ControlHandler",
+        "controls": [{
+          "ControlHandler:_controls_key": "create-login",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:CreateLoginPasswordRoute" }
+        }]
+      }
     }
   ]
 }

@@ -1,6 +1,6 @@
 import { boolean, object, string } from 'yup';
 import { getLoggerFor } from '../../../logging/LogUtil';
-import type { JsonRepresentation } from '../InteractionUtil';
+import { assertOidcInteraction, finishInteraction, type JsonRepresentation } from '../InteractionUtil';
 import { JsonInteractionHandler, type JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import type { JsonView } from '../JsonView';
 import { parseSchema, validateWithError } from '../YupUtil';
@@ -49,18 +49,20 @@ export class CreatePasswordLoginHandler extends JsonInteractionHandler implement
   }
 
   public async handle(input: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
-    console.log("Handling thing.");
+    assertOidcInteraction(input.oidcInteraction);
     await validateWithError(inSchema, input.json);
-    console.log(0);
     const accountResponse = await this.createAccountHandler.login();
     const newInput = { ...input, accountId: accountResponse.json.accountId };
-    console.log(1);
     await this.createPasswordHandler.handleSafe(newInput);
-    console.log(2);
     await this.createPodHandler.handleSafe(newInput);
-    console.log(3);
-    const toReturn = await this.passwordLoginHandler.handleSafe(newInput);
-    console.log(toReturn);
+    const loginInfo = await this.passwordLoginHandler.login(newInput);
+    const { oidcInteraction, ...restInput } = input;
+
+    // We pass in input without the OIDC interaction so that it doesn't finisht the interaction, but we can get metadata
+    const toReturn = await this.passwordLoginHandler.handle(restInput);
+    const location =  await finishInteraction(input.oidcInteraction, { create: true, ...loginInfo.json }, true);
+    toReturn.json.location = location;
     return toReturn;
+
   }
 }
