@@ -64,8 +64,8 @@ export class FixedContentTypeMapper extends BaseFileIdentifierMapper {
   }
 
   protected async getDocumentUrl(relative: string): Promise<string> {
-    // Handle path suffix
-    if (this.pathSuffix) {
+    // Handle path suffix, but ignore metadata files
+    if (this.pathSuffix && !this.isMetadataPath(relative)) {
       if (relative.endsWith(this.pathSuffix)) {
         relative = relative.slice(0, -this.pathSuffix.length);
       } else {

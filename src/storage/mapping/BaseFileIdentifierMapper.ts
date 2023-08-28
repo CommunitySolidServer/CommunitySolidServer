@@ -24,6 +24,8 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
   protected readonly rootFilepath: string;
   // Extension to use as a fallback when the media type is not supported (could be made configurable).
   protected readonly unknownMediaTypeExtension = 'unknown';
+  // Path suffix for metadata
+  private readonly metadataSuffix = '.meta';
 
   public constructor(base: string, rootFilepath: string) {
     this.baseRequestURI = trimTrailingSlashes(base);
@@ -44,7 +46,7 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
   Promise<ResourceLink> {
     let path = this.getRelativePath(identifier);
     if (isMetadata) {
-      path += '.meta';
+      path += this.metadataSuffix;
     }
     this.validateRelativePath(path, identifier);
 
@@ -125,7 +127,7 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
     }
     const isMetadata = this.isMetadataPath(filePath);
     if (isMetadata) {
-      url = url.slice(0, -'.meta'.length);
+      url = url.slice(0, -this.metadataSuffix.length);
     }
     return { identifier: { path: url }, filePath, contentType, isMetadata };
   }
@@ -213,6 +215,6 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
    * Checks if the given path is a metadata path.
    */
   protected isMetadataPath(path: string): boolean {
-    return path.endsWith('.meta');
+    return path.endsWith(this.metadataSuffix);
   }
 }
