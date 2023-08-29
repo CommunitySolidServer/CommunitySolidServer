@@ -184,7 +184,7 @@ describe('An FixedContentTypeMapper', (): void => {
         await expect(mapper.mapFilePathToUrl(`${rootFilepath}test.txt`, false)).rejects.toThrow(NotFoundHttpError);
       });
 
-      it('returns a generate file path for metadata regardless of the suffix.', async(): Promise<void> => {
+      it('returns a generated file path for metadata regardless of the suffix.', async(): Promise<void> => {
         await expect(mapper.mapFilePathToUrl(`${rootFilepath}.meta`, false)).resolves.toEqual({
           identifier: { path: `${base}` },
           filePath: `${rootFilepath}.meta`,
