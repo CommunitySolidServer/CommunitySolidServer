@@ -3,6 +3,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.1...v6.0.2) (2023-08-30)
+
+### Fixes
+
+* Have FixedContentTypeMapper ignore .meta ([9e682f5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9e682f5c4f8ecd222ae633137ca455b1b9c5ce16))
+* Ignore invalid header parts ([9c2c5ed](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9c2c5edaf514fe84594024710c03ab3b7b0fbed1))
+* Do not show PUT in Allow header for existing containers ([6f6784a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6f6784a28873c1a8a71bc8a6a37b634677109f02))
+* Store activity streams context locally ([a47cc8a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a47cc8a5eef4d0dd963f85d0ad0e4746ada48e19))
+
+### Testing
+
+* Clear test data folder before running tests ([6fc3f2c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6fc3f2cf4f23ffde40ba88305c4c67bf39b73e10))
+* Enable file locker in notification tests ([f419f2f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f419f2f28d664fad6d6e16cf89a6ebbd7d0f0052))
+
+### Chores
+
+* Name HTTP handlers ([937c41f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/937c41fd17d553ddfc0d8f140867c252ec113ccb))
+
 ## [6.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.0...v6.0.1) (2023-06-15)
 
 ### Fixes

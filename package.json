@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "keywords": [
     "solid",
