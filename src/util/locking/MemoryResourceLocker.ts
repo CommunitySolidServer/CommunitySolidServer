@@ -31,7 +31,6 @@ export class MemoryResourceLocker implements ResourceLocker, SingleThreaded {
         this.logger.debug(`Acquired lock for ${path}. ${this.getLockCount()} locks active.`);
         resolve();
       }, (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete this.unlockCallbacks[path];
         this.logger.debug(`Released lock for ${path}. ${this.getLockCount()} active locks remaining.`);
       });

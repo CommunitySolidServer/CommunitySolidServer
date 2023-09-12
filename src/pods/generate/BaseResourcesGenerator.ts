@@ -118,7 +118,6 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
 
     // Remove root metadata if it exists
     const metaLink = links[folderLink.identifier.path]?.meta;
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete links[folderLink.identifier.path];
 
     yield* this.generateResource(folderLink, options, metaLink);

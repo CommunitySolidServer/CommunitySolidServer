@@ -38,6 +38,8 @@ module.exports = {
     // There are valid typing reasons to have one or the other
     '@typescript-eslint/consistent-type-definitions': 'off',
     '@typescript-eslint/lines-between-class-members': [ 'error', { exceptAfterSingleLine: true }],
+    // We almost exclusively do dynamic deletes
+    '@typescript-eslint/no-dynamic-delete': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
     // Breaks with default void in AsyncHandler 2nd generic
     '@typescript-eslint/no-invalid-void-type': 'off',
@@ -78,9 +80,11 @@ module.exports = {
     'unicorn/catch-error-name': 'off',
     'unicorn/import-index': 'off',
     'unicorn/import-style': 'off',
-    // The next 2 some functional programming paradigms
+    // The next 2 would prevent some functional programming paradigms
     'unicorn/no-array-callback-reference': 'off',
     'unicorn/no-fn-reference-in-iterator': 'off',
+    // Triggers on all functions called `find`, not just on arrays
+    'unicorn/no-array-method-this-argument':'off',
     'unicorn/no-object-as-default-parameter': 'off',
     'unicorn/numeric-separators-style': 'off',
     // At function only supported in Node v16.6.0

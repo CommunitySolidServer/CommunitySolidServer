@@ -95,7 +95,6 @@ export class InMemoryDataAccessor implements DataAccessor, SingleThreaded {
     if (!parent.entries[identifier.path]) {
       throw new NotFoundHttpError();
     }
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete parent.entries[identifier.path];
   }
 

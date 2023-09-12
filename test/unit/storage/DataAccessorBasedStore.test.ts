@@ -48,7 +48,6 @@ class SimpleDataAccessor implements DataAccessor {
 
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
     this.checkExists(identifier);
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.data[identifier.path];
   }
 
@@ -424,7 +423,6 @@ describe('A DataAccessorBasedStore', (): void => {
     // As discussed in #475, trimming the trailing slash of a root container in getNormalizedMetadata
     // can result in undefined behaviour since there is no parent container.
     it('will not trim the slash of root containers since there is no parent.', async(): Promise<void> => {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete accessor.data[root];
 
       const mock = jest.spyOn(accessor, 'getMetadata');
@@ -524,7 +522,6 @@ describe('A DataAccessorBasedStore', (): void => {
     });
 
     it('can write resources even if root does not exist.', async(): Promise<void> => {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete accessor.data[root];
       const resourceID = { path: `${root}resource` };
       const result = await store.setRepresentation(resourceID, representation);
@@ -558,7 +555,6 @@ describe('A DataAccessorBasedStore', (): void => {
     });
 
     it('can write to root if it does not exist.', async(): Promise<void> => {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete accessor.data[root];
       const resourceID = { path: `${root}` };
 
