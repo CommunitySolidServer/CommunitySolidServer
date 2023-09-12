@@ -40,7 +40,6 @@ export class JsonFileStorage implements KeyValueStorage<string, unknown> {
   public async delete(key: string): Promise<boolean> {
     return this.updateJsonSafely((json: NodeJS.Dict<unknown>): boolean => {
       if (typeof json[key] !== 'undefined') {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete json[key];
         return true;
       }
