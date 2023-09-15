@@ -16,7 +16,6 @@
         "source": {
           "@id": "urn:solid-server:default:CreatePasswordHandler",
           "@type": "CreatePasswordHandler",
-          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
           "passwordStore": { "@id": "urn:solid-server:default:PasswordStore" },
           "passwordRoute": { "@id": "urn:solid-server:default:AccountPasswordIdRoute" }
         }

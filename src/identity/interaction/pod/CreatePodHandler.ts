@@ -6,14 +6,15 @@ import type { IdentifierGenerator } from '../../../pods/generate/IdentifierGener
 import type { PodSettings } from '../../../pods/settings/PodSettings';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { joinUrl } from '../../../util/PathUtil';
-import type { AccountStore } from '../account/util/AccountStore';
-import { getRequiredAccount } from '../account/util/AccountUtil';
+import { assertAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import type { JsonView } from '../JsonView';
 import type { WebIdStore } from '../webid/util/WebIdStore';
+import type { WebIdLinkRoute } from '../webid/WebIdLinkRoute';
 import { parseSchema, URL_SCHEMA, validateWithError } from '../YupUtil';
+import type { PodIdRoute } from './PodIdRoute';
 import type { PodStore } from './util/PodStore';
 
 const inSchema = object({
@@ -39,10 +40,6 @@ export interface CreatePodHandlerArgs {
    */
   relativeWebIdPath: string;
   /**
-   * Account data store.
-   */
-  accountStore: AccountStore;
-  /**
    * WebID data store.
    */
   webIdStore: WebIdStore;
@@ -50,6 +47,14 @@ export interface CreatePodHandlerArgs {
    * Pod data store.
    */
   podStore: PodStore;
+  /**
+   * Route to generate WebID link resource URLs.
+   */
+  webIdLinkRoute: WebIdLinkRoute;
+  /**
+   * Route to generate Pod ID resource URLs
+   */
+  podIdRoute: PodIdRoute;
   /**
    * Whether it is allowed to generate a pod in the root of the server.
    */
@@ -73,9 +78,10 @@ export class CreatePodHandler extends JsonInteractionHandler<OutType> implements
   private readonly baseUrl: string;
   private readonly identifierGenerator: IdentifierGenerator;
   private readonly relativeWebIdPath: string;
-  private readonly accountStore: AccountStore;
   private readonly webIdStore: WebIdStore;
   private readonly podStore: PodStore;
+  private readonly webIdLinkRoute: WebIdLinkRoute;
+  private readonly podIdRoute: PodIdRoute;
 
   private readonly inSchema: typeof inSchema;
 
@@ -84,9 +90,10 @@ export class CreatePodHandler extends JsonInteractionHandler<OutType> implements
     this.baseUrl = args.baseUrl;
     this.identifierGenerator = args.identifierGenerator;
     this.relativeWebIdPath = args.relativeWebIdPath;
-    this.accountStore = args.accountStore;
     this.webIdStore = args.webIdStore;
     this.podStore = args.podStore;
+    this.webIdLinkRoute = args.webIdLinkRoute;
+    this.podIdRoute = args.podIdRoute;
 
     this.inSchema = inSchema.clone();
 
@@ -96,15 +103,19 @@ export class CreatePodHandler extends JsonInteractionHandler<OutType> implements
     }
   }
 
-  public async getView(): Promise<JsonRepresentation> {
-    return { json: parseSchema(this.inSchema) };
+  public async getView({ accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
+    assertAccountId(accountId);
+    const pods: Record<string, string> = {};
+    for (const { id, baseUrl } of await this.podStore.findPods(accountId)) {
+      pods[baseUrl] = this.podIdRoute.getPath({ accountId, podId: id });
+    }
+    return { json: { ...parseSchema(this.inSchema), pods }};
   }
 
   public async handle({ json, accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation<OutType>> {
-    const account = await getRequiredAccount(this.accountStore, accountId);
-
     // In case the class was not initialized with allowRoot: false, missing name values will result in an error
     const { name, settings } = await validateWithError(inSchema, json);
+    assertAccountId(accountId);
 
     const baseIdentifier = this.generateBaseIdentifier(name);
     // Either the input WebID or the one generated in the pod
@@ -120,6 +131,7 @@ export class CreatePodHandler extends JsonInteractionHandler<OutType> implements
     // Link the WebID to the account immediately if no WebID was provided.
     // This WebID will be necessary anyway to access the data in the pod,
     // so might as well link it to the account immediately.
+    let webIdLink: string | undefined;
     let webIdResource: string | undefined;
     if (linkWebId) {
       // It is important that this check happens here.
@@ -127,32 +139,31 @@ export class CreatePodHandler extends JsonInteractionHandler<OutType> implements
       // this link would be deleted if pod creation fails,
       // since we clean up the WebID link again afterwards.
       // Current implementation of the {@link WebIdStore} also has this check but better safe than sorry.
-      if (account.webIds[webId]) {
-        this.logger.warn('Trying to create pod which would generate a WebID that already is linked to this account');
+      if (await this.webIdStore.isLinked(webId, accountId)) {
+        this.logger.warn('Trying to create pod which would generate a WebID that is already linked to this account');
         throw new BadRequestHttpError(`${webId} is already registered to this account.`);
       }
 
-      webIdResource = await this.webIdStore.add(webId, account);
+      webIdLink = await this.webIdStore.create(webId, accountId);
+      webIdResource = this.webIdLinkRoute.getPath({ accountId, webIdLink });
       // Need to have the necessary `solid:oidcIssuer` triple if the WebID is linked
       podSettings.oidcIssuer = this.baseUrl;
     }
 
     // Create the pod
-    let podResource: string;
+    let podId: string;
     try {
-      podResource = await this.podStore.create(account, podSettings, !name);
+      podId = await this.podStore.create(accountId, podSettings, !name);
     } catch (error: unknown) {
       // Undo the WebID linking if pod creation fails
-      if (linkWebId) {
-        // There was an error while trying to update the account above,
-        // so we shouldn't assume the account object we have is still valid.
-        const currentAccount = await getRequiredAccount(this.accountStore, accountId);
-        await this.webIdStore.delete(webId, currentAccount);
+      if (webIdLink) {
+        await this.webIdStore.delete(webIdLink);
       }
 
       throw error;
     }
 
+    const podResource = this.podIdRoute.getPath({ accountId, podId });
     return { json: { pod: baseIdentifier.path, webId, podResource, webIdResource }};
   }
 

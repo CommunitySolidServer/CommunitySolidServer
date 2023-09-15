@@ -277,10 +277,20 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Add extra claims in case an AccessToken is being issued.
     // Specifically this sets the required webid and client_id claims for the access token
     // See https://solid.github.io/solid-oidc/#resource-access-validation
-    config.extraTokenClaims = async(ctx, token): Promise<UnknownObject> =>
-      this.isAccessToken(token) ?
-        { webid: token.accountId } :
-        { webid: token.client && (await this.clientCredentialsStore.get(token.client.clientId))?.webId };
+    config.extraTokenClaims = async(ctx, token): Promise<UnknownObject> => {
+      if (this.isAccessToken(token)) {
+        return { webid: token.accountId };
+      }
+      const clientId = token.client?.clientId;
+      if (!clientId) {
+        throw new BadRequestHttpError('Missing client ID from client credentials.');
+      }
+      const webId = (await this.clientCredentialsStore.findByLabel(clientId))?.webId;
+      if (!webId) {
+        throw new BadRequestHttpError(`Unknown client credentials token ${clientId}`);
+      }
+      return { webid: webId };
+    };
 
     config.features = {
       ...config.features,

@@ -1,112 +1,91 @@
-import type { Account } from '../../../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../../../src/identity/interaction/account/util/AccountStore';
+import { ACCOUNT_TYPE,
+  AccountLoginStorage } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import { BaseWebIdStore } from '../../../../../../src/identity/interaction/webid/util/BaseWebIdStore';
-import type { WebIdLinkRoute } from '../../../../../../src/identity/interaction/webid/WebIdLinkRoute';
-import type { KeyValueStorage } from '../../../../../../src/storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../../../../../src/util/errors/BadRequestHttpError';
-import { createAccount, mockAccountStore } from '../../../../../util/AccountUtil';
+import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';
+
+const STORAGE_TYPE = 'webIdLink';
 
 describe('A BaseWebIdStore', (): void => {
+  const id = 'id';
   const webId = 'http://example.com/card#me';
-  let account: Account;
-  const route: WebIdLinkRoute = {
-    getPath: (): string => 'http://example.com/.account/resource',
-    matchPath: (): any => ({}),
-  };
-  let accountStore: jest.Mocked<AccountStore>;
-  let storage: jest.Mocked<KeyValueStorage<string, string[]>>;
+  const accountId = 'accountId';
+  let storage: jest.Mocked<AccountLoginStorage<any>>;
   let store: BaseWebIdStore;
 
   beforeEach(async(): Promise<void> => {
-    account = createAccount();
-
-    accountStore = mockAccountStore(createAccount());
-
     storage = {
-      get: jest.fn().mockResolvedValue([ account.id ]),
-      set: jest.fn(),
+      defineType: jest.fn().mockResolvedValue({}),
+      createIndex: jest.fn().mockResolvedValue({}),
+      get: jest.fn().mockResolvedValue({ webId, accountId }),
+      create: jest.fn().mockResolvedValue({ id, webId, accountId }),
+      find: jest.fn().mockResolvedValue([{ id, webId, accountId }]),
       delete: jest.fn(),
-    } as any;
+    } satisfies Partial<AccountLoginStorage<any>> as any;
 
-    store = new BaseWebIdStore(route, accountStore, storage);
+    store = new BaseWebIdStore(storage);
   });
 
-  it('returns the stored account identifiers.', async(): Promise<void> => {
-    await expect(store.get(webId)).resolves.toEqual([ account.id ]);
+  it('defines the type and indexes in the storage.', async(): Promise<void> => {
+    await expect(store.handle()).resolves.toBeUndefined();
+    expect(storage.defineType).toHaveBeenCalledTimes(1);
+    expect(storage.defineType).toHaveBeenLastCalledWith(STORAGE_TYPE, {
+      webId: 'string',
+      accountId: `id:${ACCOUNT_TYPE}`,
+    }, false);
+    expect(storage.createIndex).toHaveBeenCalledTimes(2);
+    expect(storage.createIndex).toHaveBeenCalledWith(STORAGE_TYPE, 'accountId');
+    expect(storage.createIndex).toHaveBeenCalledWith(STORAGE_TYPE, 'webId');
   });
 
-  it('returns an empty list if there are no matching idenfitiers.', async(): Promise<void> => {
-    storage.get.mockResolvedValueOnce(undefined);
-    await expect(store.get(webId)).resolves.toEqual([]);
+  it('can only initialize once.', async(): Promise<void> => {
+    await expect(store.handle()).resolves.toBeUndefined();
+    await expect(store.handle()).resolves.toBeUndefined();
+    expect(storage.defineType).toHaveBeenCalledTimes(1);
   });
 
-  it('can add an account to the linked list.', async(): Promise<void> => {
-    await expect(store.add(webId, account)).resolves.toBe('http://example.com/.account/resource');
-    expect(storage.set).toHaveBeenCalledTimes(1);
-    expect(storage.set).toHaveBeenLastCalledWith(webId, [ account.id ]);
-    expect(accountStore.update).toHaveBeenCalledTimes(1);
-    expect(accountStore.update).toHaveBeenLastCalledWith(account);
-    expect(account.webIds[webId]).toBe('http://example.com/.account/resource');
+  it('throws an error if defining the type goes wrong.', async(): Promise<void> => {
+    storage.defineType.mockRejectedValueOnce(new Error('bad data'));
+    await expect(store.handle()).rejects.toThrow(InternalServerError);
   });
 
-  it('creates a new list if one did not exist yet.', async(): Promise<void> => {
-    storage.get.mockResolvedValueOnce(undefined);
-    await expect(store.add(webId, account)).resolves.toBe('http://example.com/.account/resource');
-    expect(storage.set).toHaveBeenCalledTimes(1);
-    expect(storage.set).toHaveBeenLastCalledWith(webId, [ account.id ]);
-    expect(accountStore.update).toHaveBeenCalledTimes(1);
-    expect(accountStore.update).toHaveBeenLastCalledWith(account);
-    expect(account.webIds[webId]).toBe('http://example.com/.account/resource');
+  it('returns the matching information.', async(): Promise<void> => {
+    await expect(store.get(id)).resolves.toEqual({ accountId, webId });
+    expect(storage.get).toHaveBeenCalledTimes(1);
+    expect(storage.get).toHaveBeenLastCalledWith(STORAGE_TYPE, id);
   });
 
-  it('can not create a link if the WebID is already linked.', async(): Promise<void> => {
-    account.webIds[webId] = 'resource';
-    await expect(store.add(webId, account)).rejects.toThrow(BadRequestHttpError);
-    expect(storage.set).toHaveBeenCalledTimes(0);
-    expect(accountStore.update).toHaveBeenCalledTimes(0);
+  it('can verify if a WebID is linked to an account.', async(): Promise<void> => {
+    await expect(store.isLinked(webId, accountId)).resolves.toBe(true);
+    expect(storage.find).toHaveBeenCalledTimes(1);
+    expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { webId, accountId });
   });
 
-  it('does not update the account if something goes wrong.', async(): Promise<void> => {
-    storage.set.mockRejectedValueOnce(new Error('bad data'));
-    await expect(store.add(webId, account)).rejects.toThrow('bad data');
-    expect(storage.set).toHaveBeenCalledTimes(1);
-    expect(storage.set).toHaveBeenLastCalledWith(webId, [ account.id ]);
-    expect(accountStore.update).toHaveBeenCalledTimes(2);
-    expect(accountStore.update).toHaveBeenLastCalledWith(account);
-    expect(account.webIds).toEqual({});
+  it('can find all WebIDs linked to an account.', async(): Promise<void> => {
+    await expect(store.findLinks(accountId)).resolves.toEqual([{ id, webId }]);
+    expect(storage.find).toHaveBeenCalledTimes(1);
+    expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { accountId });
+  });
+
+  it('can create a new WebID link.', async(): Promise<void> => {
+    storage.find.mockResolvedValueOnce([]);
+    await expect(store.create(webId, accountId)).resolves.toBe(id);
+    expect(storage.find).toHaveBeenCalledTimes(1);
+    expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { webId, accountId });
+    expect(storage.create).toHaveBeenCalledTimes(1);
+    expect(storage.create).toHaveBeenLastCalledWith(STORAGE_TYPE, { webId, accountId });
+  });
+
+  it('can not create a link if the WebID is already linked to that account.', async(): Promise<void> => {
+    await expect(store.create(webId, accountId)).rejects.toThrow(BadRequestHttpError);
+    expect(storage.find).toHaveBeenCalledTimes(1);
+    expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { webId, accountId });
+    expect(storage.create).toHaveBeenCalledTimes(0);
   });
 
   it('can delete a link.', async(): Promise<void> => {
-    await expect(store.delete(webId, account)).resolves.toBeUndefined();
+    await expect(store.delete(id)).resolves.toBeUndefined();
     expect(storage.delete).toHaveBeenCalledTimes(1);
-    expect(storage.delete).toHaveBeenLastCalledWith(webId);
-    expect(accountStore.update).toHaveBeenCalledTimes(1);
-    expect(accountStore.update).toHaveBeenLastCalledWith(account);
-    expect(account.webIds).toEqual({});
-  });
-
-  it('does not remove the entire list if there are still other entries.', async(): Promise<void> => {
-    storage.get.mockResolvedValueOnce([ account.id, 'other-id' ]);
-    await expect(store.delete(webId, account)).resolves.toBeUndefined();
-    expect(storage.set).toHaveBeenCalledTimes(1);
-    expect(storage.set).toHaveBeenLastCalledWith(webId, [ 'other-id' ]);
-    expect(accountStore.update).toHaveBeenCalledTimes(1);
-    expect(accountStore.update).toHaveBeenLastCalledWith(account);
-    expect(account.webIds).toEqual({});
-  });
-
-  it('does not do anything if the the delete WebID target does not exist.', async(): Promise<void> => {
-    storage.get.mockResolvedValueOnce(undefined);
-    await expect(store.delete('random-webId', account)).resolves.toBeUndefined();
-    expect(storage.set).toHaveBeenCalledTimes(0);
-    expect(storage.delete).toHaveBeenCalledTimes(0);
-    expect(accountStore.update).toHaveBeenCalledTimes(0);
-  });
-
-  it('does not do anything if the the delete account target is not linked.', async(): Promise<void> => {
-    await expect(store.delete(webId, { ...account, id: 'random-id' })).resolves.toBeUndefined();
-    expect(storage.set).toHaveBeenCalledTimes(0);
-    expect(storage.delete).toHaveBeenCalledTimes(0);
-    expect(accountStore.update).toHaveBeenCalledTimes(0);
+    expect(storage.delete).toHaveBeenLastCalledWith(STORAGE_TYPE, id);
   });
 });

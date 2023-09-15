@@ -1,31 +1,31 @@
 import type { EmptyObject } from '../../../util/map/MapUtil';
-import type { AccountStore } from '../account/util/AccountStore';
-import { ensureResource, getRequiredAccount } from '../account/util/AccountUtil';
+import { parsePath, verifyAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
+import type { ClientCredentialsIdRoute } from './util/ClientCredentialsIdRoute';
 import type { ClientCredentialsStore } from './util/ClientCredentialsStore';
 
 /**
  * Handles the deletion of client credentials tokens.
  */
 export class DeleteClientCredentialsHandler extends JsonInteractionHandler<EmptyObject> {
-  private readonly accountStore: AccountStore;
   private readonly clientCredentialsStore: ClientCredentialsStore;
+  private readonly clientCredentialsRoute: ClientCredentialsIdRoute;
 
-  public constructor(accountStore: AccountStore, clientCredentialsStore: ClientCredentialsStore) {
+  public constructor(clientCredentialsStore: ClientCredentialsStore, clientCredentialsRoute: ClientCredentialsIdRoute) {
     super();
-    this.accountStore = accountStore;
     this.clientCredentialsStore = clientCredentialsStore;
+    this.clientCredentialsRoute = clientCredentialsRoute;
   }
 
   public async handle({ target, accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation<EmptyObject>> {
-    const account = await getRequiredAccount(this.accountStore, accountId);
+    const match = parsePath(this.clientCredentialsRoute, target.path);
 
-    const id = ensureResource(account.clientCredentials, target.path);
+    const credentials = await this.clientCredentialsStore.get(match.clientCredentialsId);
+    verifyAccountId(accountId, credentials?.accountId);
 
-    // This also deletes it from the account
-    await this.clientCredentialsStore.delete(id, account);
+    await this.clientCredentialsStore.delete(match.clientCredentialsId);
 
     return { json: {}};
   }

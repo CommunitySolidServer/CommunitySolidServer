@@ -18,32 +18,37 @@ so this should all be contained in an `async` function.
 
 ## Generating a token
 
+A token can be created either on your account page, by default `http://localhost:3000/.account/`,
+or by calling the relevant [API](account/json-api.md#controlsaccountclientcredentials).
+
+Below is an example of how to call the API to generate such a token.
+
 The code below generates a token linked to your account and WebID.
 This only needs to be done once, afterwards this token can be used for all future requests.
 
 ```ts
-import fetch from 'node-fetch';
-
 // This assumes your server is started under http://localhost:3000/.
-// This URL can also be found by checking the controls in JSON responses when interacting with the IDP API,
-// as described in the Identity Provider section.
-const response = await fetch('http://localhost:3000/idp/credentials/', {
+// It also assumes you have already logged in and `cookie` contains a valid cookie header
+// as described in the API documentation.
+const indexResponse = await fetch('http://localhost:3000/.account/', { headers: { cookie }});
+const { controls } = await indexResponse.json();
+const res = await fetch(controls.account.clientCredentials, {
   method: 'POST',
-  headers: { 'content-type': 'application/json' },
-  // The email/password fields are those of your account.
+  headers: { cookie, 'content-type': 'application/json' },
   // The name field will be used when generating the ID of your token.
-  body: JSON.stringify({ email: 'my-email@example.com', password: 'my-account-password', name: 'my-token' }),
+  // The WebID field determines which WebID you will identify as when using the token.
+  // Only WebIDs linked to your account can be used.
+  body: JSON.stringify({ name: 'my-token', webId: 'http://localhost:3000/my-pod/card#me' }),
 });
 
 // These are the identifier and secret of your token.
 // Store the secret somewhere safe as there is no way to request it again from the server!
-const { id, secret } = await response.json();
+// The `resource` value can be used to delete the token at a later point in time.
+const { id, secret, resource } = await response.json();
 ```
 
-If there is something wrong with your input the response code will be 500.
-If no account is linked to the email,
-the message will be "Account does not exist" and
-if the password is wrong it will be "Incorrect password".
+In case something goes wrong the status code will be 400/500
+and the response body will contain a description of the problem.
 
 ## Requesting an Access token
 
@@ -98,11 +103,12 @@ const authFetch = await buildAuthenticatedFetch(fetch, accessToken, { dpopKey })
 const response = await authFetch('http://localhost:3000/private');
 ```
 
-## Deleting a token
+## Other token actions
 
-You can see all your existing tokens by doing a POST to `http://localhost:3000/idp/credentials/`
-with as body a JSON object containing your email and password.
-The response will be a JSON list containing all your tokens.
+You can see all your existing tokens on your account page
+or by doing a GET request to the same API to create a new token.
+The details of a token can be seen by doing a GET request to the resource URL of the token.
 
-Deleting a token requires also doing a POST to the same URL,
-but adding a `delete` key to the JSON input object with as value the ID of the token you want to remove.
+A token can be deleted by doing a DELETE request to the resource URL of the token.
+
+All of these actions require you to be logged in to the account.

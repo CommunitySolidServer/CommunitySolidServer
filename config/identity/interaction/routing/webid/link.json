@@ -19,9 +19,10 @@
           "@type": "LinkWebIdHandler",
           "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
           "ownershipValidator": { "@id": "urn:solid-server:default:OwnershipValidator" },
-          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+          "podStore": { "@id": "urn:solid-server:default:PodStore" },
           "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
-          "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+          "webIdRoute": { "@id": "urn:solid-server:default:AccountWebIdLinkRoute" },
+          "storageStrategy": { "@id": "urn:solid-server:default:StorageLocationStrategy" }
         }
       }
     }

@@ -1,91 +1,98 @@
-import type { Account } from '../../../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../../../src/identity/interaction/account/util/AccountStore';
+import {
+  ACCOUNT_TYPE,
+  AccountLoginStorage,
+} from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import {
   BaseClientCredentialsStore,
 } from '../../../../../../src/identity/interaction/client-credentials/util/BaseClientCredentialsStore';
 import type {
-  ClientCredentialsIdRoute,
-} from '../../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsIdRoute';
-import type {
   ClientCredentials,
 } from '../../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
-import type { KeyValueStorage } from '../../../../../../src/storage/keyvalue/KeyValueStorage';
-import { BadRequestHttpError } from '../../../../../../src/util/errors/BadRequestHttpError';
-import { createAccount, mockAccountStore } from '../../../../../util/AccountUtil';
+import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';
 
+const STORAGE_TYPE = 'clientCredentials';
 const secret = 'verylongstringof64bytes';
 jest.mock('crypto', (): any => ({ randomBytes: (): string => secret }));
 
 describe('A BaseClientCredentialsStore', (): void => {
   const webId = 'http://example.com/card#me';
-  let account: Account;
-  const route: ClientCredentialsIdRoute = {
-    getPath: (): string => 'http://example.com/.account/resource',
-    matchPath: (): any => ({}),
-  };
-  let accountStore: jest.Mocked<AccountStore>;
-  let storage: jest.Mocked<KeyValueStorage<string, ClientCredentials>>;
+  const id = 'id';
+  const accountId = 'accountId;';
+  const label = 'token';
+  const token: ClientCredentials = { id, label, secret, accountId, webId };
+  let storage: jest.Mocked<AccountLoginStorage<any>>;
   let store: BaseClientCredentialsStore;
 
   beforeEach(async(): Promise<void> => {
-    account = createAccount();
-    account.webIds[webId] = 'resource';
-
-    // Different account object so `safeUpdate` can be tested correctly
-    const oldAccount = createAccount();
-    oldAccount.webIds[webId] = 'resource';
-    accountStore = mockAccountStore(oldAccount);
-
     storage = {
-      get: jest.fn().mockResolvedValue({ accountId: account.id, webId, secret: 'secret' }),
-      set: jest.fn(),
+      defineType: jest.fn().mockResolvedValue({}),
+      createIndex: jest.fn().mockResolvedValue({}),
+      create: jest.fn().mockResolvedValue(token),
+      get: jest.fn().mockResolvedValue(token),
+      find: jest.fn().mockResolvedValue([ token ]),
       delete: jest.fn(),
-    } as any;
+    } satisfies Partial<AccountLoginStorage<any>> as any;
 
-    store = new BaseClientCredentialsStore(route, accountStore, storage);
+    store = new BaseClientCredentialsStore(storage);
+  });
+
+  it('defines the type and indexes in the storage.', async(): Promise<void> => {
+    await expect(store.handle()).resolves.toBeUndefined();
+    expect(storage.defineType).toHaveBeenCalledTimes(1);
+    expect(storage.defineType).toHaveBeenLastCalledWith(STORAGE_TYPE, {
+      label: 'string',
+      accountId: `id:${ACCOUNT_TYPE}`,
+      secret: 'string',
+      webId: 'string',
+    }, false);
+    expect(storage.createIndex).toHaveBeenCalledTimes(2);
+    expect(storage.createIndex).toHaveBeenCalledWith(STORAGE_TYPE, 'accountId');
+    expect(storage.createIndex).toHaveBeenCalledWith(STORAGE_TYPE, 'label');
+  });
+
+  it('can only initialize once.', async(): Promise<void> => {
+    await expect(store.handle()).resolves.toBeUndefined();
+    await expect(store.handle()).resolves.toBeUndefined();
+    expect(storage.defineType).toHaveBeenCalledTimes(1);
+  });
+
+  it('throws an error if defining the type goes wrong.', async(): Promise<void> => {
+    storage.defineType.mockRejectedValueOnce(new Error('bad data'));
+    await expect(store.handle()).rejects.toThrow(InternalServerError);
   });
 
   it('returns the token it finds.', async(): Promise<void> => {
-    await expect(store.get('credentialsId')).resolves.toEqual({ accountId: account.id, webId, secret: 'secret' });
+    await expect(store.get(id)).resolves.toEqual(token);
     expect(storage.get).toHaveBeenCalledTimes(1);
-    expect(storage.get).toHaveBeenLastCalledWith('credentialsId');
+    expect(storage.get).toHaveBeenLastCalledWith(STORAGE_TYPE, id);
   });
 
-  it('creates a new token and adds it to the account.', async(): Promise<void> => {
-    await expect(store.add('credentialsId', webId, account)).resolves
-      .toEqual({ secret, resource: 'http://example.com/.account/resource' });
-    expect(account.clientCredentials.credentialsId).toBe('http://example.com/.account/resource');
-    expect(storage.set).toHaveBeenCalledTimes(1);
-    expect(storage.set).toHaveBeenLastCalledWith('credentialsId', { secret, accountId: account.id, webId });
-    expect(accountStore.update).toHaveBeenCalledTimes(1);
-    expect(accountStore.update).toHaveBeenLastCalledWith(account);
+  it('can find the token using its label.', async(): Promise<void> => {
+    await expect(store.findByLabel(label)).resolves.toEqual(token);
+    expect(storage.find).toHaveBeenCalledTimes(1);
+    expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { label });
+
+    storage.find.mockResolvedValueOnce([]);
+    await expect(store.findByLabel(label)).resolves.toBeUndefined();
+    expect(storage.find).toHaveBeenCalledTimes(2);
+    expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { label });
   });
 
-  it('errors if the WebID is not registered to the account.', async(): Promise<void> => {
-    delete account.webIds[webId];
-    await expect(store.add('credentialsId', webId, account)).rejects.toThrow(BadRequestHttpError);
-    expect(storage.set).toHaveBeenCalledTimes(0);
-    expect(accountStore.update).toHaveBeenCalledTimes(0);
-    expect(account.clientCredentials).toEqual({});
+  it('can find the token using its accountId.', async(): Promise<void> => {
+    await expect(store.findByAccount(accountId)).resolves.toEqual([ token ]);
+    expect(storage.find).toHaveBeenCalledTimes(1);
+    expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { accountId });
   });
 
-  it('does not update the account if something goes wrong.', async(): Promise<void> => {
-    storage.set.mockRejectedValueOnce(new Error('bad data'));
-    await expect(store.add('credentialsId', webId, account)).rejects.toThrow('bad data');
-    expect(storage.set).toHaveBeenCalledTimes(1);
-    expect(storage.set).toHaveBeenLastCalledWith('credentialsId', { secret, accountId: account.id, webId });
-    expect(accountStore.update).toHaveBeenCalledTimes(2);
-    expect(accountStore.update).toHaveBeenLastCalledWith(account);
-    expect(account.clientCredentials).toEqual({});
+  it('can create new tokens.', async(): Promise<void> => {
+    await expect(store.create(label, webId, accountId)).resolves.toEqual(token);
+    expect(storage.create).toHaveBeenCalledTimes(1);
+    expect(storage.create).toHaveBeenLastCalledWith(STORAGE_TYPE, { label, webId, accountId, secret });
   });
 
   it('can delete tokens.', async(): Promise<void> => {
-    account.clientCredentials.credentialsId = 'resource';
-    await expect(store.delete('credentialsId', account)).resolves.toBeUndefined();
+    await expect(store.delete(id)).resolves.toBeUndefined();
     expect(storage.delete).toHaveBeenCalledTimes(1);
-    expect(storage.delete).toHaveBeenLastCalledWith('credentialsId');
-    expect(accountStore.update).toHaveBeenCalledTimes(1);
-    expect(accountStore.update).toHaveBeenLastCalledWith(account);
-    expect(account.clientCredentials).toEqual({});
+    expect(storage.delete).toHaveBeenLastCalledWith(STORAGE_TYPE, id);
   });
 });

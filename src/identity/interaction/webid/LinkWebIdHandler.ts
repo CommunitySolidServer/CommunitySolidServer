@@ -1,14 +1,14 @@
 import { object } from 'yup';
 import { getLoggerFor } from '../../../logging/LogUtil';
+import type { StorageLocationStrategy } from '../../../server/description/StorageLocationStrategy';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import type { IdentifierStrategy } from '../../../util/identifiers/IdentifierStrategy';
 import type { OwnershipValidator } from '../../ownership/OwnershipValidator';
-import type { AccountStore } from '../account/util/AccountStore';
-import { getRequiredAccount } from '../account/util/AccountUtil';
+import { assertAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import type { JsonView } from '../JsonView';
+import type { PodStore } from '../pod/util/PodStore';
 import { parseSchema, URL_SCHEMA, validateWithError } from '../YupUtil';
 import type { WebIdStore } from './util/WebIdStore';
 import type { WebIdLinkRoute } from './WebIdLinkRoute';
@@ -34,9 +34,9 @@ export interface LinkWebIdHandlerArgs {
    */
   ownershipValidator: OwnershipValidator;
   /**
-   * Account store to store updated data.
+   * Pod store to find out if the account created the pod containing the WebID.
    */
-  accountStore: AccountStore;
+  podStore: PodStore;
   /**
    * WebID store to store WebID links.
    */
@@ -48,7 +48,7 @@ export interface LinkWebIdHandlerArgs {
   /**
    * Before calling the {@link OwnershipValidator}, we first check if the target WebID is in a pod owned by the user.
    */
-  identifierStrategy: IdentifierStrategy;
+  storageStrategy: StorageLocationStrategy;
 }
 
 /**
@@ -60,40 +60,56 @@ export class LinkWebIdHandler extends JsonInteractionHandler<OutType> implements
 
   private readonly baseUrl: string;
   private readonly ownershipValidator: OwnershipValidator;
-  private readonly accountStore: AccountStore;
+  private readonly podStore: PodStore;
   private readonly webIdStore: WebIdStore;
-  private readonly identifierStrategy: IdentifierStrategy;
+  private readonly webIdRoute: WebIdLinkRoute;
+  private readonly storageStrategy: StorageLocationStrategy;
 
   public constructor(args: LinkWebIdHandlerArgs) {
     super();
     this.baseUrl = args.baseUrl;
     this.ownershipValidator = args.ownershipValidator;
-    this.accountStore = args.accountStore;
+    this.podStore = args.podStore;
     this.webIdStore = args.webIdStore;
-    this.identifierStrategy = args.identifierStrategy;
+    this.webIdRoute = args.webIdRoute;
+    this.storageStrategy = args.storageStrategy;
   }
 
-  public async getView(): Promise<JsonRepresentation> {
-    return { json: parseSchema(inSchema) };
+  public async getView({ accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
+    assertAccountId(accountId);
+    const webIdLinks: Record<string, string> = {};
+    for (const { id, webId } of await this.webIdStore.findLinks(accountId)) {
+      webIdLinks[webId] = this.webIdRoute.getPath({ accountId, webIdLink: id });
+    }
+    return { json: { ...parseSchema(inSchema), webIdLinks }};
   }
 
   public async handle({ accountId, json }: JsonInteractionHandlerInput): Promise<JsonRepresentation<OutType>> {
-    const account = await getRequiredAccount(this.accountStore, accountId);
+    assertAccountId(accountId);
 
     const { webId } = await validateWithError(inSchema, json);
 
-    if (account.webIds[webId]) {
+    if (await this.webIdStore.isLinked(webId, accountId)) {
       this.logger.warn(`Trying to link WebID ${webId} to account ${accountId} which already has this link`);
       throw new BadRequestHttpError(`${webId} is already registered to this account.`);
     }
 
-    // Only need to check ownership if the account is not the owner
-    const isOwner = Object.keys(account.pods)
-      .some((pod): boolean => this.identifierStrategy.contains({ path: pod }, { path: webId }, true));
-    if (!isOwner) {
+    // Only need to check ownership if the account did not create the pod
+    let isCreator = false;
+    try {
+      const pod = await this.storageStrategy.getStorageIdentifier({ path: webId });
+      const creator = await this.podStore.findAccount(pod.path);
+      isCreator = accountId === creator;
+    } catch {
+      // Probably a WebID not hosted on the server
+    }
+
+    if (!isCreator) {
       await this.ownershipValidator.handleSafe({ webId });
     }
-    const resource = await this.webIdStore.add(webId, account);
+
+    const webIdLink = await this.webIdStore.create(webId, accountId);
+    const resource = this.webIdRoute.getPath({ accountId, webIdLink });
 
     return { json: { resource, webId, oidcIssuer: this.baseUrl }};
   }

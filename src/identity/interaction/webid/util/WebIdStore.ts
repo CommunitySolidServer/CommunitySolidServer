@@ -1,31 +1,43 @@
-import type { Account } from '../../account/util/Account';
-
 /**
  * Stores and updates WebID to Account links.
  */
 export interface WebIdStore {
   /**
-   * Finds all account IDs that are linked to the given WebID.
+   * Finds the account and WebID of the link with the given ID.
    *
-   * @param webId - WebID to find account IDs for.
+   * @param webId - ID of the link.
    */
-  get: (webId: string) => Promise<string[]>;
+  get: (linkId: string) => Promise<{ accountId: string; webId: string } | undefined>;
+
   /**
-   * Adds the given account ID to the WebID.
-   * Updates the account accordingly.
+   * Determines if a WebID is linked to an account.
    *
-   * @param webId - WebID to link to.
-   * @param account - Account to link to the WebID. Will be updated in place.
-   *
-   * @returns The resource corresponding to the created link for this account.
+   * @param webId - WebID to check.
+   * @param accountId - ID of the account.
    */
-  add: (webId: string, account: Account) => Promise<string>;
+  isLinked: (webId: string, accountId: string) => Promise<boolean>;
+
   /**
-   * Deletes the link between the given WebID and account.
-   * Updates the account accordingly.
+   * Finds all links associated with the given account.
    *
-   * @param webId - WebID to remove the link from.
-   * @param account - Account to unlink from the WebID. Will be updated in place.
+   * @param accountId - ID of the account.
    */
-  delete: (webId: string, account: Account) => Promise<void>;
+  findLinks: (accountId: string) => Promise<{ id: string; webId: string }[]>;
+
+  /**
+   * Creates a new WebID link for the given WebID and account.
+   *
+   * @param webId - WebID to link.
+   * @param account - ID of the account to link the WebID to.
+   *
+   * @returns ID of the link.
+   */
+  create: (webId: string, accountId: string) => Promise<string>;
+
+  /**
+   * Deletes the link with the given ID
+   *
+   * @param linkId - ID of the link.
+   */
+  delete: (linkId: string) => Promise<void>;
 }

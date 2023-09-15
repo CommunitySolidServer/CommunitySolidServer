@@ -1,9 +1,10 @@
 <h1>Your account</h1>
 <p class="error" id="error"></p>
-<div id="logins">
-  <h2>Logins</h2>
-  <p>The login methods that can be used to identify as this account.</p>
-  <div id="loginEntries"></div>
+<div id="passwordLogins">
+  <h2>Email/password logins</h2>
+  <p>The email/password logins used to identify this account.</p>
+  <a id="createPasswordLogin" href="" class="link">Add login</a>
+  <ul id="passwordLoginEntries"></ul>
 </div>
 <div id="pods">
   <h2>Pods</h2>
@@ -32,78 +33,68 @@
 </p>
 
 <script>
-  const elements = getElements('loginEntries', 'podEntries', 'webIdEntries', 'clientCredentialsEntries', 'oidc', 'logout');
+  const elements = getElements('passwordLoginEntries', 'podEntries', 'webIdEntries', 'clientCredentialsEntries', 'oidc', 'logout');
 
   // Retrieve and display client information
   (async() => {
-    const json = await fetchJson('', '<%= idpIndex %>');
+    const controls = await fetchControls('<%= idpIndex %>');
 
     // Button to continue OIDC session if there is one,
     // in case someone needed to create/update the account during a session.
     setVisibility('oidc', <%= authenticating %>);
     elements.oidc.addEventListener('click', async() => {
-      const body = await fetchJson(json.controls.oidc.prompt);
+      const body = await fetchJson(controls.oidc.prompt);
       location.href = body.location;
     });
 
     elements.logout.addEventListener('click', async() => {
-      await fetch(json.controls.account.logout, { method: 'POST' });
-      location.href = json.controls.html.main.login;
+      await fetch(controls.account.logout, { method: 'POST' });
+      location.href = controls.html.main.login;
     });
 
-
-    // Add data for all login options
-    for (const loginMethod of Object.keys(json.logins)) {
-      const url = json.controls.html[loginMethod]?.create;
-
-      elements.loginEntries.insertAdjacentHTML('beforeend', `<h3>${loginMethod}</h3>`);
-
-      // Making the assumption here that login controls use the same keys as those in the account and have an HTML create control
-      if (url) {
-        elements.loginEntries.insertAdjacentHTML('beforeend', `<a href="${url}">Add login</a>`);
-      }
-
-      const ul = document.createElement('ul');
-      elements.loginEntries.append(ul);
-
-      showAccountInfo(ul, loginMethod, json.logins, true, true,
-        'Are you sure you want to delete this login method? This will prevent you from logging in to your account with these credentials.');
-    }
+    // Update email/password entries
+    const { passwordLogins } = await fetchJson(controls.password.create);
+    updateElement('createPasswordLogin', controls.password.create, { href: true });
+    showAccountInfo(elements.passwordLoginEntries, passwordLogins, true, true,
+      'Are you sure you want to delete this login method? This will prevent you from logging in to your account with these credentials.');
 
     // Update pod entries
-    if (!json.controls.html.account.createPod && Object.keys(json.pods).length === 0) {
+    const { pods } = await fetchJson(controls.account.pod);
+    if (!controls.html.account.createPod && Object.keys(pods).length === 0) {
       setVisibility('pods', false);
     } else {
-      updateElement('createPod', json.controls.html.account.createPod, { href: true });
-      showAccountInfo(elements.podEntries, 'pods', json, false, false);
+      updateElement('createPod', controls.html.account.createPod, { href: true });
+      showAccountInfo(elements.podEntries, pods, false, false);
     }
 
     // Update WebID entries
-    if (!json.controls.html.account.linkWebId && Object.keys(json.webIds).length === 0) {
+    const { webIdLinks } = await fetchJson(controls.account.webId);
+    if (!controls.html.account.linkWebId && Object.keys(webIdLinks).length === 0) {
       setVisibility('webIds', false);
     } else {
-      updateElement('linkWebId', json.controls.html.account.linkWebId, { href: true });
-      showAccountInfo(elements.webIdEntries, 'webIds', json, false, true,
+      updateElement('linkWebId', controls.html.account.linkWebId, { href: true });
+      showAccountInfo(elements.webIdEntries, webIdLinks, false, true,
         'Are you sure you want to delete the registration of this WebID? ' +
         'If you do so you will be unable to identify as this WebID using this server, which can potentially cause you to lose access to data restricted to this WebID.',
         'Make sure to remove the relevant solid:oidcIssuer triple from the WebID to prevent existing access tokens from still being used.');
     }
 
     // Update Client Credentials entries
-    if (!json.controls.html.account.createClientCredentials && Object.keys(json.clientCredentials).length === 0) {
+    const { clientCredentials } = await fetchJson(controls.account.clientCredentials);
+    if (!controls.html.account.createClientCredentials && Object.keys(clientCredentials).length === 0) {
       setVisibility('clientCredentials', false);
     } else {
       // Initial boolean is so the create button gets hidden if the account has no WebIDs.
       // Currently, this does not get updated if the last WebID gets deleted, until the page is refreshed.
-      updateElement('createCredentials', Object.keys(json.webIds).length && json.controls.html.account.createClientCredentials, { href: true });
-      showAccountInfo(elements.clientCredentialsEntries, 'clientCredentials', json, false, true,
+      updateElement('createCredentials', Object.keys(webIdLinks).length && controls.html.account.createClientCredentials, { href: true });
+      showAccountInfo(elements.clientCredentialsEntries, clientCredentials, false, true,
         'Are you sure you want to delete this token? This will prevent this token from being used in the future.');
     }
   })();
 
   // Adds account info to the UI
-  function showAccountInfo(rootElement, label, data, addLink, addDel, confirmMsg, finishMsg) {
-    for (const [ key, url ] of Object.entries(data[label])) {
+  function showAccountInfo(rootElement, data, addLink, addDel, confirmMsg, finishMsg) {
+    for (const [ key, url ] of Object.entries(data)) {
       const li = document.createElement('li');
       if (addLink) {
         li.insertAdjacentHTML('beforeend', `<a href="${url}">${key}</a>`);

@@ -1,17 +1,25 @@
-import type { Adapter } from 'oidc-provider';
-import type { AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
+import { Adapter } from 'oidc-provider';
 import {
   ClientCredentialsAdapter, ClientCredentialsAdapterFactory,
 } from '../../../../../src/identity/interaction/client-credentials/ClientCredentialsAdapterFactory';
 import type {
+  ClientCredentials,
+} from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
+import {
   ClientCredentialsStore,
 } from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
+import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
 import type { AdapterFactory } from '../../../../../src/identity/storage/AdapterFactory';
-import { createAccount, mockAccountStore } from '../../../../util/AccountUtil';
 
 describe('A ClientCredentialsAdapterFactory', (): void => {
+  const webId = 'http://example.com/card#me';
+  const id = '123456';
+  const accountId = 'accountId;';
+  const label = 'token_123';
+  const secret = 'secret!';
+  const token: ClientCredentials = { id, label, secret, accountId, webId };
+  let webIdStore: jest.Mocked<WebIdStore>;
   let credentialsStore: jest.Mocked<ClientCredentialsStore>;
-  let accountStore: jest.Mocked<AccountStore>;
   let sourceAdapter: jest.Mocked<Adapter>;
   let sourceFactory: jest.Mocked<AdapterFactory>;
   let adapter: ClientCredentialsAdapter;
@@ -20,21 +28,23 @@ describe('A ClientCredentialsAdapterFactory', (): void => {
   beforeEach(async(): Promise<void> => {
     sourceAdapter = {
       find: jest.fn(),
-    } as any;
+    } satisfies Partial<Adapter> as any;
 
     sourceFactory = {
       createStorageAdapter: jest.fn().mockReturnValue(sourceAdapter),
     };
 
-    accountStore = mockAccountStore();
+    webIdStore = {
+      isLinked: jest.fn().mockResolvedValue(true),
+    } satisfies Partial<WebIdStore> as any;
 
     credentialsStore = {
-      get: jest.fn(),
+      findByLabel: jest.fn().mockResolvedValue(token),
       delete: jest.fn(),
-    } as any;
+    } satisfies Partial<ClientCredentialsStore> as any;
 
-    adapter = new ClientCredentialsAdapter('Client', sourceAdapter, accountStore, credentialsStore);
-    factory = new ClientCredentialsAdapterFactory(sourceFactory, accountStore, credentialsStore);
+    adapter = new ClientCredentialsAdapter('Client', sourceAdapter, webIdStore, credentialsStore);
+    factory = new ClientCredentialsAdapterFactory(sourceFactory, webIdStore, credentialsStore);
   });
 
   it('calls the source factory when creating a new Adapter.', async(): Promise<void> => {
@@ -45,69 +55,45 @@ describe('A ClientCredentialsAdapterFactory', (): void => {
 
   it('returns the result from the source.', async(): Promise<void> => {
     sourceAdapter.find.mockResolvedValue({ payload: 'payload' });
-    await expect(adapter.find('id')).resolves.toEqual({ payload: 'payload' });
+    await expect(adapter.find(label)).resolves.toEqual({ payload: 'payload' });
     expect(sourceAdapter.find).toHaveBeenCalledTimes(1);
-    expect(sourceAdapter.find).toHaveBeenLastCalledWith('id');
-    expect(credentialsStore.get).toHaveBeenCalledTimes(0);
-    expect(accountStore.get).toHaveBeenCalledTimes(0);
+    expect(sourceAdapter.find).toHaveBeenLastCalledWith(label);
+    expect(credentialsStore.findByLabel).toHaveBeenCalledTimes(0);
   });
 
-  it('tries to find a matching client credentials token if no result was found.', async(): Promise<void> => {
-    await expect(adapter.find('id')).resolves.toBeUndefined();
+  it('returns no result if there is no token for the label.', async(): Promise<void> => {
+    credentialsStore.findByLabel.mockResolvedValueOnce(undefined);
+    await expect(adapter.find(label)).resolves.toBeUndefined();
     expect(sourceAdapter.find).toHaveBeenCalledTimes(1);
-    expect(sourceAdapter.find).toHaveBeenLastCalledWith('id');
-    expect(credentialsStore.get).toHaveBeenCalledTimes(1);
-    expect(credentialsStore.get).toHaveBeenLastCalledWith('id');
-    expect(accountStore.get).toHaveBeenCalledTimes(0);
-  });
-
-  it('returns no result if there is no matching account.', async(): Promise<void> => {
-    accountStore.get.mockResolvedValueOnce(undefined);
-    credentialsStore.get.mockResolvedValue({ secret: 'super_secret', webId: 'http://example.com/foo#me', accountId: 'accountId' });
-    await expect(adapter.find('id')).resolves.toBeUndefined();
-    expect(sourceAdapter.find).toHaveBeenCalledTimes(1);
-    expect(sourceAdapter.find).toHaveBeenLastCalledWith('id');
-    expect(credentialsStore.get).toHaveBeenCalledTimes(1);
-    expect(credentialsStore.get).toHaveBeenLastCalledWith('id');
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith('accountId');
+    expect(sourceAdapter.find).toHaveBeenLastCalledWith(label);
+    expect(credentialsStore.findByLabel).toHaveBeenCalledTimes(1);
+    expect(credentialsStore.findByLabel).toHaveBeenLastCalledWith(label);
   });
 
   it('returns no result if the WebID is not linked to the account and deletes the token.', async(): Promise<void> => {
-    const account = createAccount();
-    accountStore.get.mockResolvedValueOnce(account);
-    credentialsStore.get.mockResolvedValue({ secret: 'super_secret', webId: 'http://example.com/foo#me', accountId: 'accountId' });
-    await expect(adapter.find('id')).resolves.toBeUndefined();
+    webIdStore.isLinked.mockResolvedValueOnce(false);
+    await expect(adapter.find(label)).resolves.toBeUndefined();
     expect(sourceAdapter.find).toHaveBeenCalledTimes(1);
-    expect(sourceAdapter.find).toHaveBeenLastCalledWith('id');
-    expect(credentialsStore.get).toHaveBeenCalledTimes(1);
-    expect(credentialsStore.get).toHaveBeenLastCalledWith('id');
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith('accountId');
+    expect(sourceAdapter.find).toHaveBeenLastCalledWith(label);
+    expect(credentialsStore.findByLabel).toHaveBeenCalledTimes(1);
+    expect(credentialsStore.findByLabel).toHaveBeenLastCalledWith(label);
     expect(credentialsStore.delete).toHaveBeenCalledTimes(1);
-    expect(credentialsStore.delete).toHaveBeenLastCalledWith('id', account);
+    expect(credentialsStore.delete).toHaveBeenLastCalledWith(id);
   });
 
   it('returns valid client_credentials Client metadata if a matching token was found.', async(): Promise<void> => {
-    const webId = 'http://example.com/foo#me';
-    const account = createAccount();
-    account.webIds[webId] = 'resource';
-    accountStore.get.mockResolvedValueOnce(account);
-    credentialsStore.get.mockResolvedValue({ secret: 'super_secret', webId, accountId: 'accountId' });
     /* eslint-disable @typescript-eslint/naming-convention */
-    await expect(adapter.find('id')).resolves.toEqual({
-      client_id: 'id',
-      client_secret: 'super_secret',
+    await expect(adapter.find(label)).resolves.toEqual({
+      client_id: label,
+      client_secret: secret,
       grant_types: [ 'client_credentials' ],
       redirect_uris: [],
       response_types: [],
     });
     /* eslint-enable @typescript-eslint/naming-convention */
     expect(sourceAdapter.find).toHaveBeenCalledTimes(1);
-    expect(sourceAdapter.find).toHaveBeenLastCalledWith('id');
-    expect(credentialsStore.get).toHaveBeenCalledTimes(1);
-    expect(credentialsStore.get).toHaveBeenLastCalledWith('id');
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith('accountId');
+    expect(sourceAdapter.find).toHaveBeenLastCalledWith(label);
+    expect(credentialsStore.findByLabel).toHaveBeenCalledTimes(1);
+    expect(credentialsStore.findByLabel).toHaveBeenLastCalledWith(label);
   });
 });

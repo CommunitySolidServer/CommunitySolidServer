@@ -19,9 +19,10 @@
           "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
           "identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
           "relativeWebIdPath": "/profile/card#me",
-          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
           "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
           "podStore": { "@id": "urn:solid-server:default:PodStore" },
+          "webIdLinkRoute": { "@id": "urn:solid-server:default:AccountWebIdLinkRoute" },
+          "podIdRoute": { "@id": "urn:solid-server:default:AccountPodIdRoute" },
           "allowRoot": false
         }
       }

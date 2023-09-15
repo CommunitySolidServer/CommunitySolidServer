@@ -16,7 +16,7 @@
         "source": {
           "@type": "PickWebIdHandler",
           "@id": "urn:solid-server:default:PickWebIdHandler",
-          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+          "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
           "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
         }
       }

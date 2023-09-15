@@ -2,9 +2,9 @@ import type { interactionPolicy, KoaContextWithOIDC } from '../../../templates/t
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { importOidcProvider } from '../IdentityUtil';
-import type { AccountStore } from '../interaction/account/util/AccountStore';
 import type { CookieStore } from '../interaction/account/util/CookieStore';
 import { ACCOUNT_PROMPT } from '../interaction/InteractionUtil';
+import type { WebIdStore } from '../interaction/webid/util/WebIdStore';
 import { PromptFactory } from './PromptFactory';
 
 type OIDCContext = NonNullable<KoaContextWithOIDC['oidc']['entities']['OIDCContext']>;
@@ -20,13 +20,13 @@ type ExtendedContext = OIDCContext & { internalAccountId?: string };
 export class AccountPromptFactory extends PromptFactory {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly accountStore: AccountStore;
+  private readonly webIdStore: WebIdStore;
   private readonly cookieStore: CookieStore;
   private readonly cookieName: string;
 
-  public constructor(accountStore: AccountStore, cookieStore: CookieStore, cookieName: string) {
+  public constructor(webIdStore: WebIdStore, cookieStore: CookieStore, cookieName: string) {
     super();
-    this.accountStore = accountStore;
+    this.webIdStore = webIdStore;
     this.cookieStore = cookieStore;
     this.cookieName = cookieName;
   }
@@ -60,7 +60,8 @@ export class AccountPromptFactory extends PromptFactory {
     const check = new ip.Check('no_webid_ownserhip',
       'The stored WebID does not belong to the account.',
       async(ctx): Promise<boolean> => {
-        if (!ctx.oidc.session?.accountId) {
+        const webId = ctx.oidc.session?.accountId;
+        if (!webId) {
           return false;
         }
 
@@ -70,17 +71,11 @@ export class AccountPromptFactory extends PromptFactory {
           return false;
         }
 
-        const account = await this.accountStore.get(accountId);
-        if (!account) {
-          this.logger.error(`Invalid account ID ${accountId}`);
-          return false;
-        }
+        const isLinked = await this.webIdStore.isLinked(webId, accountId);
+        this.logger.debug(`Session has WebID ${webId
+        }, which ${isLinked ? 'belongs' : 'does not belong'} to the authenticated account`);
 
-        const owner = account.webIds[ctx.oidc.session.accountId];
-        this.logger.debug(`Session has WebID ${ctx.oidc.session.accountId
-        }, which ${owner ? 'belongs' : 'does not belong'} to the authenticated account`);
-
-        return !owner;
+        return !isLinked;
       });
     const loginPrompt = policy.get('login');
     if (!loginPrompt) {

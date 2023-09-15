@@ -1,103 +1,127 @@
 import { hash, compare } from 'bcryptjs';
+import { Initializer } from '../../../../init/Initializer';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { KeyValueStorage } from '../../../../storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
+import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { ForbiddenHttpError } from '../../../../util/errors/ForbiddenHttpError';
+import { InternalServerError } from '../../../../util/errors/InternalServerError';
+import { ACCOUNT_TYPE } from '../../account/util/LoginStorage';
+import type { AccountLoginStorage } from '../../account/util/LoginStorage';
 import type { PasswordStore } from './PasswordStore';
 
-/**
- * A payload to persist a user account
- */
-export interface LoginPayload {
-  accountId: string;
-  password: string;
-  verified: boolean;
-}
+const STORAGE_TYPE = 'password';
+const STORAGE_DESCRIPTION = {
+  email: 'string',
+  password: 'string',
+  verified: 'boolean',
+  accountId: `id:${ACCOUNT_TYPE}`,
+} as const;
 
 /**
  * A {@link PasswordStore} that uses a {@link KeyValueStorage} to store the entries.
  * Passwords are hashed and salted.
  * Default `saltRounds` is 10.
  */
-export class BasePasswordStore implements PasswordStore {
+export class BasePasswordStore extends Initializer implements PasswordStore {
   private readonly logger = getLoggerFor(this);
 
-  private readonly storage: KeyValueStorage<string, LoginPayload>;
+  private readonly storage: AccountLoginStorage<{ [STORAGE_TYPE]: typeof STORAGE_DESCRIPTION }>;
   private readonly saltRounds: number;
+  private initialized = false;
 
-  public constructor(storage: KeyValueStorage<string, LoginPayload>, saltRounds = 10) {
+  public constructor(storage: AccountLoginStorage<any>, saltRounds = 10) {
+    super();
     this.storage = storage;
     this.saltRounds = saltRounds;
   }
 
-  /**
-   * Helper function that converts the given e-mail to a resource identifier
-   * and retrieves the login data from the internal storage.
-   *
-   * Will error if `checkExistence` is true and there is no login data for that email.
-   */
-  private async getLoginPayload(email: string, checkExistence: true): Promise<{ key: string; payload: LoginPayload }>;
-  private async getLoginPayload(email: string, checkExistence: false): Promise<{ key: string; payload?: LoginPayload }>;
-  private async getLoginPayload(email: string, checkExistence: boolean):
-  Promise<{ key: string; payload?: LoginPayload }> {
-    const key = encodeURIComponent(email.toLowerCase());
-    const payload = await this.storage.get(key);
-    if (checkExistence && !payload) {
-      this.logger.warn(`Trying to get account info for unknown email ${email}`);
-      throw new ForbiddenHttpError('Login does not exist.');
+  // Initialize the type definitions
+  public async handle(): Promise<void> {
+    if (this.initialized) {
+      return;
     }
-    return { key, payload };
+    try {
+      await this.storage.defineType(STORAGE_TYPE, STORAGE_DESCRIPTION, true);
+      await this.storage.createIndex(STORAGE_TYPE, 'accountId');
+      await this.storage.createIndex(STORAGE_TYPE, 'email');
+      this.initialized = true;
+    } catch (cause: unknown) {
+      throw new InternalServerError(`Error defining email/password in storage: ${createErrorMessage(cause)}`,
+        { cause });
+    }
   }
 
-  public async get(email: string): Promise<string | undefined> {
-    const { payload } = await this.getLoginPayload(email, false);
-    return payload?.accountId;
-  }
-
-  public async authenticate(email: string, password: string): Promise<string> {
-    const { payload } = await this.getLoginPayload(email, true);
-    if (!payload.verified) {
-      this.logger.warn(`Trying to get account info for unverified email ${email}`);
-      throw new ForbiddenHttpError('Login still needs to be verified.');
-    }
-    if (!await compare(password, payload.password)) {
-      this.logger.warn(`Incorrect password for email ${email}`);
-      throw new ForbiddenHttpError('Incorrect password.');
-    }
-    return payload.accountId;
-  }
-
-  public async create(email: string, accountId: string, password: string): Promise<void> {
-    const { key, payload } = await this.getLoginPayload(email, false);
-    if (payload) {
+  public async create(email: string, accountId: string, password: string): Promise<string> {
+    if (await this.findByEmail(email)) {
       this.logger.warn(`Trying to create duplicate login for email ${email}`);
       throw new BadRequestHttpError('There already is a login for this e-mail address.');
     }
-    await this.storage.set(key, {
+    const payload = await this.storage.create(STORAGE_TYPE, {
       accountId,
+      email: email.toLowerCase(),
       password: await hash(password, this.saltRounds),
       verified: false,
     });
+    return payload.id;
   }
 
-  public async confirmVerification(email: string): Promise<void> {
-    const { key, payload } = await this.getLoginPayload(email, true);
-    payload.verified = true;
-    await this.storage.set(key, payload);
-  }
-
-  public async update(email: string, password: string): Promise<void> {
-    const { key, payload } = await this.getLoginPayload(email, true);
-    payload.password = await hash(password, this.saltRounds);
-    await this.storage.set(key, payload);
-  }
-
-  public async delete(email: string): Promise<boolean> {
-    const { key, payload } = await this.getLoginPayload(email, false);
-    const exists = Boolean(payload);
-    if (exists) {
-      await this.storage.delete(key);
+  public async get(id: string): Promise<{ email: string; accountId: string } | undefined> {
+    const result = await this.storage.get(STORAGE_TYPE, id);
+    if (!result) {
+      return;
     }
-    return exists;
+    return { email: result.email, accountId: result.accountId };
+  }
+
+  public async findByEmail(email: string): Promise<{ accountId: string; id: string } | undefined> {
+    const payload = await this.storage.find(STORAGE_TYPE, { email: email.toLowerCase() });
+    if (payload.length === 0) {
+      return;
+    }
+    return { accountId: payload[0].accountId, id: payload[0].id };
+  }
+
+  public async findByAccount(accountId: string): Promise<{ id: string; email: string }[]> {
+    return (await this.storage.find(STORAGE_TYPE, { accountId }))
+      .map(({ id, email }): { id: string; email: string } => ({ id, email }));
+  }
+
+  public async confirmVerification(id: string): Promise<void> {
+    if (!await this.storage.has(STORAGE_TYPE, id)) {
+      this.logger.warn(`Trying to verify unknown password login ${id}`);
+      throw new ForbiddenHttpError('Login does not exist.');
+    }
+
+    await this.storage.setField(STORAGE_TYPE, id, 'verified', true);
+  }
+
+  public async authenticate(email: string, password: string): Promise<{ accountId: string; id: string }> {
+    const payload = await this.storage.find(STORAGE_TYPE, { email: email.toLowerCase() });
+    if (payload.length === 0) {
+      this.logger.warn(`Trying to get account info for unknown email ${email}`);
+      throw new ForbiddenHttpError('Invalid email/password combination.');
+    }
+    if (!await compare(password, payload[0].password)) {
+      this.logger.warn(`Incorrect password for email ${email}`);
+      throw new ForbiddenHttpError('Invalid email/password combination.');
+    }
+    const { verified, accountId, id } = payload[0];
+    if (!verified) {
+      this.logger.warn(`Trying to get account info for unverified email ${email}`);
+      throw new ForbiddenHttpError('Login still needs to be verified.');
+    }
+    return { accountId, id };
+  }
+
+  public async update(id: string, password: string): Promise<void> {
+    if (!await this.storage.has(STORAGE_TYPE, id)) {
+      this.logger.warn(`Trying to update unknown password login ${id}`);
+      throw new ForbiddenHttpError('Login does not exist.');
+    }
+    await this.storage.setField(STORAGE_TYPE, id, 'password', await hash(password, this.saltRounds));
+  }
+
+  public async delete(id: string): Promise<void> {
+    return this.storage.delete(STORAGE_TYPE, id);
   }
 }

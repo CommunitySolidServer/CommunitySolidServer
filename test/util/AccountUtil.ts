@@ -1,18 +1,4 @@
-import urljoin from 'url-join';
-import type { Account } from '../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../src/identity/interaction/account/util/AccountStore';
-
-export function createAccount(id = 'id'): Account {
-  return { id, logins: {}, webIds: {}, pods: {}, clientCredentials: {}, settings: {}};
-}
-
-export function mockAccountStore(account?: Account): jest.Mocked<AccountStore> {
-  return {
-    create: jest.fn(async(): Promise<Account> => createAccount()),
-    get: jest.fn().mockResolvedValue(account),
-    update: jest.fn(),
-  };
-}
+import { joinUrl } from '../../src/util/PathUtil';
 
 export type User = {
   email: string;
@@ -30,7 +16,7 @@ export type User = {
 export async function register(baseUrl: string, user: User):
 Promise<{ pod: string; webId: string; authorization: string; controls: any }> {
   // Get controls
-  let res = await fetch(urljoin(baseUrl, '.account/'));
+  let res = await fetch(joinUrl(baseUrl, '.account/'));
   let { controls } = await res.json();
 
   // Create account

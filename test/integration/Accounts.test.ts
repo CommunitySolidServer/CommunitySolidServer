@@ -1,6 +1,8 @@
 import fetch from 'cross-fetch';
 import { parse, splitCookiesString } from 'set-cookie-parser';
+import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
+import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinUrl } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
@@ -14,15 +16,17 @@ jest.mock('nodemailer');
 
 describe('A server with account management', (): void => {
   let app: App;
+  let store: ResourceStore;
   let sendMail: jest.Mock;
 
+  const publicContainer = joinUrl(baseUrl, '/public/');
   let cookie: string;
   const email = 'test@example.com';
   let password = 'secret';
   const indexUrl = joinUrl(baseUrl, '.account/');
   let controls: {
     main: Record<'index' | 'logins', string>;
-    account: Record<'create' | 'account' | 'logout' | 'pod' | 'webId' | 'clientCredentials', string>;
+    account: Record<'create' | 'logout' | 'pod' | 'webId' | 'clientCredentials', string>;
     password: Record<'login' | 'forgot' | 'create', string>;
   };
   let passwordResource: string;
@@ -37,11 +41,26 @@ describe('A server with account management', (): void => {
 
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      getTestConfigPath('server-memory.json'),
+      getTestConfigPath('memory-pod.json'),
       getDefaultVariables(port, baseUrl),
     ) as Record<string, any>;
-    ({ app } = instances);
+    ({ app, store } = instances);
     await app.start();
+
+    // Create a public container where we can write any data
+    await store.setRepresentation(
+      { path: joinUrl(publicContainer, '.acl') },
+      new BasicRepresentation(`
+        @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+        @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+        <#public>
+          a acl:Authorization;
+          acl:agentClass foaf:Agent;
+          acl:accessTo <./>;
+          acl:default <./>;
+          acl:mode acl:Read, acl:Write, acl:Control.`,
+      'text/turtle'),
+    );
 
     controls = { main: {}, account: {}, login: {}, password: {}} as any;
   });
@@ -75,27 +94,24 @@ describe('A server with account management', (): void => {
     const res = await fetch(controls.account.create, { method: 'POST' });
     expect(res.status).toBe(200);
     const json = await res.json();
-    expect(json.resource).toBeDefined();
     expect(res.headers.get('set-cookie')).toBeDefined();
     const cookies = parse(splitCookiesString(res.headers.get('set-cookie')!));
     expect(cookies).toHaveLength(1);
 
     cookie = `${cookies[0].name}=${cookies[0].value}`;
     expect(json.cookie).toBe(cookies[0].value);
-
-    controls.account.account = json.resource;
   });
 
-  it('can access the account using the cookie.', async(): Promise<void> => {
-    expect((await fetch(controls.account.account)).status).toBe(401);
-    const res = await fetch(controls.account.account, { headers: { cookie }});
+  it('can only access the account controls the cookie.', async(): Promise<void> => {
+    const res = await fetch(indexUrl, { headers: { cookie }});
     expect(res.status).toBe(200);
     const json = await res.json();
-    expect(json.controls.account.account).toEqual(controls.account.account);
     expect(json.controls.account.logout).toBeDefined();
     expect(json.controls.account.pod).toBeDefined();
     expect(json.controls.account.webId).toBeDefined();
     expect(json.controls.account.clientCredentials).toBeDefined();
+
+    expect((await fetch(json.controls.account.pod)).status).toBe(401);
 
     controls.account = json.controls.account;
 
@@ -105,13 +121,12 @@ describe('A server with account management', (): void => {
     expect(json.controls.html.account).toBeDefined();
   });
 
-  it('can also access the account using the custom authorization header.', async(): Promise<void> => {
-    expect((await fetch(controls.account.account)).status).toBe(401);
-    const res = await fetch(controls.account.account, { headers:
+  it('can also access the account controls using the custom authorization header.', async(): Promise<void> => {
+    const res = await fetch(indexUrl, { headers:
         { authorization: `CSS-Account-Cookie ${cookie.split('=')[1]}` }});
     expect(res.status).toBe(200);
     const json = await res.json();
-    expect(json.controls.account.account).toEqual(controls.account.account);
+    expect(json.controls.account.pod).toEqual(controls.account.pod);
   });
 
   it('can not create a pod since the account has no login.', async(): Promise<void> => {
@@ -138,10 +153,10 @@ describe('A server with account management', (): void => {
     expect(json.resource).toBeDefined();
     ({ resource: passwordResource } = json);
 
-    // Verify if the content was added to the profile
-    res = await fetch(controls.account.account, { headers: { cookie }});
+    // Verify if the content was added to the account
+    res = await fetch(controls.password.create, { headers: { cookie }});
     expect(res.status).toBe(200);
-    expect((await res.json()).logins.password).toEqual({ [email]: passwordResource });
+    expect((await res.json()).passwordLogins).toEqual({ [email]: passwordResource });
   });
 
   it('can not delete its last login method.', async(): Promise<void> => {
@@ -154,13 +169,13 @@ describe('A server with account management', (): void => {
     let res = await fetch(controls.account.create, { method: 'POST' });
     const cookies = parse(splitCookiesString(res.headers.get('set-cookie')!));
     const newCookie = `${cookies[0].name}=${cookies[0].value}`;
-    const { resource } = await res.json();
 
-    res = await fetch(resource, { headers: { cookie: newCookie }});
-    const oldAccount: { controls: typeof controls } = await res.json();
+    res = await fetch(indexUrl, { headers: { cookie: newCookie }});
+    expect(res.status).toBe(200);
+    const newControls: typeof controls = (await res.json()).controls;
 
     // This will fail because the email address is already used by a different account
-    res = await fetch(oldAccount.controls.password.create, {
+    res = await fetch(newControls.password.create, {
       method: 'POST',
       headers: { cookie: newCookie, 'content-type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -168,15 +183,15 @@ describe('A server with account management', (): void => {
     expect(res.status).toBe(400);
 
     // Make sure the account still has no login method
-    res = await fetch(resource, { headers: { cookie: newCookie }});
-    await expect(res.json()).resolves.toEqual(oldAccount);
+    res = await fetch(newControls.password.create, { headers: { cookie: newCookie }});
+    expect((await res.json()).passwordLogins).toEqual({});
   });
 
   it('can log out.', async(): Promise<void> => {
     const res = await fetch(controls.account.logout, { method: 'POST', headers: { cookie }});
     expect(res.status).toBe(200);
     // Cookie doesn't work anymore
-    expect((await fetch(controls.account.account, { headers: { cookie }})).status).toBe(401);
+    expect((await fetch(controls.account.pod, { headers: { cookie }})).status).toBe(401);
   });
 
   it('can login again with email/password.', async(): Promise<void> => {
@@ -191,7 +206,7 @@ describe('A server with account management', (): void => {
     expect(cookies).toHaveLength(1);
     cookie = `${cookies[0].name}=${cookies[0].value}`;
     // Cookie is valid again
-    expect((await fetch(controls.account.account, { headers: { cookie }})).status).toBe(200);
+    expect((await fetch(controls.account.pod, { headers: { cookie }})).status).toBe(200);
   });
 
   it('can change the password.', async(): Promise<void> => {
@@ -223,7 +238,7 @@ describe('A server with account management', (): void => {
       body: JSON.stringify({ name: 'test' }),
     });
     expect(res.status).toBe(200);
-    let json = await res.json();
+    const json = await res.json();
     expect(json.pod).toBeDefined();
     expect(json.podResource).toBeDefined();
     expect(json.webId).toBeDefined();
@@ -231,18 +246,19 @@ describe('A server with account management', (): void => {
     ({ pod, webId } = json);
 
     // Verify if the content was added to the profile
-    res = await fetch(controls.account.account, { headers: { cookie }});
+    res = await fetch(controls.account.pod, { headers: { cookie }});
     expect(res.status).toBe(200);
-    json = await res.json();
-    expect(json.pods[pod]).toBeDefined();
-    expect(json.webIds[webId]).toBeDefined();
+    expect((await res.json()).pods[pod]).toBeDefined();
+    res = await fetch(controls.account.webId, { headers: { cookie }});
+    expect(res.status).toBe(200);
+    expect((await res.json()).webIdLinks[webId]).toBeDefined();
   });
 
   it('does not store any data if creating a pod fails on the same account.', async(): Promise<void> => {
-    let res = await fetch(controls.account.account, { headers: { cookie }});
-    const oldAccount = await res.json();
+    const oldPods = (await (await fetch(controls.account.pod, { headers: { cookie }})).json()).pods;
+    const oldWebIdLinks = (await (await fetch(controls.account.webId, { headers: { cookie }})).json()).webIdLinks;
 
-    res = await fetch(controls.account.pod, {
+    const res = await fetch(controls.account.pod, {
       method: 'POST',
       headers: { cookie, 'content-type': 'application/json' },
       body: JSON.stringify({ name: 'test' }),
@@ -250,13 +266,15 @@ describe('A server with account management', (): void => {
     expect(res.status).toBe(400);
 
     // Verify nothing was added
-    res = await fetch(controls.account.account, { headers: { cookie }});
-    await expect(res.json()).resolves.toEqual(oldAccount);
+    const newPods = (await (await fetch(controls.account.pod, { headers: { cookie }})).json()).pods;
+    const newWebIdLinks = (await (await fetch(controls.account.webId, { headers: { cookie }})).json()).webIdLinks;
+    expect(oldPods).toEqual(newPods);
+    expect(oldWebIdLinks).toEqual(newWebIdLinks);
   });
 
   it('does not store any data if creating a pod fails on a different account.', async(): Promise<void> => {
     // We have to create a new account here to try to create a pod with the same name.
-    // Otherwise the server will never try to write data
+    // Otherwise, the server will never try to write data
     // since it would notice the account already has a pod with that name.
     let res = await fetch(controls.account.create, { method: 'POST' });
     const cookies = parse(splitCookiesString(res.headers.get('set-cookie')!));
@@ -273,8 +291,9 @@ describe('A server with account management', (): void => {
     });
     expect(res.status).toBe(200);
 
-    res = await fetch(json.controls.account.account, { headers: { cookie: newCookie }});
-    const oldAccount = await res.json();
+    const oldPods = (await (await fetch(controls.account.pod, { headers: { cookie: newCookie }})).json()).pods;
+    const oldWebIdLinks = (await (await fetch(controls.account.webId, { headers: { cookie: newCookie }})).json())
+      .webIdLinks;
 
     // This will fail because there already is a pod with this name
     res = await fetch(json.controls.account.pod, {
@@ -286,17 +305,20 @@ describe('A server with account management', (): void => {
     expect((await res.json()).message).toContain('Pod creation failed');
 
     // Make sure there is no reference in the account data
-    res = await fetch(json.controls.account.account, { headers: { cookie: newCookie }});
-    await expect(res.json()).resolves.toEqual(oldAccount);
+    const newPods = (await (await fetch(controls.account.pod, { headers: { cookie: newCookie }})).json()).pods;
+    const newWebIdLinks = (await (await fetch(controls.account.webId, { headers: { cookie: newCookie }})).json())
+      .webIdLinks;
+    expect(oldPods).toEqual(newPods);
+    expect(oldWebIdLinks).toEqual(newWebIdLinks);
   });
 
   it('can remove the WebID link.', async(): Promise<void> => {
-    let res = await fetch(controls.account.account, { headers: { cookie }});
-    const webIdResource = (await res.json()).webIds[webId];
+    let res = await fetch(controls.account.webId, { headers: { cookie }});
+    const webIdResource = (await res.json()).webIdLinks[webId];
     res = await fetch(webIdResource, { method: 'DELETE', headers: { cookie }});
     expect(res.status).toBe(200);
-    res = await fetch(controls.account.account, { headers: { cookie }});
-    expect((await res.json()).webIds[webId]).toBeUndefined();
+    res = await fetch(controls.account.webId, { headers: { cookie }});
+    expect((await res.json()).webIdLinks[webId]).toBeUndefined();
   });
 
   it('can link the WebID again.', async(): Promise<void> => {
@@ -311,14 +333,14 @@ describe('A server with account management', (): void => {
     expect(json.oidcIssuer).toBe(baseUrl);
 
     // Verify if the content was added to the profile
-    res = await fetch(controls.account.account, { headers: { cookie }});
+    res = await fetch(controls.account.webId, { headers: { cookie }});
     expect(res.status).toBe(200);
     json = await res.json();
-    expect(json.webIds[webId]).toBeDefined();
+    expect(json.webIdLinks[webId]).toBeDefined();
   });
 
   it('needs to prove ownership when linking a WebID outside of a pod.', async(): Promise<void> => {
-    const otherWebId = joinUrl(baseUrl, 'other#me');
+    const otherWebId = joinUrl(publicContainer, 'other#me');
     // Create the WebID
     let res = await fetch(otherWebId, {
       method: 'PUT',
@@ -354,12 +376,12 @@ describe('A server with account management', (): void => {
     expect(res.status).toBe(200);
 
     // Verify if the content was added to the profile
-    res = await fetch(controls.account.account, { headers: { cookie }});
+    res = await fetch(controls.account.webId, { headers: { cookie }});
     expect(res.status).toBe(200);
     json = await res.json();
     // 2 linked WebIDs now
-    expect(json.webIds[webId]).toBeDefined();
-    expect(json.webIds[otherWebId]).toBeDefined();
+    expect(json.webIdLinks[webId]).toBeDefined();
+    expect(json.webIdLinks[otherWebId]).toBeDefined();
   });
 
   it('can create a client credentials token.', async(): Promise<void> => {
@@ -376,7 +398,7 @@ describe('A server with account management', (): void => {
     const { id, resource, secret } = json;
 
     // Verify if the content was added to the profile
-    res = await fetch(controls.account.account, { headers: { cookie }});
+    res = await fetch(controls.account.clientCredentials, { headers: { cookie }});
     expect(res.status).toBe(200);
     const { clientCredentials } = await res.json();
     expect(clientCredentials[id]).toBe(resource);
@@ -397,21 +419,21 @@ describe('A server with account management', (): void => {
   });
 
   it('can remove registered WebIDs.', async(): Promise<void> => {
-    let res = await fetch(controls.account.account, { headers: { cookie }});
+    let res = await fetch(controls.account.webId, { headers: { cookie }});
     expect(res.status).toBe(200);
     let json = await res.json();
 
-    res = await fetch(json.webIds[webId], { method: 'DELETE', headers: { cookie }});
+    res = await fetch(json.webIdLinks[webId], { method: 'DELETE', headers: { cookie }});
     expect(res.status).toBe(200);
 
     // Make sure it's gone
-    res = await fetch(controls.account.account, { headers: { cookie }});
+    res = await fetch(controls.account.webId, { headers: { cookie }});
     json = await res.json();
-    expect(json.webIds[webId]).toBeUndefined();
+    expect(json.webIdLinks[webId]).toBeUndefined();
   });
 
   it('can remove credential tokens.', async(): Promise<void> => {
-    let res = await fetch(controls.account.account, { headers: { cookie }});
+    let res = await fetch(controls.account.clientCredentials, { headers: { cookie }});
     expect(res.status).toBe(200);
     let json = await res.json();
 
@@ -420,7 +442,7 @@ describe('A server with account management', (): void => {
     expect(res.status).toBe(200);
 
     // Make sure it's gone
-    res = await fetch(controls.account.account, { headers: { cookie }});
+    res = await fetch(controls.account.clientCredentials, { headers: { cookie }});
     json = await res.json();
     expect(Object.keys(json.clientCredentials)).toHaveLength(0);
   });

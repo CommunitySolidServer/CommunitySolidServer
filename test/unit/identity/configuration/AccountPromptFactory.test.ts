@@ -1,10 +1,8 @@
 import { interactionPolicy } from 'oidc-provider';
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import { AccountPromptFactory } from '../../../../src/identity/configuration/AccountPromptFactory';
-import type { Account } from '../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../src/identity/interaction/account/util/AccountStore';
-import type { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
-import { createAccount, mockAccountStore } from '../../../util/AccountUtil';
+import { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
+import { WebIdStore } from '../../../../src/identity/interaction/webid/util/WebIdStore';
 import DefaultPolicy = interactionPolicy.DefaultPolicy;
 import Prompt = interactionPolicy.Prompt;
 
@@ -12,10 +10,9 @@ describe('An AccountPromptFactory', (): void => {
   let ctx: KoaContextWithOIDC;
   let policy: jest.Mocked<DefaultPolicy>;
   const webId = 'http://example.com/card#me';
-  let account: Account;
   const accountId = 'id';
   const name = 'name';
-  let accountStore: jest.Mocked<AccountStore>;
+  let webIdStore: jest.Mocked<WebIdStore>;
   let cookieStore: jest.Mocked<CookieStore>;
   let factory: AccountPromptFactory;
 
@@ -36,18 +33,15 @@ describe('An AccountPromptFactory', (): void => {
       },
     } as any;
 
-    account = createAccount();
-    account.webIds[webId] = 'resource';
-    accountStore = mockAccountStore(account);
+    webIdStore = {
+      isLinked: jest.fn().mockResolvedValue(true),
+    } satisfies Partial<WebIdStore> as any;
 
     cookieStore = {
-      generate: jest.fn(),
       get: jest.fn().mockResolvedValue(accountId),
-      delete: jest.fn(),
-      refresh: jest.fn(),
-    };
+    } satisfies Partial<CookieStore> as any;
 
-    factory = new AccountPromptFactory(accountStore, cookieStore, name);
+    factory = new AccountPromptFactory(webIdStore, cookieStore, name);
   });
 
   describe('account prompt', (): void => {
@@ -91,7 +85,7 @@ describe('An AccountPromptFactory', (): void => {
     });
 
     it('triggers if the account does not own the WebID.', async(): Promise<void> => {
-      delete account.webIds[webId];
+      webIdStore.isLinked.mockResolvedValueOnce(false);
       await expect(factory.handle(policy)).resolves.toBeUndefined();
       const prompt = policy.get.mock.results[0].value;
       const check = prompt.checks[0];
@@ -108,14 +102,6 @@ describe('An AccountPromptFactory', (): void => {
 
     it('does not trigger if there is no internal account ID in the context.', async(): Promise<void> => {
       delete (ctx.oidc as any).internalAccountId;
-      await expect(factory.handle(policy)).resolves.toBeUndefined();
-      const prompt = policy.get.mock.results[0].value;
-      const check = prompt.checks[0];
-      await expect(check.check(ctx)).resolves.toBe(false);
-    });
-
-    it('does not trigger if no account was found.', async(): Promise<void> => {
-      accountStore.get.mockResolvedValue(undefined);
       await expect(factory.handle(policy)).resolves.toBeUndefined();
       const prompt = policy.get.mock.results[0].value;
       const check = prompt.checks[0];

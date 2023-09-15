@@ -16,7 +16,7 @@
         "methods": [ "DELETE" ],
         "source": {
           "@type": "UnlinkWebIdHandler",
-          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+          "webIdRoute": { "@id": "urn:solid-server:default:AccountWebIdLinkRoute" },
           "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" }
         }
       }

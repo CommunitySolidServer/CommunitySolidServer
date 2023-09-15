@@ -1,18 +1,18 @@
 import { Readable } from 'stream';
 import { exportJWK, generateKeyPair } from 'jose';
 import type * as Koa from 'koa';
-import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
-import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
+import { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
+import { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
 import type { JwkGenerator } from '../../../../src/identity/configuration/JwkGenerator';
-import type { PromptFactory } from '../../../../src/identity/configuration/PromptFactory';
-import type {
+import { PromptFactory } from '../../../../src/identity/configuration/PromptFactory';
+import {
   ClientCredentialsStore,
 } from '../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
 import type { Interaction } from '../../../../src/identity/interaction/InteractionHandler';
 import type { InteractionRoute } from '../../../../src/identity/interaction/routing/InteractionRoute';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
-import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
+import { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
 import type { errors, Configuration, KoaContextWithOIDC } from '../../../../templates/types/oidc-provider';
@@ -101,7 +101,7 @@ describe('An IdentityProviderFactory', (): void => {
 
     promptFactory = {
       handleSafe: jest.fn(),
-    } as any;
+    } satisfies Partial<PromptFactory> as any;
 
     adapterFactory = {
       createStorageAdapter: jest.fn().mockReturnValue('adapter!'),
@@ -111,7 +111,7 @@ describe('An IdentityProviderFactory', (): void => {
     storage = {
       get: jest.fn((id: string): any => map.get(id)),
       set: jest.fn((id: string, value: any): any => map.set(id, value)),
-    } as any;
+    } satisfies Partial<KeyValueStorage<string, any>> as any;
 
     const { privateKey, publicKey } = await generateKeyPair('ES256');
     jwkGenerator = {
@@ -121,14 +121,14 @@ describe('An IdentityProviderFactory', (): void => {
     };
 
     clientCredentialsStore = {
-      get: jest.fn(),
-    } as any;
+      findByLabel: jest.fn(),
+    } satisfies Partial<ClientCredentialsStore> as any;
 
     errorHandler = {
       handleSafe: jest.fn().mockResolvedValue({ statusCode: 500 }),
-    } as any;
+    } satisfies Partial<ErrorHandler> as any;
 
-    responseWriter = { handleSafe: jest.fn() } as any;
+    responseWriter = { handleSafe: jest.fn() } satisfies Partial<ResponseWriter> as any;
 
     factory = new IdentityProviderFactory(baseConfig, {
       promptFactory,
@@ -174,10 +174,12 @@ describe('An IdentityProviderFactory', (): void => {
     findResult = await config.findAccount?.({ oidc: {}} as any, webId);
     await expect((findResult?.claims as any)()).resolves.toEqual({ sub: webId, webid: webId });
 
-    await expect((config.extraTokenClaims as any)({}, {})).resolves.toEqual({});
-    const client = { clientId: 'my_id' };
-    await expect((config.extraTokenClaims as any)({}, { client })).resolves.toEqual({});
-    clientCredentialsStore.get.mockResolvedValueOnce({ accountId: 'id', webId: 'http://example.com/foo', secret: 'my-secret' });
+    await expect((config.extraTokenClaims as any)({}, {}))
+      .rejects.toThrow('Missing client ID from client credentials.');
+    const client = { clientId: 'my_id', kind: 'ClientCredentials' };
+    await expect((config.extraTokenClaims as any)({}, { client }))
+      .rejects.toThrow(`Unknown client credentials token my_id`);
+    clientCredentialsStore.findByLabel.mockResolvedValueOnce({ id: 'id', label: 'label', accountId: 'id', webId: 'http://example.com/foo', secret: 'my-secret' });
     await expect((config.extraTokenClaims as any)({}, { client }))
       .resolves.toEqual({ webid: 'http://example.com/foo' });
     await expect((config.extraTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))

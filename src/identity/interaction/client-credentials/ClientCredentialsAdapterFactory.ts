@@ -2,7 +2,7 @@ import type { Adapter, AdapterPayload } from '../../../../templates/types/oidc-p
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { AdapterFactory } from '../../storage/AdapterFactory';
 import { PassthroughAdapterFactory, PassthroughAdapter } from '../../storage/PassthroughAdapterFactory';
-import type { AccountStore } from '../account/util/AccountStore';
+import type { WebIdStore } from '../webid/util/WebIdStore';
 import type { ClientCredentialsStore } from './util/ClientCredentialsStore';
 
 /**
@@ -13,68 +13,64 @@ import type { ClientCredentialsStore } from './util/ClientCredentialsStore';
 export class ClientCredentialsAdapter extends PassthroughAdapter {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly accountStore: AccountStore;
+  private readonly webIdStore: WebIdStore;
   private readonly clientCredentialsStore: ClientCredentialsStore;
 
-  public constructor(name: string, source: Adapter, accountStore: AccountStore,
+  public constructor(name: string, source: Adapter, webIdStore: WebIdStore,
     clientCredentialsStore: ClientCredentialsStore) {
     super(name, source);
-    this.accountStore = accountStore;
+    this.webIdStore = webIdStore;
     this.clientCredentialsStore = clientCredentialsStore;
   }
 
-  public async find(id: string): Promise<AdapterPayload | void | undefined> {
-    let payload = await this.source.find(id);
+  public async find(label: string): Promise<AdapterPayload | void | undefined> {
+    let payload = await this.source.find(label);
 
     if (!payload && this.name === 'Client') {
-      const credentials = await this.clientCredentialsStore.get(id);
-      if (credentials) {
-        // Make sure the WebID is still linked to the account.
-        // Unlinking a WebID does not necessarily delete the corresponding credential tokens.
-        const account = await this.accountStore.get(credentials.accountId);
-        if (!account) {
-          this.logger.error(`Storage contains credentials ${id} with unknown account ID ${credentials.accountId}`);
-          return;
-        }
-
-        if (!account.webIds[credentials.webId]) {
-          this.logger.warn(
-            `Client credentials token ${id} contains WebID that is no longer linked to the account. Removing...`,
-          );
-          await this.clientCredentialsStore.delete(id, account);
-          return;
-        }
-
-        this.logger.debug(`Authenticating as ${credentials.webId} using client credentials`);
-
-        /* eslint-disable @typescript-eslint/naming-convention */
-        payload = {
-          client_id: id,
-          client_secret: credentials.secret,
-          grant_types: [ 'client_credentials' ],
-          redirect_uris: [],
-          response_types: [],
-        };
-        /* eslint-enable @typescript-eslint/naming-convention */
+      const credentials = await this.clientCredentialsStore.findByLabel(label);
+      if (!credentials) {
+        return payload;
       }
+
+      // Make sure the WebID wasn't unlinked in the meantime
+      const valid = await this.webIdStore.isLinked(credentials.webId, credentials.accountId);
+      if (!valid) {
+        this.logger.error(
+          `Client credentials token ${label} contains WebID that is no longer linked to the account. Removing...`,
+        );
+        await this.clientCredentialsStore.delete(credentials.id);
+        return payload;
+      }
+
+      this.logger.debug(`Authenticating as ${credentials.webId} using client credentials`);
+
+      /* eslint-disable @typescript-eslint/naming-convention */
+      payload = {
+        client_id: label,
+        client_secret: credentials.secret,
+        grant_types: [ 'client_credentials' ],
+        redirect_uris: [],
+        response_types: [],
+      };
+      /* eslint-enable @typescript-eslint/naming-convention */
     }
     return payload;
   }
 }
 
 export class ClientCredentialsAdapterFactory extends PassthroughAdapterFactory {
-  private readonly accountStore: AccountStore;
+  private readonly webIdStore: WebIdStore;
   private readonly clientCredentialsStore: ClientCredentialsStore;
 
-  public constructor(source: AdapterFactory, accountStore: AccountStore,
+  public constructor(source: AdapterFactory, webIdStore: WebIdStore,
     clientCredentialsStore: ClientCredentialsStore) {
     super(source);
-    this.accountStore = accountStore;
+    this.webIdStore = webIdStore;
     this.clientCredentialsStore = clientCredentialsStore;
   }
 
   public createStorageAdapter(name: string): Adapter {
     const adapter = this.source.createStorageAdapter(name);
-    return new ClientCredentialsAdapter(name, adapter, this.accountStore, this.clientCredentialsStore);
+    return new ClientCredentialsAdapter(name, adapter, this.webIdStore, this.clientCredentialsStore);
   }
 }

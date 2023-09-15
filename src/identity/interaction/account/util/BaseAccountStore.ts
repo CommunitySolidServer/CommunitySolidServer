@@ -1,69 +1,63 @@
-import { v4 } from 'uuid';
+import { Initializer } from '../../../../init/Initializer';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { ExpiringStorage } from '../../../../storage/keyvalue/ExpiringStorage';
-import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
-import { NotFoundHttpError } from '../../../../util/errors/NotFoundHttpError';
-import type { Account } from './Account';
-import type { AccountStore } from './AccountStore';
+import type { ValueType } from '../../../../storage/keyvalue/IndexedStorage';
+import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
+import { InternalServerError } from '../../../../util/errors/InternalServerError';
+import type { AccountStore, AccountSettings } from './AccountStore';
+import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from './AccountStore';
+import type { AccountLoginStorage } from './LoginStorage';
+import { ACCOUNT_TYPE } from './LoginStorage';
+
+const STORAGE_DESCRIPTION = {
+  [ACCOUNT_SETTINGS_REMEMBER_LOGIN]: 'boolean?',
+} as const;
 
 /**
- * A {@link AccountStore} that uses an {@link ExpiringStorage} to keep track of the accounts.
- * Created accounts will be removed after the chosen expiration in seconds, default 30 minutes,
- * if no login method gets added.
- *
- * New accounts can not be updated unless the update includes at least 1 login method.
+ * A {@link AccountStore} that uses an {@link AccountLoginStorage} to keep track of the accounts.
+ * Needs to be initialized before it can be used.
  */
-export class BaseAccountStore implements AccountStore {
+export class BaseAccountStore extends Initializer implements AccountStore {
   private readonly logger = getLoggerFor(this);
 
-  private readonly storage: ExpiringStorage<string, Account>;
-  private readonly expiration: number;
+  private readonly storage: AccountLoginStorage<{ [ACCOUNT_TYPE]: typeof STORAGE_DESCRIPTION }>;
+  private initialized = false;
 
-  public constructor(storage: ExpiringStorage<string, Account>, expiration = 30 * 60) {
+  public constructor(storage: AccountLoginStorage<any>) {
+    super();
     this.storage = storage;
-    this.expiration = expiration * 1000;
   }
 
-  public async create(): Promise<Account> {
-    const id = v4();
-    const account: Account = {
-      id,
-      logins: {},
-      pods: {},
-      webIds: {},
-      clientCredentials: {},
-      settings: {},
-    };
+  // Initialize the type definitions
+  public async handle(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
+    try {
+      await this.storage.defineType(ACCOUNT_TYPE, STORAGE_DESCRIPTION, false);
+      this.initialized = true;
+    } catch (cause: unknown) {
+      throw new InternalServerError(`Error defining account in storage: ${createErrorMessage(cause)}`, { cause });
+    }
+  }
 
-    // Expire accounts after some time if no login gets added
-    await this.storage.set(id, account, this.expiration);
+  public async create(): Promise<string> {
+    const { id } = await this.storage.create(ACCOUNT_TYPE, {});
     this.logger.debug(`Created new account ${id}`);
 
-    return account;
+    return id;
   }
 
-  public async get(id: string): Promise<Account | undefined> {
-    return this.storage.get(id);
+  public async getSetting<T extends keyof AccountSettings>(id: string, setting: T): Promise<AccountSettings[T]> {
+    const account = await this.storage.get(ACCOUNT_TYPE, id);
+    if (!account) {
+      return;
+    }
+    const { id: unused, ...settings } = account;
+    return settings[setting];
   }
 
-  public async update(account: Account): Promise<void> {
-    const oldAccount = await this.get(account.id);
-    // Make sure the account exists
-    if (!oldAccount) {
-      this.logger.warn(`Trying to update account ${account.id} which does not exist`);
-      throw new NotFoundHttpError();
-    }
-
-    // Ensure there is at least 1 login method
-    const logins = Object.values(account.logins);
-    if (!logins.some((specificLogins): boolean => Object.keys(specificLogins ?? {}).length > 0)) {
-      this.logger.warn(`Trying to update account ${account.id} without login methods`);
-      throw new BadRequestHttpError('An account needs at least 1 login method.');
-    }
-
-    // This will disable the expiration if there still was one
-    await this.storage.set(account.id, account);
-
-    this.logger.debug(`Updated account ${account.id}`);
+  public async updateSetting<T extends keyof AccountSettings>(id: string, setting: T, value: AccountSettings[T]):
+  Promise<void> {
+    await this.storage.setField(ACCOUNT_TYPE, id, setting, value as ValueType<typeof STORAGE_DESCRIPTION[T]>);
   }
 }

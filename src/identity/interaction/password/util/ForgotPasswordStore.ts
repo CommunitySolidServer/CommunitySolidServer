@@ -6,10 +6,10 @@ export interface ForgotPasswordStore {
    * Creates a Forgot Password Confirmation Record. This will be to remember that
    * a user has made a request to reset a password. Throws an error if the email doesn't
    * exist.
-   * @param email - The user's email.
+   * @param id - ID of the email/password login object.
    * @returns The record id. This should be included in the reset password link.
    */
-  generate: (email: string) => Promise<string>;
+  generate: (id: string) => Promise<string>;
 
   /**
    * Gets the email associated with the forgot password confirmation record

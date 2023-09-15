@@ -1,10 +1,9 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
-import { InternalServerError } from '../../../util/errors/InternalServerError';
-import type { AccountStore } from '../account/util/AccountStore';
-import { ensureResource, getRequiredAccount } from '../account/util/AccountUtil';
+import { parsePath, verifyAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
+import type { ClientCredentialsIdRoute } from './util/ClientCredentialsIdRoute';
 import type { ClientCredentialsStore } from './util/ClientCredentialsStore';
 
 type OutType = {
@@ -18,30 +17,23 @@ type OutType = {
 export class ClientCredentialsDetailsHandler extends JsonInteractionHandler<OutType> {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly accountStore: AccountStore;
   private readonly clientCredentialsStore: ClientCredentialsStore;
+  private readonly clientCredentialsRoute: ClientCredentialsIdRoute;
 
-  public constructor(accountStore: AccountStore, clientCredentialsStore: ClientCredentialsStore) {
+  public constructor(clientCredentialsStore: ClientCredentialsStore, clientCredentialsRoute: ClientCredentialsIdRoute) {
     super();
-    this.accountStore = accountStore;
     this.clientCredentialsStore = clientCredentialsStore;
+    this.clientCredentialsRoute = clientCredentialsRoute;
   }
 
   public async handle({ target, accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation<OutType>> {
-    const account = await getRequiredAccount(this.accountStore, accountId);
+    const match = parsePath(this.clientCredentialsRoute, target.path);
 
-    const id = ensureResource(account.clientCredentials, target.path);
-
-    const credentials = await this.clientCredentialsStore.get(id);
-    if (!credentials) {
-      this.logger.error(
-        `Data inconsistency between account and credentials data for account ${account.id} and token ${id}.`,
-      );
-      throw new InternalServerError('Data inconsistency between account and client credentials data.');
-    }
+    const credentials = await this.clientCredentialsStore.get(match.clientCredentialsId);
+    verifyAccountId(accountId, credentials?.accountId);
 
     return { json: {
-      id,
+      id: credentials.label,
       webId: credentials.webId,
     }};
   }

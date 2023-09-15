@@ -67,7 +67,7 @@
       const res = await fetch(controls.oidc.cancel, { method: 'POST' });
       location.href = (await res.json()).location;
     });
-    setRedirectClick('edit-account', controls.account.account);
+    setRedirectClick('edit-account', controls.html.account.account);
     elements['switch-account'].addEventListener('click', async() => {
       await fetch(controls.account.logout, { method: 'POST' });
       location.href = controls.html.main.login;

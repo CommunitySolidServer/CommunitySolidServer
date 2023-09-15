@@ -1,12 +1,10 @@
 import type { ProviderFactory } from '../../../../../src/identity/configuration/ProviderFactory';
-import type { Account } from '../../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
 import type { Interaction } from '../../../../../src/identity/interaction/InteractionHandler';
 import { PickWebIdHandler } from '../../../../../src/identity/interaction/oidc/PickWebIdHandler';
+import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import { FoundHttpError } from '../../../../../src/util/errors/FoundHttpError';
 import type Provider from '../../../../../templates/types/oidc-provider';
-import { createAccount, mockAccountStore } from '../../../../util/AccountUtil';
 
 describe('A PickWebIdHandler', (): void => {
   const accountId = 'accountId';
@@ -14,8 +12,7 @@ describe('A PickWebIdHandler', (): void => {
   const webId2 = 'http://example.com/.account/card2#me';
   let json: unknown;
   let oidcInteraction: Interaction;
-  let account: Account;
-  let accountStore: jest.Mocked<AccountStore>;
+  let store: jest.Mocked<WebIdStore>;
   let provider: jest.Mocked<Provider>;
   let providerFactory: jest.Mocked<ProviderFactory>;
   let picker: PickWebIdHandler;
@@ -24,9 +21,7 @@ describe('A PickWebIdHandler', (): void => {
     oidcInteraction = {
       lastSubmission: { login: { accountId: 'id' }},
       persist: jest.fn(),
-      session: {
-        cookie: 'cookie',
-      },
+      session: { cookie: 'cookie' },
       returnTo: 'returnTo',
     } as any;
 
@@ -34,11 +29,10 @@ describe('A PickWebIdHandler', (): void => {
       webId: webId1,
     };
 
-    account = createAccount(accountId);
-    account.webIds[webId1] = 'resource';
-    account.webIds[webId2] = 'resource';
-
-    accountStore = mockAccountStore(account);
+    store = {
+      findLinks: jest.fn().mockResolvedValue([{ id: 'id', webId: webId1 }, { id: 'id2', webId: webId2 }]),
+      isLinked: jest.fn().mockResolvedValue(true),
+    } satisfies Partial<WebIdStore> as any;
 
     provider = {
       /* eslint-disable @typescript-eslint/naming-convention */
@@ -52,28 +46,21 @@ describe('A PickWebIdHandler', (): void => {
       getProvider: jest.fn().mockResolvedValue(provider),
     };
 
-    picker = new PickWebIdHandler(accountStore, providerFactory);
+    picker = new PickWebIdHandler(store, providerFactory);
   });
 
   it('requires a WebID as input and returns the available WebIDs.', async(): Promise<void> => {
     await expect(picker.getView({ accountId } as any)).resolves.toEqual({
       json: {
         fields: {
-          webId: {
-            required: true,
-            type: 'string',
-          },
-          remember: {
-            required: false,
-            type: 'boolean',
-          },
+          webId: { required: true, type: 'string' },
+          remember: { required: false, type: 'boolean' },
         },
-        webIds: [
-          webId1,
-          webId2,
-        ],
+        webIds: [ webId1, webId2 ],
       },
     });
+    expect(store.findLinks).toHaveBeenCalledTimes(1);
+    expect(store.findLinks).toHaveBeenLastCalledWith(accountId);
   });
 
   it('allows users to pick a WebID.', async(): Promise<void> => {
@@ -81,6 +68,8 @@ describe('A PickWebIdHandler', (): void => {
     await expect(result).rejects.toThrow(FoundHttpError);
     await expect(result).rejects.toEqual(expect.objectContaining({ location: oidcInteraction.returnTo }));
 
+    expect(store.isLinked).toHaveBeenCalledTimes(1);
+    expect(store.isLinked).toHaveBeenLastCalledWith(webId1, accountId);
     expect((await (provider.Session.find as jest.Mock).mock.results[0].value).persist).toHaveBeenCalledTimes(1);
     expect(oidcInteraction.persist).toHaveBeenCalledTimes(1);
     expect(oidcInteraction.result).toEqual({
@@ -96,8 +85,11 @@ describe('A PickWebIdHandler', (): void => {
   });
 
   it('errors if the WebID is not part of the account.', async(): Promise<void> => {
-    json = { webId: 'http://example.com/somewhere/else#me' };
+    store.isLinked.mockResolvedValueOnce(false);
     await expect(picker.handle({ oidcInteraction, accountId, json } as any))
       .rejects.toThrow('WebID does not belong to this account.');
+    expect(store.isLinked).toHaveBeenCalledTimes(1);
+    expect(store.isLinked).toHaveBeenLastCalledWith(webId1, accountId);
+    expect(oidcInteraction.persist).toHaveBeenCalledTimes(0);
   });
 });

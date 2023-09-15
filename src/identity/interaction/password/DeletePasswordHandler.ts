@@ -1,43 +1,31 @@
-import { NotFoundHttpError } from '../../../util/errors/NotFoundHttpError';
 import type { EmptyObject } from '../../../util/map/MapUtil';
-import type { AccountStore } from '../account/util/AccountStore';
-import { ensureResource, getRequiredAccount, safeUpdate } from '../account/util/AccountUtil';
+import { parsePath, verifyAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
-import { PASSWORD_METHOD } from './util/PasswordStore';
+import type { PasswordIdRoute } from './util/PasswordIdRoute';
 import type { PasswordStore } from './util/PasswordStore';
 
 /**
  * Handles the deletion of a password login method.
  */
 export class DeletePasswordHandler extends JsonInteractionHandler<EmptyObject> {
-  private readonly accountStore: AccountStore;
   private readonly passwordStore: PasswordStore;
+  private readonly passwordRoute: PasswordIdRoute;
 
-  public constructor(accountStore: AccountStore, passwordStore: PasswordStore) {
+  public constructor(passwordStore: PasswordStore, passwordRoute: PasswordIdRoute) {
     super();
-    this.accountStore = accountStore;
     this.passwordStore = passwordStore;
+    this.passwordRoute = passwordRoute;
   }
 
   public async handle({ target, accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation<EmptyObject>> {
-    const account = await getRequiredAccount(this.accountStore, accountId);
+    const match = parsePath(this.passwordRoute, target.path);
 
-    const passwordLogins = account.logins[PASSWORD_METHOD];
-    if (!passwordLogins) {
-      throw new NotFoundHttpError();
-    }
+    const login = await this.passwordStore.get(match.passwordId);
+    verifyAccountId(accountId, login?.accountId);
 
-    const email = ensureResource(passwordLogins, target.path);
-
-    // This needs to happen first since this checks that there is at least 1 login method
-    delete passwordLogins[email];
-
-    // Delete the password data and revert if something goes wrong
-    await safeUpdate(account,
-      this.accountStore,
-      (): Promise<any> => this.passwordStore.delete(email));
+    await this.passwordStore.delete(match.passwordId);
 
     return { json: {}};
   }

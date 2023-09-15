@@ -8,47 +8,66 @@ export const PASSWORD_METHOD = 'password';
  */
 export interface PasswordStore {
   /**
-   * Finds the Account ID linked to this email address.
-   * @param email - The email address of which to find the account.
-   * @returns The relevant Account ID or `undefined` if there is no match.
-   */
-  get: (email: string) => Promise<string | undefined>;
-
-  /**
-   * Authenticate if the email and password are correct and return the Account ID if it is.
-   * Throw an error if it is not.
-   * @param email - The user's email.
-   * @param password - This user's password.
-   * @returns The user's Account ID.
-   */
-  authenticate: (email: string, password: string) => Promise<string>;
-
-  /**
-   * Stores a new login entry for this account.
-   * @param email - Account email.
+   * Creates a new login entry for this account.
+   *
+   * @param email - Email to log in with.
    * @param accountId - Account ID.
-   * @param password - Account password.
+   * @param password - Password to authenticate with.
    */
-  create: (email: string, accountId: string, password: string) => Promise<void>;
+  create: (email: string, accountId: string, password: string) => Promise<string>;
 
   /**
-   * Confirms that the e-mail address has been verified. This can be used with, for example, email verification.
+   * Finds the account and email associated with this login ID.
+   *
+   * @param id - The ID of the login object.
+   */
+  get: (id: string) => Promise<{ email: string; accountId: string } | undefined>;
+
+  /**
+   * Finds the account and login ID associated with this email.
+   *
+   * @param email - Email to find the information for.
+   */
+  findByEmail: (email: string) => Promise<{ accountId: string; id: string } | undefined>;
+
+  /**
+   * Find all login objects created by this account.
+   *
+   * @param accountId - ID of the account to find the logins for.
+   */
+  findByAccount: (accountId: string) => Promise<{ id: string; email: string }[]>;
+
+  /**
+   * Confirms that the login has been verified.
+   * This can be used with, for example, email verification.
    * The login can only be used after it is verified.
    * In case verification is not required, this should be called immediately after the `create` call.
-   * @param email - The account email.
+   *
+   * @param id - ID of the login.
    */
-  confirmVerification: (email: string) => Promise<void>;
+  confirmVerification: (id: string) => Promise<void>;
+
+  /**
+   * Authenticate if the email and password are correct and return the account and login ID if they are.
+   * Throw an error if they are not.
+   *
+   * @param email - The user's email.
+   * @param password - This user's password.
+   */
+  authenticate: (email: string, password: string) => Promise<{ accountId: string; id: string }>;
 
   /**
    * Changes the password.
-   * @param email - The user's email.
-   * @param password - The user's password.
+   *
+   * @param id - ID of the login object.
+   * @param password - The new password.
    */
-  update: (email: string, password: string) => Promise<void>;
+  update: (id: string, password: string) => Promise<void>;
 
   /**
-   * Delete the login entry of this email address.
-   * @param email - The user's email.
+   * Delete the login entry.
+   *
+   * @param id - ID of the login object.
    */
-  delete: (email: string) => Promise<boolean>;
+  delete: (id: string) => Promise<void>;
 }

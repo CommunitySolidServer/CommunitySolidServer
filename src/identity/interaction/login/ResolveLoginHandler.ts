@@ -1,9 +1,7 @@
 import { RepresentationMetadata } from '../../../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../../../logging/LogUtil';
-import { InternalServerError } from '../../../util/errors/InternalServerError';
 import { SOLID_HTTP } from '../../../util/Vocabularies';
-import type { AccountIdRoute } from '../account/AccountIdRoute';
-import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../account/util/Account';
+import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../account/util/AccountStore';
 import type { AccountStore } from '../account/util/AccountStore';
 import type { CookieStore } from '../account/util/CookieStore';
 import type { Json, JsonRepresentation } from '../InteractionUtil';
@@ -29,7 +27,6 @@ export type LoginOutputType = {
 /**
  * A handler that takes care of all the necessary steps when logging a user in,
  * such as generating a cookie and setting the necessary OIDC information.
- * It also sets the `resource` field of the response to the account URL.
  * Classes that resolve login methods should extend this class and implement the `login` method.
  */
 export abstract class ResolveLoginHandler extends JsonInteractionHandler {
@@ -37,23 +34,18 @@ export abstract class ResolveLoginHandler extends JsonInteractionHandler {
 
   protected readonly accountStore: AccountStore;
   protected readonly cookieStore: CookieStore;
-  protected readonly accountRoute: AccountIdRoute;
 
-  protected constructor(accountStore: AccountStore, cookieStore: CookieStore, accountRoute: AccountIdRoute) {
+  protected constructor(accountStore: AccountStore, cookieStore: CookieStore) {
     super();
     this.accountStore = accountStore;
     this.cookieStore = cookieStore;
-    this.accountRoute = accountRoute;
   }
 
   public async handle(input: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
     const result = await this.login(input);
     const { accountId, remember } = result.json;
 
-    const json: Json = {
-      ...result.json,
-      resource: this.accountRoute.getPath({ accountId }),
-    };
+    const json: Json = { ...result.json };
 
     // There is no need to output these fields in the response JSON
     delete json.accountId;
@@ -95,13 +87,7 @@ export abstract class ResolveLoginHandler extends JsonInteractionHandler {
   protected async updateRememberSetting(accountId: string, remember?: boolean): Promise<void> {
     if (typeof remember === 'boolean') {
       // Store the setting indicating if the user wants the cookie to persist
-      const account = await this.accountStore.get(accountId);
-      if (!account) {
-        this.logger.error(`Unable to find account ${accountId} that just logged in.`);
-        throw new InternalServerError('Unable to find account');
-      }
-      account.settings[ACCOUNT_SETTINGS_REMEMBER_LOGIN] = remember;
-      await this.accountStore.update(account);
+      await this.accountStore.updateSetting(accountId, ACCOUNT_SETTINGS_REMEMBER_LOGIN, remember);
       this.logger.debug(`Updating account remember setting to ${remember}`);
     }
   }

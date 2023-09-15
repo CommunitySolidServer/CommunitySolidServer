@@ -76,11 +76,11 @@ export class ForgotPasswordHandler extends JsonInteractionHandler<OutType> imple
   public async handle({ json }: JsonInteractionHandlerInput): Promise<JsonRepresentation<OutType>> {
     const { email } = await validateWithError(inSchema, json);
 
-    const accountId = await this.passwordStore.get(email);
+    const payload = await this.passwordStore.findByEmail(email);
 
-    if (accountId) {
+    if (payload?.id) {
       try {
-        const recordId = await this.forgotPasswordStore.generate(email);
+        const recordId = await this.forgotPasswordStore.generate(payload.id);
         await this.sendResetMail(recordId, email);
       } catch (error: unknown) {
         // This error can not be thrown for privacy reasons.

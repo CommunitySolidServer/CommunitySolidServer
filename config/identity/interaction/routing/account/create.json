@@ -17,8 +17,7 @@
           "@id": "urn:solid-server:default:CreateAccountHandler",
           "@type": "CreateAccountHandler",
           "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
-          "cookieStore": { "@id": "urn:solid-server:default:CookieStore" },
-          "accountRoute": { "@id": "urn:solid-server:default:AccountIdRoute" }
+          "cookieStore": { "@id": "urn:solid-server:default:CookieStore" }
         }
       }
     },

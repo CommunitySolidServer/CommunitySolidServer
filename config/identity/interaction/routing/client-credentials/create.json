@@ -16,8 +16,9 @@
         "source": {
           "@id": "urn:solid-server:default:CreateClientCredentialsHandler",
           "@type": "CreateClientCredentialsHandler",
-          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
-          "clientCredentialsStore": { "@id": "urn:solid-server:default:ClientCredentialsStore" }
+          "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
+          "clientCredentialsStore": { "@id": "urn:solid-server:default:ClientCredentialsStore" },
+          "clientCredentialsRoute": { "@id": "urn:solid-server:default:AccountClientCredentialsIdRoute" }
         }
       }
     }

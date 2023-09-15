@@ -1,114 +1,48 @@
-import type { Account } from '../../../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../../../src/identity/interaction/account/util/AccountStore';
 import {
-  addLoginEntry,
-  ensureResource,
-  getRequiredAccount,
-  safeUpdate,
+  assertAccountId, parsePath, verifyAccountId,
 } from '../../../../../../src/identity/interaction/account/util/AccountUtil';
+
+import { InteractionRoute } from '../../../../../../src/identity/interaction/routing/InteractionRoute';
+import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../../../../src/util/errors/NotFoundHttpError';
-import { createAccount, mockAccountStore } from '../../../../../util/AccountUtil';
 
 describe('AccountUtil', (): void => {
-  const resource = 'http://example.com/.account/link';
-  let account: Account;
+  describe('#assertAccountId', (): void => {
+    it('does nothing if the accountId is defined.', async(): Promise<void> => {
+      expect(assertAccountId('id')).toBeUndefined();
+    });
 
-  beforeEach(async(): Promise<void> => {
-    account = createAccount();
+    it('throws an error if the accountId is undefined.', async(): Promise<void> => {
+      expect((): void => assertAccountId()).toThrow(NotFoundHttpError);
+    });
   });
 
-  describe('#getRequiredAccount', (): void => {
-    let accountStore: jest.Mocked<AccountStore>;
+  describe('#parsePath', (): void => {
+    let route: jest.Mocked<InteractionRoute<'key'>>;
 
     beforeEach(async(): Promise<void> => {
-      accountStore = mockAccountStore(account);
+      route = {
+        matchPath: jest.fn().mockReturnValue({ key: 'value' }),
+      } satisfies Partial<InteractionRoute<'key'>> as any;
     });
 
-    it('returns the found account.', async(): Promise<void> => {
-      await expect(getRequiredAccount(accountStore, 'id')).resolves.toBe(account);
-      expect(accountStore.get).toHaveBeenCalledTimes(1);
-      expect(accountStore.get).toHaveBeenLastCalledWith('id');
+    it('returns the matching values.', async(): Promise<void> => {
+      expect(parsePath(route, 'http://example.com/')).toEqual({ key: 'value' });
     });
 
-    it('throws an error if no account was found.', async(): Promise<void> => {
-      accountStore.get.mockResolvedValueOnce(undefined);
-      await expect(getRequiredAccount(accountStore)).rejects.toThrow(NotFoundHttpError);
-    });
-  });
-
-  describe('#ensureResource', (): void => {
-    const data = {
-      'http://example.com/pod/': resource,
-      'http://example.com/other-pod/': 'http://example.com/.account/other-link',
-    };
-
-    it('returns the matching key.', async(): Promise<void> => {
-      expect(ensureResource(data, resource)).toBe('http://example.com/pod/');
-    });
-
-    it('throws a 404 if there is no input.', async(): Promise<void> => {
-      expect((): any => ensureResource(undefined, resource)).toThrow(NotFoundHttpError);
-      expect((): any => ensureResource(data)).toThrow(NotFoundHttpError);
-    });
-
-    it('throws a 404 if there is no match.', async(): Promise<void> => {
-      expect((): any => ensureResource(data, 'http://example.com/unknown/')).toThrow(NotFoundHttpError);
+    it('errors if the key was not found.', async(): Promise<void> => {
+      route.matchPath.mockReturnValue(undefined);
+      expect((): any => parsePath(route, 'http://example.com')).toThrow(InternalServerError);
     });
   });
 
-  describe('#addLoginEntry', (): void => {
-    it('adds the login entry.', async(): Promise<void> => {
-      addLoginEntry(account, 'method', 'key', 'resource');
-      expect(account.logins?.method?.key).toBe('resource');
+  describe('#verifyAccountId', (): void => {
+    it('does nothing if the values match.', async(): Promise<void> => {
+      expect(verifyAccountId('id', 'id')).toBeUndefined();
     });
 
-    it('does not overwrite existing entries.', async(): Promise<void> => {
-      account.logins.method = { key: 'resource' };
-      addLoginEntry(account, 'method', 'key2', 'resource2');
-      expect(account.logins?.method).toEqual({ key: 'resource', key2: 'resource2' });
-    });
-  });
-
-  describe('#safeUpdate', (): void => {
-    const oldAccount: Account = createAccount();
-    let accountStore: jest.Mocked<AccountStore>;
-    let operation: jest.Mock<Promise<string>, []>;
-
-    beforeEach(async(): Promise<void> => {
-      accountStore = mockAccountStore(oldAccount);
-
-      operation = jest.fn().mockResolvedValue('response');
-    });
-
-    it('updates the account and calls the operation function.', async(): Promise<void> => {
-      account.pods['http://example.com.pod'] = resource;
-      await expect(safeUpdate(account, accountStore, operation)).resolves.toBe('response');
-      expect(accountStore.get).toHaveBeenCalledTimes(1);
-      expect(accountStore.get).toHaveBeenLastCalledWith(account.id);
-      expect(accountStore.update).toHaveBeenCalledTimes(1);
-      expect(accountStore.update).toHaveBeenLastCalledWith(account);
-      expect(operation).toHaveBeenCalledTimes(1);
-      expect(account.pods['http://example.com.pod']).toBe(resource);
-    });
-
-    it('resets the account data if an error occurs.', async(): Promise<void> => {
-      const error = new Error('bad data');
-      operation.mockRejectedValueOnce(error);
-      await expect(safeUpdate(account, accountStore, operation)).rejects.toThrow(error);
-      expect(accountStore.get).toHaveBeenCalledTimes(1);
-      expect(accountStore.get).toHaveBeenLastCalledWith(account.id);
-      expect(accountStore.update).toHaveBeenCalledTimes(2);
-      expect(accountStore.update).toHaveBeenNthCalledWith(1, account);
-      expect(accountStore.update).toHaveBeenNthCalledWith(2, oldAccount);
-      expect(operation).toHaveBeenCalledTimes(1);
-      expect(account.pods).toEqual({});
-    });
-
-    it('throws a 404 if the account is unknown.', async(): Promise<void> => {
-      accountStore.get.mockResolvedValueOnce(undefined);
-      await expect(safeUpdate(account, accountStore, operation)).rejects.toThrow(NotFoundHttpError);
-      expect(accountStore.update).toHaveBeenCalledTimes(0);
-      expect(operation).toHaveBeenCalledTimes(0);
+    it('throws an error if the values do not match.', async(): Promise<void> => {
+      expect((): void => verifyAccountId('id', 'otherId')).toThrow(NotFoundHttpError);
     });
   });
 });

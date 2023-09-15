@@ -1,42 +1,41 @@
-import type { Account } from '../../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
 import { UnlinkWebIdHandler } from '../../../../../src/identity/interaction/webid/UnlinkWebIdHandler';
-import type { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
+import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { WebIdLinkRoute } from '../../../../../src/identity/interaction/webid/WebIdLinkRoute';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
-import { createAccount, mockAccountStore } from '../../../../util/AccountUtil';
 
 describe('A UnlinkWebIdHandler', (): void => {
-  const resource = 'http://example.com/.account/link';
+  const id = 'link';
+  const target = { path: 'http://example.com/.account/link' };
   const webId = 'http://example.com/.account/card#me';
   const accountId = 'accountId';
-  let account: Account;
-  let accountStore: jest.Mocked<AccountStore>;
-  let webIdStore: jest.Mocked<WebIdStore>;
+  let store: jest.Mocked<WebIdStore>;
+  let route: jest.Mocked<WebIdLinkRoute>;
   let handler: UnlinkWebIdHandler;
 
   beforeEach(async(): Promise<void> => {
-    account = createAccount(accountId);
-    account.webIds[webId] = resource;
-
-    accountStore = mockAccountStore(account);
-
-    webIdStore = {
-      get: jest.fn(),
-      add: jest.fn(),
+    store = {
+      get: jest.fn().mockResolvedValue({ accountId, webId }),
       delete: jest.fn(),
+    } satisfies Partial<WebIdStore> as any;
+
+    route = {
+      getPath: jest.fn(),
+      matchPath: jest.fn().mockReturnValue({ accountId, webIdLink: id }),
     };
 
-    handler = new UnlinkWebIdHandler(accountStore, webIdStore);
+    handler = new UnlinkWebIdHandler(store, route);
   });
 
   it('removes the WebID link.', async(): Promise<void> => {
-    await expect(handler.handle({ target: { path: resource }, accountId } as any)).resolves.toEqual({ json: {}});
-    expect(webIdStore.delete).toHaveBeenCalledTimes(1);
-    expect(webIdStore.delete).toHaveBeenLastCalledWith(webId, account);
+    await expect(handler.handle({ target, accountId } as any)).resolves.toEqual({ json: {}});
+    expect(store.delete).toHaveBeenCalledTimes(1);
+    expect(store.delete).toHaveBeenLastCalledWith(id);
   });
 
-  it('errors if there is no matching link resource.', async(): Promise<void> => {
-    delete account.webIds[webId];
-    await expect(handler.handle({ target: { path: resource }, accountId } as any)).rejects.toThrow(NotFoundHttpError);
+  it('throws a 404 if the authenticated accountId is not the owner.', async(): Promise<void> => {
+    await expect(handler.handle({ target, accountId: 'otherId' } as any)).rejects.toThrow(NotFoundHttpError);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
+    expect(store.delete).toHaveBeenCalledTimes(0);
   });
 });

@@ -18,7 +18,7 @@
             "@type": "ViewInteractionHandler",
             "source": {
               "@type": "UpdatePasswordHandler",
-              "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+              "passwordRoute": { "@id": "urn:solid-server:default:AccountPasswordIdRoute" },
               "passwordStore": { "@id": "urn:solid-server:default:PasswordStore" }
             }
           },
@@ -27,7 +27,7 @@
             "methods": [ "DELETE" ],
             "source": {
               "@type": "DeletePasswordHandler",
-              "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+              "passwordRoute": { "@id": "urn:solid-server:default:AccountPasswordIdRoute" },
               "passwordStore": { "@id": "urn:solid-server:default:PasswordStore" }
             }
           }

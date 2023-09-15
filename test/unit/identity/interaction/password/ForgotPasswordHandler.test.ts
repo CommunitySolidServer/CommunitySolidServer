@@ -1,11 +1,12 @@
 import { ForgotPasswordHandler } from '../../../../../src/identity/interaction/password/ForgotPasswordHandler';
-import type { EmailSender } from '../../../../../src/identity/interaction/password/util/EmailSender';
-import type { ForgotPasswordStore } from '../../../../../src/identity/interaction/password/util/ForgotPasswordStore';
-import type { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
+import { EmailSender } from '../../../../../src/identity/interaction/password/util/EmailSender';
+import { ForgotPasswordStore } from '../../../../../src/identity/interaction/password/util/ForgotPasswordStore';
+import { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
 import type { InteractionRoute } from '../../../../../src/identity/interaction/routing/InteractionRoute';
-import type { TemplateEngine } from '../../../../../src/util/templates/TemplateEngine';
+import { TemplateEngine } from '../../../../../src/util/templates/TemplateEngine';
 
 describe('A ForgotPasswordHandler', (): void => {
+  const id = 'id';
   const accountId = 'accountId';
   let json: unknown;
   const email = 'test@test.email';
@@ -22,16 +23,16 @@ describe('A ForgotPasswordHandler', (): void => {
     json = { email };
 
     passwordStore = {
-      get: jest.fn().mockResolvedValue(accountId),
-    } as any;
+      findByEmail: jest.fn().mockResolvedValue({ id, accountId }),
+    } satisfies Partial<PasswordStore> as any;
 
     forgotPasswordStore = {
       generate: jest.fn().mockResolvedValue(recordId),
-    } as any;
+    } satisfies Partial<ForgotPasswordStore> as any;
 
     templateEngine = {
       handleSafe: jest.fn().mockResolvedValue(html),
-    } as any;
+    } satisfies Partial<TemplateEngine> as any;
 
     resetRoute = {
       getPath: jest.fn().mockReturnValue('http://test.com/base/idp/resetpassword/'),
@@ -40,7 +41,7 @@ describe('A ForgotPasswordHandler', (): void => {
 
     emailSender = {
       handleSafe: jest.fn(),
-    } as any;
+    } satisfies Partial<EmailSender> as any;
 
     handler = new ForgotPasswordHandler({
       passwordStore,
@@ -65,13 +66,20 @@ describe('A ForgotPasswordHandler', (): void => {
   });
 
   it('does not send a mail if a ForgotPassword record could not be generated.', async(): Promise<void> => {
-    passwordStore.get.mockResolvedValueOnce(undefined);
+    passwordStore.findByEmail.mockResolvedValueOnce(undefined);
     await expect(handler.handle({ json } as any)).resolves.toEqual({ json: { email }});
+    expect(passwordStore.findByEmail).toHaveBeenCalledTimes(1);
+    expect(passwordStore.findByEmail).toHaveBeenLastCalledWith(email);
+    expect(forgotPasswordStore.generate).toHaveBeenCalledTimes(0);
     expect(emailSender.handleSafe).toHaveBeenCalledTimes(0);
   });
 
   it('sends a mail if a ForgotPassword record could be generated.', async(): Promise<void> => {
     await expect(handler.handle({ json } as any)).resolves.toEqual({ json: { email }});
+    expect(passwordStore.findByEmail).toHaveBeenCalledTimes(1);
+    expect(passwordStore.findByEmail).toHaveBeenLastCalledWith(email);
+    expect(forgotPasswordStore.generate).toHaveBeenCalledTimes(1);
+    expect(forgotPasswordStore.generate).toHaveBeenLastCalledWith(id);
     expect(emailSender.handleSafe).toHaveBeenCalledTimes(1);
     expect(emailSender.handleSafe).toHaveBeenLastCalledWith({
       recipient: email,
@@ -84,6 +92,10 @@ describe('A ForgotPasswordHandler', (): void => {
   it('catches the error if there was an issue sending the mail.', async(): Promise<void> => {
     emailSender.handleSafe.mockRejectedValueOnce(new Error('bad data'));
     await expect(handler.handle({ json } as any)).resolves.toEqual({ json: { email }});
+    expect(passwordStore.findByEmail).toHaveBeenCalledTimes(1);
+    expect(passwordStore.findByEmail).toHaveBeenLastCalledWith(email);
+    expect(forgotPasswordStore.generate).toHaveBeenCalledTimes(1);
+    expect(forgotPasswordStore.generate).toHaveBeenLastCalledWith(id);
     expect(emailSender.handleSafe).toHaveBeenCalledTimes(1);
   });
 });

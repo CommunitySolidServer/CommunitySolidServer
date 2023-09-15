@@ -1,48 +1,48 @@
-import type { Account } from '../../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
 import {
   DeleteClientCredentialsHandler,
 } from '../../../../../src/identity/interaction/client-credentials/DeleteClientCredentialsHandler';
 import type {
+  ClientCredentialsIdRoute,
+} from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsIdRoute';
+import {
   ClientCredentialsStore,
 } from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
-import { createAccount, mockAccountStore } from '../../../../util/AccountUtil';
 
 describe('A DeleteClientCredentialsHandler', (): void => {
-  let account: Account;
   const id = 'token_id';
+  const accountId = 'accountId';
   const target = { path: 'http://example.com/.account/my_token' };
-  let accountStore: jest.Mocked<AccountStore>;
-  let clientCredentialsStore: jest.Mocked<ClientCredentialsStore>;
+  let route: jest.Mocked<ClientCredentialsIdRoute>;
+  let store: jest.Mocked<ClientCredentialsStore>;
   let handler: DeleteClientCredentialsHandler;
 
   beforeEach(async(): Promise<void> => {
-    account = createAccount();
-    account.clientCredentials[id] = target.path;
+    route = {
+      getPath: jest.fn().mockReturnValue(target.path),
+      matchPath: jest.fn().mockReturnValue({ accountId, clientCredentialsId: id }),
+    };
 
-    accountStore = mockAccountStore(account);
-
-    clientCredentialsStore = {
+    store = {
+      get: jest.fn().mockResolvedValue({ accountId }),
       delete: jest.fn(),
-    } as any;
+    } satisfies Partial<ClientCredentialsStore> as any;
 
-    handler = new DeleteClientCredentialsHandler(accountStore, clientCredentialsStore);
+    handler = new DeleteClientCredentialsHandler(store, route);
   });
 
   it('deletes the token.', async(): Promise<void> => {
-    await expect(handler.handle({ target, accountId: account.id } as any)).resolves.toEqual({ json: {}});
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(account.id);
-    expect(clientCredentialsStore.delete).toHaveBeenCalledTimes(1);
-    expect(clientCredentialsStore.delete).toHaveBeenLastCalledWith(id, account);
+    await expect(handler.handle({ target, accountId } as any)).resolves.toEqual({ json: {}});
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
+    expect(store.delete).toHaveBeenCalledTimes(1);
+    expect(store.delete).toHaveBeenLastCalledWith(id);
   });
 
-  it('throws a 404 if there is no such token.', async(): Promise<void> => {
-    delete account.clientCredentials[id];
-    await expect(handler.handle({ target, accountId: account.id } as any)).rejects.toThrow(NotFoundHttpError);
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(account.id);
-    expect(clientCredentialsStore.delete).toHaveBeenCalledTimes(0);
+  it('throws a 404 if the authenticated accountId is not the owner.', async(): Promise<void> => {
+    await expect(handler.handle({ target, accountId: 'otherId' } as any)).rejects.toThrow(NotFoundHttpError);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
+    expect(store.delete).toHaveBeenCalledTimes(0);
   });
 });

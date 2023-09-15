@@ -1,9 +1,10 @@
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
-import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../../../../src/identity/interaction/account/util/Account';
-import type { Account } from '../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../src/identity/interaction/account/util/AccountStore';
-import type { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
+import {
+  ACCOUNT_SETTINGS_REMEMBER_LOGIN,
+  AccountStore,
+} from '../../../../src/identity/interaction/account/util/AccountStore';
+import { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
 import { CookieInteractionHandler } from '../../../../src/identity/interaction/CookieInteractionHandler';
 import type { JsonRepresentation } from '../../../../src/identity/interaction/InteractionUtil';
 import type {
@@ -11,7 +12,6 @@ import type {
   JsonInteractionHandlerInput,
 } from '../../../../src/identity/interaction/JsonInteractionHandler';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
-import { createAccount, mockAccountStore } from '../../../util/AccountUtil';
 
 describe('A CookieInteractionHandler', (): void => {
   const date = new Date();
@@ -20,7 +20,6 @@ describe('A CookieInteractionHandler', (): void => {
   const target: ResourceIdentifier = { path: 'http://example.com/foo' };
   let input: JsonInteractionHandlerInput;
   let output: JsonRepresentation;
-  let account: Account;
   let source: jest.Mocked<JsonInteractionHandler>;
   let accountStore: jest.Mocked<AccountStore>;
   let cookieStore: jest.Mocked<CookieStore>;
@@ -39,14 +38,14 @@ describe('A CookieInteractionHandler', (): void => {
       metadata: new RepresentationMetadata(),
     };
 
-    account = createAccount(accountId);
-    account.settings[ACCOUNT_SETTINGS_REMEMBER_LOGIN] = true;
-    accountStore = mockAccountStore(account);
+    accountStore = {
+      getSetting: jest.fn().mockResolvedValue(true),
+    } satisfies Partial<AccountStore> as any;
 
     cookieStore = {
-      get: jest.fn().mockResolvedValue(account.id),
+      get: jest.fn().mockResolvedValue(accountId),
       refresh: jest.fn().mockResolvedValue(date),
-    } as any;
+    } satisfies Partial<CookieStore> as any;
 
     source = {
       canHandle: jest.fn(),
@@ -73,8 +72,8 @@ describe('A CookieInteractionHandler', (): void => {
     expect(source.handle).toHaveBeenLastCalledWith(input);
     expect(cookieStore.get).toHaveBeenCalledTimes(1);
     expect(cookieStore.get).toHaveBeenLastCalledWith(cookie);
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(accountId);
+    expect(accountStore.getSetting).toHaveBeenCalledTimes(1);
+    expect(accountStore.getSetting).toHaveBeenLastCalledWith(accountId, ACCOUNT_SETTINGS_REMEMBER_LOGIN);
     expect(cookieStore.refresh).toHaveBeenCalledTimes(1);
     expect(cookieStore.refresh).toHaveBeenLastCalledWith(cookie);
     expect(output.metadata?.get(SOLID_HTTP.terms.accountCookie)?.value).toBe(cookie);
@@ -88,8 +87,8 @@ describe('A CookieInteractionHandler', (): void => {
     expect(source.handle).toHaveBeenLastCalledWith(input);
     expect(cookieStore.get).toHaveBeenCalledTimes(1);
     expect(cookieStore.get).toHaveBeenLastCalledWith(cookie);
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(accountId);
+    expect(accountStore.getSetting).toHaveBeenCalledTimes(1);
+    expect(accountStore.getSetting).toHaveBeenLastCalledWith(accountId, ACCOUNT_SETTINGS_REMEMBER_LOGIN);
     expect(cookieStore.refresh).toHaveBeenCalledTimes(1);
     expect(cookieStore.refresh).toHaveBeenLastCalledWith(cookie);
     // Typescript things the typing of this is `never` since we deleted it above
@@ -108,7 +107,7 @@ describe('A CookieInteractionHandler', (): void => {
     input.metadata.removeAll(SOLID_HTTP.terms.accountCookie);
     await expect(handler.handle(input)).resolves.toEqual(output);
     expect(cookieStore.get).toHaveBeenCalledTimes(0);
-    expect(accountStore.get).toHaveBeenCalledTimes(0);
+    expect(accountStore.getSetting).toHaveBeenCalledTimes(0);
     expect(cookieStore.refresh).toHaveBeenCalledTimes(0);
     expect(output.metadata?.get(SOLID_HTTP.terms.accountCookie)).toBeUndefined();
     expect(output.metadata?.get(SOLID_HTTP.terms.accountCookieExpiration)).toBeUndefined();
@@ -119,7 +118,7 @@ describe('A CookieInteractionHandler', (): void => {
     output.metadata!.set(SOLID_HTTP.terms.accountCookieExpiration, date.toISOString());
     await expect(handler.handle(input)).resolves.toEqual(output);
     expect(cookieStore.get).toHaveBeenCalledTimes(0);
-    expect(accountStore.get).toHaveBeenCalledTimes(0);
+    expect(accountStore.getSetting).toHaveBeenCalledTimes(0);
     expect(cookieStore.refresh).toHaveBeenCalledTimes(0);
   });
 
@@ -128,19 +127,19 @@ describe('A CookieInteractionHandler', (): void => {
     await expect(handler.handle(input)).resolves.toEqual(output);
     expect(cookieStore.get).toHaveBeenCalledTimes(1);
     expect(cookieStore.get).toHaveBeenLastCalledWith(cookie);
-    expect(accountStore.get).toHaveBeenCalledTimes(0);
+    expect(accountStore.getSetting).toHaveBeenCalledTimes(0);
     expect(cookieStore.refresh).toHaveBeenCalledTimes(0);
     expect(output.metadata?.get(SOLID_HTTP.terms.accountCookie)).toBeUndefined();
     expect(output.metadata?.get(SOLID_HTTP.terms.accountCookieExpiration)).toBeUndefined();
   });
 
   it('adds no cookie metadata if the account does not want to be remembered.', async(): Promise<void> => {
-    account.settings[ACCOUNT_SETTINGS_REMEMBER_LOGIN] = false;
+    accountStore.getSetting.mockResolvedValueOnce(false);
     await expect(handler.handle(input)).resolves.toEqual(output);
     expect(cookieStore.get).toHaveBeenCalledTimes(1);
     expect(cookieStore.get).toHaveBeenLastCalledWith(cookie);
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(accountId);
+    expect(accountStore.getSetting).toHaveBeenCalledTimes(1);
+    expect(accountStore.getSetting).toHaveBeenLastCalledWith(accountId, ACCOUNT_SETTINGS_REMEMBER_LOGIN);
     expect(cookieStore.refresh).toHaveBeenCalledTimes(0);
     expect(output.metadata?.get(SOLID_HTTP.terms.accountCookie)).toBeUndefined();
     expect(output.metadata?.get(SOLID_HTTP.terms.accountCookieExpiration)).toBeUndefined();
@@ -151,8 +150,8 @@ describe('A CookieInteractionHandler', (): void => {
     await expect(handler.handle(input)).resolves.toEqual(output);
     expect(cookieStore.get).toHaveBeenCalledTimes(1);
     expect(cookieStore.get).toHaveBeenLastCalledWith(cookie);
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(accountId);
+    expect(accountStore.getSetting).toHaveBeenCalledTimes(1);
+    expect(accountStore.getSetting).toHaveBeenLastCalledWith(accountId, ACCOUNT_SETTINGS_REMEMBER_LOGIN);
     expect(cookieStore.refresh).toHaveBeenCalledTimes(1);
     expect(cookieStore.refresh).toHaveBeenLastCalledWith(cookie);
     expect(output.metadata?.get(SOLID_HTTP.terms.accountCookie)).toBeUndefined();

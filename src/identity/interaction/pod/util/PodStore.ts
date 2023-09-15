@@ -1,18 +1,31 @@
 import type { PodSettings } from '../../../../pods/settings/PodSettings';
-import type { Account } from '../../account/util/Account';
 
 /**
- * Can be used to create new pods.
+ * Can be used to create new pods and find relevant information.
  */
 export interface PodStore {
   /**
    * Creates a new pod and updates the account accordingly.
    *
-   * @param account - Account to create a pod for. Object will be updated in place.
+   * @param accountId - Identifier of the account that is creating the account..
    * @param settings - Settings to create a pod with.
    * @param overwrite - If the pod is allowed to overwrite existing data.
    *
-   * @returns The resource corresponding to the created pod for this account.
+   * @returns The ID of the new pod resource.
    */
-  create: (account: Account, settings: PodSettings, overwrite: boolean) => Promise<string>;
+  create: (accountId: string, settings: PodSettings, overwrite: boolean) => Promise<string>;
+
+  /**
+   * Find the ID of the account that created the given pod.
+   *
+   * @param baseUrl - The pod base URL.
+   */
+  findAccount: (baseUrl: string) => Promise<string | undefined>;
+
+  /**
+   * Find all the pod resources created by the given account ID.
+   *
+   * @param accountId - Account ID to find pod resources for.
+   */
+  findPods: (accountId: string) => Promise<{ id: string; baseUrl: string }[]>;
 }

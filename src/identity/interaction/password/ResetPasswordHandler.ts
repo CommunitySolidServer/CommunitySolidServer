@@ -47,16 +47,16 @@ export class ResetPasswordHandler extends JsonInteractionHandler<EmptyObject> im
    * Resets the password for the account associated with the given recordId.
    */
   private async resetPassword(recordId: string, newPassword: string): Promise<void> {
-    const email = await this.forgotPasswordStore.get(recordId);
+    const id = await this.forgotPasswordStore.get(recordId);
 
-    if (!email) {
+    if (!id) {
       this.logger.warn(`Trying to use invalid reset URL with record ID ${recordId}`);
       throw new BadRequestHttpError('This reset password link is no longer valid.');
     }
 
-    await this.passwordStore.update(email, newPassword);
+    await this.passwordStore.update(id, newPassword);
     await this.forgotPasswordStore.delete(recordId);
 
-    this.logger.debug(`Resetting password for user ${email}`);
+    this.logger.debug(`Resetting password for login ${id}`);
   }
 }

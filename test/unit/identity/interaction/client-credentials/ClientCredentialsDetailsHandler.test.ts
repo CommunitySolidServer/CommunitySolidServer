@@ -1,59 +1,53 @@
-import type { Account } from '../../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
 import {
   ClientCredentialsDetailsHandler,
 } from '../../../../../src/identity/interaction/client-credentials/ClientCredentialsDetailsHandler';
 import type {
+  ClientCredentialsIdRoute,
+} from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsIdRoute';
+import {
   ClientCredentialsStore,
 } from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
-import { InternalServerError } from '../../../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
-import { createAccount, mockAccountStore } from '../../../../util/AccountUtil';
 
 describe('A ClientCredentialsDetailsHandler', (): void => {
   const webId = 'http://example.com/card#me';
-  const id = 'token_id';
+  const id = '123456';
+  const label = 'label_789';
+  const accountId = 'accountId';
   const target = { path: 'http://example.com/.account/my_token' };
-  let account: Account;
-  let accountStore: jest.Mocked<AccountStore>;
-  let clientCredentialsStore: jest.Mocked<ClientCredentialsStore>;
+  let route: jest.Mocked<ClientCredentialsIdRoute>;
+  let store: jest.Mocked<ClientCredentialsStore>;
   let handler: ClientCredentialsDetailsHandler;
 
   beforeEach(async(): Promise<void> => {
-    account = createAccount();
-    account.clientCredentials[id] = target.path;
+    route = {
+      getPath: jest.fn().mockReturnValue('http://example.com/foo'),
+      matchPath: jest.fn().mockReturnValue({ accountId, clientCredentialsId: id }),
+    };
 
-    accountStore = mockAccountStore(account);
+    store = {
+      get: jest.fn().mockResolvedValue({ webId, accountId, label }),
+    } satisfies Partial<ClientCredentialsStore> as any;
 
-    clientCredentialsStore = {
-      get: jest.fn().mockResolvedValue({ webId, accountId: account.id, secret: 'ssh!' }),
-    } as any;
-
-    handler = new ClientCredentialsDetailsHandler(accountStore, clientCredentialsStore);
+    handler = new ClientCredentialsDetailsHandler(store, route);
   });
 
   it('returns the necessary information.', async(): Promise<void> => {
-    await expect(handler.handle({ target, accountId: account.id } as any)).resolves.toEqual({ json: { id, webId }});
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(account.id);
-    expect(clientCredentialsStore.get).toHaveBeenCalledTimes(1);
-    expect(clientCredentialsStore.get).toHaveBeenLastCalledWith(id);
+    await expect(handler.handle({ target, accountId } as any)).resolves.toEqual({ json: { id: label, webId }});
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
   });
 
   it('throws a 404 if there is no such token.', async(): Promise<void> => {
-    delete account.clientCredentials[id];
-    await expect(handler.handle({ target, accountId: account.id } as any)).rejects.toThrow(NotFoundHttpError);
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(account.id);
-    expect(clientCredentialsStore.get).toHaveBeenCalledTimes(0);
+    store.get.mockResolvedValueOnce(undefined);
+    await expect(handler.handle({ target, accountId } as any)).rejects.toThrow(NotFoundHttpError);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
   });
 
-  it('throws an error if there is a data mismatch.', async(): Promise<void> => {
-    clientCredentialsStore.get.mockResolvedValueOnce(undefined);
-    await expect(handler.handle({ target, accountId: account.id } as any)).rejects.toThrow(InternalServerError);
-    expect(accountStore.get).toHaveBeenCalledTimes(1);
-    expect(accountStore.get).toHaveBeenLastCalledWith(account.id);
-    expect(clientCredentialsStore.get).toHaveBeenCalledTimes(1);
-    expect(clientCredentialsStore.get).toHaveBeenLastCalledWith(id);
+  it('throws a 404 if the account is not the owner.', async(): Promise<void> => {
+    await expect(handler.handle({ target, accountId: 'otherId' } as any)).rejects.toThrow(NotFoundHttpError);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
   });
 });

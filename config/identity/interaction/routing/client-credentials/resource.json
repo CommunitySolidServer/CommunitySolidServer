@@ -19,7 +19,7 @@
             "methods": [ "GET" ],
             "source": {
               "@type": "ClientCredentialsDetailsHandler",
-              "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+              "clientCredentialsRoute": { "@id": "urn:solid-server:default:AccountClientCredentialsIdRoute" },
               "clientCredentialsStore": { "@id": "urn:solid-server:default:ClientCredentialsStore" }
             }
           },
@@ -28,7 +28,7 @@
             "methods": [ "DELETE" ],
             "source": {
               "@type": "DeleteClientCredentialsHandler",
-              "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+              "clientCredentialsRoute": { "@id": "urn:solid-server:default:AccountClientCredentialsIdRoute" },
               "clientCredentialsStore": { "@id": "urn:solid-server:default:ClientCredentialsStore" }
             }
           }

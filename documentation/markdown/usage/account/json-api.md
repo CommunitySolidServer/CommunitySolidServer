@@ -73,7 +73,7 @@ All of these require authorization, except for the create action.
 #### controls.account.create
 
 Creates a new account on empty POST requests.
-The response contains the necessary cookie values to log and a `resource` field containing the URL of the account.
+The response contains the necessary cookie values to log in.
 This account can not be used until a login method has been added to it.
 All other interactions will fail until this is the case.
 See the [controls.password.create](#controlspasswordcreate) section below for more information on how to do this.
@@ -86,17 +86,41 @@ Invalidates the cookie that was used.
 
 #### controls.account.webId
 
+GET requests return all WebIDs linked to this account in the following format:
+
+```json
+{
+  "webIdLinks": {
+    "http://localhost:3000/test/profile/card#me": "http://localhost:3000/.account/account/c63c9e6f-48f8-40d0-8fec-238da893a7f2/webid/fdfc48c1-fe6f-4ce7-9e9f-1dc47eff803d/"
+  }
+}
+```
+
+The URL value is the resource URL corresponding to the link with this WebID.
+The link can be removed by sending a DELETE request to that URL.
+
 POST requests link a WebID to the account,
 allowing the account to identify as that WebID during an OIDC authentication interaction.
 Expected input is an object containing a `webId` field.
+The response will include the resource URL.
 
-If the chosen WebID is contained within a Solid pod associated with this account,
+If the chosen WebID is contained within a Solid pod created by this account,
 the request will succeed immediately.
 If not, an error will be thrown,
 asking the user to add a specific triple to the WebID to confirm that they are the owner.
 After this triple is added, a second request will be successful.
 
 #### controls.account.pod
+
+GET requests return all pods created by this account in the following format:
+
+```json
+{
+  "pods": {
+    "http://localhost:3000/test/": "http://localhost:3000/.account/account/c63c9e6f-48f8-40d0-8fec-238da893a7f2/pod/df2d5a06-3ecd-4eaf-ac8f-b88a8579e100/"
+  }
+}
+```
 
 Creates a Solid pod for the account on POST requests.
 The only required field is `name`, which will determine the name of the pod.
@@ -113,6 +137,21 @@ This WebID will then be the WebID that has initial access.
 
 #### controls.account.clientCredentials
 
+GET requests return all client credentials created by this account in the following format:
+
+```json
+{
+  "clientCredentials": {
+    "token_562cdeb5-d4b2-4905-9e62-8969ac10daaa": "http://localhost:3000/.account/account/c63c9e6f-48f8-40d0-8fec-238da893a7f2/client-credentials/063ee3a7-e80f-4508-9f79-ffddda9df8d4/"
+  }
+}
+```
+
+The URL value is the resource URL corresponding to that specific token.
+Sending a GET request to that URL will return information about the token,
+such as what the associated WebID is.
+The token can be removed by sending a DELETE request to that URL.
+
 Creates a client credentials token on POST requests.
 More information on these tokens can be found [here](../client-credentials.md).
 Expected input is an object containing a `name` and `webId` field.
@@ -120,47 +159,26 @@ The name is optional and will be used to name the token,
 the WebID determines which WebID you will identify as when using that token.
 It needs to be a WebID linked to the account as described in [controls.account.webID](#controlsaccountwebid).
 
-#### controls.account.account
-
-This value corresponds to the resource URL of the account you received when creating it.
-This returns all resources linked to this account, such as login methods, WebIDs, pods, and client credentials tokens.
-
-Below is an example response object:
-
-```json
-{
-  "logins": {
-    "password": {
-      "test@example.com": "http://localhost:3000/.account/account/c63c9e6f-48f8-40d0-8fec-238da893a7f2/login/password/test%40example.com/"
-    }
-  },
-  "pods": {
-    "http://localhost:3000/test/": "http://localhost:3000/.account/account/c63c9e6f-48f8-40d0-8fec-238da893a7f2/pod/7def7830df1161e422537db594ad2b7412ffb735e0e2320cf3e90db19cd969f9/"
-  },
-  "webIds": {
-    "http://localhost:3000/test/profile/card#me": "http://localhost:3000/.account/account/c63c9e6f-48f8-40d0-8fec-238da893a7f2/webid/5c1b70d3ffaa840394dda86889ed1569cf897ef3d6041fb4c9513f82144cbb7f/"
-  },
-  "clientCredentials": {
-    "token_562cdeb5-d4b2-4905-9e62-8969ac10daaa": "http://localhost:3000/.account/account/c63c9e6f-48f8-40d0-8fec-238da893a7f2/client-credentials/token_562cdeb5-d4b2-4905-9e62-8969ac10daaa/"
-  },
-  "settings": {}
-}
-```
-
-In each of the sub-objects, the key is always the unique identifier of whatever is being described,
-while the value is the resource URL that can potentially be used to modify the resource.
-Removing an entry can be done by sending a DELETE request to the resource URL,
-except for pods, which cannot be deleted.
-Login methods can only be deleted if the account has at least 1 login method remaining afterwards.
-
-The password login resource URL can also be used to modify the password,
-which can be done by sending a POST request to it with the body containing an `oldPassword` and a `newPassword` field.
-
 ### controls.password
 
 Controls related to managing the email/password login method.
 
 #### controls.password.create
+
+GET requests return all email/password logins of this account in the following format:
+
+```json
+{
+  "passwordLogins": {
+    "test@example.com": "http://localhost:3000/.account/account/c63c9e6f-48f8-40d0-8fec-238da893a7f2/login/password/7f042779-e2b2-444d-8cd9-50bd9cfa516d/"
+  }
+}
+```
+
+The URL value is the resource URL corresponding to the login with the given email address.
+The login can be removed by sending a DELETE request to that URL.
+The password can be updated by sending a POST request to that URL
+with the body containing an `oldPassword` and a `newPassword` field.
 
 POST requests create an email/password login and adds it to the account you are logged in as.
 Expects `email` and `password` fields.
@@ -228,6 +246,7 @@ It can have an optional `remember` value, which allows for refresh tokens if it 
 #### controls.html
 
 All these controls link to HTML pages and are thus mostly relevant to provide links to let the user navigate around.
+The most important one is probably `controls.html.account.account` which links to an overview page for the account.
 
 ## Example
 
@@ -244,8 +263,7 @@ Below is an example of a controls object in a response.
     "logout": "http://localhost:3000/.account/account/ade5c046-e882-4b56-80f4-18cb16433360/logout/",
     "webId": "http://localhost:3000/.account/account/ade5c046-e882-4b56-80f4-18cb16433360/webid/",
     "pod": "http://localhost:3000/.account/account/ade5c046-e882-4b56-80f4-18cb16433360/pod/",
-    "clientCredentials": "http://localhost:3000/.account/account/ade5c046-e882-4b56-80f4-18cb16433360/client-credentials/",
-    "account": "http://localhost:3000/.account/account/ade5c046-e882-4b56-80f4-18cb16433360/"
+    "clientCredentials": "http://localhost:3000/.account/account/ade5c046-e882-4b56-80f4-18cb16433360/client-credentials/"
   },
   "password": {
     "create": "http://localhost:3000/.account/account/ade5c046-e882-4b56-80f4-18cb16433360/login/password/",

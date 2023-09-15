@@ -25,6 +25,7 @@
   "interactionPolicy.DefaultPolicy",
   "NodeJS.Dict",
   "NotificationChannelType",
+  "Omit",
   "PermissionMap",
   "Promise",
   "Readable",

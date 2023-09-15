@@ -1,12 +1,9 @@
-import type { Credentials } from '../authentication/Credentials';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import type { AccountStore } from '../identity/interaction/account/util/AccountStore';
+import type { PodStore } from '../identity/interaction/pod/util/PodStore';
 import type { WebIdStore } from '../identity/interaction/webid/util/WebIdStore';
 import { getLoggerFor } from '../logging/LogUtil';
-import { createErrorMessage } from '../util/errors/ErrorUtil';
-import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
+import type { StorageLocationStrategy } from '../server/description/StorageLocationStrategy';
 import { filter } from '../util/IterableUtil';
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
@@ -20,18 +17,18 @@ import type { PermissionMap } from './permissions/Permissions';
 export class OwnerPermissionReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
 
+  private readonly podStore: PodStore;
   private readonly webIdStore: WebIdStore;
-  private readonly accountStore: AccountStore;
   private readonly authStrategy: AuxiliaryIdentifierStrategy;
-  private readonly identifierStrategy: IdentifierStrategy;
+  private readonly storageStrategy: StorageLocationStrategy;
 
-  public constructor(webIdStore: WebIdStore, accountStore: AccountStore, authStrategy: AuxiliaryIdentifierStrategy,
-    identifierStrategy: IdentifierStrategy) {
+  public constructor(podStore: PodStore, webIdStore: WebIdStore, authStrategy: AuxiliaryIdentifierStrategy,
+    storageStrategy: StorageLocationStrategy) {
     super();
+    this.podStore = podStore;
     this.webIdStore = webIdStore;
-    this.accountStore = accountStore;
     this.authStrategy = authStrategy;
-    this.identifierStrategy = identifierStrategy;
+    this.storageStrategy = storageStrategy;
   }
 
   public async handle(input: PermissionReaderInput): Promise<PermissionMap> {
@@ -43,16 +40,21 @@ export class OwnerPermissionReader extends PermissionReader {
       return result;
     }
 
-    let podBaseUrls: ResourceIdentifier[];
-    try {
-      podBaseUrls = await this.findPodBaseUrls(input.credentials);
-    } catch (error: unknown) {
-      this.logger.debug(`No pod owner Control permissions: ${createErrorMessage(error)}`);
+    const webId = input.credentials.agent?.webId;
+    if (!webId) {
+      this.logger.debug(`No WebId found for an ownership check on the pod.`);
       return result;
     }
 
+    const pods = await this.findPods(auths);
+    const owners = await this.findOwners(Object.values(pods));
+
     for (const auth of auths) {
-      if (podBaseUrls.some((podBaseUrl): boolean => this.identifierStrategy.contains(podBaseUrl, auth, true))) {
+      const webIds = owners[pods[auth.path]];
+      if (!webIds) {
+        continue;
+      }
+      if (webIds.includes(webId)) {
         this.logger.debug(`Granting Control permissions to owner on ${auth.path}`);
         result.set(auth, {
           read: true,
@@ -68,29 +70,40 @@ export class OwnerPermissionReader extends PermissionReader {
   }
 
   /**
-   * Find the base URL of the pod the given credentials own.
-   * Will throw an error if none can be found.
+   * Finds all pods that contain the given identifiers.
+   * Return value is a record where the keys are the identifiers and the values the associated pod.
    */
-  private async findPodBaseUrls(credentials: Credentials): Promise<ResourceIdentifier[]> {
-    if (!credentials.agent?.webId) {
-      throw new NotImplementedHttpError('Only authenticated agents could be owners');
-    }
-
-    const accountIds = await this.webIdStore.get(credentials.agent.webId);
-    if (accountIds.length === 0) {
-      throw new NotImplementedHttpError('No account is linked to this WebID');
-    }
-
-    const baseUrls: ResourceIdentifier[] = [];
-    for (const accountId of accountIds) {
-      const account = await this.accountStore.get(accountId);
-      if (!account) {
-        this.logger.error(`Found invalid account ID ${accountId} through WebID ${credentials.agent.webId}`);
+  protected async findPods(identifiers: ResourceIdentifier[]): Promise<Record<string, string>> {
+    const pods: Record<string, string> = {};
+    for (const identifier of identifiers) {
+      let pod: ResourceIdentifier;
+      try {
+        pod = await this.storageStrategy.getStorageIdentifier(identifier);
+      } catch {
+        this.logger.error(`Unable to find root storage for ${identifier.path}`);
         continue;
       }
-      baseUrls.push(...Object.keys(account.pods).map((pod): ResourceIdentifier => ({ path: pod })));
+      pods[identifier.path] = pod.path;
     }
+    return pods;
+  }
 
-    return baseUrls;
+  /**
+   * Finds the owners of the given pods.
+   * Return value is a record where the keys are the pods and the values are all the WebIDs that own this pod.
+   */
+  protected async findOwners(pods: string[]): Promise<Record<string, string[]>> {
+    const owners: Record<string, string[]> = {};
+    // Set to only have the unique values
+    for (const pod of new Set(pods)) {
+      const owner = await this.podStore.findAccount(pod);
+      if (!owner) {
+        this.logger.error(`Unable to find owner for ${pod}`);
+        continue;
+      }
+
+      owners[pod] = (await this.webIdStore.findLinks(owner)).map((link): string => link.webId);
+    }
+    return owners;
   }
 }

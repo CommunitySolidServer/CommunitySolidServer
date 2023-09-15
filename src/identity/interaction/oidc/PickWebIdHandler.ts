@@ -4,13 +4,13 @@ import { getLoggerFor } from '../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { FoundHttpError } from '../../../util/errors/FoundHttpError';
 import type { ProviderFactory } from '../../configuration/ProviderFactory';
-import type { AccountStore } from '../account/util/AccountStore';
-import { getRequiredAccount } from '../account/util/AccountUtil';
+import { assertAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import { assertOidcInteraction, finishInteraction, forgetWebId } from '../InteractionUtil';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
 import type { JsonView } from '../JsonView';
+import type { WebIdStore } from '../webid/util/WebIdStore';
 import { parseSchema, validateWithError } from '../YupUtil';
 
 const inSchema = object({
@@ -31,27 +31,28 @@ const inSchema = object({
 export class PickWebIdHandler extends JsonInteractionHandler<never> implements JsonView {
   private readonly logger = getLoggerFor(this);
 
-  private readonly accountStore: AccountStore;
+  private readonly webIdStore: WebIdStore;
   private readonly providerFactory: ProviderFactory;
 
-  public constructor(accountStore: AccountStore, providerFactory: ProviderFactory) {
+  public constructor(webIdStore: WebIdStore, providerFactory: ProviderFactory) {
     super();
-    this.accountStore = accountStore;
+    this.webIdStore = webIdStore;
     this.providerFactory = providerFactory;
   }
 
   public async getView({ accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
-    const account = await getRequiredAccount(this.accountStore, accountId);
+    assertAccountId(accountId);
     const description = parseSchema(inSchema);
-    return { json: { ...description, webIds: Object.keys(account.webIds) }};
+    const webIds = (await this.webIdStore.findLinks(accountId)).map((link): string => link.webId);
+    return { json: { ...description, webIds }};
   }
 
   public async handle({ oidcInteraction, accountId, json }: JsonInteractionHandlerInput): Promise<never> {
     assertOidcInteraction(oidcInteraction);
-    const account = await getRequiredAccount(this.accountStore, accountId);
+    assertAccountId(accountId);
 
     const { webId, remember } = await validateWithError(inSchema, json);
-    if (!account.webIds[webId]) {
+    if (!await this.webIdStore.isLinked(webId, accountId)) {
       this.logger.warn(`Trying to pick WebID ${webId} which does not belong to account ${accountId}`);
       throw new BadRequestHttpError('WebID does not belong to this account.');
     }

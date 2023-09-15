@@ -28,12 +28,11 @@
 
 
 <script>
-  let accountResource;
   let passwordCreateUrl;
   let oidcLocation;
 
   (async() => {
-    const controls = await fetchControls('<%= idpIndex %>');
+    let controls = await fetchControls('<%= idpIndex %>');
 
     setRedirectClick('login-link', controls.html.password.login);
 
@@ -41,14 +40,15 @@
       validatePasswordConfirmation('password');
 
       // Caching account in case there is an error adding the password login
-      if (!accountResource || !passwordCreateUrl) {
+      if (!passwordCreateUrl) {
         const res = await fetch(controls.account.create, {method: 'POST'});
         const json = await res.json();
-        accountResource = json.resource;
         // Will only be defined if we are in a OIDC interaction
         oidcLocation = json.location;
 
-        passwordCreateUrl = (await fetchJson(accountResource)).controls.password.create;
+        // Now with cookie
+        controls = await fetchControls('<%= idpIndex %>');
+        passwordCreateUrl = controls.password.create;
       }
 
       await postJsonForm(passwordCreateUrl);
@@ -61,7 +61,7 @@
 
       // We go to the account page even if we are in a OIDC interaction
       // as the user would need to link a WebID anyway before an interaction can be completed.
-      location.href = accountResource;
+      location.href = controls.html.account.account;
     });
   })();
 </script>

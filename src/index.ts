@@ -148,16 +148,16 @@ export * from './identity/configuration/PromptFactory';
 export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Account/Util
-export * from './identity/interaction/account/util/Account';
 export * from './identity/interaction/account/util/AccountUtil';
 export * from './identity/interaction/account/util/AccountStore';
 export * from './identity/interaction/account/util/BaseAccountStore';
 export * from './identity/interaction/account/util/BaseCookieStore';
+export * from './identity/interaction/account/util/BaseLoginAccountStorage';
 export * from './identity/interaction/account/util/CookieStore';
+export * from './identity/interaction/account/util/LoginStorage';
 
 // Identity/Interaction/Account
 export * from './identity/interaction/account/AccountIdRoute';
-export * from './identity/interaction/account/AccountDetailsHandler';
 export * from './identity/interaction/account/CreateAccountHandler';
 
 // Identity/Interaction/Client-Credentials/Util

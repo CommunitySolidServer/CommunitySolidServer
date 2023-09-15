@@ -1,67 +1,74 @@
-import type { Account } from '../../../../../src/identity/interaction/account/util/Account';
-import type { AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
 import { UpdatePasswordHandler } from '../../../../../src/identity/interaction/password/UpdatePasswordHandler';
-import { PASSWORD_METHOD } from '../../../../../src/identity/interaction/password/util/PasswordStore';
-import type { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
-import { createAccount, mockAccountStore } from '../../../../util/AccountUtil';
+import type { PasswordIdRoute } from '../../../../../src/identity/interaction/password/util/PasswordIdRoute';
+import { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
+import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 
 describe('An UpdatePasswordHandler', (): void => {
-  let account: Account;
   let json: unknown;
+  const id = 'id';
+  const accountId = 'accountId';
   const email = 'email@example.com';
   const target = { path: 'http://example.com/.account/password' };
   const oldPassword = 'oldPassword!';
   const newPassword = 'newPassword!';
-  let accountStore: jest.Mocked<AccountStore>;
-  let passwordStore: jest.Mocked<PasswordStore>;
+  let store: jest.Mocked<PasswordStore>;
+  let route: jest.Mocked<PasswordIdRoute>;
   let handler: UpdatePasswordHandler;
 
   beforeEach(async(): Promise<void> => {
     json = { oldPassword, newPassword };
 
-    account = createAccount();
-    account.logins[PASSWORD_METHOD] = { [email]: target.path };
-    accountStore = mockAccountStore(account);
-
-    passwordStore = {
+    store = {
+      get: jest.fn().mockResolvedValue({ email, accountId }),
       authenticate: jest.fn(),
       update: jest.fn(),
-    } as any;
+    } satisfies Partial<PasswordStore> as any;
 
-    handler = new UpdatePasswordHandler(accountStore, passwordStore);
+    route = {
+      getPath: jest.fn().mockReturnValue(''),
+      matchPath: jest.fn().mockReturnValue({ accountId, passwordId: id }),
+    };
+
+    handler = new UpdatePasswordHandler(store, route);
   });
 
   it('requires specific input fields.', async(): Promise<void> => {
     await expect(handler.getView()).resolves.toEqual({
       json: {
         fields: {
-          oldPassword: {
-            required: true,
-            type: 'string',
-          },
-          newPassword: {
-            required: true,
-            type: 'string',
-          },
+          oldPassword: { required: true, type: 'string' },
+          newPassword: { required: true, type: 'string' },
         },
       },
     });
   });
 
   it('updates the password.', async(): Promise<void> => {
-    await expect(handler.handle({ json, accountId: account.id, target } as any)).resolves.toEqual({ json: {}});
-    expect(passwordStore.authenticate).toHaveBeenCalledTimes(1);
-    expect(passwordStore.authenticate).toHaveBeenLastCalledWith(email, oldPassword);
-    expect(passwordStore.update).toHaveBeenCalledTimes(1);
-    expect(passwordStore.update).toHaveBeenLastCalledWith(email, newPassword);
+    await expect(handler.handle({ json, accountId, target } as any)).resolves.toEqual({ json: {}});
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
+    expect(store.authenticate).toHaveBeenCalledTimes(1);
+    expect(store.authenticate).toHaveBeenLastCalledWith(email, oldPassword);
+    expect(store.update).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenLastCalledWith(id, newPassword);
   });
 
   it('errors if authentication fails.', async(): Promise<void> => {
-    passwordStore.authenticate.mockRejectedValueOnce(new Error('bad data'));
-    await expect(handler.handle({ json, accountId: account.id, target } as any))
+    store.authenticate.mockRejectedValueOnce(new Error('bad data'));
+    await expect(handler.handle({ json, accountId, target } as any))
       .rejects.toThrow('Old password is invalid.');
-    expect(passwordStore.authenticate).toHaveBeenCalledTimes(1);
-    expect(passwordStore.authenticate).toHaveBeenLastCalledWith(email, oldPassword);
-    expect(passwordStore.update).toHaveBeenCalledTimes(0);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
+    expect(store.authenticate).toHaveBeenCalledTimes(1);
+    expect(store.authenticate).toHaveBeenLastCalledWith(email, oldPassword);
+    expect(store.update).toHaveBeenCalledTimes(0);
+  });
+
+  it('throws a 404 if the authenticated accountId is not the owner.', async(): Promise<void> => {
+    await expect(handler.handle({ target, json, accountId: 'otherId' } as any)).rejects.toThrow(NotFoundHttpError);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenLastCalledWith(id);
+    expect(store.authenticate).toHaveBeenCalledTimes(0);
+    expect(store.update).toHaveBeenCalledTimes(0);
   });
 });

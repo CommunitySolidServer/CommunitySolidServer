@@ -2,38 +2,10 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Handles the account details.",
-      "@id": "urn:solid-server:default:AccountIdRouter",
-      "@type": "AuthorizedRouteHandler",
-      "route": {
-        "@id": "urn:solid-server:default:AccountIdRoute",
-        "@type": "BaseAccountIdRoute",
-        "base": { "@id": "urn:solid-server:default:AccountRoute" }
-      },
-      "source": {
-        "@id": "urn:solid-server:default:AccountResourceHandler",
-        "@type": "MethodFilterHandler",
-        "methods": [ "GET" ],
-        "source": {
-          "@type": "AccountDetailsHandler",
-          "accountStore": { "@id": "urn:solid-server:default:AccountStore" }
-        }
-      }
-    },
-
-    {
-      "@id": "urn:solid-server:default:InteractionRouteHandler",
-      "@type": "WaterfallHandler",
-      "handlers": [{ "@id": "urn:solid-server:default:AccountIdRouter" }]
-    },
-
-    {
-      "@id": "urn:solid-server:default:AccountControlHandler",
-      "@type": "ControlHandler",
-      "controls": [{
-        "ControlHandler:_controls_key": "account",
-        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountIdRoute" }
-      }]
+      "comment": "Route pointing to the account resource",
+      "@id": "urn:solid-server:default:AccountIdRoute",
+      "@type": "BaseAccountIdRoute",
+      "base": { "@id": "urn:solid-server:default:AccountRoute" }
     },
 
     {

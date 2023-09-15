@@ -1,31 +1,31 @@
 import type { EmptyObject } from '../../../util/map/MapUtil';
-import type { AccountStore } from '../account/util/AccountStore';
-import { ensureResource, getRequiredAccount } from '../account/util/AccountUtil';
+import { parsePath, verifyAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
 import type { WebIdStore } from './util/WebIdStore';
+import type { WebIdLinkRoute } from './WebIdLinkRoute';
 
 /**
  * Allows users to remove WebIDs linked to their account.
  */
 export class UnlinkWebIdHandler extends JsonInteractionHandler<EmptyObject> {
-  private readonly accountStore: AccountStore;
   private readonly webIdStore: WebIdStore;
+  private readonly webIdRoute: WebIdLinkRoute;
 
-  public constructor(accountStore: AccountStore, webIdStore: WebIdStore) {
+  public constructor(webIdStore: WebIdStore, webIdRoute: WebIdLinkRoute) {
     super();
-    this.accountStore = accountStore;
     this.webIdStore = webIdStore;
+    this.webIdRoute = webIdRoute;
   }
 
   public async handle({ target, accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation<EmptyObject>> {
-    const account = await getRequiredAccount(this.accountStore, accountId);
+    const match = parsePath(this.webIdRoute, target.path);
 
-    const webId = ensureResource(account.webIds, target.path);
+    const link = await this.webIdStore.get(match.webIdLink);
+    verifyAccountId(accountId, link?.accountId);
 
-    // This also deletes it from the account
-    await this.webIdStore.delete(webId, account);
+    await this.webIdStore.delete(match.webIdLink);
 
     return { json: {}};
   }

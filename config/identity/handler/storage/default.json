@@ -2,36 +2,34 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:AccountStore",
-      "@type": "BaseAccountStore",
+      "@id": "urn:solid-server:default:AccountStorage",
+      "@type": "BaseLoginAccountStorage",
       "storage": {
-        "@id": "urn:solid-server:default:AccountStorage",
-        "@type": "WrappedExpiringStorage",
-        "source": {
-          "@type": "Base64EncodingStorage",
-          "source": {
-            "@type": "ContainerPathStorage",
-            "relativePath": "/accounts/data/",
-            "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
-          }
+        "@id": "urn:solid-server:default:IndexedStorage",
+        "@type": "WrappedIndexedStorage",
+        "valueStorage": {
+          "@type": "ContainerPathStorage",
+          "relativePath": "/accounts/data/",
+          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        },
+        "indexStorage": {
+          "@type": "ContainerPathStorage",
+          "relativePath": "/accounts/index/",
+          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
         }
       }
     },
 
     {
+      "@id": "urn:solid-server:default:AccountStore",
+      "@type": "BaseAccountStore",
+      "storage": { "@id": "urn:solid-server:default:AccountStorage" }
+    },
+
+    {
       "@id": "urn:solid-server:default:WebIdStore",
       "@type": "BaseWebIdStore",
-      "webIdRoute": { "@id": "urn:solid-server:default:AccountWebIdLinkRoute" },
-      "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
-      "storage": {
-        "@id": "urn:solid-server:default:WebIdStorage",
-        "@type": "Base64EncodingStorage",
-        "source": {
-          "@type": "ContainerPathStorage",
-          "relativePath": "/accounts/webIds/",
-          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
-        }
-      }
+      "storage": { "@id": "urn:solid-server:default:AccountStorage" }
     },
 
     {
@@ -54,25 +52,37 @@
     {
       "@id": "urn:solid-server:default:PodStore",
       "@type": "BasePodStore",
-      "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
-      "podRoute": { "@id": "urn:solid-server:default:AccountPodIdRoute" },
+      "storage": { "@id": "urn:solid-server:default:AccountStorage" },
       "manager": { "@id": "urn:solid-server:default:PodManager" }
     },
 
     {
       "@id": "urn:solid-server:default:ClientCredentialsStore",
       "@type": "BaseClientCredentialsStore",
-      "clientCredentialsRoute": { "@id": "urn:solid-server:default:AccountClientCredentialsIdRoute" },
-      "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
-      "storage": {
-        "@id": "urn:solid-server:default:ClientCredentialsStorage",
-        "@type": "Base64EncodingStorage",
-        "source": {
-          "@type": "ContainerPathStorage",
-          "relativePath": "/accounts/client-credentials/",
-          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
-        }
-      }
+      "storage": { "@id": "urn:solid-server:default:AccountStorage" }
+    },
+
+    {
+      "comment": "Initialize all the stores. Also necessary on primary thread for pod seeding.",
+      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:AccountStore" },
+        { "@id": "urn:solid-server:default:ClientCredentialsStore" },
+        { "@id": "urn:solid-server:default:PodStore" },
+        { "@id": "urn:solid-server:default:WebIdStore" }
+      ]
+    },
+    {
+      "comment": "Initialize all the stores.",
+      "@id": "urn:solid-server:default:WorkerParallelInitializer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:AccountStore" },
+        { "@id": "urn:solid-server:default:ClientCredentialsStore" },
+        { "@id": "urn:solid-server:default:PodStore" },
+        { "@id": "urn:solid-server:default:WebIdStore" }
+      ]
     }
   ]
 }

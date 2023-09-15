@@ -1,60 +1,37 @@
 # Migrating account data from v6 to v7
 
 Below is a description of the changes that are necessary to migration account data from v6 to v7 of the server.
-Note that the resource identifier values are bas64 encoded before being appended to the storage location.
 
-* "Forgot password" records
-    * **Storage location**
-        * Old: `.internal/forgot-password/`
-        * New: `.internal/accounts/login/password/forgot/`
-    * **Resource identifiers**
-        * Old: `"forgot-password-resource-identifier/" + recordId`
-        * New: `recordId`
-    * **Data format**
-        * Old: `{ recordId, email }`
-        * New: `email`
-    * **Notes**
-        * Just deleting all existing records is an acceptable solution as these do not contain important information.
-* Client credentials tokens
-    * **Storage location**
-        * Old: `.internal/accounts/credentials/`
-        * New: `.internal/accounts/client-credentials/`
-    * **Resource identifiers**
-        * No change
-    * **Data format**
-        * Old: `{ webId, secret }`
-        * New: `{ accountId, webId, secret }`
-    * **Notes**
-        * Account IDs will need to be generated first before these can be transferred.
-* Account and password data
-    * **Storage location**
-        * Old: `.internal/accounts/`
-        * New: Split up over the following:
-            * `.internal/accounts/data/`
-            * `.internal/accounts/webIds/`
-            * `.internal/accounts/logins/password/`
-    * **Resource identifiers**
-        * Old: `"account/" + encodeURIComponent(email)` or `webId`
-        * New:
-            * `.internal/accounts/data/`: Newly generated account ID.
-            * `.internal/accounts/webIds/`: `webID`
-            * `.internal/accounts/logins/password/`: `encodeURIComponent(email.toLowerCase())`
-    * **Data format**
-        * Old: `{ webId, email, password, verified }` or `{ useIdp, podBaseUrl?, clientCredentials? }`
-        * New:
-            * `.internal/accounts/data/`: `{ id, logins: { password }, pods, webIds, clientCredentials }`
-            * `.internal/accounts/webIds/`: `accountId[]`
-            * `.internal/accounts/logins/password/`: `{ accountId, password, verified }`
-    * **Notes**
-        * First account IDs need to be generated,
-      then login/pod/webId/clientCredentials resources need to be generated,
-      and then the account needs to be updated with those resources.
-        * Resource URLs are generated as follows:
-            * Passwords: `<baseUrl>/.account/account/<accountID>/login/password/<encodeURIComponent(email.toLowerCase())>`
-            * Pods: `<baseUrl>/.account/account/<accountID>/pod/<sha256Hash(podBaseUrl)>`
-            * WebIds: `<baseUrl>/.account/account/<accountID>/webid/<sha256Hash(webId)>`
-            * Client Credentials: `<baseUrl>/.account/account/<accountID>/client-credentials/<token>`
-        * The above URLs are the values in all the account objects,
-      the keys are the corresponding (lowercase) email, pod base URL, webID, and token name.
-        * Only WebIDs where `useIdp` is `true` need to be linked to the account.
-        * In the previous version, a WebID will be linked to exactly 1 account.
+The format of the "Forgot passwords records was changed",
+but seeing as those are not important and new ones can be created if necessary,
+these can just be removed when migrating.
+By default, these were located in the `.internal/forgot-password/` folder so this entire folder can be removed.
+
+For existing accounts, the data was stored in the following format and location.
+Additionally to the details below, the tail of all resource identifiers were base64 encoded.
+
+* **Account data**
+    * Storage location: `.internal/accounts/`
+    * Resource identifiers: `"account/" + encodeURIComponent(email)`
+    * Data format: `{ webId, email, password, verified }`
+* **Account settings**
+    * Storage location: `.internal/accounts/`, so same location as the account data
+    * Resource identifiers: `webId`
+    * Data format: `{ useIdp, podBaseUrl?, clientCredentials? }`
+        * `useIdp` indicates if the WebID is linked to the account for identification.
+        * `podBaseUrl` is defined if the account was created with a pod.
+        * `clientCredentials` is an array containing the labels of all client credentials tokens created by the account.
+* **Client credentials tokens**
+    * Storage location: `.internal/accounts/credentials/`
+    * Resource identifiers: the token label
+    * Data format: `{ webId, secret }`
+
+The best way to migrate the data would be to read in the old data,
+and make use of the new classes to generate the new account objects,
+as generating the data manually might be too cumbersome.
+Ideally the account classes of the previous version can be reused to read in the older data
+to prevent having to read the old data directly.
+
+During migration, WebID ownership validation would need to be disabled
+as otherwise the server won't allow linking the WebIDs.
+The password values can be reused as the password storage method was not changed.

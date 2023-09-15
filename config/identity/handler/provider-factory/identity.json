@@ -11,7 +11,7 @@
         "handlers": [
           {
             "@type": "AccountPromptFactory",
-            "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+            "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
             "cookieStore": { "@id": "urn:solid-server:default:CookieStore" },
             "cookieName": { "@id": "urn:solid-server:default:value:accountCookieName" }
           }
