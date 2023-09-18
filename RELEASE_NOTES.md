@@ -23,15 +23,23 @@ The following changes pertain to the imports in the default configs:
 
 - There is a new `static-root.json` import option for `app/init`, setting a static page for the root container.
 
-The following changes are relevant for v5 custom configs that replaced certain features.
+The following changes are relevant for v6 custom configs that replaced certain features.
 
 - `/app/init/*` imports have changed. Functionality remained the same though.
+- All imports that define storages have been updated with new storage classes.
+    - `/http/notifications/base/storage.json`
+    - `/identity/*`
+    - `/storage/keyvalue/storages/storages.json`
 
 ### Interface changes
 
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 
 - The `AppRunner` functions to create and start the server now take a singular arguments object as input.
+- Most of the key/value related storages had their constructors changed to allow more values.
+- `EncodingPathStorage` has been removed
+  and its functionality split up over `Base64EncodingStorage` and `ContainerPathStorage`.
+  `HashEncodingPathStorage` has similarly been replaced by introducing `HashEncodingStorage`.
 
 ## v6.0.0
 

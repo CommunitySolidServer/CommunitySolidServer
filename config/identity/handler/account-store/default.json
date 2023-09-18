@@ -7,9 +7,12 @@
       "@type": "BaseAccountStore",
       "saltRounds": 10,
       "storage": {
-        "@type": "EncodingPathStorage",
-        "relativePath": "/accounts/",
-        "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        "@type": "Base64EncodingStorage",
+        "source": {
+          "@type": "ContainerPathStorage",
+          "relativePath": "/accounts/",
+          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        }
       },
       "forgotPasswordStorage": {
         "@id": "urn:solid-server:default:ExpiringForgotPasswordStorage"
@@ -20,9 +23,12 @@
       "@id": "urn:solid-server:default:ExpiringForgotPasswordStorage",
       "@type": "WrappedExpiringStorage",
       "source": {
-        "@type": "EncodingPathStorage",
-        "relativePath": "/forgot-password/",
-        "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        "@type": "Base64EncodingStorage",
+        "source": {
+          "@type": "ContainerPathStorage",
+          "relativePath": "/forgot-password/",
+          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        }
       }
     }
   ]

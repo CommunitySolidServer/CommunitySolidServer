@@ -1,17 +1,16 @@
-import { HashEncodingPathStorage } from '../../../../src/storage/keyvalue/HashEncodingPathStorage';
+import { HashEncodingStorage } from '../../../../src/storage/keyvalue/HashEncodingStorage';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
-describe('A HashEncodingPathStorage', (): void => {
-  const relativePath = '/container/';
+describe('A HashEncodingStorage', (): void => {
   let map: Map<string, string>;
   let source: KeyValueStorage<string, string>;
-  let storage: HashEncodingPathStorage<string>;
+  let storage: HashEncodingStorage<string>;
 
   beforeEach(async(): Promise<void> => {
     map = new Map<string, string>();
     source = map as any;
-    storage = new HashEncodingPathStorage<string>(relativePath, source);
+    storage = new HashEncodingStorage<string>(source);
   });
 
   it('hashes the keys.', async(): Promise<void> => {
@@ -20,7 +19,7 @@ describe('A HashEncodingPathStorage', (): void => {
     const data = 'data';
     await storage.set(key, data);
     expect(map.size).toBe(1);
-    expect(map.get(`${relativePath}${hash}`)).toBe(data);
+    expect(map.get(hash)).toBe(data);
     await expect(storage.get(key)).resolves.toBe(data);
   });
 

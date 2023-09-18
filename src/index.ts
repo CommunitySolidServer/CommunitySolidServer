@@ -398,13 +398,15 @@ export * from './storage/conversion/RepresentationConverter';
 export * from './storage/conversion/TypedRepresentationConverter';
 
 // Storage/KeyValue
-export * from './storage/keyvalue/EncodingPathStorage';
+export * from './storage/keyvalue/Base64EncodingStorage';
+export * from './storage/keyvalue/ContainerPathStorage';
 export * from './storage/keyvalue/ExpiringStorage';
-export * from './storage/keyvalue/HashEncodingPathStorage';
+export * from './storage/keyvalue/HashEncodingStorage';
 export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
 export * from './storage/keyvalue/KeyValueStorage';
 export * from './storage/keyvalue/MemoryMapStorage';
+export * from './storage/keyvalue/PassthroughKeyValueStorage';
 export * from './storage/keyvalue/WrappedExpiringStorage';
 
 // Storage/Mapping

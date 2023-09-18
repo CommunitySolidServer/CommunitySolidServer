@@ -7,9 +7,12 @@
       "@type": "KeyValueChannelStorage",
       "locker": { "@id": "urn:solid-server:default:ResourceLocker" },
       "storage": {
-        "@type": "EncodingPathStorage",
-        "relativePath": "/notifications/",
-        "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        "@type": "Base64EncodingStorage",
+        "source": {
+          "@type": "ContainerPathStorage",
+          "relativePath": "/notifications/",
+          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        }
       }
     }
   ]
