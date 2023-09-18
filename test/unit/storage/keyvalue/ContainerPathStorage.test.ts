@@ -1,23 +1,21 @@
-import { EncodingPathStorage } from '../../../../src/storage/keyvalue/EncodingPathStorage';
+import { ContainerPathStorage } from '../../../../src/storage/keyvalue/ContainerPathStorage';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 
-describe('An EncodingPathStorage', (): void => {
+describe('An ContainerPathStorage', (): void => {
   const relativePath = '/container/';
   let map: Map<string, string>;
   let source: KeyValueStorage<string, unknown>;
-  let storage: EncodingPathStorage<unknown>;
+  let storage: ContainerPathStorage<unknown>;
 
   beforeEach(async(): Promise<void> => {
     map = new Map<string, string>();
     source = map as any;
-    storage = new EncodingPathStorage(relativePath, source);
+    storage = new ContainerPathStorage(source, relativePath);
   });
 
-  it('encodes the input key and joins it with the relativePath to create a new key.', async(): Promise<void> => {
+  it('joins the input key with the relativePath to create a new key.', async(): Promise<void> => {
     const key = 'key';
-    // Base 64 encoding of 'key'
-    const encodedKey = 'a2V5';
-    const generatedPath = `${relativePath}${encodedKey}`;
+    const generatedPath = `${relativePath}${key}`;
     const data = 'data';
 
     await expect(storage.set(key, data)).resolves.toBe(storage);
@@ -32,10 +30,8 @@ describe('An EncodingPathStorage', (): void => {
   });
 
   it('only returns entries from the source storage matching the relative path.', async(): Promise<void> => {
-    // Base 64 encoding of 'key'
-    const encodedKey = 'a2V5';
-    const generatedPath = `${relativePath}${encodedKey}`;
-    const otherPath = `/otherContainer/${encodedKey}`;
+    const generatedPath = `${relativePath}key`;
+    const otherPath = `/otherContainer/key`;
     const data = 'data';
 
     map.set(generatedPath, data);

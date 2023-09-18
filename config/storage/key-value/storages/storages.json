@@ -4,16 +4,22 @@
     {
       "comment": "Used for internal storage by the locker.",
       "@id": "urn:solid-server:default:LockStorage",
-      "@type": "HashEncodingPathStorage",
-      "relativePath": "/locks/",
-      "source": { "@id": "urn:solid-server:default:BackendKeyValueStorage" }
+      "@type": "HashEncodingStorage",
+      "source": {
+        "@type": "ContainerPathStorage",
+        "relativePath": "/locks/",
+        "source": { "@id": "urn:solid-server:default:BackendKeyValueStorage" }
+      }
     },
     {
       "comment": "Storage used by setup components.",
       "@id": "urn:solid-server:default:SetupStorage",
-      "@type": "EncodingPathStorage",
-      "relativePath": "/setup/",
-      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+      "@type": "Base64EncodingStorage",
+      "source": {
+        "@type": "ContainerPathStorage",
+        "relativePath": "/setup/",
+        "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+      }
     }
   ]
 }

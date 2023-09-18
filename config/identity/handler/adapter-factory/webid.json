@@ -12,9 +12,12 @@
         "source": {
           "@type": "ExpiringAdapterFactory",
           "storage": {
-            "@type": "EncodingPathStorage",
-            "relativePath": "/idp/adapter/",
-            "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+            "@type": "Base64EncodingStorage",
+            "source": {
+              "@type": "ContainerPathStorage",
+              "relativePath": "/idp/adapter/",
+              "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+            }
           }
         }
       }
