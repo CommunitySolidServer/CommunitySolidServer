@@ -7,7 +7,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.0
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
@@ -38,7 +38,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v4.0.0
+        uses: actions/checkout@v4.1.0
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Type-check tests
@@ -81,7 +81,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Check out repository
-        uses: actions/checkout@v4.0.0
+        uses: actions/checkout@v4.1.0
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run integration tests
@@ -105,7 +105,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v4.0.0
+        uses: actions/checkout@v4.1.0
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run integration tests
@@ -127,7 +127,7 @@ jobs:
         with:
           node-version: '16.x'
       - name: Check out repository
-        uses: actions/checkout@v4.0.0
+        uses: actions/checkout@v4.1.0
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run deploy tests
