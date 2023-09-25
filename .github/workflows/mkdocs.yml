@@ -21,7 +21,7 @@ jobs:
     outputs:
       major: ${{ steps.tagged_version.outputs.major || steps.current_version.outputs.major }}
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.0
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: mkdocs-prep
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.0
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
@@ -63,7 +63,7 @@ jobs:
     needs: [mkdocs-prep, mkdocs]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.0
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'

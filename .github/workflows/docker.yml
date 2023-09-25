@@ -21,7 +21,7 @@ jobs:
       tags: ${{ steps.meta-main.outputs.tags || steps.meta-version.outputs.tags }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.0.0
+        uses: actions/checkout@v4.1.0
       - if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
         name: Docker meta edge and version tag
         id: meta-main
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.0.0
+        uses: actions/checkout@v4.1.0
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
