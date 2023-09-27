@@ -8,6 +8,7 @@ import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHt
 
 describe('A LinkWebIdHandler', (): void => {
   const id = 'id';
+  const podId = 'podId';
   const accountId = 'accountId';
   const webId = 'http://example.com/pod/profile/card#me';
   let json: unknown;
@@ -29,7 +30,7 @@ describe('A LinkWebIdHandler', (): void => {
     } satisfies Partial<OwnershipValidator> as any;
 
     podStore = {
-      findAccount: jest.fn().mockResolvedValue(accountId),
+      findByBaseUrl: jest.fn().mockResolvedValue({ accountId, id: podId }),
     } satisfies Partial<PodStore> as any;
 
     webIdStore = {
@@ -80,8 +81,8 @@ describe('A LinkWebIdHandler', (): void => {
     expect(webIdStore.isLinked).toHaveBeenLastCalledWith(webId, accountId);
     expect(storageStrategy.getStorageIdentifier).toHaveBeenCalledTimes(1);
     expect(storageStrategy.getStorageIdentifier).toHaveBeenLastCalledWith({ path: webId });
-    expect(podStore.findAccount).toHaveBeenCalledTimes(1);
-    expect(podStore.findAccount).toHaveBeenLastCalledWith(podUrl);
+    expect(podStore.findByBaseUrl).toHaveBeenCalledTimes(1);
+    expect(podStore.findByBaseUrl).toHaveBeenLastCalledWith(podUrl);
     expect(webIdStore.create).toHaveBeenCalledTimes(1);
     expect(webIdStore.create).toHaveBeenLastCalledWith(webId, accountId);
     expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(0);
@@ -93,12 +94,12 @@ describe('A LinkWebIdHandler', (): void => {
     expect(webIdStore.isLinked).toHaveBeenCalledTimes(1);
     expect(webIdStore.isLinked).toHaveBeenLastCalledWith(webId, accountId);
     expect(storageStrategy.getStorageIdentifier).toHaveBeenCalledTimes(0);
-    expect(podStore.findAccount).toHaveBeenCalledTimes(0);
+    expect(podStore.findByBaseUrl).toHaveBeenCalledTimes(0);
     expect(webIdStore.create).toHaveBeenCalledTimes(0);
   });
 
   it('calls the ownership validator if the account did not create the pod the WebID is in.', async(): Promise<void> => {
-    podStore.findAccount.mockResolvedValueOnce(undefined);
+    podStore.findByBaseUrl.mockResolvedValueOnce(undefined);
     await expect(handler.handle({ accountId, json } as any)).resolves.toEqual({
       json: { resource, webId, oidcIssuer: baseUrl },
     });
@@ -106,8 +107,8 @@ describe('A LinkWebIdHandler', (): void => {
     expect(webIdStore.isLinked).toHaveBeenLastCalledWith(webId, accountId);
     expect(storageStrategy.getStorageIdentifier).toHaveBeenCalledTimes(1);
     expect(storageStrategy.getStorageIdentifier).toHaveBeenLastCalledWith({ path: webId });
-    expect(podStore.findAccount).toHaveBeenCalledTimes(1);
-    expect(podStore.findAccount).toHaveBeenLastCalledWith(podUrl);
+    expect(podStore.findByBaseUrl).toHaveBeenCalledTimes(1);
+    expect(podStore.findByBaseUrl).toHaveBeenLastCalledWith(podUrl);
     expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
     expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
     expect(webIdStore.create).toHaveBeenCalledTimes(1);

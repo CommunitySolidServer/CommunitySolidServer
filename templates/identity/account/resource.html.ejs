@@ -64,7 +64,7 @@
       setVisibility('pods', false);
     } else {
       updateElement('createPod', controls.html.account.createPod, { href: true });
-      showAccountInfo(elements.podEntries, pods, false, false);
+      showAccountInfo(elements.podEntries, pods, true, false);
     }
 
     // Update WebID entries
@@ -104,25 +104,7 @@
 
 
       if (addDel) {
-        const del = document.createElement('a');
-        del.innerText = '(delete)';
-        del.href = '#';
-        del.addEventListener('click', async() => {
-          if (!confirm(confirmMsg)) {
-            return;
-          }
-          // Delete resource, show error if this fails
-          const res = await fetch(url, { method: 'DELETE' });
-          if (res.status >= 400) {
-            const error = await res.json();
-            setError(error.message);
-          } else {
-            li.remove();
-            if (finishMsg) {
-              setError(finishMsg);
-            }
-          }
-        });
+        const del = createUrlDeleteElement(li, url, { method: 'DELETE' }, confirmMsg, finishMsg);
         li.append(' ');
         li.append(del);
       }

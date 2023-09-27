@@ -1,7 +1,6 @@
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { PodStore } from '../identity/interaction/pod/util/PodStore';
-import type { WebIdStore } from '../identity/interaction/webid/util/WebIdStore';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { StorageLocationStrategy } from '../server/description/StorageLocationStrategy';
 import { filter } from '../util/IterableUtil';
@@ -12,21 +11,19 @@ import type { AclPermissionSet } from './permissions/AclPermissionSet';
 import type { PermissionMap } from './permissions/Permissions';
 
 /**
- * Allows control access if the request is being made by the owner of the pod containing the resource.
+ * Allows control access if the request is being made by an owner of the pod containing the resource.
  */
 export class OwnerPermissionReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
 
   private readonly podStore: PodStore;
-  private readonly webIdStore: WebIdStore;
   private readonly authStrategy: AuxiliaryIdentifierStrategy;
   private readonly storageStrategy: StorageLocationStrategy;
 
-  public constructor(podStore: PodStore, webIdStore: WebIdStore, authStrategy: AuxiliaryIdentifierStrategy,
+  public constructor(podStore: PodStore, authStrategy: AuxiliaryIdentifierStrategy,
     storageStrategy: StorageLocationStrategy) {
     super();
     this.podStore = podStore;
-    this.webIdStore = webIdStore;
     this.authStrategy = authStrategy;
     this.storageStrategy = storageStrategy;
   }
@@ -95,14 +92,19 @@ export class OwnerPermissionReader extends PermissionReader {
   protected async findOwners(pods: string[]): Promise<Record<string, string[]>> {
     const owners: Record<string, string[]> = {};
     // Set to only have the unique values
-    for (const pod of new Set(pods)) {
-      const owner = await this.podStore.findAccount(pod);
-      if (!owner) {
-        this.logger.error(`Unable to find owner for ${pod}`);
+    for (const baseUrl of new Set(pods)) {
+      const pod = await this.podStore.findByBaseUrl(baseUrl);
+      if (!pod) {
+        this.logger.error(`Unable to find pod ${baseUrl}`);
         continue;
       }
 
-      owners[pod] = (await this.webIdStore.findLinks(owner)).map((link): string => link.webId);
+      const podOwners = await this.podStore.getOwners(pod.id);
+      if (!podOwners) {
+        this.logger.error(`Unable to find owners for ${baseUrl}`);
+        continue;
+      }
+      owners[baseUrl] = podOwners.map((owner): string => owner.webId);
     }
     return owners;
   }

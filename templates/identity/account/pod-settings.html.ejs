@@ -1,0 +1,82 @@
+<h1>Pod settings</h1>
+<p class="error" id="error"></p>
+<h2 id="pod"></h2>
+
+<h3>Owners</h3>
+<p>
+  All these WebIDs have full control access over all resources in the pod.
+  If visible, these will be returned as a header to all requests targeting the pod.
+</p>
+<ul id="owners"></ul>
+
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Add the WebID to add to the list of owners</p>
+    <ol>
+      <li>
+        <label for="owner">WebID:</label>
+        <input id="owner" type="text" name="owner" autofocus>
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions">
+    <button type="submit" name="submit">Add owner</button>
+    <button type="button" id="account-link">Back</button>
+  </p>
+</form>
+
+
+<script>
+  const elements = getElements('owners');
+  (async() => {
+    const { baseUrl, owners, controls } = await fetchJson('', '<%= idpIndex %>');
+    updateElement('pod', baseUrl, { innerText: true });
+
+    setRedirectClick('account-link', controls.html.account.account);
+
+    for (const { webId, visible } of owners) {
+      const li = document.createElement('li');
+      li.insertAdjacentHTML('beforeend', `<strong>${webId}</strong>`);
+      elements.owners.append(li);
+
+      // Visibility element
+      const label = document.createElement('label');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = visible;
+      label.append(checkbox);
+      label.append('Visible');
+      li.append(label);
+      checkbox.addEventListener('click', async() => {
+        const res = await fetch('', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ webId, visible: checkbox.checked }),
+        });
+        if (res.status >= 400) {
+          const error = await res.json();
+          setError(error.message);
+        }
+      });
+
+      // Delete element
+      const fetchParams = {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ webId, remove: true }),
+      }
+      const del = createUrlDeleteElement(li, '', fetchParams,
+        `Are you sure you want to remove ${webId} as an owner of ${pod}?`);
+      li.append(' ');
+      li.append(del);
+    }
+
+    addPostListener(async() => {
+      await postJsonForm('');
+      location.reload();
+    });
+  })();
+</script>

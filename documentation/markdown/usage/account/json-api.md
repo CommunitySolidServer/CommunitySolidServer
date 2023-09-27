@@ -122,7 +122,26 @@ GET requests return all pods created by this account in the following format:
 }
 ```
 
-Creates a Solid pod for the account on POST requests.
+The URL value is the resource URL corresponding to the link with this WebID.
+Doing a GET request to this resource will return the base URl of the pod, and all its owners of a pod, as shown below.
+You can send a POST request to this resource with a `webId` and `visible: boolean` field
+to add/update an owner and set its visibility.
+Visibility determines whether the owner is exposed through a link header when requesting the pod.
+You can also send a POST request to this resource with a `webId` and `remove: true` field to remove the owner.
+
+```json
+{
+  "baseUrl":  "http://localhost:3000/my-pod/",
+  "owners": [
+    { 
+      "webId":  "http://localhost:3000/my-pod/profile/card#me", 
+      "visible": false
+    }
+  ]
+}
+```
+
+POST requests to `controls.account.pod` create a Solid pod for the account.
 The only required field is `name`, which will determine the name of the pod.
 
 Additionally, a `settings` object can be sent along,

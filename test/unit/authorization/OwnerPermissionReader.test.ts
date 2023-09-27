@@ -5,7 +5,6 @@ import type { AccessMap } from '../../../src/authorization/permissions/Permissio
 import { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { PodStore } from '../../../src/identity/interaction/pod/util/PodStore';
-import { WebIdStore } from '../../../src/identity/interaction/webid/util/WebIdStore';
 import type { StorageLocationStrategy } from '../../../src/server/description/StorageLocationStrategy';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 import { compareMaps } from '../../util/Util';
@@ -18,7 +17,6 @@ describe('An OwnerPermissionReader', (): void => {
   let identifier: ResourceIdentifier;
   let requestedModes: AccessMap;
   let podStore: jest.Mocked<PodStore>;
-  let webIdStore: jest.Mocked<WebIdStore>;
   let aclStrategy: jest.Mocked<AuxiliaryIdentifierStrategy>;
   let storageStrategy: jest.Mocked<StorageLocationStrategy>;
   let reader: OwnerPermissionReader;
@@ -31,12 +29,9 @@ describe('An OwnerPermissionReader', (): void => {
     requestedModes = new IdentifierSetMultiMap([[ identifier, AclMode.control ]]) as any;
 
     podStore = {
-      findAccount: jest.fn().mockResolvedValue(accountId),
+      findByBaseUrl: jest.fn().mockResolvedValue(accountId),
+      getOwners: jest.fn().mockResolvedValue([{ webId: owner, visible: false }]),
     } satisfies Partial<PodStore> as any;
-
-    webIdStore = {
-      findLinks: jest.fn().mockResolvedValue([{ id: '???', webId: owner }]),
-    } satisfies Partial<WebIdStore> as any;
 
     aclStrategy = {
       isAuxiliaryIdentifier: jest.fn((id): boolean => id.path.endsWith('.acl')),
@@ -46,7 +41,7 @@ describe('An OwnerPermissionReader', (): void => {
       getStorageIdentifier: jest.fn().mockResolvedValue(podBaseUrl),
     };
 
-    reader = new OwnerPermissionReader(podStore, webIdStore, aclStrategy, storageStrategy);
+    reader = new OwnerPermissionReader(podStore, aclStrategy, storageStrategy);
   });
 
   it('returns empty permissions for non-ACL resources.', async(): Promise<void> => {
@@ -64,8 +59,13 @@ describe('An OwnerPermissionReader', (): void => {
     compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 
-  it('returns empty permissions if there is no pod owner.', async(): Promise<void> => {
-    podStore.findAccount.mockResolvedValueOnce(undefined);
+  it('returns empty permissions if there is no pod object.', async(): Promise<void> => {
+    podStore.findByBaseUrl.mockResolvedValueOnce(undefined);
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
+  });
+
+  it('returns empty permissions if there are no pod owners.', async(): Promise<void> => {
+    podStore.getOwners.mockResolvedValueOnce(undefined);
     compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 

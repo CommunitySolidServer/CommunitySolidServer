@@ -2,10 +2,55 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "This route is only used when creating new pod resources as no further interactions are supported.",
-      "@id": "urn:solid-server:default:AccountPodIdRoute",
-      "@type": "BasePodIdRoute",
-      "base": { "@id": "urn:solid-server:default:AccountPodRoute" }
+      "comment": "Handles updating pod settings.",
+      "@id": "urn:solid-server:default:AccountPodIdRouter",
+      "@type": "AuthorizedRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountPodIdRoute",
+        "@type": "BasePodIdRoute",
+        "base": { "@id": "urn:solid-server:default:AccountPodRoute" }
+      },
+      "source":{
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:PodResourceHandler",
+          "@type": "UpdateOwnerHandler",
+          "podStore": { "@id": "urn:solid-server:default:PodStore" },
+          "podRoute": { "@id": "urn:solid-server:default:AccountPodIdRoute" }
+        }
+      }
+    },
+
+
+    {
+      "@id": "urn:solid-server:default:MetadataWriter",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "comment": "Adds owner link headers to responses.",
+          "@id": "urn:solid-server:default:MetadataWriter_Owner",
+          "@type": "OwnerMetadataWriter",
+          "podStore": { "@id": "urn:solid-server:default:PodStore" },
+          "storageStrategy": { "@id": "urn:solid-server:default:StorageLocationStrategy" }
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:AccountPodIdRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:UpdatePodHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/account/pod-settings.html.ejs",
+        "route": { "@id": "urn:solid-server:default:AccountPodIdRoute" }
+      }]
     }
   ]
 }

@@ -169,3 +169,37 @@ function validatePasswordConfirmation(passwordId, formId = 'mainForm', confirmPa
     throw new Error('Password confirmation does not match the password!');
   }
 }
+
+/**
+ * Creates a `(delete)` link that can be clicked to remove a resource and update the HTML accordingly.
+ *
+ * @param parent - The HTML object that needs to be removed when the resource is removed.
+ * @param url - The URL of the resource.
+ * @param fetchParams - Parameters to pass to the fetch request that would remove the resource.
+ * @param confirmMsg - Message to show to confirm that the resource needs to be deleted.
+ * @param finishMsg - Optional message to show in the error field when the resource was removed.
+ *
+ * @returns The HTML object representing the `(delete)` link.
+ */
+function createUrlDeleteElement(parent, url, fetchParams, confirmMsg, finishMsg) {
+  const del = document.createElement('a');
+  del.innerText = '(delete)';
+  del.href = '#';
+  del.addEventListener('click', async() => {
+    if (!confirm(confirmMsg)) {
+      return;
+    }
+    // Delete resource, show error if this fails
+    const res = await fetch(url, fetchParams);
+    if (res.status >= 400) {
+      const error = await res.json();
+      setError(error.message);
+    } else {
+      parent.remove();
+      if (finishMsg) {
+        setError(finishMsg);
+      }
+    }
+  });
+  return del;
+}

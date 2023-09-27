@@ -97,9 +97,9 @@ export class LinkWebIdHandler extends JsonInteractionHandler<OutType> implements
     // Only need to check ownership if the account did not create the pod
     let isCreator = false;
     try {
-      const pod = await this.storageStrategy.getStorageIdentifier({ path: webId });
-      const creator = await this.podStore.findAccount(pod.path);
-      isCreator = accountId === creator;
+      const baseUrl = await this.storageStrategy.getStorageIdentifier({ path: webId });
+      const pod = await this.podStore.findByBaseUrl(baseUrl.path);
+      isCreator = accountId === pod?.accountId;
     } catch {
       // Probably a WebID not hosted on the server
     }

@@ -31,6 +31,7 @@ describe('A server with account management', (): void => {
   };
   let passwordResource: string;
   let pod: string;
+  let podResource: string;
   let webId: string;
 
   beforeAll(async(): Promise<void> => {
@@ -243,7 +244,7 @@ describe('A server with account management', (): void => {
     expect(json.podResource).toBeDefined();
     expect(json.webId).toBeDefined();
     expect(json.webIdResource).toBeDefined();
-    ({ pod, webId } = json);
+    ({ pod, webId, podResource } = json);
 
     // Verify if the content was added to the profile
     res = await fetch(controls.account.pod, { headers: { cookie }});
@@ -252,6 +253,82 @@ describe('A server with account management', (): void => {
     res = await fetch(controls.account.webId, { headers: { cookie }});
     expect(res.status).toBe(200);
     expect((await res.json()).webIdLinks[webId]).toBeDefined();
+  });
+
+  it('can not remove the last owner of a pod.', async(): Promise<void> => {
+    const res = await fetch(podResource, {
+      method: 'POST',
+      headers: { cookie, 'content-type': 'application/json' },
+      body: JSON.stringify({ webId, remove: true }),
+    });
+    expect(res.status).toBe(400);
+    await expect(res.text()).resolves.toContain('Unable to remove the last owner of a pod.');
+  });
+
+  it('can add an owner to a pod.', async(): Promise<void> => {
+    let res = await fetch(podResource, {
+      method: 'POST',
+      headers: { cookie, 'content-type': 'application/json' },
+      body: JSON.stringify({ webId: 'http://example.com/other/webID', visible: true }),
+    });
+    expect(res.status).toBe(200);
+
+    // Verify that the new owner was added
+    res = await fetch(podResource, { headers: { cookie }});
+    expect(res.status).toBe(200);
+    expect((await res.json()).owners).toEqual([
+      { webId, visible: false },
+      { webId: 'http://example.com/other/webID', visible: true },
+    ]);
+
+    // Verify only the new owner is exposed through a link header
+    res = await fetch(pod);
+    expect(res.status).toBe(200);
+    const owners = res.headers.get('link')?.split(',')
+      .filter((header): boolean => header.includes('rel="http://www.w3.org/ns/solid/terms#owner"'))
+      .map((header): string => /<([^>]+)>/u.exec(header)![1]);
+    expect(owners).toEqual([ 'http://example.com/other/webID' ]);
+  });
+
+  it('can update the visibility of an existing pod owner.', async(): Promise<void> => {
+    let res = await fetch(podResource, {
+      method: 'POST',
+      headers: { cookie, 'content-type': 'application/json' },
+      body: JSON.stringify({ webId, visible: true }),
+    });
+    expect(res.status).toBe(200);
+
+    // Verify that the visibility was changed
+    res = await fetch(podResource, { headers: { cookie }});
+    expect(res.status).toBe(200);
+    expect((await res.json()).owners).toEqual([
+      { webId, visible: true },
+      { webId: 'http://example.com/other/webID', visible: true },
+    ]);
+
+    // Verify both WebIDs are now visible
+    res = await fetch(pod);
+    expect(res.status).toBe(200);
+    const owners = res.headers.get('link')?.split(',')
+      .filter((header): boolean => header.includes('rel="http://www.w3.org/ns/solid/terms#owner"'))
+      .map((header): string => /<([^>]+)>/u.exec(header)![1]);
+    expect(owners).toEqual([ webId, 'http://example.com/other/webID' ]);
+  });
+
+  it('can remove an owner from a pod.', async(): Promise<void> => {
+    let res = await fetch(podResource, {
+      method: 'POST',
+      headers: { cookie, 'content-type': 'application/json' },
+      body: JSON.stringify({ webId: 'http://example.com/other/webID', remove: true }),
+    });
+    expect(res.status).toBe(200);
+
+    // Verify that the new owner was added
+    res = await fetch(podResource, { headers: { cookie }});
+    expect(res.status).toBe(200);
+    expect((await res.json()).owners).toEqual([
+      { webId, visible: true },
+    ]);
   });
 
   it('does not store any data if creating a pod fails on the same account.', async(): Promise<void> => {

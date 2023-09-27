@@ -202,11 +202,13 @@ export * from './identity/interaction/password/UpdatePasswordHandler';
 
 // Identity/Interaction/Pod/Util
 export * from './identity/interaction/pod/util/BasePodStore';
+export * from './identity/interaction/pod/util/OwnerMetadataWriter';
 export * from './identity/interaction/pod/util/PodStore';
 
 // Identity/Interaction/Pod
 export * from './identity/interaction/pod/CreatePodHandler';
 export * from './identity/interaction/pod/PodIdRoute';
+export * from './identity/interaction/pod/UpdateOwnerHandler';
 
 // Identity/Interaction/Routing
 export * from './identity/interaction/routing/AbsolutePathInteractionRoute';
