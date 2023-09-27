@@ -93,13 +93,20 @@
   })();
 
   // Adds account info to the UI
-  function showAccountInfo(rootElement, data, addLink, addDel, confirmMsg, finishMsg) {
+  function showAccountInfo(rootElement, data, addUpdate, addDel, confirmMsg, finishMsg) {
     for (const [ key, url ] of Object.entries(data)) {
       const li = document.createElement('li');
-      if (addLink) {
-        li.insertAdjacentHTML('beforeend', `<a href="${url}">${key}</a>`);
+
+      // I didn't want to add another parameter to the function to indicate if the key should be a link
+      if (/^https?:\/\//.test(key)) {
+        li.insertAdjacentHTML('beforeend', `<a href="${key}">${key}</a>`);
       } else {
         li.append(key);
+      }
+
+
+      if (addUpdate) {
+        li.insertAdjacentHTML('beforeend', ` <a href="${url}">(update)</a>`);
       }
 
 
