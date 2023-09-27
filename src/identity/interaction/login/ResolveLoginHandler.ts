@@ -55,8 +55,8 @@ export abstract class ResolveLoginHandler extends JsonInteractionHandler {
     // Putting it in the metadata, so it can be converted into an HTTP response header.
     // Putting it in the response JSON so users can also use it in an Authorization header.
     const metadata = result.metadata ?? new RepresentationMetadata(input.target);
-    json.cookie = await this.cookieStore.generate(accountId);
-    metadata.add(SOLID_HTTP.terms.accountCookie, json.cookie);
+    json.authorization = await this.cookieStore.generate(accountId);
+    metadata.add(SOLID_HTTP.terms.accountCookie, json.authorization);
 
     // Delete the old cookie if there was one, to prevent unused cookies from being stored.
     // We are not reusing this cookie as it could be associated with a different account.

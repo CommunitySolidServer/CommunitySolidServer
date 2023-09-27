@@ -100,7 +100,7 @@ describe('A server with account management', (): void => {
     expect(cookies).toHaveLength(1);
 
     cookie = `${cookies[0].name}=${cookies[0].value}`;
-    expect(json.cookie).toBe(cookies[0].value);
+    expect(json.authorization).toBe(cookies[0].value);
   });
 
   it('can only access the account controls the cookie.', async(): Promise<void> => {
@@ -124,7 +124,7 @@ describe('A server with account management', (): void => {
 
   it('can also access the account controls using the custom authorization header.', async(): Promise<void> => {
     const res = await fetch(indexUrl, { headers:
-        { authorization: `CSS-Account-Cookie ${cookie.split('=')[1]}` }});
+        { authorization: `CSS-Account-Token ${cookie.split('=')[1]}` }});
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.controls.account.pod).toEqual(controls.account.pod);

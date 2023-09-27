@@ -23,7 +23,7 @@ class DummyLoginHandler extends ResolveLoginHandler {
 }
 
 describe('A ResolveLoginHandler', (): void => {
-  const cookie = 'cookie';
+  const authorization = 'cookie';
   let metadata: RepresentationMetadata;
   let input: JsonInteractionHandlerInput;
   let accountStore: jest.Mocked<AccountStore>;
@@ -49,7 +49,7 @@ describe('A ResolveLoginHandler', (): void => {
     } satisfies Partial<AccountStore> as any;
 
     cookieStore = {
-      generate: jest.fn().mockResolvedValue(cookie),
+      generate: jest.fn().mockResolvedValue(authorization),
       delete: jest.fn(),
     } satisfies Partial<CookieStore> as any;
 
@@ -59,10 +59,10 @@ describe('A ResolveLoginHandler', (): void => {
   it('removes the ID from the output and adds a cookie.', async(): Promise<void> => {
     await expect(handler.handle(input)).resolves.toEqual({ json: {
       data: 'data',
-      cookie,
+      authorization,
     },
     metadata });
-    expect(metadata.get(SOLID_HTTP.terms.accountCookie)?.value).toBe(cookie);
+    expect(metadata.get(SOLID_HTTP.terms.accountCookie)?.value).toBe(authorization);
 
     expect(cookieStore.generate).toHaveBeenCalledTimes(1);
     expect(cookieStore.generate).toHaveBeenLastCalledWith(accountId);
@@ -75,7 +75,7 @@ describe('A ResolveLoginHandler', (): void => {
     const result = await handler.handle(input);
     expect(result).toEqual({ json: {
       data: 'data',
-      cookie,
+      authorization,
     },
     metadata: expect.any(RepresentationMetadata) });
     expect(result.metadata).not.toBe(metadata);
@@ -91,7 +91,7 @@ describe('A ResolveLoginHandler', (): void => {
     } as any;
     await expect(handler.handle(input)).resolves.toEqual({ json: {
       data: 'data',
-      cookie,
+      authorization,
       location: 'returnTo',
     },
     metadata });
@@ -110,7 +110,7 @@ describe('A ResolveLoginHandler', (): void => {
     };
     await expect(handler.handle(input)).resolves.toEqual({ json: {
       data: 'data',
-      cookie,
+      authorization,
     },
     metadata });
 
@@ -124,10 +124,10 @@ describe('A ResolveLoginHandler', (): void => {
     input.metadata.set(SOLID_HTTP.terms.accountCookie, 'old-cookie-value');
     await expect(handler.handle(input)).resolves.toEqual({ json: {
       data: 'data',
-      cookie,
+      authorization,
     },
     metadata });
-    expect(metadata.get(SOLID_HTTP.terms.accountCookie)?.value).toBe(cookie);
+    expect(metadata.get(SOLID_HTTP.terms.accountCookie)?.value).toBe(authorization);
 
     expect(cookieStore.generate).toHaveBeenCalledTimes(1);
     expect(cookieStore.generate).toHaveBeenLastCalledWith(accountId);

@@ -22,8 +22,7 @@ Promise<{ pod: string; webId: string; authorization: string; controls: any }> {
   // Create account
   res = await fetch(controls.account.create, { method: 'POST' });
   expect(res.status).toBe(200);
-  const { cookie } = await res.json();
-  const authorization = `CSS-Account-Cookie ${cookie}`;
+  const authorization = `CSS-Account-Token ${(await res.json()).authorization}`;
 
   // Get account controls
   res = await fetch(controls.account.create, {

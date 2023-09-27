@@ -23,12 +23,13 @@ When doing a GET request on these APIs they will return an object describing wha
 
 ## Authorization
 
-After logging in, the API will return a `set-cookie` header.
+After logging in, the API will return a `set-cookie` header of the format `css-account=$VALUE`
 This cookie is necessary to have access to many of the APIs.
 When including this cookie, the controls object will also be extended with new URLs that are now accessible.
-When logging in, the response body JSON body will also contain a `cookie` field containing the cookie value.
+When logging in, the response body JSON body will also contain an `authorization` field
+containing the `$VALUE` value mentioned above.
 Instead of using cookies,
-this value can also be used in an `Authorization` header with auth scheme `CSS-Account-Cookie`
+this value can be used in an `Authorization` header with value `CSS-Account-Token $VALUE`
 to achieve the same result.
 
 The expiration time of this cookie will be refreshed

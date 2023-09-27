@@ -7,7 +7,7 @@
       "@type": "AuthorizationParser",
       "authMap": [
         {
-          "AuthorizationParser:_authMap_key": "CSS-Account-Cookie",
+          "AuthorizationParser:_authMap_key": "CSS-Account-Token",
           "AuthorizationParser:_authMap_value": "urn:npm:solid:community-server:http:accountCookie"
         }
       ]

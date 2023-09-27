@@ -31,7 +31,7 @@ const bob: User = {
  * Registers a user with the server and provides them with a pod.
  * @param user - The user settings necessary to register a user.
  */
-async function register(user: User): Promise<{ webId: string; cookie: string }> {
+async function register(user: User): Promise<{ webId: string; authorization: string }> {
   // Get controls
   let res = await fetch(urljoin(baseUrl, '.account/'));
   let { controls } = await res.json();
@@ -41,8 +41,7 @@ async function register(user: User): Promise<{ webId: string; cookie: string }> 
   if (res.status !== 200) {
     throw new Error(`Account creation failed: ${await res.text()}`);
   }
-  const { cookie } = await res.json();
-  const authorization = `CSS-Account-Cookie ${cookie}`;
+  const authorization = `CSS-Account-Token ${(await res.json()).authorization}`;
 
   // Get account controls
   res = await fetch(controls.main.index, {
@@ -74,18 +73,16 @@ async function register(user: User): Promise<{ webId: string; cookie: string }> 
   }
   const { webId } = await res.json();
 
-  return { webId, cookie };
+  return { webId, authorization };
 }
 
 /**
  * Requests a client credentials API token.
  * @param webId - WebID to create credentials for.
- * @param cookie - Authoriziation cookie for the account that tries to create credentials.
+ * @param authorization - Authorization header for the account that tries to create credentials.
  * @returns The id/secret for the client credentials request.
  */
-async function createCredentials(webId: string, cookie: string): Promise<{ id: string; secret: string }> {
-  // Get account controls
-  const authorization = `CSS-Account-Cookie ${cookie}`;
+async function createCredentials(webId: string, authorization: string): Promise<{ id: string; secret: string }> {
   let res = await fetch(urljoin(baseUrl, '.account/'), {
     headers: { authorization },
   });
@@ -110,8 +107,8 @@ async function createCredentials(webId: string, cookie: string): Promise<{ id: s
  * @param user - User for which data needs to be generated.
  */
 async function outputCredentials(user: User): Promise<void> {
-  const { webId, cookie } = await register(user);
-  const { id, secret } = await createCredentials(webId, cookie);
+  const { webId, authorization } = await register(user);
+  const { id, secret } = await createCredentials(webId, authorization);
 
   const name = user.podName.toUpperCase();
   console.log(`USERS_${name}_CLIENTID=${id}`);
