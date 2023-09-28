@@ -1,9 +1,8 @@
 import { CreatePodHandler } from '../../../../../src/identity/interaction/pod/CreatePodHandler';
 import type { PodIdRoute } from '../../../../../src/identity/interaction/pod/PodIdRoute';
+import { PodCreator } from '../../../../../src/identity/interaction/pod/util/PodCreator';
 import { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
-import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
 import type { WebIdLinkRoute } from '../../../../../src/identity/interaction/webid/WebIdLinkRoute';
-import type { IdentifierGenerator } from '../../../../../src/pods/generate/IdentifierGenerator';
 
 describe('A CreatePodHandler', (): void => {
   const name = 'name';
@@ -12,17 +11,13 @@ describe('A CreatePodHandler', (): void => {
   const podId = 'podId';
   const webIdLink = 'webIdLink';
   let json: unknown;
-  const baseUrl = 'http://example.com/';
-  const relativeWebIdPath = '/profile/card#me';
   const podUrl = 'http://example.com/name/';
-  const generatedWebId = 'http://example.com/name/profile/card#me';
   const webIdResource = 'http://example.com/.account/webID';
   const podResource = 'http://example.com/.account/pod';
-  let identifierGenerator: jest.Mocked<IdentifierGenerator>;
-  let webIdStore: jest.Mocked<WebIdStore>;
   let webIdLinkRoute: jest.Mocked<WebIdLinkRoute>;
   let podIdRoute: jest.Mocked<PodIdRoute>;
   let podStore: jest.Mocked<PodStore>;
+  let podCreator: jest.Mocked<PodCreator>;
   let handler: CreatePodHandler;
 
   beforeEach(async(): Promise<void> => {
@@ -30,16 +25,9 @@ describe('A CreatePodHandler', (): void => {
       name,
     };
 
-    identifierGenerator = {
-      generate: jest.fn().mockReturnValue({ path: podUrl }),
-      extractPod: jest.fn(),
-    };
-
-    webIdStore = {
-      isLinked: jest.fn().mockResolvedValue(false),
-      create: jest.fn().mockResolvedValue(webIdLink),
-      delete: jest.fn(),
-    } satisfies Partial<WebIdStore> as any;
+    podCreator = {
+      handleSafe: jest.fn().mockResolvedValue({ podUrl, podId, webId, webIdLink }),
+    } satisfies Partial<PodCreator> as any;
 
     podStore = {
       create: jest.fn().mockResolvedValue(podId),
@@ -56,16 +44,7 @@ describe('A CreatePodHandler', (): void => {
       matchPath: jest.fn(),
     };
 
-    handler = new CreatePodHandler({
-      webIdStore,
-      podStore,
-      baseUrl,
-      relativeWebIdPath,
-      identifierGenerator,
-      webIdLinkRoute,
-      podIdRoute,
-      allowRoot: false,
-    });
+    handler = new CreatePodHandler(podStore, podCreator, webIdLinkRoute, podIdRoute);
   });
 
   it('returns the required input fields and known pods.', async(): Promise<void> => {
@@ -91,75 +70,25 @@ describe('A CreatePodHandler', (): void => {
 
   it('generates a pod and WebID.', async(): Promise<void> => {
     await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({ json: {
-      pod: podUrl, webId: generatedWebId, podResource, webIdResource,
+      pod: podUrl, webId, podResource, webIdResource,
     }});
-    expect(webIdStore.isLinked).toHaveBeenCalledTimes(1);
-    expect(webIdStore.isLinked).toHaveBeenLastCalledWith(generatedWebId, accountId);
-    expect(webIdStore.create).toHaveBeenCalledTimes(1);
-    expect(webIdStore.create).toHaveBeenLastCalledWith(generatedWebId, accountId);
-    expect(podStore.create).toHaveBeenCalledTimes(1);
-    expect(podStore.create).toHaveBeenLastCalledWith(accountId, {
-      base: { path: podUrl },
-      webId: generatedWebId,
-      oidcIssuer: baseUrl,
-    }, false);
+    expect(podCreator.handleSafe).toHaveBeenCalledTimes(1);
+    expect(podCreator.handleSafe).toHaveBeenLastCalledWith({ accountId, name, settings: {}});
   });
 
-  it('can use an external WebID for the pod generation.', async(): Promise<void> => {
-    json = { name, settings: { webId }};
-
+  it('generates a pod with a WebID if there is one.', async(): Promise<void> => {
+    const settings = { webId };
+    json = { name, settings };
     await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({ json: {
-      pod: podUrl, webId, podResource,
+      pod: podUrl, webId, podResource, webIdResource,
     }});
-    expect(webIdStore.isLinked).toHaveBeenCalledTimes(0);
-    expect(webIdStore.create).toHaveBeenCalledTimes(0);
-    expect(podStore.create).toHaveBeenCalledTimes(1);
-    expect(podStore.create).toHaveBeenLastCalledWith(accountId, {
-      base: { path: podUrl },
-      webId,
-    }, false);
-  });
-
-  it('errors if the account is already linked to the WebID that would be generated.', async(): Promise<void> => {
-    webIdStore.isLinked.mockResolvedValueOnce(true);
-    await expect(handler.handle({ json, accountId } as any))
-      .rejects.toThrow(`${generatedWebId} is already registered to this account.`);
-    expect(webIdStore.isLinked).toHaveBeenCalledTimes(1);
-    expect(webIdStore.isLinked).toHaveBeenLastCalledWith(generatedWebId, accountId);
-    expect(webIdStore.create).toHaveBeenCalledTimes(0);
-    expect(podStore.create).toHaveBeenCalledTimes(0);
-  });
-
-  it('undoes any changes if something goes wrong creating the pod.', async(): Promise<void> => {
-    const error = new Error('bad data');
-    podStore.create.mockRejectedValueOnce(error);
-
-    await expect(handler.handle({ json, accountId } as any)).rejects.toBe(error);
-
-    expect(webIdStore.create).toHaveBeenCalledTimes(1);
-    expect(webIdStore.create).toHaveBeenLastCalledWith(generatedWebId, accountId);
-    expect(podStore.create).toHaveBeenCalledTimes(1);
-    expect(podStore.create).toHaveBeenLastCalledWith(accountId, {
-      base: { path: podUrl },
-      webId: generatedWebId,
-      oidcIssuer: baseUrl,
-    }, false);
-    expect(webIdStore.delete).toHaveBeenCalledTimes(1);
-    expect(webIdStore.delete).toHaveBeenLastCalledWith(webIdLink);
+    expect(podCreator.handleSafe).toHaveBeenCalledTimes(1);
+    expect(podCreator.handleSafe).toHaveBeenLastCalledWith({ accountId, name, webId, settings });
   });
 
   describe('allowing root pods', (): void => {
     beforeEach(async(): Promise<void> => {
-      handler = new CreatePodHandler({
-        webIdStore,
-        podStore,
-        baseUrl,
-        relativeWebIdPath,
-        identifierGenerator,
-        webIdLinkRoute,
-        podIdRoute,
-        allowRoot: true,
-      });
+      handler = new CreatePodHandler(podStore, podCreator, webIdLinkRoute, podIdRoute, true);
     });
 
     it('does not require a name.', async(): Promise<void> => {
@@ -178,20 +107,6 @@ describe('A CreatePodHandler', (): void => {
           },
         },
       });
-    });
-
-    it('generates a pod and WebID in the root.', async(): Promise<void> => {
-      await expect(handler.handle({ json: {}, accountId } as any)).resolves.toEqual({ json: {
-        pod: baseUrl, webId: `${baseUrl}profile/card#me`, podResource, webIdResource,
-      }});
-      expect(webIdStore.create).toHaveBeenCalledTimes(1);
-      expect(webIdStore.create).toHaveBeenLastCalledWith(`${baseUrl}profile/card#me`, accountId);
-      expect(podStore.create).toHaveBeenCalledTimes(1);
-      expect(podStore.create).toHaveBeenLastCalledWith(accountId, {
-        base: { path: baseUrl },
-        webId: `${baseUrl}profile/card#me`,
-        oidcIssuer: baseUrl,
-      }, true);
     });
   });
 });

@@ -1,8 +1,8 @@
 import { readJson } from 'fs-extra';
 import { array, object, string } from 'yup';
-import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
-import type { JsonInteractionHandler } from '../identity/interaction/JsonInteractionHandler';
-import type { ResolveLoginHandler } from '../identity/interaction/login/ResolveLoginHandler';
+import type { AccountStore } from '../identity/interaction/account/util/AccountStore';
+import type { PasswordStore } from '../identity/interaction/password/util/PasswordStore';
+import type { PodCreator } from '../identity/interaction/pod/util/PodCreator';
 import { URL_SCHEMA } from '../identity/interaction/YupUtil';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
@@ -24,15 +24,15 @@ export interface SeededAccountInitializerArgs {
   /**
    * Creates the accounts.
    */
-  accountHandler: ResolveLoginHandler;
+  accountStore: AccountStore;
   /**
    * Adds the login methods.
    */
-  passwordHandler: JsonInteractionHandler;
+  passwordStore: PasswordStore;
   /**
    * Creates the pods.
    */
-  podHandler: JsonInteractionHandler;
+  podCreator: PodCreator;
   /**
    * File path of the JSON describing the accounts to seed.
    */
@@ -47,16 +47,16 @@ export interface SeededAccountInitializerArgs {
 export class SeededAccountInitializer extends Initializer {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly accountHandler: ResolveLoginHandler;
-  private readonly passwordHandler: JsonInteractionHandler;
-  private readonly podHandler: JsonInteractionHandler;
+  private readonly accountStore: AccountStore;
+  private readonly passwordStore: PasswordStore;
+  private readonly podCreator: PodCreator;
   private readonly configFilePath?: string;
 
   public constructor(args: SeededAccountInitializerArgs) {
     super();
-    this.accountHandler = args.accountHandler;
-    this.passwordHandler = args.passwordHandler;
-    this.podHandler = args.podHandler;
+    this.accountStore = args.accountStore;
+    this.passwordStore = args.passwordStore;
+    this.podCreator = args.podCreator;
     this.configFilePath = args.configFilePath;
   }
 
@@ -76,30 +76,25 @@ export class SeededAccountInitializer extends Initializer {
       throw new Error(msg);
     }
 
-    // Dummy data for requests to all the handlers
-    const method = 'POST';
-    const target = { path: '' };
-    const metadata = new RepresentationMetadata();
-
-    let accounts = 0;
-    let pods = 0;
-    for await (const input of configuration) {
+    let accountCount = 0;
+    let podCount = 0;
+    for await (const { email, password, pods } of configuration) {
       try {
-        this.logger.info(`Creating account for ${input.email}`);
-        const accountResult = await this.accountHandler.login({ method, target, metadata, json: {}});
-        const { accountId } = accountResult.json;
-        await this.passwordHandler.handleSafe({ method, target, metadata, accountId, json: input });
-        accounts += 1;
+        this.logger.info(`Creating account for ${email}`);
+        const accountId = await this.accountStore.create();
+        const id = await this.passwordStore.create(email, accountId, password);
+        await this.passwordStore.confirmVerification(id);
+        accountCount += 1;
 
-        for (const pod of input.pods ?? []) {
-          this.logger.info(`Creating pod with name ${pod.name}`);
-          await this.podHandler.handleSafe({ method, target, metadata, accountId, json: pod });
-          pods += 1;
+        for (const { name, settings } of pods ?? []) {
+          this.logger.info(`Creating pod with name ${name}`);
+          await this.podCreator.handleSafe({ accountId, name, webId: settings?.webId, settings });
+          podCount += 1;
         }
       } catch (error: unknown) {
         this.logger.warn(`Error while initializing seeded account: ${createErrorMessage(error)}`);
       }
     }
-    this.logger.info(`Initialized ${accounts} accounts and ${pods} pods.`);
+    this.logger.info(`Initialized ${accountCount} accounts and ${podCount} pods.`);
   }
 }

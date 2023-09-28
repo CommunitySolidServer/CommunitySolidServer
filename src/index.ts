@@ -201,8 +201,10 @@ export * from './identity/interaction/password/ResetPasswordHandler';
 export * from './identity/interaction/password/UpdatePasswordHandler';
 
 // Identity/Interaction/Pod/Util
+export * from './identity/interaction/pod/util/BasePodCreator';
 export * from './identity/interaction/pod/util/BasePodStore';
 export * from './identity/interaction/pod/util/OwnerMetadataWriter';
+export * from './identity/interaction/pod/util/PodCreator';
 export * from './identity/interaction/pod/util/PodStore';
 
 // Identity/Interaction/Pod
