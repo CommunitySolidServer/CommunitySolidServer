@@ -7,6 +7,7 @@
     "css:config/ldp/metadata-writer/writers/link-rel-metadata.json",
     "css:config/ldp/metadata-writer/writers/mapped.json",
     "css:config/ldp/metadata-writer/writers/modified.json",
+    "css:config/ldp/metadata-writer/writers/range.json",
     "css:config/ldp/metadata-writer/writers/storage-description.json",
     "css:config/ldp/metadata-writer/writers/www-auth.json"
   ],
@@ -22,6 +23,7 @@
         { "@id": "urn:solid-server:default:MetadataWriter_LinkRelMetadata" },
         { "@id": "urn:solid-server:default:MetadataWriter_Mapped" },
         { "@id": "urn:solid-server:default:MetadataWriter_Modified" },
+        { "@id": "urn:solid-server:default:MetadataWriter_Range" },
         { "@id": "urn:solid-server:default:MetadataWriter_StorageDescription" },
         { "@id": "urn:solid-server:default:MetadataWriter_WwwAuth" }
       ]

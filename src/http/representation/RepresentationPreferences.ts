@@ -31,4 +31,6 @@ export interface RepresentationPreferences {
   datetime?: ValuePreferences;
   encoding?: ValuePreferences;
   language?: ValuePreferences;
+  // `start` can be negative and implies the last X of a stream
+  range?: { unit: string; parts: { start: number; end?: number }[] };
 }

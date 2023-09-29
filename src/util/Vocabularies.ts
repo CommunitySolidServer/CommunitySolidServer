@@ -258,8 +258,12 @@ export const SOLID_ERROR = createVocabulary('urn:npm:solid:community-server:erro
 );
 
 export const SOLID_HTTP = createVocabulary('urn:npm:solid:community-server:http:',
+  // Unit, start, and end are used for range headers
+  'end',
   'location',
+  'start',
   'slug',
+  'unit',
 );
 
 export const SOLID_META = createVocabulary('urn:npm:solid:community-server:meta:',

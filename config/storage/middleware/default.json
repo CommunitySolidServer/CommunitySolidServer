@@ -16,6 +16,12 @@
       "comment": "Sets up a stack of utility stores used by most instances.",
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "MonitoringStore",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_BinarySlice" }
+    },
+    {
+      "comment": "Slices part of binary streams based on the range preferences.",
+      "@id": "urn:solid-server:default:ResourceStore_BinarySlice",
+      "@type": "BinarySliceResourceStore",
       "source": { "@id": "urn:solid-server:default:ResourceStore_Index" }
     },
     {
