@@ -8,6 +8,7 @@ import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { NotModifiedHttpError } from '../../../../src/util/errors/NotModifiedHttpError';
+import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A GetOperationHandler', (): void => {
   let operation: Operation;
@@ -39,6 +40,18 @@ describe('A GetOperationHandler', (): void => {
   it('returns the representation from the store with the correct response.', async(): Promise<void> => {
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(200);
+    expect(result.metadata).toBe(metadata);
+    expect(result.data).toBe(data);
+    expect(store.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(store.getRepresentation).toHaveBeenLastCalledWith(operation.target, preferences, conditions);
+  });
+
+  it('returns 206 if the result is a partial stream.', async(): Promise<void> => {
+    metadata.set(SOLID_HTTP.terms.unit, 'bytes');
+    metadata.set(SOLID_HTTP.terms.start, '5');
+    metadata.set(SOLID_HTTP.terms.end, '7');
+    const result = await handler.handle({ operation });
+    expect(result.statusCode).toBe(206);
     expect(result.metadata).toBe(metadata);
     expect(result.data).toBe(data);
     expect(store.getRepresentation).toHaveBeenCalledTimes(1);

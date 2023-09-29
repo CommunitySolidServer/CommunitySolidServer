@@ -12,6 +12,7 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 import { NotModifiedHttpError } from '../../../../src/util/errors/NotModifiedHttpError';
 import { PayloadHttpError } from '../../../../src/util/errors/PayloadHttpError';
 import { PreconditionFailedHttpError } from '../../../../src/util/errors/PreconditionFailedHttpError';
+import { RangeNotSatisfiedHttpError } from '../../../../src/util/errors/RangeNotSatisfiedHttpError';
 import { UnauthorizedHttpError } from '../../../../src/util/errors/UnauthorizedHttpError';
 import { UnprocessableEntityHttpError } from '../../../../src/util/errors/UnprocessableEntityHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
@@ -30,6 +31,7 @@ describe('HttpError', (): void => {
     [ 'PreconditionFailedHttpError', 412, PreconditionFailedHttpError ],
     [ 'PayloadHttpError', 413, PayloadHttpError ],
     [ 'UnsupportedMediaTypeHttpError', 415, UnsupportedMediaTypeHttpError ],
+    [ 'RangeNotSatisfiedHttpError', 416, RangeNotSatisfiedHttpError ],
     [ 'UnprocessableEntityHttpError', 422, UnprocessableEntityHttpError ],
     [ 'InternalServerError', 500, InternalServerError ],
     [ 'NotImplementedHttpError', 501, NotImplementedHttpError ],
