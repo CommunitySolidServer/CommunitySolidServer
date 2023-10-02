@@ -29,22 +29,27 @@ the Community Solid Server is a great companion:
 
 And, of course, for many others who like to experience Solid.
 
-You can install the software locally or on your server
-and get started with Solid immediately.
+## ⚡ Running the Community Solid Server
 
-## ⚡ Running the server
+### 🏃‍♀️ Quickly spin up your Solid server
 
-To run the server, you will need [Node.js](https://nodejs.org/en/).
-We support versions 14.14 and up.
+Use [Node.js](https://nodejs.org/en/) 14.14 or up and execute:
 
-If you do not use Node.js,
-you can run a [Docker](https://www.docker.com/) version instead.
+```shell
+npx @solid/community-server
+```
 
-### 💻 Installing and running locally
+Now visit your brand new server at [http://localhost:3000/](http://localhost:3000/)!
 
-After installing Node.js,
-install the latest server version
-from the [npm package repository](https://www.npmjs.com/):
+To persist your pod's contents between restarts, use:
+
+```shell
+npx @solid/community-server -c @css:config/file.json -f data/
+```
+
+### 💻 Installing locally
+
+Install the npm package globally with:
 
 ```shell
 npm install -g @solid/community-server
@@ -59,10 +64,10 @@ community-solid-server # add parameters if needed
 To run the server with your current folder as storage, use:
 
 ```shell
-community-solid-server -c @css:config/file.json
+community-solid-server -c @css:config/file.json -f data/
 ```
 
-### 📃 Installing and running from source
+### 📃 Running from source
 
 If you rather prefer to run the latest source code version,
 or if you want to try a specific [branch](https://www.npmjs.com/) of the code,
