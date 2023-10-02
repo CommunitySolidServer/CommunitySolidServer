@@ -32,6 +32,9 @@ export interface DataAccessor {
 
   /**
    * Returns the metadata corresponding to the identifier.
+   * If possible, it is suggested to add a `posix:size` triple to the metadata indicating the binary size.
+   * This is necessary for range requests.
+   *
    * @param identifier - Identifier for which the metadata is requested.
    */
   getMetadata: (identifier: ResourceIdentifier) => Promise<RepresentationMetadata>;

@@ -5,9 +5,10 @@ import { getLoggerFor } from '../logging/LogUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import { RangeNotSatisfiedHttpError } from '../util/errors/RangeNotSatisfiedHttpError';
 import { guardStream } from '../util/GuardedStream';
+import { termToInt } from '../util/QuadUtil';
 import { SliceStream } from '../util/SliceStream';
 import { toLiteral } from '../util/TermUtil';
-import { SOLID_HTTP, XSD } from '../util/Vocabularies';
+import { POSIX, SOLID_HTTP, XSD } from '../util/Vocabularies';
 import type { Conditions } from './Conditions';
 import { PassthroughStore } from './PassthroughStore';
 import type { ResourceStore } from './ResourceStore';
@@ -51,10 +52,11 @@ export class BinarySliceResourceStore<T extends ResourceStore = ResourceStore> e
     }
 
     try {
+      const size = termToInt(result.metadata.get(POSIX.terms.size));
       // The reason we don't determine the object mode based on the object mode of the parent stream
       // is that `guardedStreamFrom` does not create object streams when inputting streams/buffers.
       // Something to potentially update in the future.
-      result.data = guardStream(new SliceStream(result.data, { start, end, objectMode: false }));
+      result.data = guardStream(new SliceStream(result.data, { start, end, size, objectMode: false }));
     } catch (error: unknown) {
       // Creating the slice stream can throw an error if some of the parameters are unacceptable.
       // Need to make sure the stream is closed in that case.

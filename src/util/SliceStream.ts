@@ -3,12 +3,19 @@ import { Transform } from 'stream';
 import { RangeNotSatisfiedHttpError } from './errors/RangeNotSatisfiedHttpError';
 import { pipeSafely } from './StreamUtil';
 
+export interface SliceStreamOptions extends TransformOptions {
+  start: number;
+  end?: number;
+  size?: number;
+}
+
 /**
  * A stream that slices a part out of another stream.
  * `start` and `end` are inclusive.
  * If `end` is not defined it is until the end of the stream.
- * Does not support negative `start` values which would indicate slicing the end of the stream off,
- * since we don't know the length of the input stream.
+ *
+ * Negative `start` values can be used to instead slice that many streams off the end of the stream.
+ * This requires the `size` field to be defined.
  *
  * Both object and non-object streams are supported.
  * This needs to be explicitly specified,
@@ -19,16 +26,29 @@ export class SliceStream extends Transform {
   protected remainingSkip: number;
   protected remainingRead: number;
 
-  public constructor(source: Readable, options: TransformOptions & { start: number; end?: number }) {
+  public constructor(source: Readable, options: SliceStreamOptions) {
     super(options);
+    let start = options.start;
     const end = options.end ?? Number.POSITIVE_INFINITY;
     if (options.start < 0) {
-      throw new RangeNotSatisfiedHttpError('Slicing data at the end of a stream is not supported.');
+      if (typeof options.size !== 'number') {
+        throw new RangeNotSatisfiedHttpError('Slicing data at the end of a stream requires a known size.');
+      } else {
+        // `start` is a negative number here so need to add
+        start = options.size + start;
+      }
     }
-    if (options.start >= end) {
+
+    if (start >= end) {
       throw new RangeNotSatisfiedHttpError('Range start should be less than end.');
     }
-    this.remainingSkip = options.start;
+
+    // Not using `end` variable as that could be infinity
+    if (typeof options.end === 'number' && typeof options.size === 'number' && options.end >= options.size) {
+      throw new RangeNotSatisfiedHttpError('Range end should be less than the total size.');
+    }
+
+    this.remainingSkip = start;
     // End value is inclusive
     this.remainingRead = end - options.start + 1;
 

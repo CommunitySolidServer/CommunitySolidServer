@@ -5,7 +5,7 @@ import { ResourceStore } from '../../../src/storage/ResourceStore';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { RangeNotSatisfiedHttpError } from '../../../src/util/errors/RangeNotSatisfiedHttpError';
 import { readableToString } from '../../../src/util/StreamUtil';
-import { SOLID_HTTP } from '../../../src/util/Vocabularies';
+import { POSIX, SOLID_HTTP } from '../../../src/util/Vocabularies';
 
 describe('A BinarySliceResourceStore', (): void => {
   const identifier = { path: 'path' };
@@ -29,6 +29,14 @@ describe('A BinarySliceResourceStore', (): void => {
     expect(result.metadata.get(SOLID_HTTP.terms.unit)?.value).toBe('bytes');
     expect(result.metadata.get(SOLID_HTTP.terms.start)?.value).toBe('1');
     expect(result.metadata.get(SOLID_HTTP.terms.end)?.value).toBe('4');
+  });
+
+  it('uses the stream size when slicing if available.', async(): Promise<void> => {
+    representation.metadata.set(POSIX.terms.size, '10');
+    const result = await store.getRepresentation(identifier, { range: { unit: 'bytes', parts: [{ start: -4 }]}});
+    await expect(readableToString(result.data)).resolves.toBe('6789');
+    expect(result.metadata.get(SOLID_HTTP.terms.unit)?.value).toBe('bytes');
+    expect(result.metadata.get(SOLID_HTTP.terms.start)?.value).toBe('-4');
   });
 
   it('does not add end metadata if there is none.', async(): Promise<void> => {

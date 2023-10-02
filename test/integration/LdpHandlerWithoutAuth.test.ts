@@ -733,20 +733,23 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
     let response = await fetch(resourceUrl, { headers: { range: 'bytes=0-5' }});
     expect(response.status).toBe(206);
-    expect(response.headers.get('content-range')).toBe('bytes 0-5/*');
+    expect(response.headers.get('content-range')).toBe('bytes 0-5/10');
+    expect(response.headers.get('content-length')).toBe('6');
     await expect(response.text()).resolves.toBe('012345');
 
     response = await fetch(resourceUrl, { headers: { range: 'bytes=5-' }});
     expect(response.status).toBe(206);
-    expect(response.headers.get('content-range')).toBe('bytes 5-*/*');
+    expect(response.headers.get('content-range')).toBe('bytes 5-9/10');
+    expect(response.headers.get('content-length')).toBe('5');
     await expect(response.text()).resolves.toBe('56789');
+
+    response = await fetch(resourceUrl, { headers: { range: 'bytes=-4' }});
+    expect(response.status).toBe(206);
+    expect(response.headers.get('content-range')).toBe('bytes 6-9/10');
+    expect(response.headers.get('content-length')).toBe('4');
+    await expect(response.text()).resolves.toBe('6789');
 
     response = await fetch(resourceUrl, { headers: { range: 'bytes=5-15' }});
-    expect(response.status).toBe(206);
-    expect(response.headers.get('content-range')).toBe('bytes 5-15/*');
-    await expect(response.text()).resolves.toBe('56789');
-
-    response = await fetch(resourceUrl, { headers: { range: 'bytes=-5' }});
     expect(response.status).toBe(416);
   });
 });

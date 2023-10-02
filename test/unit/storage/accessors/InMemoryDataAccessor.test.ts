@@ -9,7 +9,7 @@ import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIdentifierStrategy';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
-import { LDP, RDF } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE, LDP, POSIX, RDF } from '../../../../src/util/Vocabularies';
 const { namedNode } = DataFactory;
 
 class DummyStrategy extends BaseIdentifierStrategy {
@@ -104,13 +104,18 @@ describe('An InMemoryDataAccessor', (): void => {
 
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
       const identifier = { path: `${base}resource` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: LDP.terms.Resource });
+      const inputMetadata = new RepresentationMetadata(identifier, {
+        [RDF.type]: LDP.terms.Resource,
+        [CONTENT_TYPE]: 'text/turtle',
+      });
       await expect(accessor.writeDocument(identifier, data, inputMetadata)).resolves.toBeUndefined();
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}resource`);
       const quads = metadata.quads();
-      expect(quads).toHaveLength(1);
-      expect(quads[0].object.value).toBe(LDP.Resource);
+      expect(quads).toHaveLength(3);
+      expect(metadata.get(RDF.terms.type)).toEqual(LDP.terms.Resource);
+      expect(metadata.contentType).toBe('text/turtle');
+      expect(metadata.get(POSIX.terms.size)?.value).toBe('4');
     });
 
     it('adds stored metadata when requesting container metadata.', async(): Promise<void> => {
