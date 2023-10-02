@@ -3,7 +3,7 @@ import type { NamedNode } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';
 import { StreamParser, StreamWriter } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { Quad, Term } from 'rdf-js';
 import type { Guarded } from './GuardedStream';
 import { guardedStreamFrom, pipeSafely } from './StreamUtil';
 import { toNamedTerm } from './TermUtil';
@@ -43,6 +43,18 @@ export function uniqueQuads(quads: Quad[]): Quad[] {
     }
     return result;
   }, []);
+}
+
+/**
+ * Converts a term to a number. Returns undefined if the term was undefined.
+ *
+ * @param term - Term to parse.
+ * @param radix - Radix to use when parsing. Default is 10.
+ */
+export function termToInt(term?: Term, radix = 10): number | undefined {
+  if (term) {
+    return Number.parseInt(term.value, radix);
+  }
 }
 
 /**

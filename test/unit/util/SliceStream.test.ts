@@ -4,7 +4,7 @@ import { SliceStream } from '../../../src/util/SliceStream';
 import { readableToString } from '../../../src/util/StreamUtil';
 
 describe('A SliceStream', (): void => {
-  it('does not support suffix slicing.', async(): Promise<void> => {
+  it('does not support suffix slicing if the size is unknown.', async(): Promise<void> => {
     expect((): unknown => new SliceStream(Readable.from('0123456789'), { start: -5 }))
       .toThrow(RangeNotSatisfiedHttpError);
   });
@@ -13,6 +13,11 @@ describe('A SliceStream', (): void => {
     expect((): unknown => new SliceStream(Readable.from('0123456789'), { start: 5, end: 4 }))
       .toThrow(RangeNotSatisfiedHttpError);
     expect((): unknown => new SliceStream(Readable.from('0123456789'), { start: 5, end: 5 }))
+      .toThrow(RangeNotSatisfiedHttpError);
+  });
+
+  it('requires the end to be less than the size.', async(): Promise<void> => {
+    expect((): unknown => new SliceStream(Readable.from('0123456789'), { start: 5, end: 6, size: 6 }))
       .toThrow(RangeNotSatisfiedHttpError);
   });
 
@@ -25,6 +30,9 @@ describe('A SliceStream', (): void => {
 
     await expect(readableToString(new SliceStream(Readable.from('0123456789', { objectMode: false }),
       { start: 3, end: 20, objectMode: false }))).resolves.toBe('3456789');
+
+    await expect(readableToString(new SliceStream(Readable.from('0123456789', { objectMode: false }),
+      { start: -3, size: 10, objectMode: false }))).resolves.toBe('789');
   });
 
   it('can slice object streams.', async(): Promise<void> => {
@@ -37,5 +45,8 @@ describe('A SliceStream', (): void => {
 
     await expect(readableToString(new SliceStream(Readable.from(arr, { objectMode: true }),
       { start: 3, end: 20, objectMode: true }))).resolves.toBe('3456789');
+
+    await expect(readableToString(new SliceStream(Readable.from(arr, { objectMode: true }),
+      { start: -3, size: 10, objectMode: true }))).resolves.toBe('789');
   });
 });
