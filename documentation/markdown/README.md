@@ -29,6 +29,7 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 
 ## Using the server
 
+* [Quickly starting the server](usage/starting-server.md)
 * [Basic example HTTP requests](usage/example-requests.md)
 * [Editing the metadata of a resource](usage/metadata.md)
 * [How to use the Identity Provider](usage/identity-provider.md)
