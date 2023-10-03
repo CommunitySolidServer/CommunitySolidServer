@@ -132,7 +132,10 @@ export class IdentityTestState {
     const mockUrl = res.headers.get('location')!;
     expect(mockUrl.startsWith(this.redirectUrl)).toBeTruthy();
 
-    const info = await this.session.handleIncomingRedirect(mockUrl);
+    // Workaround for https://github.com/inrupt/solid-client-authn-js/issues/2985
+    const strippedUrl = new URL(mockUrl);
+    strippedUrl.searchParams.delete('iss');
+    const info = await this.session.handleIncomingRedirect(strippedUrl.href);
     expect(info?.isLoggedIn).toBe(true);
   }
 
