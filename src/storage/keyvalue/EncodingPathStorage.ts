@@ -62,7 +62,15 @@ export class EncodingPathStorage<T> implements KeyValueStorage<string, T> {
    * Converts an internal storage path string into the original path key.
    */
   protected pathToKey(path: string): string {
-    const buffer = Buffer.from(path.slice(this.basePath.length), 'base64');
+    // While the main part of a base64 encoded string is same from any changes from encoding or decoding URL parts,
+    // the `=` symbol that is used for padding is not.
+    // This can cause incorrect results when calling these function,
+    // where the original path contains `YXBwbGU%3D` instead of `YXBwbGU=`.
+    // This does not create any issues when the source store does not encode the string, so is safe to always call.
+    // For consistency, we might want to also always encode when creating the path in `keyToPath()`,
+    // but that would potentially break existing implementations that do not do encoding,
+    // and is not really necessary to solve any issues.
+    const buffer = Buffer.from(decodeURIComponent(path.slice(this.basePath.length)), 'base64');
     return buffer.toString('utf-8');
   }
 }
