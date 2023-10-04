@@ -1,0 +1,16 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/app/init/migration/v6.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Handles all migration initializers.",
+      "@id": "urn:solid-server:default:MigrationInitializer",
+      "@type": "SequenceHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:V6MigrationHandler" }
+      ]
+    }
+  ]
+}

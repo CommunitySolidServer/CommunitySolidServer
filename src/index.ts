@@ -275,6 +275,10 @@ export * from './init/final/Finalizer';
 export * from './init/cli/CliExtractor';
 export * from './init/cli/YargsCliExtractor';
 
+// Init/Migration
+export * from './init/migration/SingleContainerJsonStorage';
+export * from './init/migration/V6MigrationInitializer';
+
 // Init/Variables/Extractors
 export * from './init/variables/extractors/KeyExtractor';
 export * from './init/variables/extractors/AssetPathExtractor';

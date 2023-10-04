@@ -121,6 +121,14 @@
             "type": "number",
             "describe": "Run the server in multithreaded mode using workers. (special values: -1: num_cores-1, 0: num_cores). Defaults to 1 (singlethreaded)"
           }
+        },
+        {
+          "@type": "YargsParameter",
+          "name": "confirmMigration",
+          "options": {
+            "type": "boolean",
+            "describe": "Skips the confirmation prompts during migration from older versions."
+          }
         }
       ],
       "options": {

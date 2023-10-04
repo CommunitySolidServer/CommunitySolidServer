@@ -9,8 +9,8 @@ import { ACCOUNT_TYPE } from '../../account/util/LoginStorage';
 import type { AccountLoginStorage } from '../../account/util/LoginStorage';
 import type { PasswordStore } from './PasswordStore';
 
-const STORAGE_TYPE = 'password';
-const STORAGE_DESCRIPTION = {
+export const PASSWORD_STORAGE_TYPE = 'password';
+export const PASSWORD_STORAGE_DESCRIPTION = {
   email: 'string',
   password: 'string',
   verified: 'boolean',
@@ -25,7 +25,7 @@ const STORAGE_DESCRIPTION = {
 export class BasePasswordStore extends Initializer implements PasswordStore {
   private readonly logger = getLoggerFor(this);
 
-  private readonly storage: AccountLoginStorage<{ [STORAGE_TYPE]: typeof STORAGE_DESCRIPTION }>;
+  private readonly storage: AccountLoginStorage<{ [PASSWORD_STORAGE_TYPE]: typeof PASSWORD_STORAGE_DESCRIPTION }>;
   private readonly saltRounds: number;
   private initialized = false;
 
@@ -41,9 +41,9 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
       return;
     }
     try {
-      await this.storage.defineType(STORAGE_TYPE, STORAGE_DESCRIPTION, true);
-      await this.storage.createIndex(STORAGE_TYPE, 'accountId');
-      await this.storage.createIndex(STORAGE_TYPE, 'email');
+      await this.storage.defineType(PASSWORD_STORAGE_TYPE, PASSWORD_STORAGE_DESCRIPTION, true);
+      await this.storage.createIndex(PASSWORD_STORAGE_TYPE, 'accountId');
+      await this.storage.createIndex(PASSWORD_STORAGE_TYPE, 'email');
       this.initialized = true;
     } catch (cause: unknown) {
       throw new InternalServerError(`Error defining email/password in storage: ${createErrorMessage(cause)}`,
@@ -56,7 +56,7 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
       this.logger.warn(`Trying to create duplicate login for email ${email}`);
       throw new BadRequestHttpError('There already is a login for this e-mail address.');
     }
-    const payload = await this.storage.create(STORAGE_TYPE, {
+    const payload = await this.storage.create(PASSWORD_STORAGE_TYPE, {
       accountId,
       email: email.toLowerCase(),
       password: await hash(password, this.saltRounds),
@@ -66,7 +66,7 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
   }
 
   public async get(id: string): Promise<{ email: string; accountId: string } | undefined> {
-    const result = await this.storage.get(STORAGE_TYPE, id);
+    const result = await this.storage.get(PASSWORD_STORAGE_TYPE, id);
     if (!result) {
       return;
     }
@@ -74,7 +74,7 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
   }
 
   public async findByEmail(email: string): Promise<{ accountId: string; id: string } | undefined> {
-    const payload = await this.storage.find(STORAGE_TYPE, { email: email.toLowerCase() });
+    const payload = await this.storage.find(PASSWORD_STORAGE_TYPE, { email: email.toLowerCase() });
     if (payload.length === 0) {
       return;
     }
@@ -82,21 +82,21 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
   }
 
   public async findByAccount(accountId: string): Promise<{ id: string; email: string }[]> {
-    return (await this.storage.find(STORAGE_TYPE, { accountId }))
+    return (await this.storage.find(PASSWORD_STORAGE_TYPE, { accountId }))
       .map(({ id, email }): { id: string; email: string } => ({ id, email }));
   }
 
   public async confirmVerification(id: string): Promise<void> {
-    if (!await this.storage.has(STORAGE_TYPE, id)) {
+    if (!await this.storage.has(PASSWORD_STORAGE_TYPE, id)) {
       this.logger.warn(`Trying to verify unknown password login ${id}`);
       throw new ForbiddenHttpError('Login does not exist.');
     }
 
-    await this.storage.setField(STORAGE_TYPE, id, 'verified', true);
+    await this.storage.setField(PASSWORD_STORAGE_TYPE, id, 'verified', true);
   }
 
   public async authenticate(email: string, password: string): Promise<{ accountId: string; id: string }> {
-    const payload = await this.storage.find(STORAGE_TYPE, { email: email.toLowerCase() });
+    const payload = await this.storage.find(PASSWORD_STORAGE_TYPE, { email: email.toLowerCase() });
     if (payload.length === 0) {
       this.logger.warn(`Trying to get account info for unknown email ${email}`);
       throw new ForbiddenHttpError('Invalid email/password combination.');
@@ -114,14 +114,14 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
   }
 
   public async update(id: string, password: string): Promise<void> {
-    if (!await this.storage.has(STORAGE_TYPE, id)) {
+    if (!await this.storage.has(PASSWORD_STORAGE_TYPE, id)) {
       this.logger.warn(`Trying to update unknown password login ${id}`);
       throw new ForbiddenHttpError('Login does not exist.');
     }
-    await this.storage.setField(STORAGE_TYPE, id, 'password', await hash(password, this.saltRounds));
+    await this.storage.setField(PASSWORD_STORAGE_TYPE, id, 'password', await hash(password, this.saltRounds));
   }
 
   public async delete(id: string): Promise<void> {
-    return this.storage.delete(STORAGE_TYPE, id);
+    return this.storage.delete(PASSWORD_STORAGE_TYPE, id);
   }
 }

@@ -51,6 +51,11 @@
       "comment": "Run the server in multithreaded mode with the set amount of workers.",
       "@id": "urn:solid-server:default:variable:workers",
       "@type": "Variable"
+    },
+    {
+      "comment": "If true, skips the confirmation prompts during migration.",
+      "@id": "urn:solid-server:default:variable:confirmMigration",
+      "@type": "Variable"
     }
   ]
 }

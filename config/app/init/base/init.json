@@ -6,7 +6,8 @@
     "css:config/app/init/initializers/server.json",
     "css:config/app/init/initializers/seeding.json",
     "css:config/app/init/initializers/version.json",
-    "css:config/app/init/initializers/workers.json"
+    "css:config/app/init/initializers/workers.json",
+    "css:config/app/init/migration/base.json"
   ],
   "@graph": [
     {
@@ -15,6 +16,7 @@
       "@type": "SequenceHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:LoggerInitializer" },
+        { "@id": "urn:solid-server:default:EarlyProcessParallelInitializer" },
         { "@id": "urn:solid-server:default:PrimaryInitializer" },
         { "@id": "urn:solid-server:default:WorkerInitializer" }
       ]
@@ -32,6 +34,7 @@
         "handlers": [
           { "@id": "urn:solid-server:default:CleanupInitializer"},
           { "@id": "urn:solid-server:default:BaseUrlVerifier" },
+          { "@id": "urn:solid-server:default:MigrationInitializer" },
           { "@id": "urn:solid-server:default:PrimaryParallelInitializer" },
           { "@id": "urn:solid-server:default:SeededAccountInitializer" },
           { "@id": "urn:solid-server:default:ModuleVersionVerifier" },
