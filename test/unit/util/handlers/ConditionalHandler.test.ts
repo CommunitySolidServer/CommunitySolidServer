@@ -45,6 +45,15 @@ describe('A ConditionalHandler', (): void => {
     await expect(handler.handleSafe(input)).resolves.toBe('handledSafely');
     expect(source.handleSafe).toHaveBeenCalledTimes(1);
     expect(source.handleSafe).toHaveBeenLastCalledWith(input);
+    expect(storage.get(storageKey)).toBeUndefined();
+  });
+
+  it('can store the value itself if requested after a handleSafe call.', async(): Promise<void> => {
+    handler = new ConditionalHandler(source, storage, storageKey, storageValue, true);
+    await expect(handler.handleSafe(input)).resolves.toBe('handledSafely');
+    expect(source.handleSafe).toHaveBeenCalledTimes(1);
+    expect(source.handleSafe).toHaveBeenLastCalledWith(input);
+    expect(storage.get(storageKey)).toBe(storageValue);
   });
 
   it('rejects all handleSafe requests once the storage value matches.', async(): Promise<void> => {
@@ -57,6 +66,7 @@ describe('A ConditionalHandler', (): void => {
     await expect(handler.handle(input)).resolves.toBe('handled');
     expect(source.handle).toHaveBeenCalledTimes(1);
     expect(source.handle).toHaveBeenLastCalledWith(input);
+    expect(storage.get(storageKey)).toBeUndefined();
   });
 
   it('does not reject handle requests once the storage value matches.', async(): Promise<void> => {
@@ -64,5 +74,13 @@ describe('A ConditionalHandler', (): void => {
     await expect(handler.handle(input)).resolves.toBe('handled');
     expect(source.handle).toHaveBeenCalledTimes(1);
     expect(source.handle).toHaveBeenLastCalledWith(input);
+  });
+
+  it('can store the value itself if requested after a handle call.', async(): Promise<void> => {
+    handler = new ConditionalHandler(source, storage, storageKey, storageValue, true);
+    await expect(handler.handle(input)).resolves.toBe('handled');
+    expect(source.handle).toHaveBeenCalledTimes(1);
+    expect(source.handle).toHaveBeenLastCalledWith(input);
+    expect(storage.get(storageKey)).toBe(storageValue);
   });
 });
