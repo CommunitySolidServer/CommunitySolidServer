@@ -26,12 +26,9 @@ Additionally to the details below, the tail of all resource identifiers were bas
     * Resource identifiers: the token label
     * Data format: `{ webId, secret }`
 
-The best way to migrate the data would be to read in the old data,
-and make use of the new classes to generate the new account objects,
-as generating the data manually might be too cumbersome.
-Ideally the account classes of the previous version can be reused to read in the older data
-to prevent having to read the old data directly.
-
-During migration, WebID ownership validation would need to be disabled
-as otherwise the server won't allow linking the WebIDs.
-The password values can be reused as the password storage method was not changed.
+The `V6MigrationInitializer` class is responsible for migrating from this format to the new one
+and does so by reading in the old data and creating new instances in the `IndexedStorage`.
+In case you have an instance that made impactful changes to how storage is handled
+that would be the class to investigate and replace.
+Password data can be reused as the algorithm there was not changed.
+Email addresses are now stored in lowercase, so these need to be converted during migration.

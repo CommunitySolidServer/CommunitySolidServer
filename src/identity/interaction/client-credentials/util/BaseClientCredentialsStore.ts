@@ -7,8 +7,8 @@ import { ACCOUNT_TYPE } from '../../account/util/LoginStorage';
 import type { AccountLoginStorage } from '../../account/util/LoginStorage';
 import type { ClientCredentials, ClientCredentialsStore } from './ClientCredentialsStore';
 
-const STORAGE_TYPE = 'clientCredentials';
-const STORAGE_DESCRIPTION = {
+export const CLIENT_CREDENTIALS_STORAGE_TYPE = 'clientCredentials';
+export const CLIENT_CREDENTIALS_STORAGE_DESCRIPTION = {
   label: 'string',
   accountId: `id:${ACCOUNT_TYPE}`,
   secret: 'string',
@@ -22,7 +22,9 @@ const STORAGE_DESCRIPTION = {
 export class BaseClientCredentialsStore extends Initializer implements ClientCredentialsStore {
   private readonly logger = getLoggerFor(this);
 
-  private readonly storage: AccountLoginStorage<{ [STORAGE_TYPE]: typeof STORAGE_DESCRIPTION }>;
+  private readonly storage: AccountLoginStorage<{ [CLIENT_CREDENTIALS_STORAGE_TYPE]:
+      typeof CLIENT_CREDENTIALS_STORAGE_DESCRIPTION; }>;
+
   private initialized = false;
 
   public constructor(storage: AccountLoginStorage<any>) {
@@ -36,9 +38,9 @@ export class BaseClientCredentialsStore extends Initializer implements ClientCre
       return;
     }
     try {
-      await this.storage.defineType(STORAGE_TYPE, STORAGE_DESCRIPTION, false);
-      await this.storage.createIndex(STORAGE_TYPE, 'accountId');
-      await this.storage.createIndex(STORAGE_TYPE, 'label');
+      await this.storage.defineType(CLIENT_CREDENTIALS_STORAGE_TYPE, CLIENT_CREDENTIALS_STORAGE_DESCRIPTION, false);
+      await this.storage.createIndex(CLIENT_CREDENTIALS_STORAGE_TYPE, 'accountId');
+      await this.storage.createIndex(CLIENT_CREDENTIALS_STORAGE_TYPE, 'label');
       this.initialized = true;
     } catch (cause: unknown) {
       throw new InternalServerError(`Error defining client credentials in storage: ${createErrorMessage(cause)}`,
@@ -47,11 +49,11 @@ export class BaseClientCredentialsStore extends Initializer implements ClientCre
   }
 
   public async get(id: string): Promise<ClientCredentials | undefined> {
-    return this.storage.get(STORAGE_TYPE, id);
+    return this.storage.get(CLIENT_CREDENTIALS_STORAGE_TYPE, id);
   }
 
   public async findByLabel(label: string): Promise<ClientCredentials | undefined> {
-    const result = await this.storage.find(STORAGE_TYPE, { label });
+    const result = await this.storage.find(CLIENT_CREDENTIALS_STORAGE_TYPE, { label });
     if (result.length === 0) {
       return;
     }
@@ -59,7 +61,7 @@ export class BaseClientCredentialsStore extends Initializer implements ClientCre
   }
 
   public async findByAccount(accountId: string): Promise<ClientCredentials[]> {
-    return this.storage.find(STORAGE_TYPE, { accountId });
+    return this.storage.find(CLIENT_CREDENTIALS_STORAGE_TYPE, { accountId });
   }
 
   public async create(label: string, webId: string, accountId: string): Promise<ClientCredentials> {
@@ -69,11 +71,11 @@ export class BaseClientCredentialsStore extends Initializer implements ClientCre
       `Creating client credentials token with label ${label} for WebID ${webId} and account ${accountId}`,
     );
 
-    return this.storage.create(STORAGE_TYPE, { accountId, label, webId, secret });
+    return this.storage.create(CLIENT_CREDENTIALS_STORAGE_TYPE, { accountId, label, webId, secret });
   }
 
   public async delete(id: string): Promise<void> {
     this.logger.debug(`Deleting client credentials token with ID ${id}`);
-    return this.storage.delete(STORAGE_TYPE, id);
+    return this.storage.delete(CLIENT_CREDENTIALS_STORAGE_TYPE, id);
   }
 }

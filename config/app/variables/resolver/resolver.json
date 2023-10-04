@@ -81,6 +81,14 @@
             "key": "workers",
             "defaultValue": 1
           }
+        },
+        {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:confirmMigration",
+          "CombinedShorthandResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "confirmMigration",
+            "defaultValue": false
+          }
         }
       ]
     }

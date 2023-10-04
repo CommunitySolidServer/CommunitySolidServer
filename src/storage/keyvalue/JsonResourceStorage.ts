@@ -27,8 +27,8 @@ const KEY_LENGTH_LIMIT = 255;
  * All non-404 errors will be re-thrown.
  */
 export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
-  private readonly source: ResourceStore;
-  private readonly container: string;
+  protected readonly source: ResourceStore;
+  protected readonly container: string;
 
   public constructor(source: ResourceStore, baseUrl: string, container: string) {
     this.source = source;
@@ -79,7 +79,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
   /**
    * Recursively iterates through the container to find all documents.
    */
-  private async* getResourceEntries(identifier: ResourceIdentifier): AsyncIterableIterator<[string, T]> {
+  protected async* getResourceEntries(identifier: ResourceIdentifier): AsyncIterableIterator<[string, T]> {
     const representation = await this.safelyGetResource(identifier);
     if (representation) {
       if (isContainerIdentifier(identifier)) {
@@ -101,7 +101,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
    * Returns undefined if a 404 error is thrown.
    * Re-throws the error in all other cases.
    */
-  private async safelyGetResource(identifier: ResourceIdentifier): Promise<Representation | undefined> {
+  protected async safelyGetResource(identifier: ResourceIdentifier): Promise<Representation | undefined> {
     let representation: Representation | undefined;
     try {
       const preferences = isContainerIdentifier(identifier) ? {} : { type: { 'application/json': 1 }};
@@ -119,7 +119,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
   /**
    * Converts a key into an identifier for internal storage.
    */
-  private keyToIdentifier(key: string): ResourceIdentifier {
+  protected keyToIdentifier(key: string): ResourceIdentifier {
     // Parse the key as a file path
     const parsedPath = parse(key);
     // Hash long filenames to prevent issues with the underlying storage.
@@ -135,7 +135,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
   /**
    * Converts an internal identifier to an external key.
    */
-  private identifierToKey(identifier: ResourceIdentifier): string {
+  protected identifierToKey(identifier: ResourceIdentifier): string {
     // Due to the usage of `joinUrl` we don't know for sure if there was a preceding slash,
     // so we always add one for consistency.
     // In practice this would only be an issue if a class depends
@@ -143,7 +143,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
     return ensureLeadingSlash(identifier.path.slice(this.container.length));
   }
 
-  private applyHash(key: string): string {
+  protected applyHash(key: string): string {
     return createHash('sha256').update(key).digest('hex');
   }
 }

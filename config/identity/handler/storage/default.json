@@ -75,7 +75,7 @@
     },
     {
       "comment": "Initialize all the stores.",
-      "@id": "urn:solid-server:default:WorkerParallelInitializer",
+      "@id": "urn:solid-server:default:EarlyProcessParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:AccountStore" },

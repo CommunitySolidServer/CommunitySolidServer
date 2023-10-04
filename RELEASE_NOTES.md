@@ -15,6 +15,7 @@
 - Pod seeding has been updated to account for the new account management, with an update CLI parameter `--seedConfig`,
   see the [updated documentation](https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/seeding-pods/)
   for more details.
+- Migration was added to update account data automatically from previous versions. See below for more details.
 - Due to the changes in account management, setup has been removed completely.
   The `*-no-setup.json` configurations have been renamed to `*-root.json` to indicate their focus on the root container.
 - The `StaticAssetHandler` can now be used to link static pages to containers.
@@ -23,8 +24,15 @@
 
 ### Data migration
 
-Old account data will need to be migrated as described in the
-[documentation](https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/account/migration/).
+Old account data will need to be migrated.
+When starting the server for the first time after updating the version,
+this will happen automatically.
+A prompt will be shown to confirm.
+It is advised to first backup the account data in case something goes wrong.
+When using the filesystem backend with default storage options,
+these can be found in the `.internal/accounts/` folder.
+
+In case the prompt causes issues, it can be skipped automatically with the `--confirmMigration` CLI option.
 
 ### Configuration changes
 

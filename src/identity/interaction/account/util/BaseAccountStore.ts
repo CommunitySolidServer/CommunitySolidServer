@@ -8,7 +8,7 @@ import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from './AccountStore';
 import type { AccountLoginStorage } from './LoginStorage';
 import { ACCOUNT_TYPE } from './LoginStorage';
 
-const STORAGE_DESCRIPTION = {
+export const ACCOUNT_STORAGE_DESCRIPTION = {
   [ACCOUNT_SETTINGS_REMEMBER_LOGIN]: 'boolean?',
 } as const;
 
@@ -19,7 +19,7 @@ const STORAGE_DESCRIPTION = {
 export class BaseAccountStore extends Initializer implements AccountStore {
   private readonly logger = getLoggerFor(this);
 
-  private readonly storage: AccountLoginStorage<{ [ACCOUNT_TYPE]: typeof STORAGE_DESCRIPTION }>;
+  private readonly storage: AccountLoginStorage<{ [ACCOUNT_TYPE]: typeof ACCOUNT_STORAGE_DESCRIPTION }>;
   private initialized = false;
 
   public constructor(storage: AccountLoginStorage<any>) {
@@ -33,7 +33,7 @@ export class BaseAccountStore extends Initializer implements AccountStore {
       return;
     }
     try {
-      await this.storage.defineType(ACCOUNT_TYPE, STORAGE_DESCRIPTION, false);
+      await this.storage.defineType(ACCOUNT_TYPE, ACCOUNT_STORAGE_DESCRIPTION, false);
       this.initialized = true;
     } catch (cause: unknown) {
       throw new InternalServerError(`Error defining account in storage: ${createErrorMessage(cause)}`, { cause });
@@ -58,6 +58,6 @@ export class BaseAccountStore extends Initializer implements AccountStore {
 
   public async updateSetting<T extends keyof AccountSettings>(id: string, setting: T, value: AccountSettings[T]):
   Promise<void> {
-    await this.storage.setField(ACCOUNT_TYPE, id, setting, value as ValueType<typeof STORAGE_DESCRIPTION[T]>);
+    await this.storage.setField(ACCOUNT_TYPE, id, setting, value as ValueType<typeof ACCOUNT_STORAGE_DESCRIPTION[T]>);
   }
 }

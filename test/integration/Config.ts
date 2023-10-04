@@ -56,5 +56,6 @@ export function getDefaultVariables(port: number, baseUrl?: string): Record<stri
     'urn:solid-server:default:variable:showStackTrace': true,
     'urn:solid-server:default:variable:seedConfig': null,
     'urn:solid-server:default:variable:workers': 1,
+    'urn:solid-server:default:variable:confirmMigration': false,
   };
 }
