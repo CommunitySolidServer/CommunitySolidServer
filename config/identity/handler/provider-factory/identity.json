@@ -2,9 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": [
-        "Sets all the relevant Solid-OIDC parameters.",
-      ],
+      "comment":  "Sets all the relevant Solid-OIDC parameters.",
       "@id": "urn:solid-server:default:IdentityProviderFactory",
       "@type": "IdentityProviderFactory",
       "adapterFactory": { "@id": "urn:solid-server:default:IdpAdapterFactory" },
@@ -26,6 +24,14 @@
         "cookies": {
           "long": { "signed": true, "maxAge": 86400000 },
           "short": { "signed": true }
+        },
+        "enabledJWA": {
+          "dPoPSigningAlgValues": [
+            "RS256", "RS384", "RS512",
+            "PS256", "PS384", "PS512",
+            "ES256", "ES256K", "ES384", "ES512",
+            "EdDSA"
+          ]
         },
         "features": {
           "claimsParameter": { "enabled": true },
