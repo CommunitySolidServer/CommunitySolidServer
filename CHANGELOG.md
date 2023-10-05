@@ -3,6 +3,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.2...v6.1.0) (2023-10-05)
+
+### Features
+
+* Track binary size of resources when possible ([71e5569](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/71e55690f3418be3d08e35d2cd3aeae5a0634654))
+* Add support for range headers ([3e9adef](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3e9adef4cf00d0776c0d371f835a31511db7427b))
+
+### Fixes
+
+* Prevent error when creating a root pod([da46bec](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/da46becf7a087118e7d682a193d00a3ca6c32eab))
+* Remove URL encoding from base64 strings before decoding ([d31393f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d31393f4751dd3f023110ead4e47a01ac15da2af))
+
+### Documentation
+
+* Simplify README by pointing to our docs. ([d618f97](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d618f9781af80b1697d5fe23f50e3f186954792b))
+* Add starting guide. ([e424b84](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e424b8488261bc8942d82a7fe2d92a94650e93b9))
+* Add quick start to README. ([1fa6d24](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1fa6d248a2e500c025794f4e3ed6cc504ed77f10))
+
 ## [6.0.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.1...v6.0.2) (2023-08-30)
 
 ### Fixes

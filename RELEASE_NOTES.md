@@ -1,5 +1,11 @@
 # Community Solid Server release notes
 
+## v6.1.0
+
+### New features
+
+- Added support for HTTP Range headers.
+
 ## v6.0.0
 
 ### New features
