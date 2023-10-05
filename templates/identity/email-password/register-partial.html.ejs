@@ -59,7 +59,9 @@
         Create a new Pod with my WebID as owner<% if (locals.allowRootPod) { %> in the root<% } %>.
       </label>
       <ol id="createPodForm">
-        <% if (!locals.allowRootPod) { %>
+        <% if (locals.allowRootPod) { %>
+          <input type="hidden" id="rootPod" name="rootPod" value="true">
+        <% } else { %>
         <li id="podNameForm">
           <label for="podName">Pod name:</label>
           <input id="podName" type="text" name="podName" value="<%= prefilled.podName || '' %>">
