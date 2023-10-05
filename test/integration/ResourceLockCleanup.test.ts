@@ -53,11 +53,8 @@ void => {
   });
 
   afterAll(async(): Promise<void> => {
-    // Stop the server
-    await app.stop();
-
-    // Execute the configured teardown
     await teardown();
+    await app.stop();
   });
 
   it('should not be affected by dangling locks.', async(): Promise<void> => {
