@@ -2,26 +2,26 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:WebHookRoute",
+      "@id": "urn:solid-server:default:WebhookRoute",
       "@type": "RelativePathInteractionRoute",
       "base": { "@id": "urn:solid-server:default:NotificationRoute" },
       "relativePath": "/WebhookChannel2023/"
     },
     {
-      "@id": "urn:solid-server:default:WebHookWebIdRoute",
+      "@id": "urn:solid-server:default:WebhookWebIdRoute",
       "@type": "RelativePathInteractionRoute",
-      "base": { "@id": "urn:solid-server:default:WebHookRoute" },
+      "base": { "@id": "urn:solid-server:default:WebhookRoute" },
       "relativePath": "/webId"
     },
 
     {
       "comment": "Handles the WebhookChannel2023 WebID.",
-      "@id": "urn:solid-server:default:WebHookWebId",
+      "@id": "urn:solid-server:default:WebhookWebId",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "allowedPathNames": [ "/WebhookChannel2023/webId$" ],
       "handler": {
-        "@type": "WebHookWebId",
+        "@type": "WebhookWebId",
         "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
       }
     },
@@ -30,8 +30,8 @@
       "@id": "urn:solid-server:default:NotificationTypeHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:WebHookRouter" },
-        { "@id": "urn:solid-server:default:WebHookWebId" }
+        { "@id": "urn:solid-server:default:WebhookRouter" },
+        { "@id": "urn:solid-server:default:WebhookWebId" }
       ]
     }
   ]

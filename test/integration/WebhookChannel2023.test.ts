@@ -21,14 +21,14 @@ import {
 } from './Config';
 import quad = DataFactory.quad;
 
-const port = getPort('WebHookChannel2023');
+const port = getPort('WebhookChannel2023');
 const baseUrl = `http://localhost:${port}/`;
-const clientPort = getPort('WebHookChannel2023-client');
+const clientPort = getPort('WebhookChannel2023-client');
 const target = `http://localhost:${clientPort}/`;
 const webId = 'http://example.com/card/#me';
 const notificationType = NOTIFY.WebhookChannel2023;
 
-const rootFilePath = getTestFolder('WebHookChannel2023');
+const rootFilePath = getTestFolder('WebhookChannel2023');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
     configs: [ 'storage/backend/memory.json', 'util/resource-locker/memory.json' ],
@@ -40,7 +40,7 @@ const stores: [string, any][] = [
   }],
 ];
 
-describe.each(stores)('A server supporting WebHookChannel2023 using %s', (name, { configs, teardown }): void => {
+describe.each(stores)('A server supporting WebhookChannel2023 using %s', (name, { configs, teardown }): void => {
   let app: App;
   const topic = joinUrl(baseUrl, '/foo');
   let storageDescriptionUrl: string;

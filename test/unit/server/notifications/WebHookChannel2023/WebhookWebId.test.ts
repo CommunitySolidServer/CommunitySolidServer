@@ -3,17 +3,17 @@ import type { Operation } from '../../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
-import { WebHookWebId } from '../../../../../src/server/notifications/WebHookChannel2023/WebHookWebId';
+import { WebhookWebId } from '../../../../../src/server/notifications/WebhookChannel2023/WebhookWebId';
 import { readableToString } from '../../../../../src/util/StreamUtil';
 import { SOLID } from '../../../../../src/util/Vocabularies';
 const { namedNode, quad } = DataFactory;
 
-describe('A WebHookWebId', (): void => {
+describe('A WebhookWebId', (): void => {
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
   let operation: Operation;
   const baseUrl = 'http://example.com/';
-  let webIdHandler: WebHookWebId;
+  let webIdHandler: WebhookWebId;
 
   beforeEach(async(): Promise<void> => {
     operation = {
@@ -23,7 +23,7 @@ describe('A WebHookWebId', (): void => {
       body: new BasicRepresentation(),
     };
 
-    webIdHandler = new WebHookWebId(baseUrl);
+    webIdHandler = new WebhookWebId(baseUrl);
   });
 
   it('returns a solid:oidcIssuer triple.', async(): Promise<void> => {
@@ -41,7 +41,7 @@ describe('A WebHookWebId', (): void => {
   });
 
   it('errors if the base URL is invalid.', async(): Promise<void> => {
-    expect((): any => new WebHookWebId('very invalid URL'))
+    expect((): any => new WebhookWebId('very invalid URL'))
       .toThrow('Invalid issuer URL: Unexpected "<very" on line 2.');
   });
 });

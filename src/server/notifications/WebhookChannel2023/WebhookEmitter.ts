@@ -10,10 +10,10 @@ import { readableToString } from '../../../util/StreamUtil';
 import type { NotificationEmitterInput } from '../NotificationEmitter';
 import { NotificationEmitter } from '../NotificationEmitter';
 import type { WebhookChannel2023 } from './WebhookChannel2023Type';
-import { isWebHook2023Channel } from './WebhookChannel2023Type';
+import { isWebhook2023Channel } from './WebhookChannel2023Type';
 
 /**
- * Emits a notification representation using the WebHookChannel2023 specification.
+ * Emits a notification representation using the WebhookChannel2023 specification.
  *
  * At the time of writing it is not specified how exactly a notification sender should make its requests verifiable,
  * so for now we use a token similar to those from Solid-OIDC, signed by the server itself.
@@ -23,7 +23,7 @@ import { isWebHook2023Channel } from './WebhookChannel2023Type';
  * The `expiration` input parameter is how long the generated token should be valid in minutes.
  * Default is 20.
  */
-export class WebHookEmitter extends NotificationEmitter {
+export class WebhookEmitter extends NotificationEmitter {
   protected readonly logger = getLoggerFor(this);
 
   private readonly issuer: string;
@@ -40,15 +40,15 @@ export class WebHookEmitter extends NotificationEmitter {
   }
 
   public async canHandle({ channel }: NotificationEmitterInput): Promise<void> {
-    if (!isWebHook2023Channel(channel)) {
-      throw new NotImplementedHttpError(`${channel.id} is not a WebHookChannel2023 channel.`);
+    if (!isWebhook2023Channel(channel)) {
+      throw new NotImplementedHttpError(`${channel.id} is not a WebhookChannel2023 channel.`);
     }
   }
 
   public async handle({ channel, representation }: NotificationEmitterInput): Promise<void> {
     // Cast was checked in `canHandle`
-    const webHookChannel = channel as WebhookChannel2023;
-    this.logger.debug(`Emitting WebHook notification with target ${webHookChannel.sendTo}`);
+    const webhookChannel = channel as WebhookChannel2023;
+    this.logger.debug(`Emitting Webhook notification with target ${webhookChannel.sendTo}`);
 
     const privateKey = await this.jwkGenerator.getPrivateKey();
     const publicKey = await this.jwkGenerator.getPublicKey();
@@ -78,14 +78,14 @@ export class WebHookEmitter extends NotificationEmitter {
 
     // https://datatracker.ietf.org/doc/html/draft-ietf-oauth-dpop#section-4.2
     const dpopProof = await new SignJWT({
-      htu: webHookChannel.sendTo,
+      htu: webhookChannel.sendTo,
       htm: 'POST',
     }).setProtectedHeader({ alg: privateKey.alg, jwk: publicKey, typ: 'dpop+jwt' })
       .setIssuedAt(time)
       .setJti(v4())
       .sign(privateKeyObject);
 
-    const response = await fetch(webHookChannel.sendTo, {
+    const response = await fetch(webhookChannel.sendTo, {
       method: 'POST',
       headers: {
         'content-type': representation.metadata.contentType!,
@@ -95,7 +95,7 @@ export class WebHookEmitter extends NotificationEmitter {
       body: await readableToString(representation.data),
     });
     if (response.status >= 400) {
-      this.logger.error(`There was an issue emitting a WebHook notification with target ${webHookChannel.sendTo}: ${
+      this.logger.error(`There was an issue emitting a Webhook notification with target ${webhookChannel.sendTo}: ${
         await response.text()}`);
     }
   }

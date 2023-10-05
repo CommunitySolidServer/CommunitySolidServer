@@ -31,6 +31,8 @@ The following changes are relevant for v6 custom configs that replaced certain f
     - `/http/notifications/base/storage.json`
     - `/identity/*`
     - `/storage/keyvalue/storages/storages.json`
+- All identifiers containing the string "WebHook" have been renamed to instead use "Webhook"
+  to be consistent with the notification type.
 
 ### Interface changes
 
@@ -41,6 +43,8 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `EncodingPathStorage` has been removed
   and its functionality split up over `Base64EncodingStorage` and `ContainerPathStorage`.
   `HashEncodingPathStorage` has similarly been replaced by introducing `HashEncodingStorage`.
+- All classes with the name `WebHook*` have been renamed to `Webhook*`
+  to be consistent with the corresponding notification type.
 
 ## v6.1.0
 
