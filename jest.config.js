@@ -40,6 +40,7 @@ module.exports = {
   ],
   testEnvironment: 'node',
   globalSetup: '<rootDir>/test/util/SetupTests.ts',
+  globalTeardown: '<rootDir>/test/util/TeardownTests.ts',
   setupFilesAfterEnv: [ 'jest-rdf' ],
   collectCoverage: false,
   // See https://github.com/matthieubosquet/ts-dpop/issues/13
