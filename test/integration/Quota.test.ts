@@ -112,8 +112,8 @@ describe('A quota server', (): void => {
     });
 
     afterAll(async(): Promise<void> => {
-      await app.stop();
       await removeFolder(rootFilePath);
+      await app.stop();
     });
 
     // Test quota in the first pod
@@ -198,8 +198,8 @@ describe('A quota server', (): void => {
     });
 
     afterAll(async(): Promise<void> => {
-      await app.stop();
       await removeFolder(rootFilePath);
+      await app.stop();
     });
 
     it('should return 413 when global quota is exceeded.', async(): Promise<void> => {
