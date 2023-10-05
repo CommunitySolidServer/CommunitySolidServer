@@ -8,6 +8,8 @@ import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { guardedStreamFrom } from '../../util/StreamUtil';
+import { POSIX } from '../../util/Vocabularies';
+import { isInternalContentType } from '../conversion/ConversionUtil';
 import type { DataAccessor } from './DataAccessor';
 
 interface DataEntry {
@@ -59,9 +61,17 @@ export class InMemoryDataAccessor implements DataAccessor, SingleThreaded {
   public async writeDocument(identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata):
   Promise<void> {
     const parent = this.getParentEntry(identifier);
+    // Drain original stream and create copy
+    const dataArray = await arrayifyStream(data);
+
+    // Only add the size for binary streams, which are all streams that do not have an internal type.
+    if (metadata.contentType && !isInternalContentType(metadata.contentType)) {
+      const size = dataArray.reduce<number>((total, chunk: Buffer): number => total + chunk.length, 0);
+      metadata.set(POSIX.terms.size, `${size}`);
+    }
+
     parent.entries[identifier.path] = {
-      // Drain original stream and create copy
-      data: await arrayifyStream(data),
+      data: dataArray,
       metadata,
     };
   }

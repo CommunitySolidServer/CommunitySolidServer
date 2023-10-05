@@ -21,6 +21,7 @@
         "Accept-Post",
         "Accept-Put",
         "Allow",
+        "Content-Range",
         "ETag",
         "Last-Modified",
         "Link",

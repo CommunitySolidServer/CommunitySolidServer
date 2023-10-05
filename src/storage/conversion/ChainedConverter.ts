@@ -5,6 +5,7 @@ import type { ValuePreferences } from '../../http/representation/RepresentationP
 import { getLoggerFor } from '../../logging/LogUtil';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { POSIX } from '../../util/Vocabularies';
 import { cleanPreferences, getBestPreference, getTypeWeight, preferencesToString } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { RepresentationConverter } from './RepresentationConverter';
@@ -100,6 +101,13 @@ export class ChainedConverter extends RepresentationConverter {
       args.preferences = { type: { [outTypes[i]]: 1 }};
       args.representation = await match.converters[i].handle(args);
     }
+
+    // For now, we assume any kind of conversion invalidates the stored byte length.
+    // In the future, we could let converters handle this individually, as some might know the size of the result.
+    if (match.converters.length > 0) {
+      args.representation.metadata.removeAll(POSIX.terms.size);
+    }
+
     return args.representation;
   }
 

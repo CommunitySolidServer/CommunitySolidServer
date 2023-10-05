@@ -45,8 +45,8 @@ describe('A server with seeded pods', (): void => {
   });
 
   afterAll(async(): Promise<void> => {
-    await app.stop();
     await removeFolder(rootFilePath);
+    await app.stop();
   });
 
   it('has created the requested pods.', async(): Promise<void> => {

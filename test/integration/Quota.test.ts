@@ -1,9 +1,8 @@
-import { promises as fsPromises } from 'fs';
 import type { Stats } from 'fs';
 import fetch from 'cross-fetch';
 import type { Response } from 'cross-fetch';
-import { ensureDir, pathExists } from 'fs-extra';
-import { joinFilePath, joinUrl } from '../../src';
+import { ensureDir, pathExists, stat } from 'fs-extra';
+import { joinUrl } from '../../src';
 import type { App } from '../../src';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
@@ -45,23 +44,6 @@ async function registerTestPods(baseUrl: string, pods: string[]): Promise<void> 
   }
 }
 
-/* We just want a container with the correct metadata, everything else can be removed */
-async function clearInitialFiles(rootFilePath: string, pods: string[]): Promise<void> {
-  for (const pod of pods) {
-    const fileList = await fsPromises.readdir(joinFilePath(rootFilePath, pod));
-    for (const file of fileList) {
-      if (file !== '.meta') {
-        const path = joinFilePath(rootFilePath, pod, file);
-        if ((await fsPromises.stat(path)).isDirectory()) {
-          await fsPromises.rm(path, { recursive: true });
-        } else {
-          await fsPromises.unlink(path);
-        }
-      }
-    }
-  }
-}
-
 describe('A quota server', (): void => {
   // The allowed quota depends on what filesystem/OS you are using.
   // For example: an empty folder is reported as
@@ -74,7 +56,7 @@ describe('A quota server', (): void => {
     // We want to use an empty folder as on APFS/Mac folder sizes vary a lot
     const tempFolder = getTestFolder('quota-temp');
     await ensureDir(tempFolder);
-    folderSizeTest = await fsPromises.stat(tempFolder);
+    folderSizeTest = await stat(tempFolder);
     await removeFolder(tempFolder);
   });
   const podName1 = 'arthur';
@@ -108,12 +90,11 @@ describe('A quota server', (): void => {
 
       // Initialize 2 pods
       await registerTestPods(baseUrl, [ podName1, podName2 ]);
-      await clearInitialFiles(rootFilePath, [ podName1, podName2 ]);
     });
 
     afterAll(async(): Promise<void> => {
-      await app.stop();
       await removeFolder(rootFilePath);
+      await app.stop();
     });
 
     // Test quota in the first pod
@@ -194,12 +175,11 @@ describe('A quota server', (): void => {
 
       // Initialize 2 pods
       await registerTestPods(baseUrl, [ podName1, podName2 ]);
-      await clearInitialFiles(rootFilePath, [ podName1, podName2 ]);
     });
 
     afterAll(async(): Promise<void> => {
-      await app.stop();
       await removeFolder(rootFilePath);
+      await app.stop();
     });
 
     it('should return 413 when global quota is exceeded.', async(): Promise<void> => {

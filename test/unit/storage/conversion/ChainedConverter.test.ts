@@ -8,7 +8,7 @@ import { BaseTypedRepresentationConverter } from '../../../../src/storage/conver
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
 import { matchesMediaType } from '../../../../src/storage/conversion/ConversionUtil';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
-import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE, POSIX } from '../../../../src/util/Vocabularies';
 
 class DummyConverter extends BaseTypedRepresentationConverter {
   private readonly inTypes: ValuePreferences;
@@ -47,6 +47,7 @@ describe('A ChainedConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     const metadata = new RepresentationMetadata('a/a');
+    metadata.set(POSIX.terms.size, '500');
     representation = { metadata } as Representation;
     preferences = { type: { 'x/x': 1, 'x/*': 0.8 }};
     args = { representation, preferences, identifier: { path: 'path' }};
@@ -81,6 +82,7 @@ describe('A ChainedConverter', (): void => {
 
     const result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('b/b');
+    expect(result.metadata.get(POSIX.terms.size)?.value).toBe('500');
   });
 
   it('converts input matching the output preferences if a better output can be found.', async(): Promise<void> => {
@@ -91,6 +93,7 @@ describe('A ChainedConverter', (): void => {
 
     const result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('x/x');
+    expect(result.metadata.get(POSIX.terms.size)).toBeUndefined();
   });
 
   it('interprets no preferences as */*.', async(): Promise<void> => {
@@ -101,10 +104,12 @@ describe('A ChainedConverter', (): void => {
 
     let result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('b/b');
+    expect(result.metadata.get(POSIX.terms.size)?.value).toBe('500');
 
     args.preferences.type = { };
     result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('b/b');
+    expect(result.metadata.get(POSIX.terms.size)?.value).toBe('500');
   });
 
   it('can find paths of length 1.', async(): Promise<void> => {
@@ -113,6 +118,7 @@ describe('A ChainedConverter', (): void => {
 
     const result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('x/x');
+    expect(result.metadata.get(POSIX.terms.size)).toBeUndefined();
   });
 
   it('can find longer paths.', async(): Promise<void> => {
@@ -126,6 +132,7 @@ describe('A ChainedConverter', (): void => {
 
     const result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('x/x');
+    expect(result.metadata.get(POSIX.terms.size)).toBeUndefined();
   });
 
   it('will use the shortest path among the best found.', async(): Promise<void> => {
@@ -147,6 +154,7 @@ describe('A ChainedConverter', (): void => {
     }
     const result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('x/x');
+    expect(result.metadata.get(POSIX.terms.size)).toBeUndefined();
     expect(converters[0].handle).toHaveBeenCalledTimes(0);
     expect(converters[1].handle).toHaveBeenCalledTimes(0);
     expect(converters[2].handle).toHaveBeenCalledTimes(1);

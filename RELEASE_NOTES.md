@@ -41,6 +41,12 @@ These changes are relevant if you wrote custom modules for the server that depen
   and its functionality split up over `Base64EncodingStorage` and `ContainerPathStorage`.
   `HashEncodingPathStorage` has similarly been replaced by introducing `HashEncodingStorage`.
 
+## v6.1.0
+
+### New features
+
+- Added support for HTTP Range headers.
+
 ## v6.0.0
 
 ### New features

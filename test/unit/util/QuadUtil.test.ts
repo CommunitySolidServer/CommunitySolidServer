@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import { DataFactory } from 'n3';
-import { parseQuads, serializeQuads, uniqueQuads } from '../../../src/util/QuadUtil';
+import { parseQuads, serializeQuads, termToInt, uniqueQuads } from '../../../src/util/QuadUtil';
 import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
 const { literal, namedNode, quad } = DataFactory;
 
@@ -48,6 +48,17 @@ describe('QuadUtil', (): void => {
         quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
         quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')),
       ]);
+    });
+  });
+
+  describe('#termToInt', (): void => {
+    it('returns undefined if the input is undefined.', async(): Promise<void> => {
+      expect(termToInt()).toBeUndefined();
+    });
+
+    it('converts the term to a number.', async(): Promise<void> => {
+      expect(termToInt(namedNode('5'))).toBe(5);
+      expect(termToInt(namedNode('0xF'), 16)).toBe(15);
     });
   });
 });

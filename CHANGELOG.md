@@ -3,6 +3,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.2...v6.1.0) (2023-10-05)
+
+### Features
+
+* Track binary size of resources when possible ([71e5569](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/71e55690f3418be3d08e35d2cd3aeae5a0634654))
+* Add support for range headers ([3e9adef](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3e9adef4cf00d0776c0d371f835a31511db7427b))
+
+### Fixes
+
+* Prevent error when creating a root pod([da46bec](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/da46becf7a087118e7d682a193d00a3ca6c32eab))
+* Remove URL encoding from base64 strings before decoding ([d31393f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d31393f4751dd3f023110ead4e47a01ac15da2af))
+
+### Documentation
+
+* Simplify README by pointing to our docs. ([d618f97](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d618f9781af80b1697d5fe23f50e3f186954792b))
+* Add starting guide. ([e424b84](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e424b8488261bc8942d82a7fe2d92a94650e93b9))
+* Add quick start to README. ([1fa6d24](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1fa6d248a2e500c025794f4e3ed6cc504ed77f10))
+
+## [6.0.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.1...v6.0.2) (2023-08-30)
+
+### Fixes
+
+* Have FixedContentTypeMapper ignore .meta ([9e682f5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9e682f5c4f8ecd222ae633137ca455b1b9c5ce16))
+* Ignore invalid header parts ([9c2c5ed](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9c2c5edaf514fe84594024710c03ab3b7b0fbed1))
+* Do not show PUT in Allow header for existing containers ([6f6784a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6f6784a28873c1a8a71bc8a6a37b634677109f02))
+* Store activity streams context locally ([a47cc8a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a47cc8a5eef4d0dd963f85d0ad0e4746ada48e19))
+
+### Testing
+
+* Clear test data folder before running tests ([6fc3f2c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6fc3f2cf4f23ffde40ba88305c4c67bf39b73e10))
+* Enable file locker in notification tests ([f419f2f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f419f2f28d664fad6d6e16cf89a6ebbd7d0f0052))
+
+### Chores
+
+* Name HTTP handlers ([937c41f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/937c41fd17d553ddfc0d8f140867c252ec113ccb))
+
 ## [6.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.0...v6.0.1) (2023-06-15)
 
 ### Fixes

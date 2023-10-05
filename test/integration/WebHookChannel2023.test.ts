@@ -74,8 +74,8 @@ describe.each(stores)('A server supporting WebHookChannel2023 using %s', (name, 
 
   afterAll(async(): Promise<void> => {
     clientServer.close();
-    await app.stop();
     await teardown();
+    await app.stop();
   });
 
   it('links to the storage description.', async(): Promise<void> => {

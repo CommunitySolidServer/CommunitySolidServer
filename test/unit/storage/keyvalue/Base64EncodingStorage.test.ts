@@ -37,4 +37,19 @@ describe('A Base64EncodingStorage', (): void => {
     expect(results).toHaveLength(1);
     expect(results[0]).toEqual([ 'key', data ]);
   });
+
+  it('correctly handles keys that have been encoded by the source storage.', async(): Promise<void> => {
+    // Base 64 encoding of 'apple'
+    const encodedKey = 'YXBwbGU=';
+    const data = 'data';
+
+    map.set(encodedKey, data);
+
+    const results = [];
+    for await (const entry of storage.entries()) {
+      results.push(entry);
+    }
+    expect(results).toHaveLength(1);
+    expect(results[0]).toEqual([ 'apple', data ]);
+  });
 });

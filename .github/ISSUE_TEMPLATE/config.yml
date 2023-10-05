@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ Question
+    url: https://github.com/CommunitySolidServer/CommunitySolidServer/discussions/new/choose
+    about: A question or discussion about the server

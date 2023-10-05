@@ -55,6 +55,15 @@
       "ignoreFolders": [ "^/\\.internal$" ]
     },
     {
+      "comment": "Use an empty pod for quota tests",
+      "@type": "Override",
+      "overrideInstance": { "@id": "urn:solid-server:default:PodResourcesGenerator" },
+      "overrideParameters": {
+        "@type": "StaticFolderGenerator",
+        "templateFolder": "@css:templates/root/empty"
+      }
+    },
+    {
       "@id": "urn:solid-server:test:Instances",
       "@type": "RecordObject",
       "record": [

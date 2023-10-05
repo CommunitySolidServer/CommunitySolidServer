@@ -183,6 +183,15 @@ describe('An FixedContentTypeMapper', (): void => {
         await expect(mapper.mapFilePathToUrl(`${rootFilepath}test`, false)).rejects.toThrow(NotFoundHttpError);
         await expect(mapper.mapFilePathToUrl(`${rootFilepath}test.txt`, false)).rejects.toThrow(NotFoundHttpError);
       });
+
+      it('returns a generated file path for metadata regardless of the suffix.', async(): Promise<void> => {
+        await expect(mapper.mapFilePathToUrl(`${rootFilepath}.meta`, false)).resolves.toEqual({
+          identifier: { path: `${base}` },
+          filePath: `${rootFilepath}.meta`,
+          contentType: 'text/turtle',
+          isMetadata: true,
+        });
+      });
     });
   });
 

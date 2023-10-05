@@ -3,7 +3,11 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:PreferenceParser",
-      "@type": "AcceptPreferenceParser"
+      "@type": "UnionPreferenceParser",
+      "parsers": [
+        { "@type": "AcceptPreferenceParser" },
+        { "@type": "RangePreferenceParser" }
+      ]
     }
   ]
 }
