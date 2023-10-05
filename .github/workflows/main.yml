@@ -23,7 +23,7 @@ jobs:
     uses: ./.github/workflows/cth-test.yml
     with:
       ignore_failures: true
-      version: 1.1.7 # The latest version that CSS is confirmed to pass
+      version: 1.1.14 # The latest version that CSS is confirmed to pass
 
   docker:
   # Build docker containers on version tag, push to main and push to versions/
