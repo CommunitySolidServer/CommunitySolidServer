@@ -93,7 +93,7 @@ describe('A quota server', (): void => {
     });
 
     afterAll(async(): Promise<void> => {
-      await removeFolder(rootFilePath);
+      // Not cleaning up `rootFilePath` as this intermittently causes issues during CI
       await app.stop();
     });
 
@@ -178,7 +178,7 @@ describe('A quota server', (): void => {
     });
 
     afterAll(async(): Promise<void> => {
-      await removeFolder(rootFilePath);
+      // Not cleaning up `rootFilePath` as this intermittently causes issues during CI
       await app.stop();
     });
 
