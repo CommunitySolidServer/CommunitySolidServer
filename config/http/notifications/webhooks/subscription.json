@@ -3,15 +3,15 @@
   "@graph": [
     {
       "comment": "Handles the subscriptions targeting a WebhookChannel2023.",
-      "@id": "urn:solid-server:default:WebHookRouter",
+      "@id": "urn:solid-server:default:WebhookRouter",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "allowedMethods": [ "HEAD", "GET", "POST" ],
       "allowedPathNames": [ "/WebhookChannel2023/$" ],
       "handler": {
-        "@id": "urn:solid-server:default:WebHookSubscriber",
+        "@id": "urn:solid-server:default:WebhookSubscriber",
         "@type": "NotificationSubscriber",
-        "channelType": { "@id": "urn:solid-server:default:WebHookChannel2023Type" },
+        "channelType": { "@id": "urn:solid-server:default:WebhookChannel2023Type" },
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
         "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
@@ -21,13 +21,13 @@
     },
     {
       "comment": "Contains all the metadata relevant for a WebhookChannel2023.",
-      "@id": "urn:solid-server:default:WebHookChannel2023Type",
+      "@id": "urn:solid-server:default:WebhookChannel2023Type",
       "@type": "WebhookChannel2023Type",
-      "route": { "@id": "urn:solid-server:default:WebHookRoute" },
-      "webIdRoute": { "@id": "urn:solid-server:default:WebHookWebIdRoute" },
+      "route": { "@id": "urn:solid-server:default:WebhookRoute" },
+      "webIdRoute": { "@id": "urn:solid-server:default:WebhookWebIdRoute" },
       "stateHandler": {
         "@type": "BaseStateHandler",
-        "handler": { "@id": "urn:solid-server:default:WebHookNotificationHandler" },
+        "handler": { "@id": "urn:solid-server:default:WebhookNotificationHandler" },
         "storage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
       }
     },
@@ -37,7 +37,7 @@
       "@type": "NotificationDescriber",
       "subscriptions": [
         {
-          "@id": "urn:solid-server:default:WebHookChannel2023Type"
+          "@id": "urn:solid-server:default:WebhookChannel2023Type"
         }
       ]
     }

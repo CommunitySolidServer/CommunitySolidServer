@@ -8,11 +8,11 @@ import type { NotificationChannel } from '../NotificationChannel';
 import type { StateHandler } from '../StateHandler';
 
 /**
- * A {@link NotificationChannel} containing the necessary fields for a WebHookChannel2023 channel.
+ * A {@link NotificationChannel} containing the necessary fields for a WebhookChannel2023 channel.
  */
 export interface WebhookChannel2023 extends NotificationChannel {
   /**
-   * The "WebHookChannel2023" type.
+   * The "WebhookChannel2023" type.
    */
   type: typeof NOTIFY.WebhookChannel2023;
   /**
@@ -21,12 +21,12 @@ export interface WebhookChannel2023 extends NotificationChannel {
   sendTo: string;
 }
 
-export function isWebHook2023Channel(channel: NotificationChannel): channel is WebhookChannel2023 {
+export function isWebhook2023Channel(channel: NotificationChannel): channel is WebhookChannel2023 {
   return channel.type === NOTIFY.WebhookChannel2023;
 }
 
 /**
- * The notification channel type WebHookChannel2023 as described in
+ * The notification channel type WebhookChannel2023 as described in
  * https://solid.github.io/notifications/webhook-channel-2023
  *
  * Requires read permissions on a resource to be able to receive notifications.

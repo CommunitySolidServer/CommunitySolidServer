@@ -12,11 +12,11 @@ import type { NotificationChannel } from '../../../../../src/server/notification
 import type { StateHandler } from '../../../../../src/server/notifications/StateHandler';
 import type {
   WebhookChannel2023,
-} from '../../../../../src/server/notifications/WebHookChannel2023/WebhookChannel2023Type';
+} from '../../../../../src/server/notifications/WebhookChannel2023/WebhookChannel2023Type';
 import {
-  isWebHook2023Channel,
+  isWebhook2023Channel,
   WebhookChannel2023Type,
-} from '../../../../../src/server/notifications/WebHookChannel2023/WebhookChannel2023Type';
+} from '../../../../../src/server/notifications/WebhookChannel2023/WebhookChannel2023Type';
 import { NOTIFY, RDF } from '../../../../../src/util/Vocabularies';
 import quad = DataFactory.quad;
 import blankNode = DataFactory.blankNode;
@@ -63,10 +63,10 @@ describe('A WebhookChannel2023Type', (): void => {
   });
 
   it('exposes a utility function to verify if a channel is a webhook channel.', async(): Promise<void> => {
-    expect(isWebHook2023Channel(channel)).toBe(true);
+    expect(isWebhook2023Channel(channel)).toBe(true);
 
     (channel as NotificationChannel).type = 'something else';
-    expect(isWebHook2023Channel(channel)).toBe(false);
+    expect(isWebhook2023Channel(channel)).toBe(false);
   });
 
   it('correctly parses notification channel bodies.', async(): Promise<void> => {

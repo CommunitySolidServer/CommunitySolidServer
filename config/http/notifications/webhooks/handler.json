@@ -3,23 +3,23 @@
   "@graph": [
     {
       "comment": "Handles the generation and serialization of notifications for WebhookChannel2023.",
-      "@id": "urn:solid-server:default:WebHookNotificationHandler",
+      "@id": "urn:solid-server:default:WebhookNotificationHandler",
       "@type": "TypedNotificationHandler",
       "type": "http://www.w3.org/ns/solid/notifications#WebhookChannel2023",
       "source": {
         "@type": "ComposedNotificationHandler",
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
         "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
-        "emitter": { "@id": "urn:solid-server:default:WebHookEmitter" },
+        "emitter": { "@id": "urn:solid-server:default:WebhookEmitter" },
         "eTagHandler": { "@id": "urn:solid-server:default:ETagHandler" }
       }
     },
     {
       "comment": "Emits serialized notifications through HTTP requests to the Webhook.",
-      "@id": "urn:solid-server:default:WebHookEmitter",
-      "@type": "WebHookEmitter",
+      "@id": "urn:solid-server:default:WebhookEmitter",
+      "@type": "WebhookEmitter",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "webIdRoute": { "@id": "urn:solid-server:default:WebHookWebIdRoute" },
+      "webIdRoute": { "@id": "urn:solid-server:default:WebhookWebIdRoute" },
       "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" }
     },
 
@@ -27,7 +27,7 @@
       "@id": "urn:solid-server:default:NotificationHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:WebHookNotificationHandler" }
+        { "@id": "urn:solid-server:default:WebhookNotificationHandler" }
       ]
     }
   ]

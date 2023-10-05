@@ -11,8 +11,8 @@ import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
 import type {
   WebhookChannel2023,
-} from '../../../../../src/server/notifications/WebHookChannel2023/WebhookChannel2023Type';
-import { WebHookEmitter } from '../../../../../src/server/notifications/WebHookChannel2023/WebHookEmitter';
+} from '../../../../../src/server/notifications/WebhookChannel2023/WebhookChannel2023Type';
+import { WebhookEmitter } from '../../../../../src/server/notifications/WebhookChannel2023/WebhookEmitter';
 import { NotImplementedHttpError } from '../../../../../src/util/errors/NotImplementedHttpError';
 import { matchesAuthorizationScheme } from '../../../../../src/util/HeaderUtil';
 import { trimTrailingSlashes } from '../../../../../src/util/PathUtil';
@@ -26,7 +26,7 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
   return { getLoggerFor: (): Logger => logger };
 });
 
-describe('A WebHookEmitter', (): void => {
+describe('A WebhookEmitter', (): void => {
   const fetchMock: jest.Mock = fetch as any;
   const baseUrl = 'http://example.com/';
   const serverWebId = 'http://example.com/.notifcations/webhooks/webid';
@@ -52,7 +52,7 @@ describe('A WebHookEmitter', (): void => {
   let privateJwk: AlgJwk;
   let publicJwk: AlgJwk;
   let jwkGenerator: jest.Mocked<JwkGenerator>;
-  let emitter: WebHookEmitter;
+  let emitter: WebhookEmitter;
 
   beforeEach(async(): Promise<void> => {
     fetchMock.mockResolvedValue({ status: 200 });
@@ -70,7 +70,7 @@ describe('A WebHookEmitter', (): void => {
       getPublicKey: jest.fn().mockResolvedValue(publicJwk),
     };
 
-    emitter = new WebHookEmitter(baseUrl, webIdRoute, jwkGenerator);
+    emitter = new WebhookEmitter(baseUrl, webIdRoute, jwkGenerator);
   });
 
   it('errors if the channel type is wrong.', async(): Promise<void> => {
@@ -139,7 +139,7 @@ describe('A WebHookEmitter', (): void => {
 
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenLastCalledWith(
-      `There was an issue emitting a WebHook notification with target ${channel.sendTo}: invalid request`,
+      `There was an issue emitting a Webhook notification with target ${channel.sendTo}: invalid request`,
     );
   });
 });

@@ -228,4 +228,4 @@ You can modify this behaviour by adding the following block to your configuratio
 `maxDuration` defines after how many minutes every channel will be removed.
 Setting this value to 0 will allow channels to exist forever.
 Similarly, to change the maximum duration of webhook channels you can use the identifier
-`urn:solid-server:default:WebHookSubscriber`.
+`urn:solid-server:default:WebhookSubscriber`.

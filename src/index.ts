@@ -325,10 +325,10 @@ export * from './server/notifications/serialize/ConvertingNotificationSerializer
 export * from './server/notifications/serialize/JsonLdNotificationSerializer';
 export * from './server/notifications/serialize/NotificationSerializer';
 
-// Server/Notifications/WebHookChannel2023
-export * from './server/notifications/WebHookChannel2023/WebhookChannel2023Type';
-export * from './server/notifications/WebHookChannel2023/WebHookEmitter';
-export * from './server/notifications/WebHookChannel2023/WebHookWebId';
+// Server/Notifications/WebhookChannel2023
+export * from './server/notifications/WebhookChannel2023/WebhookChannel2023Type';
+export * from './server/notifications/WebhookChannel2023/WebhookEmitter';
+export * from './server/notifications/WebhookChannel2023/WebhookWebId';
 
 // Server/Notifications/WebSocketChannel2023
 export * from './server/notifications/WebSocketChannel2023/WebSocket2023Emitter';

@@ -22,13 +22,13 @@ Determines how notifications should be sent out from the server when resources c
 
 * *all*: Supports all available notification types of the Solid Notifications protocol
   [specification](https://solidproject.org/TR/notifications-protocol).
-  Currently, this includes WebHookChannel2023 and WebSocketChannel2023.
+  Currently, this includes WebhookChannel2023 and WebSocketChannel2023.
 * *disabled*: No notifications are sent out.
 * *legacy-websocket*: Follows the legacy Solid WebSocket
   [specification](https://github.com/solid/solid-spec/blob/master/api-websockets.md).
   Will be removed in future versions.
 * *new-old-websockets.json*: Support for both the legacy Solid Websockets and the new WebSocketChannel2023.
-* *webhooks*: Follows the WebHookChannel2023
+* *webhooks*: Follows the WebhookChannel2023
   [specification](https://solid.github.io/notifications/webhook-channel-2023) draft.
 * *websockets*: Follows the WebSocketChannel2023
   [specification](https://solid.github.io/notifications/websocket-channel-2023).
