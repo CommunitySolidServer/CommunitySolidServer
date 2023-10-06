@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/handler/base/default.json",
+    "css:config/identity/handler/routing/default.json",
+    "css:config/identity/handler/storage/password.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Disabled the account component.",
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "UnsupportedAsyncHandler"
+    }
+  ]
+}

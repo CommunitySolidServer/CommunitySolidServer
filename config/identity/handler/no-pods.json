@@ -8,12 +8,11 @@
     "css:config/identity/handler/enable/account.json",
     "css:config/identity/handler/enable/client-credentials.json",
     "css:config/identity/handler/enable/password.json",
-    "css:config/identity/handler/enable/pod.json",
     "css:config/identity/handler/enable/webid.json"
   ],
   "@graph": [
     {
-      "comment": "Enables all account-related features."
+      "comment": "Disabled pod creation."
     }
   ]
 }

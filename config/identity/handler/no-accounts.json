@@ -5,7 +5,6 @@
     "css:config/identity/handler/routing/default.json",
     "css:config/identity/handler/storage/password.json",
 
-    "css:config/identity/handler/enable/account.json",
     "css:config/identity/handler/enable/client-credentials.json",
     "css:config/identity/handler/enable/password.json",
     "css:config/identity/handler/enable/pod.json",
@@ -13,7 +12,7 @@
   ],
   "@graph": [
     {
-      "comment": "Enables all account-related features."
+      "comment": "Disables account creation."
     }
   ]
 }

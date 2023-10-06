@@ -1,8 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "import": [
-    "css:config/identity/interaction/routing/core/index.json",
-    "css:config/identity/interaction/routing/core/login.json"
+    "css:config/identity/handler/routing/core/index.json",
+    "css:config/identity/handler/routing/core/login.json"
   ],
   "@graph": [
     {
