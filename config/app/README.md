@@ -11,6 +11,9 @@ Contains a list of initializer that need to be run when starting the server.
 * *initialize-prefilled-root*: Similar to `initialize-root` but adds an index page to the root container.
 * *initialize-intro*: Similar to `initialize-prefilled-root` but adds an index page
                       specific to the memory-based server of the default configuration.
+* *initialize-root-pod*: Initializes the server with a pod in the root.
+                         Email and password have not yet been set and need to be defined in the base configuration.
+                         See `file-root-pod.json` for an example.
 * *static-root*: Shows a static introduction page at the server root. This is not a Solid resource.
 
 ## Main
