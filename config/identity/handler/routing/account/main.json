@@ -1,10 +1,10 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "import": [
-    "css:config/identity/interaction/routing/account/create.json",
-    "css:config/identity/interaction/routing/account/login.json",
-    "css:config/identity/interaction/routing/account/logout.json",
-    "css:config/identity/interaction/routing/account/resource.json"
+    "css:config/identity/handler/routing/account/create.json",
+    "css:config/identity/handler/routing/account/login.json",
+    "css:config/identity/handler/routing/account/logout.json",
+    "css:config/identity/handler/routing/account/resource.json"
   ],
   "@graph": [
     {

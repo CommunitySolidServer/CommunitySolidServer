@@ -6,26 +6,26 @@
     "css:config/app/variables/default.json",
     "css:config/http/handler/default.json",
     "css:config/http/middleware/default.json",
-    "css:config/http/notifications/websockets.json",
+    "css:config/http/notifications/disabled.json",
     "css:config/http/server-factory/http.json",
     "css:config/http/static/default.json",
     "css:config/identity/access/public.json",
     "css:config/identity/email/default.json",
-    "css:config/identity/handler/default.json",
+    "css:config/identity/handler/no-pods.json",
     "css:config/identity/oidc/default.json",
     "css:config/identity/ownership/token.json",
     "css:config/identity/pod/static.json",
     "css:config/ldp/authentication/dpop-bearer.json",
-    "css:config/ldp/authorization/webacl.json",
-    "css:config/ldp/handler/default.json",
+    "css:config/ldp/authorization/allow-all.json",
+    "css:config/ldp/handler/disabled.json",
     "css:config/ldp/metadata-parser/default.json",
     "css:config/ldp/metadata-writer/default.json",
     "css:config/ldp/modes/default.json",
-    "css:config/storage/backend/pod-quota-file.json",
+    "css:config/storage/backend/file.json",
     "css:config/storage/key-value/resource-store.json",
-    "css:config/storage/location/pod.json",
+    "css:config/storage/location/root.json",
     "css:config/storage/middleware/default.json",
-    "css:config/util/auxiliary/acl.json",
+    "css:config/util/auxiliary/empty.json",
     "css:config/util/identifiers/suffix.json",
     "css:config/util/index/default.json",
     "css:config/util/logging/winston.json",
@@ -35,19 +35,10 @@
   ],
   "@graph": [
     {
-      "comment": "A server that stores its resources on disk while enforcing quota."
-    },
-    {
-      "comment": "Sets the maximum size of a single pod to 7KB.",
-      "@id": "urn:solid-server:default:QuotaStrategy",
-      "@type": "PodQuotaStrategy",
-      "limit_amount": 7000,
-      "limit_unit": "bytes"
-    },
-    {
-      "@id": "urn:solid-server:default:SizeReporter",
-      "@type": "FileSizeReporter",
-      "ignoreFolders": [ "^/\\.internal$" ]
+      "comment": [
+        "A Solid server that only supports account management and OIDC interaction, without pods.",
+        "Note that several of the imports above are irrelevant due to there not being pods."
+      ]
     }
   ]
 }

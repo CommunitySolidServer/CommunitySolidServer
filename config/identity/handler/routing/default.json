@@ -1,18 +1,18 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "import": [
-    "css:config/identity/interaction/routing/account/main.json",
-    "css:config/identity/interaction/routing/client-credentials/create.json",
-    "css:config/identity/interaction/routing/client-credentials/resource.json",
-    "css:config/identity/interaction/routing/core/main.json",
-    "css:config/identity/interaction/routing/oidc/main.json",
-    "css:config/identity/interaction/routing/password/main.json",
-    "css:config/identity/interaction/routing/pod/create.json",
-    "css:config/identity/interaction/routing/pod/resource.json",
-    "css:config/identity/interaction/routing/webid/link.json",
-    "css:config/identity/interaction/routing/webid/resource.json",
+    "css:config/identity/handler/routing/account/main.json",
+    "css:config/identity/handler/routing/client-credentials/create.json",
+    "css:config/identity/handler/routing/client-credentials/resource.json",
+    "css:config/identity/handler/routing/core/main.json",
+    "css:config/identity/handler/routing/oidc/main.json",
+    "css:config/identity/handler/routing/password/main.json",
+    "css:config/identity/handler/routing/pod/create.json",
+    "css:config/identity/handler/routing/pod/resource.json",
+    "css:config/identity/handler/routing/webid/link.json",
+    "css:config/identity/handler/routing/webid/resource.json",
 
-    "css:config/identity/interaction/routing/views/html.json"
+    "css:config/identity/handler/routing/views/html.json"
   ],
   "@graph": [
     {

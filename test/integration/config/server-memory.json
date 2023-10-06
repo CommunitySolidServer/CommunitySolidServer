@@ -11,7 +11,7 @@
     "css:config/identity/access/public.json",
 
     "css:config/identity/handler/default.json",
-    "css:config/identity/interaction/default.json",
+    "css:config/identity/oidc/default.json",
     "css:config/identity/ownership/token.json",
     "css:config/identity/pod/static.json",
     "css:config/ldp/authentication/dpop-bearer.json",

@@ -59,8 +59,8 @@
       'Are you sure you want to delete this login method? This will prevent you from logging in to your account with these credentials.');
 
     // Update pod entries
-    const { pods } = await fetchJson(controls.account.pod);
-    if (!controls.html.account.createPod && Object.keys(pods).length === 0) {
+    const { pods } = controls.account.pod ? await fetchJson(controls.account.pod) : {};
+    if (!controls.html.account.createPod && Object.keys(pods ?? {}).length === 0) {
       setVisibility('pods', false);
     } else {
       updateElement('createPod', controls.html.account.createPod, { href: true });
@@ -68,8 +68,8 @@
     }
 
     // Update WebID entries
-    const { webIdLinks } = await fetchJson(controls.account.webId);
-    if (!controls.html.account.linkWebId && Object.keys(webIdLinks).length === 0) {
+    const { webIdLinks } = controls.account.webId ? await fetchJson(controls.account.webId) : {};
+    if (!controls.html.account.linkWebId && Object.keys(webIdLinks ?? {}).length === 0) {
       setVisibility('webIds', false);
     } else {
       updateElement('linkWebId', controls.html.account.linkWebId, { href: true });
@@ -80,8 +80,8 @@
     }
 
     // Update Client Credentials entries
-    const { clientCredentials } = await fetchJson(controls.account.clientCredentials);
-    if (!controls.html.account.createClientCredentials && Object.keys(clientCredentials).length === 0) {
+    const { clientCredentials } = controls.account.clientCredentials ? await fetchJson(controls.account.clientCredentials) : {};
+    if (!controls.html.account.createClientCredentials && Object.keys(clientCredentials ?? {}).length === 0) {
       setVisibility('clientCredentials', false);
     } else {
       // Initial boolean is so the create button gets hidden if the account has no WebIDs.

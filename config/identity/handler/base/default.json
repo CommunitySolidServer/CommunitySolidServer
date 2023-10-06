@@ -1,0 +1,45 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/handler/adapter-factory/webid.json",
+    "css:config/identity/handler/jwks/default.json",
+    "css:config/identity/handler/provider-factory/identity.json",
+    "css:config/identity/handler/storage/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Routes all IDP related requests to the relevant handlers.",
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "RouterHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "allowedPathNames": [ "^/.account/.*" ],
+      "handler": { "@id": "urn:solid-server:default:IdentityProviderParsingHandler" }
+    },
+    {
+      "comment": "Handles IDP input parsing.",
+      "@id": "urn:solid-server:default:IdentityProviderParsingHandler",
+      "@type": "ParsingHttpHandler",
+      "requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "operationHandler": {
+        "comment": "Handles IDP input authorization. Permission reader should be set to allow all if no authorization is needed.",
+        "@type": "AuthorizingHttpHandler",
+        "@id": "urn:solid-server:default:IdentityProviderAuthorizingHandler",
+        "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
+        "modesExtractor": { "@id": "urn:solid-server:default:ModesExtractor" },
+        "authorizer": { "@id": "urn:solid-server:default:Authorizer" },
+        "operationHandler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
+      }
+    },
+    {
+      "comment": "Handles IDP handler behaviour.",
+      "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
+      "@type": "IdentityProviderHttpHandler",
+      "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
+      "cookieStore": { "@id": "urn:solid-server:default:CookieStore" },
+      "handler": { "@id": "urn:solid-server:default:InteractionHandler" }
+    }
+  ]
+}

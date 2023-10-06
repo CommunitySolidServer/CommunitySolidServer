@@ -1,11 +1,11 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "import": [
-    "css:config/identity/interaction/routing/oidc/cancel.json",
-    "css:config/identity/interaction/routing/oidc/consent.json",
-    "css:config/identity/interaction/routing/oidc/forget-webid.json",
-    "css:config/identity/interaction/routing/oidc/prompt.json",
-    "css:config/identity/interaction/routing/oidc/pick-webid.json"
+    "css:config/identity/handler/routing/oidc/cancel.json",
+    "css:config/identity/handler/routing/oidc/consent.json",
+    "css:config/identity/handler/routing/oidc/forget-webid.json",
+    "css:config/identity/handler/routing/oidc/prompt.json",
+    "css:config/identity/handler/routing/oidc/pick-webid.json"
   ],
   "@graph": [
     {

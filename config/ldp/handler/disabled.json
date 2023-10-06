@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/ldp/handler/components/authorizer.json",
+    "css:config/ldp/handler/components/error-handler.json",
+    "css:config/ldp/handler/components/operation-handler.json",
+    "css:config/ldp/handler/components/operation-metadata.json",
+    "css:config/ldp/handler/components/preferences.json",
+    "css:config/ldp/handler/components/request-parser.json",
+    "css:config/ldp/handler/components/response-writer.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Disabled the LDP component.",
+      "@id": "urn:solid-server:default:LdpHandler",
+      "@type": "UnsupportedAsyncHandler"
+    }
+  ]
+}

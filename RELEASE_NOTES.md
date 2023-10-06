@@ -43,10 +43,13 @@ The `@context` needs to be updated to
 
 The following changes pertain to the imports in the default configs:
 
+- There is a new `identity/oidc` import set that needs to be added to each config.
+  Options are `default.json` and `disabled.json`.
 - There is a new `static-root.json` import option for `app/init`, setting a static page for the root container.
-- There is a new set of imports `identity/interaction` to determine the IDP features.
+- There are more `identity/handler` options to finetune account management availability.
 - There is a new set of imports `storage/location` to determine where the root storage of the server is located.
 - The `app/setup`and `identity/registration` imports have been removed.
+- There is a new `ldp/handler/disabled.json` import to disable the LDP API.
 
 The following changes are relevant for v6 custom configs that replaced certain features.
 

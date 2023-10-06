@@ -25,9 +25,19 @@ Necessary for sending e-mail when using IDP.
 
 ## Handler
 
-Contains everything needed for setting up the Identity Provider.
+Contains everything needed for setting up the account management.
 
-* *default*: Contains all the core components of the IDP.
+* *default*: All account features enabled.
+* *disabled*: Completely disables everything account related.
+* *no-accounts*: Disables the creation of new accounts.
+* *no-pods*: Disables the creation of new pods.
+
+## OIDC
+
+Determines if OIDC interactions are supported as an identity provider.
+
+* *default*: OIDC is enabled.
+* *disabled*: OIDC is disabled.
 
 ## Interaction
 
