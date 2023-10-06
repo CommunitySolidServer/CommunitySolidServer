@@ -258,7 +258,9 @@ export * from './identity/storage/PassthroughAdapterFactory';
 export * from './identity/storage/WebIdAdapterFactory';
 
 // Identity
+export * from './identity/AccountInitializer';
 export * from './identity/IdentityProviderHttpHandler';
+export * from './identity/IdentityUtil';
 export * from './identity/OidcHttpHandler';
 
 // Init/Cluster

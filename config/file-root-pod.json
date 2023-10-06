@@ -1,0 +1,51 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/app/main/default.json",
+    "css:config/app/init/initialize-root-pod.json",
+    "css:config/app/variables/default.json",
+    "css:config/http/handler/default.json",
+    "css:config/http/middleware/default.json",
+    "css:config/http/notifications/websockets.json",
+    "css:config/http/server-factory/http.json",
+    "css:config/http/static/default.json",
+    "css:config/identity/access/public.json",
+    "css:config/identity/email/default.json",
+    "css:config/identity/handler/no-accounts.json",
+    "css:config/identity/oidc/default.json",
+    "css:config/identity/ownership/token.json",
+    "css:config/identity/pod/static.json",
+    "css:config/ldp/authentication/dpop-bearer.json",
+    "css:config/ldp/authorization/webacl.json",
+    "css:config/ldp/handler/default.json",
+    "css:config/ldp/metadata-parser/default.json",
+    "css:config/ldp/metadata-writer/default.json",
+    "css:config/ldp/modes/default.json",
+    "css:config/storage/backend/file.json",
+    "css:config/storage/key-value/resource-store.json",
+    "css:config/storage/location/root.json",
+    "css:config/storage/middleware/default.json",
+    "css:config/util/auxiliary/acl.json",
+    "css:config/util/identifiers/suffix.json",
+    "css:config/util/index/default.json",
+    "css:config/util/logging/winston.json",
+    "css:config/util/representation-conversion/default.json",
+    "css:config/util/resource-locker/file.json",
+    "css:config/util/variables/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": [
+        "A Solid server that stores its resources on disk and uses WAC for authorization.",
+        "A pod will be created in the root with the email/password login defined here.",
+        "It is advised to immediately change this password after starting the server."
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:RootPodInitializer",
+      "@type": "AccountInitializer",
+      "email": "test@example.com",
+      "password": "secret!"
+    }
+  ]
+}

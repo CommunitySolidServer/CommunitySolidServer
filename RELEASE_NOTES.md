@@ -46,6 +46,7 @@ The following changes pertain to the imports in the default configs:
 - There is a new `identity/oidc` import set that needs to be added to each config.
   Options are `default.json` and `disabled.json`.
 - There is a new `static-root.json` import option for `app/init`, setting a static page for the root container.
+- There is a new `initialize-root-pod.json` import option for `app/init`, initializing a pod in the root.
 - There are more `identity/handler` options to finetune account management availability.
 - There is a new set of imports `storage/location` to determine where the root storage of the server is located.
 - The `app/setup`and `identity/registration` imports have been removed.
