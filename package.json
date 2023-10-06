@@ -8,14 +8,6 @@
     "rdf",
     "ldp"
   ],
-  "contributors": [
-    "Joachim Van Herwegen <joachim.vanherwegen@ugent.be>",
-    "Thomas Dupont <thomas.dupont@ugent.be>",
-    "Wannes Kerckhove <wannes.kerckhove@ugent.be>",
-    "Jasper Vaneessen <jasper.vaneessen@ugent.be>",
-    "Ruben Taelman <ruben.taelman@ugent.be> (https://www.rubensworks.net/)",
-    "Ruben Verborgh <ruben.verborgh@ugent.be> (https://ruben.verborgh.org/)"
-  ],
   "license": "MIT",
   "engines": {
     "node": ">=18.0"
