@@ -2,7 +2,7 @@ import { ContainerPathStorage } from '../../../../src/storage/keyvalue/Container
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 
 describe('An ContainerPathStorage', (): void => {
-  const relativePath = '/container/';
+  const relativePath = 'container/';
   let map: Map<string, string>;
   let source: KeyValueStorage<string, unknown>;
   let storage: ContainerPathStorage<unknown>;

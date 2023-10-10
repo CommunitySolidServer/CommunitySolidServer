@@ -12,9 +12,9 @@ import { LDP } from '../../../../src/util/Vocabularies';
 describe('A JsonResourceStorage', (): void => {
   const baseUrl = 'http://test.com/';
   const container = '/data/';
-  const path1 = '/foo';
-  const path2 = '/bar';
-  const subPath = '/container/document';
+  const path1 = 'foo';
+  const path2 = 'bar';
+  const subPath = 'container/document';
   const containerIdentifier = 'http://test.com/data/';
   const subContainerIdentifier = 'http://test.com/data/container/';
   let data: Map<string, string>;
