@@ -19,15 +19,15 @@ export class ExpiringAdapter implements Adapter {
   }
 
   private grantKeyFor(id: string): string {
-    return `grant/${encodeURIComponent(id)}`;
+    return `grants/${encodeURIComponent(id)}`;
   }
 
   private userCodeKeyFor(userCode: string): string {
-    return `user_code/${encodeURIComponent(userCode)}`;
+    return `user_codes/${encodeURIComponent(userCode)}`;
   }
 
   private uidKeyFor(uid: string): string {
-    return `uid/${encodeURIComponent(uid)}`;
+    return `uids/${encodeURIComponent(uid)}`;
   }
 
   private keyFor(id: string): string {
