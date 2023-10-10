@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Used for internal storage by the locker.",
+      "comment": "Used for internal storage by the locker. Always hashing the keys to prevent issues.",
       "@id": "urn:solid-server:default:LockStorage",
       "@type": "HashEncodingStorage",
       "source": {
@@ -14,12 +14,9 @@
     {
       "comment": "Storage used by setup components.",
       "@id": "urn:solid-server:default:SetupStorage",
-      "@type": "Base64EncodingStorage",
-      "source": {
-        "@type": "ContainerPathStorage",
-        "relativePath": "/setup/",
-        "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
-      }
+      "@type": "ContainerPathStorage",
+      "relativePath": "/setup/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
     }
   ]
 }
