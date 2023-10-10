@@ -1,16 +1,17 @@
-import { ensureTrailingSlash, joinUrl } from '../../util/PathUtil';
+import { ensureTrailingSlash, joinUrl, trimLeadingSlashes } from '../../util/PathUtil';
 import type { KeyValueStorage } from './KeyValueStorage';
 import { PassthroughKeyValueStorage } from './PassthroughKeyValueStorage';
 
 /**
  * A {@link KeyValueStorage} that prepends a relative path to the key.
+ * Leading slashes of the relative path are trimmed, and a trailing slash is added if needed.
  */
 export class ContainerPathStorage<T> extends PassthroughKeyValueStorage<T> {
   protected readonly basePath: string;
 
   public constructor(source: KeyValueStorage<string, T>, relativePath: string) {
     super(source);
-    this.basePath = ensureTrailingSlash(relativePath);
+    this.basePath = trimLeadingSlashes(ensureTrailingSlash(relativePath));
   }
 
   public async* entries(): AsyncIterableIterator<[string, T]> {

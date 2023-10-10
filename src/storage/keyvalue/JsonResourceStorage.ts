@@ -125,9 +125,9 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
    */
   protected identifierToKey(identifier: ResourceIdentifier): string {
     // Due to the usage of `joinUrl` we don't know for sure if there was a preceding slash,
-    // so we always add one for consistency.
-    // In practice this would only be an issue if a class depends
-    // on the `entries` results matching a key that was sent before.
-    return ensureLeadingSlash(identifier.path.slice(this.container.length));
+    // so we always remove leading slashes one for consistency.
+    // In practice this only has an impact on the `entries` call
+    // and only if class calling this depends on a leading slash still being there.
+    return trimLeadingSlashes(identifier.path.slice(this.container.length));
   }
 }
