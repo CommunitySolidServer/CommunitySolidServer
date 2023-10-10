@@ -69,7 +69,7 @@
         body: JSON.stringify({ webId, remove: true }),
       }
       const del = createUrlDeleteElement(li, '', fetchParams,
-        `Are you sure you want to remove ${webId} as an owner of ${pod}?`);
+        `Are you sure you want to remove ${webId} as an owner of ${baseUrl}?`);
       li.append(' ');
       li.append(del);
     }
