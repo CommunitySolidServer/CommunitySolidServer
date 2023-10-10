@@ -1,4 +1,3 @@
-import { v4 } from 'uuid';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { Logger } from '../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../src/logging/LogUtil';
@@ -8,7 +7,6 @@ import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueS
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import resetAllMocks = jest.resetAllMocks;
 
-jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 jest.mock('../../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { info: jest.fn(), error: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
@@ -17,7 +15,10 @@ jest.mock('../../../../src/logging/LogUtil', (): any => {
 describe('A KeyValueChannelStorage', (): void => {
   const logger = getLoggerFor('mock');
   const topic = 'http://example.com/foo';
+  const encodedTopic = encodeURIComponent(topic);
   const identifier = { path: topic };
+  const id = 'http://example.com/.notifications/123465';
+  const encodedId = encodeURIComponent(id);
   let channel: NotificationChannel;
   let internalMap: Map<string, any>;
   let internalStorage: KeyValueStorage<string, any>;
@@ -27,7 +28,7 @@ describe('A KeyValueChannelStorage', (): void => {
   beforeEach(async(): Promise<void> => {
     resetAllMocks();
     channel = {
-      id: `WebSocketChannel2023:${v4()}:http://example.com/foo`,
+      id,
       topic,
       type: 'WebSocketChannel2023',
     };
@@ -36,7 +37,7 @@ describe('A KeyValueChannelStorage', (): void => {
     internalStorage = internalMap as any;
 
     locker = {
-      withWriteLock: jest.fn(async <T,>(id: ResourceIdentifier, whileLocked: () => T | Promise<T>):
+      withWriteLock: jest.fn(async <T,>(rid: ResourceIdentifier, whileLocked: () => T | Promise<T>):
       Promise<T> => whileLocked()),
       withReadLock: jest.fn(),
     };
@@ -52,6 +53,7 @@ describe('A KeyValueChannelStorage', (): void => {
     it('returns the matching channel.', async(): Promise<void> => {
       await storage.add(channel);
       await expect(storage.get(channel.id)).resolves.toEqual(channel);
+      expect(internalMap.get(encodedId)).toEqual(channel);
     });
 
     it('deletes expired channel.', async(): Promise<void> => {
@@ -77,9 +79,9 @@ describe('A KeyValueChannelStorage', (): void => {
     it('adds the channel and adds its id to the topic collection.', async(): Promise<void> => {
       await expect(storage.add(channel)).resolves.toBeUndefined();
       expect(internalMap.size).toBe(2);
-      expect([ ...internalMap.values() ]).toEqual(expect.arrayContaining([
-        [ channel.id ],
-        channel,
+      expect([ ...internalMap.entries() ]).toEqual(expect.arrayContaining([
+        [ encodedTopic, [ channel.id ]],
+        [ encodedId, channel ],
       ]));
     });
   });
@@ -110,14 +112,12 @@ describe('A KeyValueChannelStorage', (): void => {
 
     it('rejects update request targeting a non-channel value.', async(): Promise<void> => {
       await storage.add(channel);
-      // Looking for the key so this test doesn't depend on the internal keys used
-      const id = [ ...internalMap.entries() ].find((entry): boolean => Array.isArray(entry[1]))![0];
       const newChannel = {
         ...channel,
-        id,
+        id: topic,
       };
       await expect(storage.update(newChannel)).rejects
-        .toThrow(`Trying to update ${id} which is not a NotificationChannel.`);
+        .toThrow(`Trying to update ${topic} which is not a NotificationChannel.`);
     });
   });
 
@@ -125,16 +125,16 @@ describe('A KeyValueChannelStorage', (): void => {
     it('removes the channel and its reference.', async(): Promise<void> => {
       const channel2 = {
         ...channel,
-        id: 'differentId',
+        id: 'http://example.com/.notifications/9999999',
       };
       await storage.add(channel);
       await storage.add(channel2);
       expect(internalMap.size).toBe(3);
       await expect(storage.delete(channel.id)).resolves.toBe(true);
       expect(internalMap.size).toBe(2);
-      expect([ ...internalMap.values() ]).toEqual(expect.arrayContaining([
-        [ channel2.id ],
-        channel2,
+      expect([ ...internalMap.entries() ]).toEqual(expect.arrayContaining([
+        [ encodedTopic, [ channel2.id ]],
+        [ encodeURIComponent('http://example.com/.notifications/9999999'), channel2 ],
       ]));
     });
 
@@ -150,9 +150,7 @@ describe('A KeyValueChannelStorage', (): void => {
 
     it('logs an error if the target can not be found in the list of references.', async(): Promise<void> => {
       await storage.add(channel);
-      // Looking for the key so this test doesn't depend on the internal keys used
-      const id = [ ...internalMap.entries() ].find((entry): boolean => Array.isArray(entry[1]))![0];
-      internalMap.set(id, []);
+      internalMap.set(encodedTopic, []);
       await expect(storage.delete(channel.id)).resolves.toBe(true);
       expect(logger.error).toHaveBeenCalledTimes(2);
     });
