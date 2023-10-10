@@ -5,7 +5,10 @@
   ],
   "@graph": [
     {
-      "comment": "A storage that writes directly to a low-level store. This is necessary to prevent infinite loops with stores that also use storage.",
+      "comment": [
+        "A storage that writes directly to a low-level store. This is necessary to prevent infinite loops with stores that also use storage.",
+        "Currently only used for storing locks, where keys are always hashed, which is why this is not wrapped by a MaxKeyLengthStorage for now."
+      ],
       "@id": "urn:solid-server:default:BackendKeyValueStorage",
       "@type": "JsonResourceStorage",
       "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
@@ -15,10 +18,14 @@
     {
       "comment": "Internal value storage.",
       "@id": "urn:solid-server:default:KeyValueStorage",
-      "@type": "JsonResourceStorage",
-      "source": { "@id": "urn:solid-server:default:ResourceStore" },
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/.internal/"
+      "@type": "MaxKeyLengthStorage",
+      "source": {
+        "@id": "urn:solid-server:default:JsonResourceStorage",
+        "@type": "JsonResourceStorage",
+        "source": { "@id": "urn:solid-server:default:ResourceStore" },
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "container": "/.internal/"
+      }
     },
     {
       "comment": "Block external access to the storage containers to avoid exposing internal data.",
