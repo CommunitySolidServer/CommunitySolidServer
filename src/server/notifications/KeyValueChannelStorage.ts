@@ -10,6 +10,7 @@ type StorageValue = string | string[] | NotificationChannel;
 
 /**
  * Stores all the {@link NotificationChannel} in a {@link KeyValueStorage}.
+ * Encodes IDs/topics before storing them in the KeyValueStorage.
  *
  * Uses a {@link ReadWriteLocker} to prevent internal race conditions.
  */
@@ -25,7 +26,7 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
   }
 
   public async get(id: string): Promise<NotificationChannel | undefined> {
-    const channel = await this.storage.get(id);
+    const channel = await this.storage.get(encodeURIComponent(id));
     if (channel && this.isChannel(channel)) {
       if (typeof channel.endAt === 'number' && channel.endAt < Date.now()) {
         this.logger.info(`Notification channel ${id} has expired.`);
@@ -40,7 +41,7 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
   }
 
   public async getAll(topic: ResourceIdentifier): Promise<string[]> {
-    const channels = await this.storage.get(topic.path);
+    const channels = await this.storage.get(encodeURIComponent(topic.path));
     if (Array.isArray(channels)) {
       return channels;
     }
@@ -51,15 +52,15 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
     const target = { path: channel.topic };
     return this.locker.withWriteLock(this.getLockKey(target), async(): Promise<void> => {
       const channels = await this.getAll(target);
-      await this.storage.set(channel.id, channel);
+      await this.storage.set(encodeURIComponent(channel.id), channel);
       channels.push(channel.id);
-      await this.storage.set(channel.topic, channels);
+      await this.storage.set(encodeURIComponent(channel.topic), channels);
     });
   }
 
   public async update(channel: NotificationChannel): Promise<void> {
     return this.locker.withWriteLock(this.getLockKey(channel.id), async(): Promise<void> => {
-      const oldChannel = await this.storage.get(channel.id);
+      const oldChannel = await this.storage.get(encodeURIComponent(channel.id));
 
       if (oldChannel) {
         if (!this.isChannel(oldChannel)) {
@@ -70,7 +71,7 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
         }
       }
 
-      await this.storage.set(channel.id, channel);
+      await this.storage.set(encodeURIComponent(channel.id), channel);
     });
   }
 
@@ -100,12 +101,12 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
       } else {
         channels.splice(idx, 1);
         if (channels.length > 0) {
-          await this.storage.set(channel.topic, channels);
+          await this.storage.set(encodeURIComponent(channel.topic), channels);
         } else {
-          await this.storage.delete(channel.topic);
+          await this.storage.delete(encodeURIComponent(channel.topic));
         }
       }
-      await this.storage.delete(channel.id);
+      await this.storage.delete(encodeURIComponent(channel.id));
     });
   }
 
