@@ -66,10 +66,9 @@ export interface V6MigrationInitializerArgs {
    */
   clientCredentialsStorage: KeyValueStorage<string, ClientCredentials>;
   /**
-   * The storage in which the forgot password entries of the previous version are stored.
-   * These will all just be removed, not migrated.
+   * Storages for which all entries need to be removed.
    */
-  forgotPasswordStorage: KeyValueStorage<string, unknown>;
+  cleanupStorages: KeyValueStorage<string, any>[];
   /**
    * The storage that will contain the account data in the new format.
    */
@@ -97,7 +96,7 @@ export class V6MigrationInitializer extends Initializer {
 
   private readonly accountStorage: KeyValueStorage<string, Account | Settings>;
   private readonly clientCredentialsStorage: KeyValueStorage<string, ClientCredentials>;
-  private readonly forgotPasswordStorage: KeyValueStorage<string, unknown>;
+  private readonly cleanupStorages: KeyValueStorage<string, any>[];
 
   private readonly newStorage: AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
 
@@ -108,7 +107,7 @@ export class V6MigrationInitializer extends Initializer {
     this.versionStorage = args.versionStorage;
     this.accountStorage = args.accountStorage;
     this.clientCredentialsStorage = args.clientCredentialsStorage;
-    this.forgotPasswordStorage = args.forgotPasswordStorage;
+    this.cleanupStorages = args.cleanupStorages;
     this.newStorage = args.newStorage;
   }
 
@@ -125,24 +124,19 @@ export class V6MigrationInitializer extends Initializer {
       return;
     }
 
-    const accountIterator = this.accountStorage.entries();
-    const next = await accountIterator.next();
-    if (next.done) {
-      this.logger.debug('No account data was found so no migration is necessary.');
-      return;
-    }
-
     // Ask the user for confirmation
     if (!this.skipConfirmation) {
       const readline = createInterface({ input: process.stdin, output: process.stdout });
       const answer = await new Promise<string>((resolve): void => {
         readline.question([
-          'The server is now going to migrate v6 account data to the new storage format internally.',
+          'The server is now going to migrate v6 data to the new storage format internally.',
+          'Existing accounts will be migrated.',
+          'All other internal data, such as notification subscriptions will be removed.',
           'In case you have not yet done this,',
-          'it is recommended to cancel startup and first backup the existing account data,',
+          'it is recommended to cancel startup and first backup the existing data,',
           'in case something goes wrong.',
           'When using default configurations with a file backend,',
-          'this data can be found in the ".internal/accounts" folder.',
+          'this data can be found in the ".internal" folder.',
           '\n\nDo you want to migrate the data now? [y/N] ',
         ].join(' '), resolve);
       });
@@ -152,18 +146,11 @@ export class V6MigrationInitializer extends Initializer {
       }
     }
 
-    this.logger.info('Migrating v6 account data to the new format...');
+    this.logger.info('Migrating v6 data...');
 
     const webIdAccountMap: Record<string, string> = {};
 
-    // Need to migrate the first entry we already extracted from the iterator above
-    const firstResult = await this.createAccount(next.value[1]);
-    if (firstResult) {
-      // Store link between WebID and account ID for client credentials
-      webIdAccountMap[firstResult.webId] = firstResult.accountId;
-    }
-
-    for await (const [ , account ] of accountIterator) {
+    for await (const [ , account ] of this.accountStorage.entries()) {
       const result = await this.createAccount(account);
       if (result) {
         // Store link between WebID and account ID for client credentials
@@ -171,6 +158,7 @@ export class V6MigrationInitializer extends Initializer {
       }
     }
 
+    this.logger.debug('Converting client credentials tokens.');
     // Convert the existing client credentials tokens
     for await (const [ label, { webId, secret }] of this.clientCredentialsStorage.entries()) {
       const accountId = webIdAccountMap[webId];
@@ -181,18 +169,15 @@ export class V6MigrationInitializer extends Initializer {
       await this.newStorage.create(CLIENT_CREDENTIALS_STORAGE_TYPE, { webId, label, secret, accountId });
     }
 
-    // Delete all old entries
-    for await (const [ key ] of this.accountStorage.entries()) {
-      await this.accountStorage.delete(key);
-    }
-    for await (const [ key ] of this.clientCredentialsStorage.entries()) {
-      await this.clientCredentialsStorage.delete(key);
-    }
-    for await (const [ key ] of this.forgotPasswordStorage.entries()) {
-      await this.forgotPasswordStorage.delete(key);
+    // Cleanup all old entries
+    this.logger.debug('Cleaning up older entries.');
+    for (const storage of this.cleanupStorages) {
+      for await (const [ key ] of storage.entries()) {
+        await storage.delete(key);
+      }
     }
 
-    this.logger.info('Finished migrating v6 account data.');
+    this.logger.info('Finished migrating v6 data.');
   }
 
   protected isAccount(data: Account | Settings): data is Account {

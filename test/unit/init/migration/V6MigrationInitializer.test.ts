@@ -98,7 +98,7 @@ describe('A V6MigrationInitializer', (): void => {
       versionStorage,
       accountStorage,
       clientCredentialsStorage,
-      forgotPasswordStorage,
+      cleanupStorages: [ accountStorage, clientCredentialsStorage, forgotPasswordStorage ],
       newStorage,
       skipConfirmation: true,
     });
@@ -190,7 +190,7 @@ describe('A V6MigrationInitializer', (): void => {
         versionStorage,
         accountStorage,
         clientCredentialsStorage,
-        forgotPasswordStorage,
+        cleanupStorages: [ accountStorage, clientCredentialsStorage, forgotPasswordStorage ],
         newStorage,
         skipConfirmation: false,
       });
@@ -208,15 +208,6 @@ describe('A V6MigrationInitializer', (): void => {
     it('throws an error to stop the server if no positive answer is received.', async(): Promise<void> => {
       questionMock.mockImplementation((input, callback): void => callback('n'));
       await expect(initializer.handle()).rejects.toThrow('Stopping server as migration was cancelled.');
-      expect(newStorage.create).toHaveBeenCalledTimes(0);
-    });
-
-    it('does not show the prompt if there are no accounts.', async(): Promise<void> => {
-      settings = {};
-      accounts = {};
-      await expect(initializer.handle()).resolves.toBeUndefined();
-      expect(questionMock).toHaveBeenCalledTimes(0);
-      expect(accountStorage.get).toHaveBeenCalledTimes(0);
       expect(newStorage.create).toHaveBeenCalledTimes(0);
     });
   });

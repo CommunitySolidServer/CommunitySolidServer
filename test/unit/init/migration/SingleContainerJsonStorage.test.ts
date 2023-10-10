@@ -40,8 +40,8 @@ describe('A SingleContainerJsonStorage', (): void => {
       entries.push(entry);
     }
     expect(entries).toEqual([
-      [ '/foo', { id: 'http://example.com/.internal/accounts/foo' }],
-      [ '/baz', { id: 'http://example.com/.internal/accounts/baz' }],
+      [ 'foo', { id: 'http://example.com/.internal/accounts/foo' }],
+      [ 'baz', { id: 'http://example.com/.internal/accounts/baz' }],
     ]);
     expect(store.getRepresentation).toHaveBeenCalledTimes(4);
     expect(store.getRepresentation).toHaveBeenNthCalledWith(1,
