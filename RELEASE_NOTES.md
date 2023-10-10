@@ -12,7 +12,7 @@
   for an overview of the new structure.
   Creating an account now requires multiple steps, but allows you to have multiple pods or WebIDs for 1 account.
   The architecture has been updated to be more easily extensible.
-- Pod seeding has been updated to account for the new account management, with an update CLI parameter `--seedConfig`,
+- Pod seeding has been updated to account for the new account management, with an updated CLI parameter `--seedConfig`,
   see the [updated documentation](https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/seeding-pods/)
   for more details.
 - Migration was added to update account data automatically from previous versions. See below for more details.
@@ -24,13 +24,17 @@
 
 ### Data migration
 
-Old account data will need to be migrated.
+Old internal data will need to be migrated.
 When starting the server for the first time after updating the version,
 this will happen automatically.
 A prompt will be shown to confirm.
-It is advised to first backup the account data in case something goes wrong.
+It is advised to first backup the internal data in case something goes wrong.
 When using the filesystem backend with default storage options,
-these can be found in the `.internal/accounts/` folder.
+these can be found in the `.internal` folder.
+
+Only account data will be migrated,
+other internal data such as OIDC sessions and notification subscriptions will be removed
+as how they are stored has changed as well.
 
 In case the prompt causes issues, it can be skipped automatically with the `--confirmMigration` CLI option.
 

@@ -13,12 +13,33 @@
         "@id": "urn:solid-server:default:V6MigrationInitializer",
         "@type": "V6MigrationInitializer",
         "versionKey": "current-server-version",
-        "versionStorage": { "@id": "urn:solid-server:default:SetupStorage" },
+        "versionStorage": { "@id": "urn:solid-server:default:V6MigrationSetupStorage" },
         "accountStorage": { "@id": "urn:solid-server:default:V6MigrationAccountStorage" },
         "clientCredentialsStorage": { "@id": "urn:solid-server:default:V6MigrationClientCredentialsStorage" },
-        "forgotPasswordStorage": { "@id": "urn:solid-server:default:V6MigrationForgotPasswordStorage" },
+        "cleanupStorages": [
+          { "@id": "urn:solid-server:default:V6MigrationAccountStorage" },
+          { "@id": "urn:solid-server:default:V6MigrationClientCredentialsStorage" },
+          { "@id": "urn:solid-server:default:V6MigrationForgotPasswordStorage" },
+          { "@id": "urn:solid-server:default:V6MigrationKeyStorage" },
+          { "@id": "urn:solid-server:default:V6MigrationAdapterStorage" },
+          { "@id": "urn:solid-server:default:V6MigrationTokenStorage" },
+          { "@id": "urn:solid-server:default:V6MigrationNotificationStorage" },
+          { "@id": "urn:solid-server:default:V6MigrationSetupStorage" }
+        ],
         "newStorage": { "@id": "urn:solid-server:default:AccountStorage" },
         "skipConfirmation": { "@id": "urn:solid-server:default:variable:confirmMigration" }
+      }
+    },
+
+    {
+      "comment": "All storages changed so we need the old setup storage to correctly read the version key",
+      "@id": "urn:solid-server:default:V6MigrationSetupStorage",
+      "@type": "Base64EncodingStorage",
+      "source": {
+        "@type": "SingleContainerJsonStorage",
+        "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "container": "/.internal/setup/"
       }
     },
 
@@ -26,15 +47,10 @@
       "@id": "urn:solid-server:default:V6MigrationAccountStorage",
       "@type": "Base64EncodingStorage",
       "source": {
-        "comment": "Relative path of `/` is necessary to strip leading slash from keys.",
-        "@type": "ContainerPathStorage",
-        "relativePath": "/",
-        "source": {
-          "@type": "SingleContainerJsonStorage",
-          "source": { "@id": "urn:solid-server:default:ResourceStore" },
-          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-          "container": "/.internal/accounts/"
-        }
+        "@type": "SingleContainerJsonStorage",
+        "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "container": "/.internal/accounts/"
       }
     },
 
@@ -42,32 +58,47 @@
       "@id": "urn:solid-server:default:V6MigrationClientCredentialsStorage",
       "@type": "Base64EncodingStorage",
       "source": {
-        "comment": "Relative path of `/` is necessary to strip leading slash from keys.",
-        "@type": "ContainerPathStorage",
-        "relativePath": "/",
-        "source": {
-          "@type": "SingleContainerJsonStorage",
-          "source": { "@id": "urn:solid-server:default:ResourceStore" },
-          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-          "container": "/.internal/accounts/credentials/"
-        }
+        "@type": "SingleContainerJsonStorage",
+        "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "container": "/.internal/accounts/credentials/"
       }
     },
 
     {
       "@id": "urn:solid-server:default:V6MigrationForgotPasswordStorage",
-      "@type": "Base64EncodingStorage",
-      "source": {
-        "comment": "Relative path of `/` is necessary to strip leading slash from keys.",
-        "@type": "ContainerPathStorage",
-        "relativePath": "/",
-        "source": {
-          "@type": "SingleContainerJsonStorage",
-          "source": { "@id": "urn:solid-server:default:ResourceStore" },
-          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-          "container": "/.internal/forgot-password/"
-        }
-      }
+      "@type": "SingleContainerJsonStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/forgot-password/"
+    },
+    {
+      "@id": "urn:solid-server:default:V6MigrationKeyStorage",
+      "@type": "SingleContainerJsonStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/idp/keys/"
+    },
+    {
+      "@id": "urn:solid-server:default:V6MigrationAdapterStorage",
+      "@type": "SingleContainerJsonStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/idp/adapter/"
+    },
+    {
+      "@id": "urn:solid-server:default:V6MigrationTokenStorage",
+      "@type": "SingleContainerJsonStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/idp/tokens/"
+    },
+    {
+      "@id": "urn:solid-server:default:V6MigrationNotificationStorage",
+      "@type": "SingleContainerJsonStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/notifications/"
     }
   ]
 }
