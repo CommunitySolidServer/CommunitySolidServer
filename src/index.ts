@@ -473,6 +473,7 @@ export * from './storage/keyvalue/IndexedStorage';
 export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
 export * from './storage/keyvalue/KeyValueStorage';
+export * from './storage/keyvalue/MaxKeyLengthStorage';
 export * from './storage/keyvalue/MemoryMapStorage';
 export * from './storage/keyvalue/PassthroughKeyValueStorage';
 export * from './storage/keyvalue/WrappedExpiringStorage';

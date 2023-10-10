@@ -1,5 +1,6 @@
 /**
  * A simple storage solution that can be used for internal values that need to be stored.
+ * To prevent potential issues, keys should be urlencoded before calling the storage.
  */
 export interface KeyValueStorage<TKey, TValue> {
   /**
