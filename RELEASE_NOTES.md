@@ -35,6 +35,8 @@ these can be found in the `.internal` folder.
 Only account data will be migrated,
 other internal data such as OIDC sessions and notification subscriptions will be removed
 as how they are stored has changed as well.
+This means existing tokens and sessions will be invalidated and users will have to log in again.
+Notifications will have to be resubscribed to for the same reason.
 
 In case the prompt causes issues, it can be skipped automatically with the `--confirmMigration` CLI option.
 
