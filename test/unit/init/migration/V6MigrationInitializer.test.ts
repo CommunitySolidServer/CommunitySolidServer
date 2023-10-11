@@ -42,11 +42,12 @@ describe('A V6MigrationInitializer', (): void => {
   let accounts: Record<string, Account>;
   let clientCredentials: Record<string, ClientCredentials>;
   const versionKey = 'version';
-  let versionStorage: jest.Mocked<KeyValueStorage<string, string>>;
+  let setupStorage: jest.Mocked<KeyValueStorage<string, string>>;
   let accountStorage: jest.Mocked<KeyValueStorage<string, Account | Settings>>;
   let clientCredentialsStorage: jest.Mocked<KeyValueStorage<string, ClientCredentials>>;
   let forgotPasswordStorage: jest.Mocked<KeyValueStorage<string, unknown>>;
-  let newStorage: jest.Mocked<AccountLoginStorage<any>>;
+  let newAccountStorage: jest.Mocked<AccountLoginStorage<any>>;
+  let newSetupStorage: jest.Mocked<KeyValueStorage<string, string>>;
   let initializer: V6MigrationInitializer;
 
   beforeEach(async(): Promise<void> => {
@@ -62,8 +63,16 @@ describe('A V6MigrationInitializer', (): void => {
       token: { webId, secret: 'secret!' },
     };
 
-    versionStorage = {
+    setupStorage = {
       get: jest.fn().mockResolvedValue('6.0.0'),
+      delete: jest.fn(),
+      entries: jest.fn(async function* (): AsyncGenerator<[string, string]> {
+        yield [ 'version', '6.0.0' ];
+      }),
+    } satisfies Partial<KeyValueStorage<string, string>> as any;
+
+    newSetupStorage = {
+      set: jest.fn(),
     } satisfies Partial<KeyValueStorage<string, string>> as any;
 
     accountStorage = {
@@ -89,17 +98,18 @@ describe('A V6MigrationInitializer', (): void => {
       }),
     } satisfies Partial<KeyValueStorage<string, any>> as any;
 
-    newStorage = {
+    newAccountStorage = {
       create: jest.fn((type): any => ({ id: `${type}-id` })),
     } satisfies Partial<AccountLoginStorage<any>> as any;
 
     initializer = new V6MigrationInitializer({
       versionKey,
-      versionStorage,
+      setupStorage,
       accountStorage,
       clientCredentialsStorage,
       cleanupStorages: [ accountStorage, clientCredentialsStorage, forgotPasswordStorage ],
-      newStorage,
+      newAccountStorage,
+      newSetupStorage,
       skipConfirmation: true,
     });
   });
@@ -107,8 +117,8 @@ describe('A V6MigrationInitializer', (): void => {
   it('migrates the data.', async(): Promise<void> => {
     await expect(initializer.handle()).resolves.toBeUndefined();
 
-    expect(versionStorage.get).toHaveBeenCalledTimes(1);
-    expect(versionStorage.get).toHaveBeenLastCalledWith(versionKey);
+    expect(setupStorage.get).toHaveBeenCalledTimes(1);
+    expect(setupStorage.get).toHaveBeenLastCalledWith(versionKey);
 
     expect(accountStorage.get).toHaveBeenCalledTimes(2);
     expect(accountStorage.get).toHaveBeenCalledWith(webId);
@@ -125,43 +135,50 @@ describe('A V6MigrationInitializer', (): void => {
     expect(forgotPasswordStorage.delete).toHaveBeenCalledTimes(1);
     expect(forgotPasswordStorage.delete).toHaveBeenCalledWith('forgot');
 
-    expect(newStorage.create).toHaveBeenCalledTimes(11);
-    expect(newStorage.create).toHaveBeenCalledWith(ACCOUNT_TYPE, {});
-    expect(newStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
+    expect(newAccountStorage.create).toHaveBeenCalledTimes(11);
+    expect(newAccountStorage.create).toHaveBeenCalledWith(ACCOUNT_TYPE, {});
+    expect(newAccountStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
       { email: 'email@example.com', password: '123', verified: true, accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
+    expect(newAccountStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
       { email: 'email2@example.com', password: '1234', verified: true, accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE, { webId, accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE, { webId: webId2, accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test/', accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test2/', accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE, { webId, podId: 'pod-id', visible: false });
-    expect(newStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE,
+    expect(newAccountStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE, { webId, accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE,
+      { webId: webId2, accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test/', accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test2/', accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE,
+      { webId, podId: 'pod-id', visible: false });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE,
       { webId: webId2, podId: 'pod-id', visible: false });
-    expect(newStorage.create).toHaveBeenCalledWith(CLIENT_CREDENTIALS_STORAGE_TYPE,
+    expect(newAccountStorage.create).toHaveBeenCalledWith(CLIENT_CREDENTIALS_STORAGE_TYPE,
       { label: 'token', secret: 'secret!', webId, accountId: 'account-id' });
+
+    expect(newSetupStorage.set).toHaveBeenCalledTimes(1);
+    expect(newSetupStorage.set).toHaveBeenLastCalledWith('version', '6.0.0');
+    expect(setupStorage.delete).toHaveBeenCalledTimes(1);
+    expect(setupStorage.delete).toHaveBeenLastCalledWith('version');
   });
 
   it('does nothing if the server has no stored version number.', async(): Promise<void> => {
-    versionStorage.get.mockResolvedValueOnce(undefined);
+    setupStorage.get.mockResolvedValueOnce(undefined);
     await expect(initializer.handle()).resolves.toBeUndefined();
     expect(accountStorage.get).toHaveBeenCalledTimes(0);
-    expect(newStorage.create).toHaveBeenCalledTimes(0);
+    expect(newAccountStorage.create).toHaveBeenCalledTimes(0);
   });
 
   it('does nothing if stored version is more than 6.', async(): Promise<void> => {
-    versionStorage.get.mockResolvedValueOnce('7.0.0');
+    setupStorage.get.mockResolvedValueOnce('7.0.0');
     await expect(initializer.handle()).resolves.toBeUndefined();
     expect(accountStorage.get).toHaveBeenCalledTimes(0);
-    expect(newStorage.create).toHaveBeenCalledTimes(0);
+    expect(newAccountStorage.create).toHaveBeenCalledTimes(0);
   });
 
   it('ignores accounts and credentials for which it cannot find the settings.', async(): Promise<void> => {
     delete settings[webId];
     await expect(initializer.handle()).resolves.toBeUndefined();
 
-    expect(versionStorage.get).toHaveBeenCalledTimes(1);
-    expect(versionStorage.get).toHaveBeenLastCalledWith(versionKey);
+    expect(setupStorage.get).toHaveBeenCalledTimes(1);
+    expect(setupStorage.get).toHaveBeenLastCalledWith(versionKey);
 
     expect(accountStorage.get).toHaveBeenCalledTimes(2);
     expect(accountStorage.get).toHaveBeenCalledWith(webId);
@@ -171,14 +188,20 @@ describe('A V6MigrationInitializer', (): void => {
     expect(accountStorage.delete).toHaveBeenCalledWith('account');
     expect(accountStorage.delete).toHaveBeenCalledWith('account2');
 
-    expect(newStorage.create).toHaveBeenCalledTimes(5);
-    expect(newStorage.create).toHaveBeenCalledWith(ACCOUNT_TYPE, {});
-    expect(newStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
+    expect(newAccountStorage.create).toHaveBeenCalledTimes(5);
+    expect(newAccountStorage.create).toHaveBeenCalledWith(ACCOUNT_TYPE, {});
+    expect(newAccountStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
       { email: 'email2@example.com', password: '1234', verified: true, accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE, { webId: webId2, accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test2/', accountId: 'account-id' });
-    expect(newStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE,
+    expect(newAccountStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE,
+      { webId: webId2, accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test2/', accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE,
       { webId: webId2, podId: 'pod-id', visible: false });
+
+    expect(newSetupStorage.set).toHaveBeenCalledTimes(1);
+    expect(newSetupStorage.set).toHaveBeenLastCalledWith('version', '6.0.0');
+    expect(setupStorage.delete).toHaveBeenCalledTimes(1);
+    expect(setupStorage.delete).toHaveBeenLastCalledWith('version');
   });
 
   describe('with prompts enabled', (): void => {
@@ -187,11 +210,12 @@ describe('A V6MigrationInitializer', (): void => {
 
       initializer = new V6MigrationInitializer({
         versionKey,
-        versionStorage,
+        setupStorage,
         accountStorage,
         clientCredentialsStorage,
         cleanupStorages: [ accountStorage, clientCredentialsStorage, forgotPasswordStorage ],
-        newStorage,
+        newAccountStorage,
+        newSetupStorage,
         skipConfirmation: false,
       });
     });
@@ -200,15 +224,16 @@ describe('A V6MigrationInitializer', (): void => {
       await expect(initializer.handle()).resolves.toBeUndefined();
 
       expect(questionMock).toHaveBeenCalledTimes(1);
-      expect(questionMock.mock.invocationCallOrder[0]).toBeLessThan(newStorage.create.mock.invocationCallOrder[0]);
+      expect(questionMock.mock.invocationCallOrder[0])
+        .toBeLessThan(newAccountStorage.create.mock.invocationCallOrder[0]);
 
-      expect(newStorage.create).toHaveBeenCalledTimes(11);
+      expect(newAccountStorage.create).toHaveBeenCalledTimes(11);
     });
 
     it('throws an error to stop the server if no positive answer is received.', async(): Promise<void> => {
       questionMock.mockImplementation((input, callback): void => callback('n'));
       await expect(initializer.handle()).rejects.toThrow('Stopping server as migration was cancelled.');
-      expect(newStorage.create).toHaveBeenCalledTimes(0);
+      expect(newAccountStorage.create).toHaveBeenCalledTimes(0);
     });
   });
 });

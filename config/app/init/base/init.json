@@ -33,8 +33,8 @@
         "@type":"SequenceHandler",
         "handlers": [
           { "@id": "urn:solid-server:default:CleanupInitializer"},
-          { "@id": "urn:solid-server:default:BaseUrlVerifier" },
           { "@id": "urn:solid-server:default:MigrationInitializer" },
+          { "@id": "urn:solid-server:default:BaseUrlVerifier" },
           { "@id": "urn:solid-server:default:PrimaryParallelInitializer" },
           { "@id": "urn:solid-server:default:SeededAccountInitializer" },
           { "@id": "urn:solid-server:default:ModuleVersionVerifier" },

@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Handles migration of v6 account data.",
+      "comment": "Handles migration of v6 internal data. In a conditional handler to prevent issues if something fails between migration and writing the new version.",
       "@id": "urn:solid-server:default:V6MigrationHandler",
       "@type": "ConditionalHandler",
       "storageKey": "v6-migration",
@@ -13,7 +13,7 @@
         "@id": "urn:solid-server:default:V6MigrationInitializer",
         "@type": "V6MigrationInitializer",
         "versionKey": "current-server-version",
-        "versionStorage": { "@id": "urn:solid-server:default:V6MigrationSetupStorage" },
+        "setupStorage": { "@id": "urn:solid-server:default:V6MigrationSetupStorage" },
         "accountStorage": { "@id": "urn:solid-server:default:V6MigrationAccountStorage" },
         "clientCredentialsStorage": { "@id": "urn:solid-server:default:V6MigrationClientCredentialsStorage" },
         "cleanupStorages": [
@@ -23,10 +23,10 @@
           { "@id": "urn:solid-server:default:V6MigrationKeyStorage" },
           { "@id": "urn:solid-server:default:V6MigrationAdapterStorage" },
           { "@id": "urn:solid-server:default:V6MigrationTokenStorage" },
-          { "@id": "urn:solid-server:default:V6MigrationNotificationStorage" },
-          { "@id": "urn:solid-server:default:V6MigrationSetupStorage" }
+          { "@id": "urn:solid-server:default:V6MigrationNotificationStorage" }
         ],
-        "newStorage": { "@id": "urn:solid-server:default:AccountStorage" },
+        "newAccountStorage": { "@id": "urn:solid-server:default:AccountStorage" },
+        "newSetupStorage": { "@id": "urn:solid-server:default:SetupStorage" },
         "skipConfirmation": { "@id": "urn:solid-server:default:variable:confirmMigration" }
       }
     },

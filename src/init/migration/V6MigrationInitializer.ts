@@ -50,11 +50,11 @@ const STORAGE_DESCRIPTION = {
 
 export interface V6MigrationInitializerArgs {
   /**
-   * The storage in which the version is saved that was stored last time the server was started.
+   * The storage in which all setup values are stored, including the version of the server.
    */
-  versionStorage: KeyValueStorage<string, string>;
+  setupStorage: KeyValueStorage<string, string>;
   /**
-   * The key necessary to get the version from the `versionStorage`.
+   * The key necessary to get the version from the `setupStorage`.
    */
   versionKey: string;
   /**
@@ -72,7 +72,11 @@ export interface V6MigrationInitializerArgs {
   /**
    * The storage that will contain the account data in the new format.
    */
-  newStorage: AccountLoginStorage<any>;
+  newAccountStorage: AccountLoginStorage<any>;
+  /**
+   * The storage that will contain the setup entries in the new format.
+   */
+  newSetupStorage: KeyValueStorage<string, string>;
   /**
    * If true, no confirmation prompt will be printed to the stdout.
    */
@@ -92,27 +96,29 @@ export class V6MigrationInitializer extends Initializer {
   private readonly skipConfirmation: boolean;
 
   private readonly versionKey: string;
-  private readonly versionStorage: KeyValueStorage<string, string>;
+  private readonly setupStorage: KeyValueStorage<string, string>;
 
   private readonly accountStorage: KeyValueStorage<string, Account | Settings>;
   private readonly clientCredentialsStorage: KeyValueStorage<string, ClientCredentials>;
   private readonly cleanupStorages: KeyValueStorage<string, any>[];
 
-  private readonly newStorage: AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
+  private readonly newAccountStorage: AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
+  private readonly newSetupStorage: KeyValueStorage<string, string>;
 
   public constructor(args: V6MigrationInitializerArgs) {
     super();
     this.skipConfirmation = Boolean(args.skipConfirmation);
     this.versionKey = args.versionKey;
-    this.versionStorage = args.versionStorage;
+    this.setupStorage = args.setupStorage;
     this.accountStorage = args.accountStorage;
     this.clientCredentialsStorage = args.clientCredentialsStorage;
     this.cleanupStorages = args.cleanupStorages;
-    this.newStorage = args.newStorage;
+    this.newAccountStorage = args.newAccountStorage;
+    this.newSetupStorage = args.newSetupStorage;
   }
 
   public async handle(): Promise<void> {
-    const previousVersion = await this.versionStorage.get(this.versionKey);
+    const previousVersion = await this.setupStorage.get(this.versionKey);
     if (!previousVersion) {
       // This happens if this is the first time the server is started
       this.logger.debug('No previous version found');
@@ -166,7 +172,13 @@ export class V6MigrationInitializer extends Initializer {
         this.logger.warn(`Unable to find account for client credentials ${label}. Skipping migration of this token.`);
         continue;
       }
-      await this.newStorage.create(CLIENT_CREDENTIALS_STORAGE_TYPE, { webId, label, secret, accountId });
+      await this.newAccountStorage.create(CLIENT_CREDENTIALS_STORAGE_TYPE, { webId, label, secret, accountId });
+    }
+
+    this.logger.debug('Converting setup entries.');
+    for await (const [ key, value ] of this.setupStorage.entries()) {
+      await this.newSetupStorage.set(key, value);
+      await this.setupStorage.delete(key);
     }
 
     // Cleanup all old entries
@@ -206,17 +218,17 @@ export class V6MigrationInitializer extends Initializer {
       return;
     }
 
-    const { id: accountId } = await this.newStorage.create(ACCOUNT_TYPE, {});
+    const { id: accountId } = await this.newAccountStorage.create(ACCOUNT_TYPE, {});
     // The `toLowerCase` call is important here to have the expected value
-    await this.newStorage.create(PASSWORD_STORAGE_TYPE,
+    await this.newAccountStorage.create(PASSWORD_STORAGE_TYPE,
       { email: email.toLowerCase(), password, verified, accountId });
     if (settings.useIdp) {
-      await this.newStorage.create(WEBID_STORAGE_TYPE, { webId, accountId });
+      await this.newAccountStorage.create(WEBID_STORAGE_TYPE, { webId, accountId });
     }
     if (settings.podBaseUrl) {
-      const { id: podId } = await this.newStorage.create(POD_STORAGE_TYPE,
+      const { id: podId } = await this.newAccountStorage.create(POD_STORAGE_TYPE,
         { baseUrl: settings.podBaseUrl, accountId });
-      await this.newStorage.create(OWNER_STORAGE_TYPE, { webId, podId, visible: false });
+      await this.newAccountStorage.create(OWNER_STORAGE_TYPE, { webId, podId, visible: false });
     }
 
     return { accountId, webId };
