@@ -51,6 +51,7 @@ describe('A server migrating from v6', (): void => {
   it('can start the server to migrate the data.', async(): Promise<void> => {
     // This is going to trigger the migration step
     await expect(app.start()).resolves.toBeUndefined();
+
     // If migration was successful, there should be no files left in these folders
     const accountDir = await readdir(joinFilePath(rootFilePath, '.internal/accounts/'));
     expect(accountDir).toEqual(expect.arrayContaining([ 'data', 'index', 'credentials' ]));
@@ -58,6 +59,15 @@ describe('A server migrating from v6', (): void => {
     expect(credentialsDir).toEqual([]);
     const forgotDir = await readdir(joinFilePath(rootFilePath, '.internal/forgot-password/'));
     expect(forgotDir).toEqual([]);
+
+    // Setup resources should have been migrated
+    const setupDir = await readdir(joinFilePath(rootFilePath, '.internal/setup/'));
+    expect(setupDir).toEqual([
+      'current-base-url$.json',
+      'current-server-version$.json',
+      'setupCompleted-2.0$.json',
+      'v6-migration$.json',
+    ]);
   });
 
   it('still allows existing accounts to log in.', async(): Promise<void> => {
