@@ -11,16 +11,15 @@ import { OIDC } from '../../util/Vocabularies';
 import type { AdapterFactory } from './AdapterFactory';
 import { PassthroughAdapter, PassthroughAdapterFactory } from './PassthroughAdapterFactory';
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 /**
  * This {@link Adapter} redirects the `find` call to its source adapter.
- * In case no client data was found in the source for the given WebId,
- * this class will do an HTTP GET request to that WebId.
- * If a valid `solid:oidcRegistration` triple is found there,
- * that data will be returned instead.
+ * In case no client data was found in the source for the given Client ID,
+ * this class will do an HTTP GET request to that Client ID.
+ * If the result is a valid Client ID document, that will be returned instead.
+ *
+ * See https://solidproject.org/TR/2022/oidc-20220328#clientids-document.
  */
-export class WebIdAdapter extends PassthroughAdapter {
+export class ClientIdAdapter extends PassthroughAdapter {
   protected readonly logger = getLoggerFor(this);
 
   private readonly converter: RepresentationConverter;
@@ -39,7 +38,6 @@ export class WebIdAdapter extends PassthroughAdapter {
     // so no extra checks are needed from our side.
     if (!payload && this.name === 'Client' && hasScheme(id, 'http', 'https')) {
       this.logger.debug(`Looking for payload data at ${id}`);
-      // All checks based on https://solid.github.io/authentication-panel/solid-oidc/#clientids-webid
       if (!/^https:|^http:\/\/localhost(?::\d+)?(?:\/|$)/u.test(id)) {
         throw new Error(`SSL is required for client_id authentication unless working locally.`);
       }
@@ -58,21 +56,22 @@ export class WebIdAdapter extends PassthroughAdapter {
         }
       } catch (error: unknown) {
         json = undefined;
-        this.logger.debug(`Found unexpected client WebID for ${id}: ${createErrorMessage(error)}`);
+        this.logger.debug(`Found unexpected client ID for ${id}: ${createErrorMessage(error)}`);
       }
 
       if (json) {
         // Need to make sure the document is about the id
         if (json.client_id !== id) {
-          throw new Error('The client registration `client_id` field must match the client WebID');
+          throw new Error('The client registration `client_id` field must match the client ID');
         }
         payload = json;
       } else {
-        // Since the WebID does not match the default JSON-LD we try to interpret it as RDF
-        payload = await this.parseRdfWebId(data, id, response);
+        // Since the client ID does not match the default JSON-LD we try to interpret it as RDF
+        payload = await this.parseRdfClientId(data, id, response);
       }
 
       // `token_endpoint_auth_method: 'none'` prevents oidc-provider from requiring a client_secret
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       payload = { ...payload, token_endpoint_auth_method: 'none' };
     }
 
@@ -81,12 +80,12 @@ export class WebIdAdapter extends PassthroughAdapter {
   }
 
   /**
-   * Parses RDF data found at a client WebID.
-   * @param data - Raw data from the WebID.
-   * @param id - The actual WebID.
+   * Parses RDF data found at a Client ID.
+   * @param data - Raw data from the Client ID.
+   * @param id - The actual Client ID.
    * @param response - Response object from the request.
    */
-  private async parseRdfWebId(data: string, id: string, response: Response): Promise<AdapterPayload> {
+  private async parseRdfClientId(data: string, id: string, response: Response): Promise<AdapterPayload> {
     const representation = await responseToDataset(response, this.converter, data);
 
     // Find the valid redirect URIs
@@ -98,14 +97,16 @@ export class WebIdAdapter extends PassthroughAdapter {
       }
     }
 
+    /* eslint-disable @typescript-eslint/naming-convention */
     return {
       client_id: id,
       redirect_uris: redirectUris,
     };
+    /* eslint-enable @typescript-eslint/naming-convention */
   }
 }
 
-export class WebIdAdapterFactory extends PassthroughAdapterFactory {
+export class ClientIdAdapterFactory extends PassthroughAdapterFactory {
   private readonly converter: RepresentationConverter;
 
   public constructor(source: AdapterFactory, converter: RepresentationConverter) {
@@ -114,6 +115,6 @@ export class WebIdAdapterFactory extends PassthroughAdapterFactory {
   }
 
   public createStorageAdapter(name: string): Adapter {
-    return new WebIdAdapter(name, this.source.createStorageAdapter(name), this.converter);
+    return new ClientIdAdapter(name, this.source.createStorageAdapter(name), this.converter);
   }
 }

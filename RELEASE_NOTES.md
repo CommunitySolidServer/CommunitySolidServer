@@ -85,6 +85,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - All classes related to setup have been removed.
 - The `StaticAssetHandler` has bene updated to support the new functionality.
 - `SeededPodInitializer` has been renamed to `SeededAccountInitializer`.
+- `WebIdAdapterFactory` has been renamed to `ClientIdAdapterFactory`.
 
 ## v6.1.0
 

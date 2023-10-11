@@ -1,22 +1,22 @@
 import fetch from 'cross-fetch';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
-import { WebIdAdapterFactory } from '../../../../src/identity/storage/WebIdAdapterFactory';
+import { ClientIdAdapterFactory } from '../../../../src/identity/storage/ClientIdAdapterFactory';
 import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import type { Adapter } from '../../../../templates/types/oidc-provider';
 
 jest.mock('cross-fetch');
 
 /* eslint-disable @typescript-eslint/naming-convention */
-describe('A WebIdAdapterFactory', (): void => {
+describe('A ClientIdAdapterFactory', (): void => {
   const fetchMock: jest.Mock = fetch as any;
-  const id = 'https://app.test.com/card#me';
+  const id = 'https://app.example.com/card#me';
   let json: any;
   let rdf: string;
   let source: Adapter;
   let sourceFactory: AdapterFactory;
   let adapter: Adapter;
   const converter = new RdfToQuadConverter();
-  let factory: WebIdAdapterFactory;
+  let factory: ClientIdAdapterFactory;
 
   beforeEach(async(): Promise<void> => {
     json = {
@@ -24,14 +24,14 @@ describe('A WebIdAdapterFactory', (): void => {
 
       client_id: id,
       client_name: 'Solid Application Name',
-      redirect_uris: [ 'http://test.com/' ],
+      redirect_uris: [ 'http://example.com/' ],
       scope: 'openid profile offline_access',
       grant_types: [ 'refresh_token', 'authorization_code' ],
       response_types: [ 'code' ],
       default_max_age: 3600,
       require_auth_time: true,
     };
-    rdf = `<${id}> <http://www.w3.org/ns/solid/oidc#redirect_uris> <http://test.com>.`;
+    rdf = `<${id}> <http://www.w3.org/ns/solid/oidc#redirect_uris> <http://example.com>.`;
 
     fetchMock.mockImplementation((url: string): any => ({ text: (): any => '', url, status: 200 }));
 
@@ -49,7 +49,7 @@ describe('A WebIdAdapterFactory', (): void => {
       createStorageAdapter: jest.fn().mockReturnValue(source),
     };
 
-    factory = new WebIdAdapterFactory(sourceFactory, converter);
+    factory = new ClientIdAdapterFactory(sourceFactory, converter);
     adapter = factory.createStorageAdapter('Client');
   });
 
@@ -98,7 +98,7 @@ describe('A WebIdAdapterFactory', (): void => {
     json.client_id = 'someone else';
     fetchMock.mockResolvedValueOnce({ url: id, status: 200, text: (): string => JSON.stringify(json) });
     await expect(adapter.find(id)).rejects
-      .toThrow('The client registration `client_id` field must match the client WebID');
+      .toThrow('The client registration `client_id` field must match the client ID');
   });
 
   it('can handle a valid RDF response.', async(): Promise<void> => {
@@ -107,15 +107,15 @@ describe('A WebIdAdapterFactory', (): void => {
     );
     await expect(adapter.find(id)).resolves.toEqual({
       client_id: id,
-      redirect_uris: [ 'http://test.com' ],
+      redirect_uris: [ 'http://example.com' ],
       token_endpoint_auth_method: 'none',
     });
   });
 
   it('falls back to RDF parsing if no valid context was found.', async(): Promise<void> => {
     json = {
-      '@id': 'https://app.test.com/card#me',
-      'http://www.w3.org/ns/solid/oidc#redirect_uris': { '@id': 'http://test.com' },
+      '@id': 'https://app.example.com/card#me',
+      'http://www.w3.org/ns/solid/oidc#redirect_uris': { '@id': 'http://example.com' },
       'http://randomField': { '@value': 'this will not be there since RDF parsing only takes preset fields' },
     };
     fetchMock.mockResolvedValueOnce(
@@ -126,7 +126,7 @@ describe('A WebIdAdapterFactory', (): void => {
     );
     await expect(adapter.find(id)).resolves.toEqual({
       client_id: id,
-      redirect_uris: [ 'http://test.com' ],
+      redirect_uris: [ 'http://example.com' ],
       token_endpoint_auth_method: 'none',
     });
   });
