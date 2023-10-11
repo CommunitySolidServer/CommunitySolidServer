@@ -1,0 +1,17 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/handler/base/default.json",
+    "css:config/identity/handler/routing/default.json",
+    "css:config/identity/handler/storage/password.json",
+
+    "css:config/identity/handler/enable/client-credentials.json",
+    "css:config/identity/handler/enable/password.json",
+    "css:config/identity/handler/enable/webid.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Disables account creation and creating new pods."
+    }
+  ]
+}

@@ -30,6 +30,7 @@ Contains everything needed for setting up the account management.
 * *default*: All account features enabled.
 * *disabled*: Completely disables everything account related.
 * *no-accounts*: Disables the creation of new accounts.
+* *no-accounts-pods*: Disables the creation of new accounts and creating new pods for existing accounts.
 * *no-pods*: Disables the creation of new pods.
 
 ## OIDC
