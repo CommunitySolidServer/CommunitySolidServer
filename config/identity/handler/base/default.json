@@ -1,9 +1,9 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
   "import": [
-    "css:config/identity/handler/adapter-factory/default.json",
-    "css:config/identity/handler/jwks/default.json",
-    "css:config/identity/handler/provider-factory/identity.json",
+    "css:config/identity/handler/base/adapter-factory.json",
+    "css:config/identity/handler/base/jwks.json",
+    "css:config/identity/handler/base/provider-factory.json",
     "css:config/identity/handler/storage/default.json"
   ],
   "@graph": [
