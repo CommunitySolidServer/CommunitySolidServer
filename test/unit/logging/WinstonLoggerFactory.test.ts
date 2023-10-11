@@ -69,7 +69,7 @@ describe('WinstonLoggerFactory', (): void => {
       timestamp: now.toISOString(),
       metadata: { isPrimary: true, pid: 0 },
       [Symbol.for('level')]: 'debug',
-      [Symbol.for('splat')]: [ undefined ],
+      [Symbol.for('splat')]: [{ isPrimary: true, pid: 0 }],
       [Symbol.for('message')]: `${now.toISOString()} [MyLabel] {Primary} ${level}: my message`,
     }));
   });
