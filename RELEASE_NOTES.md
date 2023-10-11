@@ -10,6 +10,7 @@
   for an overview of the new features,
   and the [architecture documentation](http://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/accounts/overview/)
   for an overview of the new structure.
+  On a default server, the entry point for everything related to accounts is <http://localhost:3000/.account/>.
   Creating an account now requires multiple steps, but allows you to have multiple pods or WebIDs for 1 account.
   The architecture has been updated to be more easily extensible.
 - Pod seeding has been updated to account for the new account management, with an updated CLI parameter `--seedConfig`,
