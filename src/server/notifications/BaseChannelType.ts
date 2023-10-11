@@ -161,7 +161,8 @@ export abstract class BaseChannelType implements NotificationChannelType {
           }),
         },
       );
-      this.shaclQuads = await readableToQuads(shaclStream);
+      // Typing issue with rdf-parse library
+      this.shaclQuads = await readableToQuads(shaclStream as unknown as Readable);
     }
     return this.shaclQuads;
   }
