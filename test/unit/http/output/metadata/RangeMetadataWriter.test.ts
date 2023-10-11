@@ -11,7 +11,7 @@ describe('RangeMetadataWriter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     metadata = new RepresentationMetadata();
-    response = createResponse();
+    response = createResponse() as HttpResponse;
     writer = new RangeMetadataWriter();
   });
 

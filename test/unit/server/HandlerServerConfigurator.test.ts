@@ -35,7 +35,7 @@ describe('A HandlerServerConfigurator', (): void => {
       writeHead: jest.fn(),
     } as any;
     response.end.mockImplementation((): any => {
-      response.headersSent = true;
+      (response as any).headersSent = true;
     });
     response.writeHead.mockReturnValue(response);
 
@@ -43,7 +43,7 @@ describe('A HandlerServerConfigurator', (): void => {
 
     handler = {
       handleSafe: jest.fn((): void => {
-        response.headersSent = true;
+        (response as any).headersSent = true;
       }),
     } as any;
 
@@ -89,7 +89,7 @@ describe('A HandlerServerConfigurator', (): void => {
   });
 
   it('does not write an error if the response had been started.', async(): Promise<void> => {
-    response.headersSent = true;
+    (response as any).headersSent = true;
     handler.handleSafe.mockRejectedValueOnce(new Error('dummyError'));
     server.emit('request', request, response);
     await flushPromises();

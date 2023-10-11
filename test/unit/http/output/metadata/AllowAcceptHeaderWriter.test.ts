@@ -30,7 +30,7 @@ describe('An AllowAcceptHeaderWriter', (): void => {
   let writer: AllowAcceptHeaderWriter;
 
   beforeEach(async(): Promise<void> => {
-    response = createResponse();
+    response = createResponse() as HttpResponse;
 
     writer = new AllowAcceptHeaderWriter(
       [ 'OPTIONS', 'GET', 'HEAD', 'PUT', 'POST', 'PATCH', 'DELETE' ],
@@ -42,7 +42,7 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     await expect(writer.handleSafe({ response, metadata: document })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
-    expect(new Set((headers.allow as string).split(', ')))
+    expect(new Set(headers.allow!.split(', ')))
       .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'PUT', 'PATCH', 'DELETE' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
     expect(headers['accept-put']).toBe('*/*');
@@ -53,7 +53,7 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     await expect(writer.handleSafe({ response, metadata: emptyContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
-    expect(new Set((headers.allow as string).split(', ')))
+    expect(new Set(headers.allow!.split(', ')))
       .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH', 'DELETE' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
     expect(headers['accept-post']).toBe('*/*');
@@ -63,7 +63,7 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     await expect(writer.handleSafe({ response, metadata: fullContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
-    expect(new Set((headers.allow as string).split(', ')))
+    expect(new Set(headers.allow!.split(', ')))
       .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
     expect(headers['accept-post']).toBe('*/*');
@@ -73,7 +73,7 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     await expect(writer.handleSafe({ response, metadata: storageContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
-    expect(new Set((headers.allow as string).split(', ')))
+    expect(new Set(headers.allow!.split(', ')))
       .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
     expect(headers['accept-post']).toBe('*/*');
@@ -83,7 +83,7 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     await expect(writer.handleSafe({ response, metadata: error404 })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
-    expect(new Set((headers.allow as string).split(', ')))
+    expect(new Set(headers.allow!.split(', ')))
       .toEqual(new Set([ 'PUT', 'PATCH' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
     expect(headers['accept-put']).toBe('*/*');
@@ -94,7 +94,7 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     await expect(writer.handleSafe({ response, metadata: error405 })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
-    expect(new Set((headers.allow as string).split(', ')))
+    expect(new Set(headers.allow!.split(', ')))
       .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH', 'DELETE' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
     expect(headers['accept-put']).toBeUndefined();

@@ -4,6 +4,7 @@ import { RepresentationMetadata } from '../../../../../../src/http/representatio
 import { OwnerMetadataWriter } from '../../../../../../src/identity/interaction/pod/util/OwnerMetadataWriter';
 import { PodStore } from '../../../../../../src/identity/interaction/pod/util/PodStore';
 import type { StorageLocationStrategy } from '../../../../../../src/server/description/StorageLocationStrategy';
+import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
 import { joinUrl } from '../../../../../../src/util/PathUtil';
 
 describe('An OwnerMetadataWriter', (): void => {
@@ -20,7 +21,7 @@ describe('An OwnerMetadataWriter', (): void => {
   beforeEach(async(): Promise<void> => {
     metadata = new RepresentationMetadata(target);
 
-    response = createResponse();
+    response = createResponse() as HttpResponse;
 
     podStore = {
       findByBaseUrl: jest.fn().mockResolvedValue({ id, accountId }),
