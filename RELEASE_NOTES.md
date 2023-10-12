@@ -39,6 +39,10 @@ as how they are stored has changed as well.
 This means existing tokens and sessions will be invalidated and users will have to log in again.
 Notifications will have to be resubscribed to for the same reason.
 
+This migration step is based on how storage is defined in the configurations provided in this repository.
+If you made drastic changes to how internal data is stored,
+you might need to have a look at the `app/init/migration/v6.json` configuration.
+
 In case the prompt causes issues, it can be skipped automatically with the `--confirmMigration` CLI option.
 
 ### Configuration changes
