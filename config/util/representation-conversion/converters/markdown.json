@@ -5,11 +5,7 @@
       "comment": "Renders Markdown snippets into the main page template.",
       "@id": "urn:solid-server:default:MarkdownToHtmlConverter",
       "@type": "MarkdownToHtmlConverter",
-      "templateEngine": {
-        "@type": "StaticTemplateEngine",
-        "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
-        "template": "@css:templates/main.html.ejs"
-      }
+      "templateEngine": { "@id": "urn:solid-server:default:MainTemplateEngine" }
     },
     {
       "comment": "Converts a container into a Markdown listing of its contents.",

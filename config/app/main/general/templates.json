@@ -17,6 +17,14 @@
           "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
         }
       ]
+    },
+
+    {
+      "comment": "Renders the main template of all HTML pages. Other generated templates should be fed as input into this.",
+      "@id": "urn:solid-server:default:MainTemplateEngine",
+      "@type": "StaticTemplateEngine",
+      "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
+      "template": "@css:templates/main.html.ejs"
     }
   ]
 }
