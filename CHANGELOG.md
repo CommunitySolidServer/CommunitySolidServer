@@ -3,6 +3,75 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.1.0...v7.0.0) (2023-10-19)
+
+### Features
+
+* Add config option to enable account and pod creation ([9321add](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9321addafa7a63d42a1c11415a55af3e9c695e08))
+* Update migration to clear all old non-account data ([9daeaf8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9daeaf89ace822d8283a7a75b0d300628ab573d3))
+* Use new MaxKeyLengthStorage to prevent keys that are too long ([b5a61cb](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b5a61cbb08bc03a1e73ee713dde12921a6bfb515))
+* Remove base64 encoding from storages ([e1c5189](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e1c5189cb809727ae1f97cc4a435baa6a60058e6))
+* Support all notification methods in all default configs ([b54c6b9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b54c6b97b7931932ce0c9ed7e9d4fc42cb27156b))
+* Add support for initializing a server with a root pod ([864dd7c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/864dd7c2e015d33ef6535e7c3e882bc108bda224))
+* Link to the account page in the pod README ([764b392](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/764b392b2b53b588dfb1cfce97e9ad677fe02aac))
+* Update configurations so ldp/accounts/oidc can be disabled ([010017a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/010017a14176246d6a792f89b701c9a8655b70bb))
+* Add migration for v6 account data ([0ac7d40](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0ac7d407bfef2d880c59bc8fd1d809e69113d5f6))
+* Allow ConditionalHandler to set the expected value ([fedd9e0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fedd9e04d8dd82b8eb4d1f8dac57ff65c0a96a6f))
+* Create PodCreator class to contain most pod creation logic ([42a1ca7](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/42a1ca7b645d537b5539827e44f668d46b3ede38))
+* Add support for pod owners ([cd07338](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cd07338ce7132d84c8c18f9f6d935026cebc039e))
+* Use IndexedStorage to store account data ([4230db5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4230db50382b05e454e27b28e7b8be3ac4858fed))
+* Full rework of account management ([a47f523](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a47f5236ef651dd8eaeb344fd83c7ef82f9730ac))
+* Move storage location decision to separate import ([ade977b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ade977bb4f86ae000cd70eec4b00e064f5bd7c4b))
+* Remove setup ([5eff035](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5eff035cb3095b43bf76e35dd55abf6e299d02ba))
+* Update StaticAssetHandler to allow for easier overrides ([ea83ea5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ea83ea59a11ff127c21f33d111bd0ceb75460a25))
+* Update oidc-provider to v8 ([7024ee9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7024ee9a583144c223078ebac0f6685b704dac57))
+* Introduce IndexedStorage for a more extensive storage solution ([3ade2ad](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3ade2ad795598a109a96f546e0512b116d66bc2f))
+* Split up EncodingPathStorage functionality into different classes ([154d981](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/154d98168498a786368f75a01f51b902b8958ee8))
+* Use ETagHandler for ETag generation and comparison ([afcbfda](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/afcbfdaacfb767d5cddefd90af5998158c44f727))
+* Store ETag in metadata ([b608080](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b608080d5f23a1326932b2b2c476db660e2dab2e))
+* Add error causes to error serializations ([0245b31](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0245b31e0c650d72190c467546bf0b40a62d800c))
+* Add metadata to errors ([f373dff](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f373dff1d7185e71c3d9aa49d2b116cfe4b2dbcc))
+* StaticAssetHandler can link a container to a document ([36ff95e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/36ff95e6b289c854635e4a842a8550d9ee88ef24))
+
+### Fixes
+
+* Ensure setup values are migrated correctly ([7a44581](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7a44581406689c3ee3c6477832f7aa3bf4b76c8d))
+* Be consistent in slash usage in storages ([f954fc9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f954fc94509266c7a7e47ba27ee768888bd1034f))
+* Encode notification keys before accessing the storage ([16378ec](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/16378ec4708ca39975a6a092b08ca0f3126583f4))
+* Make sure stored tokens expire ([7504817](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/75048172dfc495c2ae621b04247295aefe60b136))
+* Update generated keys in ExpiringAdapterFactory to prevent overlap ([2914fd7](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2914fd7d6028532f3e9239643047bcc1a421ce3c))
+* Fix issue in warning on pod settings HTML page ([7684198](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7684198b53e3f00a2de6f302a11ca3029176ba40))
+* Add links on account page ([3bfd9e3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3bfd9e329829176ec339edaf8165e03bedd3875f))
+* Rename cookie field to authorization ([307dba3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/307dba3219c15cd094d732e61f8f7e849fd72790))
+* Update supported DPoP algorithms to run CTH ([1e3684b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1e3684bcf3061d318768e1341acb04485123a906))
+* Add workaround for authn library issue ([180d5f1](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/180d5f131e4498b91fb71a9e2e88cdfd7820e8aa))
+* Use local file for oidc-provider typings ([b3ef4ed](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b3ef4ed017a5630b85a76420c1d69fa06fc2b59c))
+* Return WAC-Allow header in 304 responses ([43e8ef9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/43e8ef99b0b5179715453d94168bef77576ad272))
+* Return ETag in 304 responses ([baa6498](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/baa64987c6af92fb3964506c9a19d4b251a8f227))
+* Add missing error causes ([7505f07](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7505f07f2fb7f9972e31f445fcd078590f1f0481))
+* Make all ways to start the server more consistent ([e921d62](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e921d62630660dab9317ade1fb5583929eeb9f8a))
+
+### Chores
+
+* Make Node v18 the minimum supported version ([e0c1bae](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e0c1baeb437b64966f74edcdc37719e6945043f2))
+* Test Node v20 ([43be71e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/43be71e4a2ed73ad0ca106431aa0af43a3ccc1be))
+
+### Refactors
+
+* Use one identifier to reference main template engine ([92a0856](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/92a0856da6066b58d3c7a1437feadbf9f64abf76))
+* Sort default config imports ([851eafd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/851eafd1d15c12cd46b1c240f7702a35b1f042d9))
+* Move single IDP configurations into one folder ([862ac48](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/862ac4867bad57694b4a2b565b5aaf94b332c277))
+* Rename WebIdAdapterFactory to ClientIdAdapterFactory ([607c04f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/607c04ff286a9842e12c750fcdf87b903a838f8a))
+* Rename WebHook to Webhook ([531c299](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/531c299c7bc4d710361cedf5e8747835d62b2820))
+* Move condition classes to separate folder ([5ec6edd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5ec6eddbfab57f88b92861d1f0a8ee6034a55526))
+
+### Testing
+
+* Workaround for Jest dynamic import issues ([cccca96](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cccca96d28919338596b1a3690177e4b6427c85f))
+* Workaround for Jest ESM issues ([bfa70a4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/bfa70a40aa72d3db0347dbc6e28445a3d1499e64))
+* Remove test tmp folder after all tests are finished ([9bf7348](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9bf734817deaaf3e06b0eccac2423092bd1427c5))
+* Stop cleaning up folders after quota test to prevent CI issues ([3a57e88](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3a57e88229bafce23b4165ef15ebdfb1a1826b55))
+
 ## [6.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.0.2...v6.1.0) (2023-10-05)
 
 ### Features
