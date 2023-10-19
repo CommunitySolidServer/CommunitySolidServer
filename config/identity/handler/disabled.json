@@ -1,7 +1,11 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
   "import": [
-    "css:config/identity/handler/base/default.json",
+    "css:config/identity/handler/base/adapter-factory.json",
+    "css:config/identity/handler/base/jwks.json",
+    "css:config/identity/handler/base/provider-factory.json",
+    "css:config/identity/handler/storage/default.json",
+
     "css:config/identity/handler/routing/default.json",
     "css:config/identity/handler/storage/password.json"
   ],
