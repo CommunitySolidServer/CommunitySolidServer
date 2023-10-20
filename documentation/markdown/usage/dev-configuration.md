@@ -18,7 +18,7 @@ As an alternative to using CLI arguments, or environment variables, the CSS can 
     "dev:pod": "community-solid-server"
   },
   "devDependencies": {
-    "@solid/community-server": "^6.0.0"
+    "@solid/community-server": "^7.0.0"
   }
 }
 ```
