@@ -1,4 +1,4 @@
-import type { Credentials } from '../authentication/Credentials';
+import type { Credentials } from '../authentication/Credentials.js';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceSet } from '../storage/ResourceSet';
@@ -16,7 +16,8 @@ import { AccessMode } from './permissions/Permissions';
  * if yes authorization is granted.
  * `undefined` values for reader results are interpreted as `false`.
  */
-export class PermissionBasedAuthorizer extends Authorizer {
+export class PermissionBasedAuthorizer<TCredentials extends Record<string, unknown> = Credentials>
+  extends Authorizer<TCredentials> {
   protected readonly logger = getLoggerFor(this);
 
   private readonly resourceSet: ResourceSet;
@@ -31,13 +32,15 @@ export class PermissionBasedAuthorizer extends Authorizer {
     this.resourceSet = resourceSet;
   }
 
-  public async handle(input: AuthorizerInput): Promise<void> {
+  public async handle(input: AuthorizerInput<TCredentials>): Promise<void> {
     const { credentials, requestedModes, availablePermissions } = input;
 
     // Ensure all required modes are within the agent's permissions.
     for (const [ identifier, modes ] of requestedModes.entrySets()) {
       const modeString = [ ...modes ].join(',');
-      this.logger.debug(`Checking if ${credentials.agent?.webId} has ${modeString} permissions for ${identifier.path}`);
+      this.logger.debug(
+        `Checking if ${JSON.stringify(credentials)} has ${modeString} permissions for ${identifier.path}`,
+      );
       const permissionSet = availablePermissions.get(identifier) ?? {};
       for (const mode of modes) {
         try {
@@ -75,10 +78,10 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * @param permissionSet - PermissionSet describing the available permissions of the credentials.
    * @param mode - Which mode is requested.
    */
-  private requireModePermission(credentials: Credentials, permissionSet: PermissionSet, mode: AccessMode): void {
+  private requireModePermission(credentials: TCredentials, permissionSet: PermissionSet, mode: AccessMode): void {
     if (!permissionSet[mode]) {
       if (this.isAuthenticated(credentials)) {
-        this.logger.warn(`Agent ${credentials.agent!.webId} has no ${mode} permissions`);
+        this.logger.warn(`Agent ${JSON.stringify(credentials)} has no ${mode} permissions`);
         throw new ForbiddenHttpError();
       } else {
         // Solid, §2.1: "When a client does not provide valid credentials when requesting a resource that requires it,
@@ -94,7 +97,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * Checks whether the agent is authenticated (logged in) or not (public/anonymous).
    * @param credentials - Credentials to check.
    */
-  private isAuthenticated(credentials: Credentials): boolean {
-    return typeof credentials.agent?.webId === 'string';
+  private isAuthenticated(credentials: TCredentials): boolean {
+    return Object.entries(credentials).length > 0;
   }
 }
