@@ -3,6 +3,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.0...v7.0.1) (2023-10-20)
+
+### Fixes
+
+* Remove duplicate identifier reference when disabling accounts ([f1fdbb0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f1fdbb05b2575a56dbab4ed9ba38e8d31cfa65d8))
+
+### Documentation
+
+* Fix incorrect variable in documentation ([61b8d4a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/61b8d4a7e85c16580158f06cf25b6c3059ffe224))
+* Update v6 references ([762d703](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/762d703df7d0f178cdbd0b53b21ef7ef9b2d4919))
+
 ## [7.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v6.1.0...v7.0.0) (2023-10-19)
 
 ### Features
