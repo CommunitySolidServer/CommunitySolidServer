@@ -5,4 +5,5 @@ import type { Credentials } from './Credentials';
 /**
  * Responsible for extracting credentials from an incoming request.
  */
-export abstract class CredentialsExtractor extends AsyncHandler<HttpRequest, Credentials> {}
+export abstract class CredentialsExtractor<TCredentials extends Record<string, unknown> = Credentials>
+  extends AsyncHandler<HttpRequest, TCredentials> {}
