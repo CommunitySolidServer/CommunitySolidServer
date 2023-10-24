@@ -161,7 +161,7 @@
     "yup": "^1.3.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.7.2",
+    "@commitlint/cli": "^18.0.0",
     "@commitlint/config-conventional": "^18.0.0",
     "@inrupt/solid-client-authn-core": "^1.17.3",
     "@inrupt/solid-client-authn-node": "^1.17.3",
