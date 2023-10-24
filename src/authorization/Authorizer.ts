@@ -18,8 +18,8 @@ export interface AuthorizerInput<TCredentials extends Record<string, unknown> = 
 }
 
 /**
- * Verifies if the credentials provide access with the given permissions on the resource.
- * An {@link Error} with the necessary explanation will be thrown when permissions are not granted.
+ * Verifies whether the credentials provide access with the given permissions on the resource.
+ * An {@link Error} with the necessary explanation will be thrown if permissions are not granted.
  */
 export abstract class Authorizer<TCredentials extends Record<string, unknown> = Credentials>
   extends AsyncHandler<AuthorizerInput<TCredentials>> {}
