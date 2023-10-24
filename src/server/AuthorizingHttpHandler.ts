@@ -95,11 +95,13 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
   }
 
   private addAccessModesToError(error: HttpError, requestedModes: AccessMap): void {
-    for (const [ identifier, mode ] of requestedModes.entries()) {
+    for (const [ identifier, modes ] of requestedModes.entrySets()) {
       const bnode = blankNode();
       error.metadata.add(SOLID_META.terms.requestedAccess, bnode);
       error.metadata.addQuad(bnode, SOLID_META.terms.accessTarget, namedNode(identifier.path));
-      error.metadata.addQuad(bnode, SOLID_META.terms.accessMode, literal(mode));
+      for (const mode of modes.values()) {
+        error.metadata.addQuad(bnode, SOLID_META.terms.accessMode, literal(mode));
+      }
     }
   }
 }

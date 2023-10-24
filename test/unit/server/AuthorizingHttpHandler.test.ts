@@ -19,9 +19,11 @@ import { SOLID_META } from '../../../src/util/Vocabularies';
 describe('An AuthorizingHttpHandler', (): void => {
   const credentials = { };
   const target = { path: 'http://example.com/foo' };
-  const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>([[ target, AccessMode.read ]]);
+  const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>(
+    [[ target, new Set([ AccessMode.read, AccessMode.write ]) ]],
+  );
   const availablePermissions: PermissionMap = new IdentifierMap(
-    [[ target, { read: true }]],
+    [[ target, { read: true, write: true }]],
   );
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
@@ -91,9 +93,11 @@ describe('An AuthorizingHttpHandler', (): void => {
     const [ bnode ] = handlerError?.metadata?.getAll(SOLID_META.terms.requestedAccess) ?? [];
     expect(bnode?.termType).toBe('BlankNode');
     const [ targetQuad ] = handlerError?.metadata?.quads(bnode as BlankNode, SOLID_META.terms.accessTarget) ?? [];
-    const [ modeQuad ] = handlerError?.metadata?.quads(bnode as BlankNode, SOLID_META.terms.accessMode) ?? [];
     expect(targetQuad.object.value).toBe(target.path);
-    expect(modeQuad.object.value).toBe(AccessMode.read);
+    const modeQuads = handlerError?.metadata?.quads(bnode as BlankNode, SOLID_META.terms.accessMode) ?? [];
+    const modes = modeQuads.map((quad): string => quad.object.value);
+    expect(modes).toContain(AccessMode.read);
+    expect(modes).toContain(AccessMode.write);
     expect(source.handleSafe).toHaveBeenCalledTimes(0);
   });
 });
