@@ -1,3 +1,4 @@
+import type { BlankNode } from 'n3';
 import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
@@ -11,7 +12,9 @@ import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import type { OperationHttpHandler } from '../../../src/server/OperationHttpHandler';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
+import { HttpError } from '../../../src/util/errors/HttpError';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
+import { SOLID_META } from '../../../src/util/Vocabularies';
 
 describe('An AuthorizingHttpHandler', (): void => {
   const credentials = { };
@@ -73,10 +76,24 @@ describe('An AuthorizingHttpHandler', (): void => {
     expect(source.handleSafe).toHaveBeenLastCalledWith({ request, response, operation });
   });
 
-  it('errors if authorization fails.', async(): Promise<void> => {
+  it('errors with added access modes if authorization fails.', async(): Promise<void> => {
     const error = new ForbiddenHttpError();
     authorizer.handleSafe.mockRejectedValueOnce(error);
-    await expect(handler.handle({ request, response, operation })).rejects.toThrow(error);
+    let handlerError: HttpError | undefined;
+    try {
+      await handler.handle({ request, response, operation });
+    } catch (receivedError: unknown) {
+      if (receivedError instanceof HttpError) {
+        handlerError = receivedError;
+      }
+    }
+    expect(handlerError).toBe(error);
+    const [ bnode ] = handlerError?.metadata?.getAll(SOLID_META.terms.requestedAccess) ?? [];
+    expect(bnode?.termType).toBe('BlankNode');
+    const [ targetQuad ] = handlerError?.metadata?.quads(bnode as BlankNode, SOLID_META.terms.accessTarget) ?? [];
+    const [ modeQuad ] = handlerError?.metadata?.quads(bnode as BlankNode, SOLID_META.terms.accessMode) ?? [];
+    expect(targetQuad.object.value).toBe(target.path);
+    expect(modeQuad.object.value).toBe(AccessMode.read);
     expect(source.handleSafe).toHaveBeenCalledTimes(0);
   });
 });

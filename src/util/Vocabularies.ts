@@ -287,6 +287,10 @@ export const SOLID_META = createVocabulary('urn:npm:solid:community-server:meta:
   'value',
   // This is used to indicate whether metadata should be preserved or not during a PUT operation
   'preserve',
+  // These predicates are used to describe the requested access in case of an unauthorized request
+  'requestedAccess',
+  'accessTarget',
+  'accessMode',
 );
 
 export const VANN = createVocabulary('http://purl.org/vocab/vann/',
