@@ -1,4 +1,4 @@
-import type { Credentials } from '../authentication/Credentials.js';
+import type { Credentials } from '../authentication/Credentials';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceSet } from '../storage/ResourceSet';
@@ -13,7 +13,7 @@ import { AccessMode } from './permissions/Permissions';
 /**
  * Authorizer that bases its decision on the output it gets from its PermissionReader.
  * For each permission it checks if the reader allows that for at least one credential type,
- * if yes authorization is granted.
+ * if yes, authorization is granted.
  * `undefined` values for reader results are interpreted as `false`.
  */
 export class PermissionBasedAuthorizer<TCredentials extends Record<string, unknown> = Credentials>
