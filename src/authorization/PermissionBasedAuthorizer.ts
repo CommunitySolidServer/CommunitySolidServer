@@ -98,6 +98,6 @@ export class PermissionBasedAuthorizer<TCredentials extends Record<string, unkno
    * @param credentials - Credentials to check.
    */
   private isAuthenticated(credentials: TCredentials): boolean {
-    return Object.entries(credentials).length > 0;
+    return Object.values(credentials).some((cred): boolean => cred !== undefined);
   }
 }
