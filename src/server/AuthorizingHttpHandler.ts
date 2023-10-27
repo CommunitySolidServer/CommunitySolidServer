@@ -1,12 +1,18 @@
+import { DataFactory } from 'n3';
 import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
 import type { PermissionReader } from '../authorization/PermissionReader';
 import type { ModesExtractor } from '../authorization/permissions/ModesExtractor';
+import type { AccessMap } from '../authorization/permissions/Permissions';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import { getLoggerFor } from '../logging/LogUtil';
+import { HttpError } from '../util/errors/HttpError';
+import { SOLID_META } from '../util/Vocabularies';
 import type { OperationHttpHandlerInput } from './OperationHttpHandler';
 import { OperationHttpHandler } from './OperationHttpHandler';
+
+const { blankNode, namedNode, literal } = DataFactory;
 
 export interface AuthorizingHttpHandlerArgs {
   /**
@@ -77,11 +83,25 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
       await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });
     } catch (error: unknown) {
       this.logger.verbose(`Authorization failed: ${(error as any).message}`);
+      if (HttpError.isInstance(error)) {
+        this.addAccessModesToError(error, requestedModes);
+      }
       throw error;
     }
 
     this.logger.verbose(`Authorization succeeded, calling source handler`);
 
     return this.operationHandler.handleSafe(input);
+  }
+
+  private addAccessModesToError(error: HttpError, requestedModes: AccessMap): void {
+    for (const [ identifier, modes ] of requestedModes.entrySets()) {
+      const bnode = blankNode();
+      error.metadata.add(SOLID_META.terms.requestedAccess, bnode);
+      error.metadata.addQuad(bnode, SOLID_META.terms.accessTarget, namedNode(identifier.path));
+      for (const mode of modes.values()) {
+        error.metadata.addQuad(bnode, SOLID_META.terms.accessMode, literal(mode));
+      }
+    }
   }
 }
