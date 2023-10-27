@@ -1,8 +1,8 @@
 import { interactionPolicy } from 'oidc-provider';
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import { AccountPromptFactory } from '../../../../src/identity/configuration/AccountPromptFactory';
-import { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
-import { WebIdStore } from '../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
+import type { WebIdStore } from '../../../../src/identity/interaction/webid/util/WebIdStore';
 import DefaultPolicy = interactionPolicy.DefaultPolicy;
 import Prompt = interactionPolicy.Prompt;
 

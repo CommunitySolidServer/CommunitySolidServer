@@ -6,6 +6,7 @@ import type { Representation } from '../../../../src/http/representation/Represe
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import * as fetchUtil from '../../../../src/util/FetchUtil';
 import { ACL, VCARD } from '../../../../src/util/Vocabularies';
+
 const { namedNode, quad } = DataFactory;
 
 describe('An AgentGroupAccessChecker', (): void => {

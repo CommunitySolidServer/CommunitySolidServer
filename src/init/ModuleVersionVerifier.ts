@@ -20,6 +20,6 @@ export class ModuleVersionVerifier extends Initializer {
 
   public async handle(): Promise<void> {
     const pkg = await readPackageJson();
-    await this.storage.set(this.storageKey, pkg.version);
+    await this.storage.set(this.storageKey, pkg.version as string);
   }
 }

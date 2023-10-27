@@ -25,7 +25,7 @@ export class BaseWebIdStore extends Initializer implements WebIdStore {
 
   public constructor(storage: AccountLoginStorage<any>) {
     super();
-    this.storage = storage;
+    this.storage = storage as typeof this.storage;
   }
 
   // Initialize the type definitions

@@ -22,6 +22,7 @@ import {
   instantiateFromConfig,
   removeFolder,
 } from './Config';
+
 const { literal, namedNode, quad } = DataFactory;
 
 const port = getPort('LpdHandlerWithoutAuth');

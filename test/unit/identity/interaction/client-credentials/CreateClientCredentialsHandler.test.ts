@@ -6,11 +6,9 @@ import type {
 } from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsIdRoute';
 import type {
   ClientCredentials,
-} from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
-import {
   ClientCredentialsStore,
 } from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
-import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 
 const uuid = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3';

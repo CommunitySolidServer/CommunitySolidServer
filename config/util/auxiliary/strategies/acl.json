@@ -24,7 +24,7 @@
       "@type": "AuxiliaryLinkMetadataWriter",
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
       "specificStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
-      "relationType" : "acl"
+      "relationType": "acl"
     },
     {
       "@id": "urn:solid-server:default:MetadataWriter",

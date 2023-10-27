@@ -4,7 +4,7 @@ import {
 import type {
   ClientCredentialsIdRoute,
 } from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsIdRoute';
-import {
+import type {
   ClientCredentialsStore,
 } from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';

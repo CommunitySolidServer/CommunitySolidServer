@@ -1,4 +1,4 @@
-import type { Writable, ReadableOptions, DuplexOptions } from 'stream';
+import type { DuplexOptions, ReadableOptions, Writable } from 'stream';
 import { Readable, Transform } from 'stream';
 import { promisify } from 'util';
 import arrayifyStream from 'arrayify-stream';
@@ -47,7 +47,7 @@ export async function readableToQuads(stream: Readable): Promise<Store> {
  */
 export async function readJsonStream(stream: Readable): Promise<NodeJS.Dict<any>> {
   const body = await readableToString(stream);
-  return JSON.parse(body);
+  return JSON.parse(body) as NodeJS.Dict<any>;
 }
 
 /**
@@ -61,7 +61,7 @@ export async function getSingleItem(stream: Readable): Promise<unknown> {
   if (items.length !== 1) {
     throw new InternalServerError('Expected a stream with a single object.');
   }
-  return items[0];
+  return items[0] as unknown;
 }
 
 // These error messages usually indicate expected behaviour so should not give a warning.
@@ -130,8 +130,10 @@ export interface AsyncTransformOptions<T = any> extends DuplexOptions {
 
 /**
  * Transforms a stream, ensuring that all errors are forwarded.
- * @param source - The stream to be transformed
- * @param options - The transformation options
+ * @param source - The stream to be transformed.
+ * @param options - The transformation options.
+ * @param options.transform - The transform function to use.
+ * @param options.flush - The flush function to use.
  *
  * @returns The transformed stream
  */
@@ -139,6 +141,7 @@ export function transformSafely<T = any>(
   source: NodeJS.ReadableStream,
   {
     transform = function(data): void {
+      // eslint-disable-next-line ts/no-invalid-this
       this.push(data);
     },
     flush = (): null => null,
@@ -148,7 +151,7 @@ export function transformSafely<T = any>(
   Guarded<Transform> {
   return pipeSafely(source, new Transform({
     ...options,
-    async transform(data, encoding, callback): Promise<void> {
+    async transform(data: T, encoding, callback): Promise<void> {
       let error: Error | null = null;
       try {
         await transform.call(this, data, encoding);

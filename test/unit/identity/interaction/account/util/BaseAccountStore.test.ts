@@ -1,8 +1,9 @@
 import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../../../../../../src/identity/interaction/account/util/AccountStore';
 import { BaseAccountStore } from '../../../../../../src/identity/interaction/account/util/BaseAccountStore';
+import type {
+  AccountLoginStorage } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import {
   ACCOUNT_TYPE,
-  AccountLoginStorage,
 } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';
 

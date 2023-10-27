@@ -13,6 +13,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+
 const { namedNode, triple, literal, quad } = DataFactory;
 
 // All of this is necessary to not break the cross-fetch imports that happen in `rdf-parse`
@@ -21,7 +22,6 @@ jest.mock('cross-fetch', (): any => {
   // Require the original module to not be mocked...
   const originalFetch = jest.requireActual('cross-fetch');
   return {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     __esModule: true,
     ...originalFetch,
     fetch: mock,

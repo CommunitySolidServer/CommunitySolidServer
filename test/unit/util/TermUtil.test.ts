@@ -1,13 +1,14 @@
 import 'jest-rdf';
 import { DataFactory } from 'n3';
 import {
-  toNamedTerm,
-  toPredicateTerm,
-  toObjectTerm,
-  toLiteral,
   isTerm,
+  toLiteral,
+  toNamedTerm,
+  toObjectTerm,
+  toPredicateTerm,
 } from '../../../src/util/TermUtil';
 import { XSD } from '../../../src/util/Vocabularies';
+
 const { literal, namedNode } = DataFactory;
 
 describe('TermUtil', (): void => {

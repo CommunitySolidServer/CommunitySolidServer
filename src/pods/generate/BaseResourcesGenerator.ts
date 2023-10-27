@@ -16,7 +16,7 @@ import type { ResourceSet } from '../../storage/ResourceSet';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
-import { joinFilePath, isContainerIdentifier, resolveAssetPath } from '../../util/PathUtil';
+import { isContainerIdentifier, joinFilePath, resolveAssetPath } from '../../util/PathUtil';
 import { addResourceMetadata } from '../../util/ResourceUtil';
 import { guardedStreamFrom, readableToString } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';

@@ -20,11 +20,9 @@ describe('A ForgetWebIdHandler', (): void => {
     } as any;
 
     provider = {
-      /* eslint-disable @typescript-eslint/naming-convention */
       Session: {
         find: jest.fn().mockResolvedValue({ persist: jest.fn() }),
       },
-      /* eslint-enable @typescript-eslint/naming-convention */
     } as any;
 
     providerFactory = {

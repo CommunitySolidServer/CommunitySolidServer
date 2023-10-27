@@ -237,7 +237,6 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
   describe('authenticating a client with a WebID', (): void => {
     const clientId = joinUrl(baseUrl, 'client-id');
     const badClientId = joinUrl(baseUrl, 'bad-client-id');
-    /* eslint-disable @typescript-eslint/naming-convention */
     const clientJson = {
       '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
 
@@ -260,7 +259,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       client_id: badClientId,
       redirect_uris: [],
     };
-    /* eslint-enable @typescript-eslint/naming-convention */
+
     let state: IdentityTestState;
 
     beforeAll(async(): Promise<void> => {

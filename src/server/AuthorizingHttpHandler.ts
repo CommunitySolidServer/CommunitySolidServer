@@ -7,6 +7,7 @@ import type { ModesExtractor } from '../authorization/permissions/ModesExtractor
 import type { AccessMap } from '../authorization/permissions/Permissions';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import { getLoggerFor } from '../logging/LogUtil';
+import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { HttpError } from '../util/errors/HttpError';
 import { SOLID_META } from '../util/Vocabularies';
 import type { OperationHttpHandlerInput } from './OperationHttpHandler';
@@ -71,18 +72,20 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
 
     const requestedModes = await this.modesExtractor.handleSafe(operation);
     this.logger.verbose(`Retrieved required modes: ${
-      [ ...requestedModes.entrySets() ].map(([ id, set ]): string => `{ ${id.path}: ${[ ...set ]} }`)
+      [ ...requestedModes.entrySets() ]
+        .map(([ id, set ]): string => `{ ${id.path}: ${[ ...set ].join(',')} }`).join(',')
     }`);
 
     const availablePermissions = await this.permissionReader.handleSafe({ credentials, requestedModes });
     this.logger.verbose(`Available permissions are ${
-      [ ...availablePermissions.entries() ].map(([ id, map ]): string => `{ ${id.path}: ${JSON.stringify(map)} }`)
+      [ ...availablePermissions.entries() ]
+        .map(([ id, map ]): string => `{ ${id.path}: ${JSON.stringify(map)} }`).join(',')
     }`);
 
     try {
       await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });
     } catch (error: unknown) {
-      this.logger.verbose(`Authorization failed: ${(error as any).message}`);
+      this.logger.verbose(`Authorization failed: ${createErrorMessage(error)}`);
       if (HttpError.isInstance(error)) {
         this.addAccessModesToError(error, requestedModes);
       }

@@ -8,6 +8,7 @@ import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringS
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { SOLID } from '../../../../src/util/Vocabularies';
+
 const { literal, namedNode, quad } = DataFactory;
 
 jest.mock('uuid');

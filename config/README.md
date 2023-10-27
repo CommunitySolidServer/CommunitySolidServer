@@ -28,13 +28,13 @@ you could import `ldp/metadata-parser/default.json`
 and then add the following in your root config:
 
 ```json
-    {
-      "@id": "urn:solid-server:default:MetadataParser",
-      "@type": "ParallelHandler",
-      "handlers": [
-        { "@type": "MyNewParser" }
-      ]
-    }
+{
+  "@id": "urn:solid-server:default:MetadataParser",
+  "@type": "ParallelHandler",
+  "handlers": [
+    { "@type": "MyNewParser" }
+  ]
+}
 ```
 
 This will add the new parser to the list of metadata parsers.
@@ -54,13 +54,13 @@ you would have to not import anything from `ldp/metadata-parser` folder,
 but instead have the following in your root config:
 
 ```json
-    {
-      "@id": "urn:solid-server:default:MetadataParser",
-      "@type": "ParallelHandler",
-      "handlers": [
-        { "@type": "SlugParser" }
-      ]
-    }
+{
+  "@id": "urn:solid-server:default:MetadataParser",
+  "@type": "ParallelHandler",
+  "handlers": [
+    { "@type": "SlugParser" }
+  ]
+}
 ```
 
 Don't forget that in some cases you would also have to copy some imports!

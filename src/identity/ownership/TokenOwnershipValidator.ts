@@ -8,6 +8,7 @@ import { errorTermsToMetadata } from '../../util/errors/HttpErrorUtil';
 import { fetchDataset } from '../../util/FetchUtil';
 import { SOLID } from '../../util/Vocabularies';
 import { OwnershipValidator } from './OwnershipValidator';
+
 const { literal, namedNode, quad } = DataFactory;
 
 /**

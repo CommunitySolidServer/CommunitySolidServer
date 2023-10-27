@@ -9,7 +9,6 @@ const manager: jest.Mocked<ComponentsManager<any>> = {
 } as any;
 
 jest.mock('componentsjs', (): any => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   ComponentsManager: {
     build: jest.fn(async(): Promise<ComponentsManager<any>> => manager),
   },

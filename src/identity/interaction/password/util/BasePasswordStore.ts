@@ -1,4 +1,4 @@
-import { hash, compare } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 import { Initializer } from '../../../../init/Initializer';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
@@ -31,7 +31,7 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
 
   public constructor(storage: AccountLoginStorage<any>, saltRounds = 10) {
     super();
-    this.storage = storage;
+    this.storage = storage as typeof this.storage;
     this.saltRounds = saltRounds;
   }
 

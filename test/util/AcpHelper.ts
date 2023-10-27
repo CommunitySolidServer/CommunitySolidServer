@@ -70,17 +70,17 @@ export class AcpHelper {
       accessControlResource: {
         iri: joinUrl(baseUrl, v4()),
         accessControl: policies ?
-          [{
-            iri: joinUrl(baseUrl, v4()),
-            policy: [ ...policies ],
-          }] :
-          [],
+            [{
+              iri: joinUrl(baseUrl, v4()),
+              policy: [ ...policies ],
+            }] :
+            [],
         memberAccessControl: memberPolicies ?
-          [{
-            iri: joinUrl(baseUrl, v4()),
-            policy: [ ...memberPolicies ],
-          }] :
-          [],
+            [{
+              iri: joinUrl(baseUrl, v4()),
+              policy: [ ...memberPolicies ],
+            }] :
+            [],
       },
     };
   }

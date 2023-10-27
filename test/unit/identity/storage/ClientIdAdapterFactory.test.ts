@@ -6,7 +6,6 @@ import type { Adapter } from '../../../../templates/types/oidc-provider';
 
 jest.mock('cross-fetch');
 
-/* eslint-disable @typescript-eslint/naming-convention */
 describe('A ClientIdAdapterFactory', (): void => {
   const fetchMock: jest.Mock = fetch as any;
   const id = 'https://app.example.com/card#me';

@@ -41,6 +41,6 @@ export interface SystemError extends Error {
   syscall: string;
 }
 
-export function isSystemError(error: any): error is SystemError {
-  return error.code && error.syscall;
+export function isSystemError(error: unknown): error is SystemError {
+  return Boolean((error as SystemError).code && (error as SystemError).syscall);
 }

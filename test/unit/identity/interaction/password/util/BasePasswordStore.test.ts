@@ -1,7 +1,8 @@
 import { hash } from 'bcryptjs';
+import type {
+  AccountLoginStorage } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import {
   ACCOUNT_TYPE,
-  AccountLoginStorage,
 } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import { BasePasswordStore } from '../../../../../../src/identity/interaction/password/util/BasePasswordStore';
 import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';

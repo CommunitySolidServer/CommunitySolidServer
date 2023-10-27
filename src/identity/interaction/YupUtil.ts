@@ -11,7 +11,7 @@ import Dict = NodeJS.Dict;
 // which would break the pod creation causing us to have an incomplete pod.
 export const URL_SCHEMA = string().trim().optional().test({
   name: 'url',
-  message: (value): string => `"${value.value}" is not a valid URL`,
+  message: (value: { value: string }): string => `"${value.value}" is not a valid URL`,
   test(value): boolean {
     if (!value) {
       return true;
@@ -61,6 +61,7 @@ export function parseSchema<T extends ObjectSchema<any>>(schema: T): Pick<Schema
 export async function validateWithError<T extends ObjectSchema<any>>(schema: T, data: unknown,
   options?: ValidateOptions<any>): Promise<T['__outputType']> {
   try {
+    // eslint-disable-next-line ts/no-unsafe-return
     return await schema.validate(data, options);
   } catch (error: unknown) {
     throw new BadRequestHttpError(createErrorMessage(error));

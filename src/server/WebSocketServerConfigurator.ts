@@ -27,6 +27,7 @@ export class WebSocketServerConfigurator extends ServerConfigurator {
     // Create WebSocket server
     const webSocketServer = new WebSocketServer({ noServer: true });
     server.on('upgrade', (upgradeRequest: IncomingMessage, socket: Socket, head: Buffer): void => {
+      // eslint-disable-next-line ts/no-misused-promises
       webSocketServer.handleUpgrade(upgradeRequest, socket, head, async(webSocket: WebSocket): Promise<void> => {
         try {
           await this.handler.handleSafe({ upgradeRequest: guardStream(upgradeRequest), webSocket });

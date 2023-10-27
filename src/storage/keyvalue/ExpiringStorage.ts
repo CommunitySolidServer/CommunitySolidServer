@@ -1,6 +1,6 @@
 import type { KeyValueStorage } from './KeyValueStorage';
 
-/* eslint-disable @typescript-eslint/method-signature-style */
+/* eslint-disable ts/method-signature-style */
 /**
  * A KeyValueStorage in which the values can expire.
  * Entries with no expiration date never expire.

@@ -1,7 +1,7 @@
 import type { Adapter, AdapterPayload } from '../../../../templates/types/oidc-provider';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { AdapterFactory } from '../../storage/AdapterFactory';
-import { PassthroughAdapterFactory, PassthroughAdapter } from '../../storage/PassthroughAdapterFactory';
+import { PassthroughAdapter, PassthroughAdapterFactory } from '../../storage/PassthroughAdapterFactory';
 import type { WebIdStore } from '../webid/util/WebIdStore';
 import type { ClientCredentialsStore } from './util/ClientCredentialsStore';
 
@@ -44,7 +44,7 @@ export class ClientCredentialsAdapter extends PassthroughAdapter {
 
       this.logger.debug(`Authenticating as ${credentials.webId} using client credentials`);
 
-      /* eslint-disable @typescript-eslint/naming-convention */
+      /* eslint-disable ts/naming-convention */
       payload = {
         client_id: label,
         client_secret: credentials.secret,
@@ -52,7 +52,7 @@ export class ClientCredentialsAdapter extends PassthroughAdapter {
         redirect_uris: [],
         response_types: [],
       };
-      /* eslint-enable @typescript-eslint/naming-convention */
+      /* eslint-enable ts/naming-convention */
     }
     return payload;
   }

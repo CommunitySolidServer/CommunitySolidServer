@@ -9,8 +9,8 @@ import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdf
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { DC, PREFERRED_PREFIX_TERM, SOLID_META } from '../../../../src/util/Vocabularies';
-import quad = DataFactory.quad;
-const { namedNode, triple } = DataFactory;
+
+const { namedNode, triple, quad } = DataFactory;
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();

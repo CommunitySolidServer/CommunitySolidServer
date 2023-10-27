@@ -47,7 +47,7 @@ export abstract class BaseRouterHandler<T extends AsyncHandler<any, any>>
   protected constructor(args: BaseRouterHandlerArgs<T>) {
     super();
     if (typeof args.allowedPathNames !== 'undefined' && typeof args.baseUrl !== 'string') {
-      throw new Error('A value for allowedPathNames requires baseUrl to be defined.');
+      throw new TypeError('A value for allowedPathNames requires baseUrl to be defined.');
     }
     // Trimming trailing slash so regexes can start with `/`
     this.baseUrlLength = trimTrailingSlashes(args.baseUrl ?? '').length;
@@ -70,6 +70,6 @@ export abstract class BaseRouterHandler<T extends AsyncHandler<any, any>>
   }
 
   public async handle(input: AsyncHandlerInput<T>): Promise<AsyncHandlerOutput<T>> {
-    return this.handler.handle(input);
+    return this.handler.handle(input) as Promise<AsyncHandlerOutput<T>>;
   }
 }

@@ -71,7 +71,7 @@ at `http://localhost:3000/.notifications/WebSocketChannel2023/`:
 
 ```json
 {
-  "@context": ["https://www.w3.org/ns/solid/notification/v1"],
+  "@context": [ "https://www.w3.org/ns/solid/notification/v1" ],
   "type": "http://www.w3.org/ns/solid/notifications#WebSocketChannel2023",
   "topic": "http://localhost:3000/foo"
 }

@@ -45,8 +45,9 @@ export abstract class UnionHandler<T extends AsyncHandler<any, any>> extends
   }
 
   public async handle(input: AsyncHandlerInput<T>): Promise<AsyncHandlerOutput<T>> {
-    const handlers = this.requireAll ? this.handlers : await filterHandlers(this.handlers, input);
-    const results = handlers.map((handler): Promise<AsyncHandlerOutput<T>> => handler.handle(input));
+    const handlers = this.requireAll ? this.handlers : (await filterHandlers(this.handlers, input)) as T[];
+    const results = handlers.map(async(handler): Promise<AsyncHandlerOutput<T>> =>
+      (handler.handle(input)) as Promise<AsyncHandlerOutput<T>>);
     return this.combine(await allFulfilled(results, this.ignoreErrors));
   }
 
@@ -55,7 +56,7 @@ export abstract class UnionHandler<T extends AsyncHandler<any, any>> extends
    * If not, throw an error based on the errors of the failed handlers.
    */
   protected async allCanHandle(input: AsyncHandlerInput<T>): Promise<void> {
-    await allFulfilled(this.handlers.map((handler): Promise<void> => handler.canHandle(input)));
+    await allFulfilled(this.handlers.map(async(handler): Promise<void> => handler.canHandle(input)));
   }
 
   /**

@@ -4,7 +4,8 @@ import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { ContentType } from '../../../../src/util/Header';
-import { CONTENT_TYPE_TERM, SOLID_META, RDFS } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE_TERM, RDFS, SOLID_META } from '../../../../src/util/Vocabularies';
+
 const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
 // Helper functions to filter quads

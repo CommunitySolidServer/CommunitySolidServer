@@ -53,7 +53,6 @@ export class IdentityTestState {
       for (const cookie of newCookies) {
         this.cookies.set(cookie.name, cookie);
       }
-      // eslint-disable-next-line unicorn/prefer-spread
       this.cookie = Array.from(this.cookies, ([ , nom ]): string => `${nom.name}=${nom.value}`).join('; ');
     }
     return res;

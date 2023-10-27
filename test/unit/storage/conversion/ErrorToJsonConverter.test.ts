@@ -55,7 +55,6 @@ describe('An ErrorToJsonConverter', (): void => {
   it('adds OAuth fields if present.', async(): Promise<void> => {
     const out: OAuthErrorFields = {
       error: 'error',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       error_description: 'error_description',
       scope: 'scope',
       state: 'state',
@@ -74,7 +73,6 @@ describe('An ErrorToJsonConverter', (): void => {
       errorCode: 'H400',
       stack: error.stack,
       error: 'error',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       error_description: 'error_description',
       scope: 'scope',
       state: 'state',

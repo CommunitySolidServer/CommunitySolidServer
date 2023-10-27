@@ -14,6 +14,7 @@ import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
 import type { HttpRequest } from '../HttpRequest';
 
+/* eslint-disable ts/naming-convention */
 const redirectErrorFactories: Record<301 | 302 | 303 | 307 | 308, (location: string) => RedirectHttpError> = {
   301: (location: string): RedirectHttpError => new MovedPermanentlyHttpError(location),
   302: (location: string): RedirectHttpError => new FoundHttpError(location),
@@ -21,6 +22,7 @@ const redirectErrorFactories: Record<301 | 302 | 303 | 307 | 308, (location: str
   307: (location: string): RedirectHttpError => new TemporaryRedirectHttpError(location),
   308: (location: string): RedirectHttpError => new PermanentRedirectHttpError(location),
 };
+/* eslint-enable ts/naming-convention */
 
 /**
  * Handler that redirects paths matching given patterns
@@ -36,6 +38,7 @@ export class RedirectingHttpHandler extends HttpHandler {
   /**
    * Creates a handler for the provided redirects.
    * @param redirects - A mapping between URL patterns.
+   * @param baseUrl - Base URL of the server.
    * @param targetExtractor - To extract the target from the request.
    * @param responseWriter - To write the redirect to the response.
    * @param statusCode - Desired 30x redirection code (defaults to 308).

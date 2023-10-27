@@ -9,7 +9,6 @@ import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';
  * Do not use this locker in combination with storages that doesn't handle concurrent read/writes gracefully
  */
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 function noop(): void {}
 
 export class VoidLocker implements ExpiringReadWriteLocker {

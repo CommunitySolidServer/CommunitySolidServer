@@ -11,6 +11,7 @@ import {
   instantiateFromConfig,
   removeFolder,
 } from './Config';
+
 const { namedNode, quad } = DataFactory;
 
 const port = getPort('Conditions');

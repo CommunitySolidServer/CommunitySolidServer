@@ -95,7 +95,6 @@ describe('HeaderUtil', (): void => {
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
       expect(parseAccept('a/b; q=1 ; a')).toEqual([{
-        // eslint-disable-next-line id-length
         range: 'a/b', weight: 1, parameters: { extension: { a: '' }, mediaType: {}},
       }]);
     });

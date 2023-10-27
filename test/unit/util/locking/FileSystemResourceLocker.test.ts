@@ -1,5 +1,5 @@
 import { readdir } from 'fs-extra';
-import { InternalServerError, FileSystemResourceLocker, joinFilePath } from '../../../../src';
+import { FileSystemResourceLocker, InternalServerError, joinFilePath } from '../../../../src';
 import { getTestFolder, removeFolder } from '../../../integration/Config';
 
 // Due to the nature of using a file locking library, this is a unit test that writes to disk.

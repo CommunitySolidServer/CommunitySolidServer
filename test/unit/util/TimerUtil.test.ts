@@ -7,7 +7,7 @@ jest.useFakeTimers();
 describe('TimerUtil', (): void => {
   describe('#setSafeInterval', (): void => {
     let logger: jest.Mocked<Logger>;
-    let callback: jest.Mock<(...cbArgs: any[]) => void>;
+    let callback: jest.Mock;
 
     beforeEach(async(): Promise<void> => {
       logger = { error: jest.fn() } as any;

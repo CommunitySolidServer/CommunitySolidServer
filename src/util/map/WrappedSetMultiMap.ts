@@ -16,8 +16,9 @@ export class WrappedSetMultiMap<TKey, TVal> implements SetMultiMap<TKey, TVal> {
    * @param mapConstructor - Will be used to instantiate the internal Map.
    * @param iterable - Entries to add to the map.
    */
-  public constructor(mapConstructor: new() => Map<any, any> = Map,
+  public constructor(mapConstructor: new() => Map<TKey, Set<TVal>> = Map,
     iterable?: Iterable<readonly [TKey, TVal | ReadonlySet<TVal>]>) {
+    // eslint-disable-next-line new-cap
     this.map = new mapConstructor();
     this.count = 0;
 
@@ -42,7 +43,7 @@ export class WrappedSetMultiMap<TKey, TVal> implements SetMultiMap<TKey, TVal> {
 
   public set(key: TKey, value: ReadonlySet<TVal> | TVal): this {
     const setCount = this.get(key)?.size ?? 0;
-    const set = value instanceof Set ? new Set(value) : new Set([ value ]);
+    const set = value instanceof Set ? new Set<TVal>(value) : new Set([ value as TVal ]);
     this.count += set.size - setCount;
     if (set.size > 0) {
       this.map.set(key, set);
@@ -54,7 +55,7 @@ export class WrappedSetMultiMap<TKey, TVal> implements SetMultiMap<TKey, TVal> {
   }
 
   public add(key: TKey, value: TVal | ReadonlySet<TVal>): this {
-    const it = value instanceof Set ? value : [ value ];
+    const it = value instanceof Set ? value as Set<TVal> : [ value as TVal ];
     let set = this.map.get(key);
     if (set) {
       const originalCount = set.size;

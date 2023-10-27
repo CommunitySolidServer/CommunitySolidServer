@@ -15,7 +15,6 @@ import {
 import { NotImplementedHttpError } from '../../../../../src/util/errors/NotImplementedHttpError';
 
 jest.mock('ws', (): any => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   WebSocketServer: jest.fn().mockImplementation((): any => ({
     handleUpgrade(upgradeRequest: any, socket: any, head: any, callback: any): void {
       callback(socket, upgradeRequest);

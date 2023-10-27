@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 import type { RouterRule } from './routing/RouterRule';
 
 /**

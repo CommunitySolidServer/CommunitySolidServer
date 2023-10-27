@@ -1,14 +1,12 @@
-import { Adapter } from 'oidc-provider';
+import type { Adapter } from 'oidc-provider';
 import {
   ClientCredentialsAdapter, ClientCredentialsAdapterFactory,
 } from '../../../../../src/identity/interaction/client-credentials/ClientCredentialsAdapterFactory';
 import type {
   ClientCredentials,
-} from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
-import {
   ClientCredentialsStore,
 } from '../../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
-import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
 import type { AdapterFactory } from '../../../../../src/identity/storage/AdapterFactory';
 
 describe('A ClientCredentialsAdapterFactory', (): void => {
@@ -82,7 +80,6 @@ describe('A ClientCredentialsAdapterFactory', (): void => {
   });
 
   it('returns valid client_credentials Client metadata if a matching token was found.', async(): Promise<void> => {
-    /* eslint-disable @typescript-eslint/naming-convention */
     await expect(adapter.find(label)).resolves.toEqual({
       client_id: label,
       client_secret: secret,
@@ -90,7 +87,7 @@ describe('A ClientCredentialsAdapterFactory', (): void => {
       redirect_uris: [],
       response_types: [],
     });
-    /* eslint-enable @typescript-eslint/naming-convention */
+
     expect(sourceAdapter.find).toHaveBeenCalledTimes(1);
     expect(sourceAdapter.find).toHaveBeenLastCalledWith(label);
     expect(credentialsStore.findByLabel).toHaveBeenCalledTimes(1);

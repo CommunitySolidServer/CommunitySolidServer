@@ -29,7 +29,7 @@ export class BaseClientCredentialsStore extends Initializer implements ClientCre
 
   public constructor(storage: AccountLoginStorage<any>) {
     super();
-    this.storage = storage;
+    this.storage = storage as typeof this.storage;
   }
 
   // Initialize the type definitions

@@ -132,10 +132,10 @@ You can also send a POST request to this resource with a `webId` and `remove: tr
 
 ```json
 {
-  "baseUrl":  "http://localhost:3000/my-pod/",
+  "baseUrl": "http://localhost:3000/my-pod/",
   "owners": [
-    { 
-      "webId":  "http://localhost:3000/my-pod/profile/card#me", 
+    {
+      "webId": "http://localhost:3000/my-pod/profile/card#me",
       "visible": false
     }
   ]

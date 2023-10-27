@@ -1,7 +1,7 @@
 import type { ProviderFactory } from '../../../../../src/identity/configuration/ProviderFactory';
 import type { Interaction } from '../../../../../src/identity/interaction/InteractionHandler';
 import { PickWebIdHandler } from '../../../../../src/identity/interaction/oidc/PickWebIdHandler';
-import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import { FoundHttpError } from '../../../../../src/util/errors/FoundHttpError';
 import type Provider from '../../../../../templates/types/oidc-provider';
@@ -35,11 +35,9 @@ describe('A PickWebIdHandler', (): void => {
     } satisfies Partial<WebIdStore> as any;
 
     provider = {
-      /* eslint-disable @typescript-eslint/naming-convention */
       Session: {
         find: jest.fn().mockResolvedValue({ persist: jest.fn() }),
       },
-      /* eslint-enable @typescript-eslint/naming-convention */
     } as any;
 
     providerFactory = {

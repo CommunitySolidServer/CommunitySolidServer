@@ -1,7 +1,7 @@
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { PermissionSet, PermissionMap } from './permissions/Permissions';
+import type { PermissionMap, PermissionSet } from './permissions/Permissions';
 
 /**
  * PermissionReader which sets all permissions to true or false

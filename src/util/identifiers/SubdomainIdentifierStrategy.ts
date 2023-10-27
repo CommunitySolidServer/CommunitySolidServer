@@ -1,6 +1,6 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { ensureTrailingSlash, createSubdomainRegexp } from '../PathUtil';
+import { createSubdomainRegexp, ensureTrailingSlash } from '../PathUtil';
 import { BaseIdentifierStrategy } from './BaseIdentifierStrategy';
 
 /**

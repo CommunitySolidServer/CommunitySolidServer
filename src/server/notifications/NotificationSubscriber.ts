@@ -123,7 +123,7 @@ export class NotificationSubscriber extends OperationHttpHandler {
 
     // Complete the channel once the response has been sent out
     endOfStream(response.data)
-      .then((): Promise<void> => this.channelType.completeChannel(channel))
+      .then(async(): Promise<void> => this.channelType.completeChannel(channel))
       .catch((error): void => {
         this.logger.error(`There was an issue completing notification channel ${channel.id}: ${
           createErrorMessage(error)}`);
@@ -134,10 +134,10 @@ export class NotificationSubscriber extends OperationHttpHandler {
 
   private async authorize(credentials: Credentials, channel: NotificationChannel): Promise<void> {
     const requestedModes = await this.channelType.extractModes(channel);
-    this.logger.debug(`Retrieved required modes: ${[ ...requestedModes.entrySets() ]}`);
+    this.logger.debug(`Retrieved required modes: ${[ ...requestedModes.entrySets() ].join(',')}`);
 
     const availablePermissions = await this.permissionReader.handleSafe({ credentials, requestedModes });
-    this.logger.debug(`Available permissions are ${[ ...availablePermissions.entries() ]}`);
+    this.logger.debug(`Available permissions are ${[ ...availablePermissions.entries() ].join(',')}`);
 
     await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });
     this.logger.debug(`Authorization succeeded, creating notification channel`);

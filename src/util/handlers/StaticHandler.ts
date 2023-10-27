@@ -6,7 +6,7 @@ import { AsyncHandler } from './AsyncHandler';
  *
  * The generic type extends `any` due to Components.js requirements.
  */
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
+// eslint-disable-next-line ts/no-unnecessary-type-constraint
 export class StaticHandler<T extends any = void> extends AsyncHandler<any, T> {
   private readonly value?: T;
 
@@ -16,7 +16,7 @@ export class StaticHandler<T extends any = void> extends AsyncHandler<any, T> {
   }
 
   public async handle(): Promise<T> {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    // eslint-disable-next-line ts/no-unnecessary-type-assertion
     return this.value!;
   }
 }

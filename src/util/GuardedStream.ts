@@ -24,7 +24,7 @@ export type Guarded<T extends NodeJS.EventEmitter = NodeJS.EventEmitter> = T & G
  * Determines whether the stream is guarded against emitting errors.
  */
 export function isGuarded<T extends NodeJS.EventEmitter>(stream: T): stream is Guarded<T> {
-  return typeof (stream as any)[guardedErrors] === 'object';
+  return typeof (stream as unknown as Guarded)[guardedErrors] === 'object';
 }
 
 /**

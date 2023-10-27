@@ -1,7 +1,7 @@
 import type {
   IAccessControl,
-  IAccessControlResource,
   IAccessControlledResource,
+  IAccessControlResource,
   IAccessMode,
   IMatcher,
   IPolicy,

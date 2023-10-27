@@ -8,6 +8,7 @@ import { getDefaultVariables, getPresetConfigPath, getTestConfigPath, instantiat
 const port = getPort('SparqlStorage');
 const baseUrl = `http://localhost:${port}/`;
 
+/* eslint-disable jest/require-top-level-describe, jest/consistent-test-it */
 describeIf('docker')('A server with a SPARQL endpoint as storage', (): void => {
   let app: App;
 

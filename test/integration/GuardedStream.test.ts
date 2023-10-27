@@ -1,16 +1,16 @@
 import {
-  RepresentationMetadata,
-  readableToString,
-  ChainedConverter,
-  guardedStreamFrom,
-  RdfToQuadConverter,
   BasicRepresentation,
+  ChainedConverter,
   getLoggerFor,
+  guardedStreamFrom,
   INTERNAL_QUADS,
+  RdfToQuadConverter,
+  readableToString,
+  RepresentationMetadata,
 } from '../../src';
-import type { Representation,
-  RepresentationConverterArgs,
-  Logger } from '../../src';
+import type { Logger,
+  Representation,
+  RepresentationConverterArgs } from '../../src';
 import { BaseTypedRepresentationConverter } from '../../src/storage/conversion/BaseTypedRepresentationConverter';
 
 jest.mock('../../src/logging/LogUtil', (): any => {

@@ -11,10 +11,10 @@ on:
 jobs:
 
   docker-meta:
-  # Generates the metadata (labels and tags) for the docker containers
-  #   - push to main results in the edge tag
-  #   - version tag results in edge, latest and semver, major, major.minor tags
-  #   - push to versions/ results in the next tag
+    # Generates the metadata (labels and tags) for the docker containers
+    #   - push to main results in the edge tag
+    #   - version tag results in edge, latest and semver, major, major.minor tags
+    #   - push to versions/ results in the next tag
     runs-on: ubuntu-latest
     outputs:
       labels: ${{ steps.meta-main.outputs.labels || steps.meta-version.outputs.labels }}
@@ -49,8 +49,8 @@ jobs:
           github-token: ${{ secrets.github_token }}
 
   docker:
-  # Builds, tests and pushes docker containers
-  # Containers are built for both linux/amd64 and linux/arm/v7 platforms
+    # Builds, tests and pushes docker containers
+    # Containers are built for both linux/amd64 and linux/arm/v7 platforms
     needs: docker-meta
     runs-on: ubuntu-latest
     steps:
@@ -73,7 +73,7 @@ jobs:
           tags: ${{ needs.docker-meta.outputs.tags }}
           labels: ${{ needs.docker-meta.outputs.labels }}
 
-      - name: "Test all docker-built image tags"
+      - name: Test all docker-built image tags
         shell: bash
         # Loop over all generated image:tag names and docker run them.
         # If they aren't built previously, the command will error.

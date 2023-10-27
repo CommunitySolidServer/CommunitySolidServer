@@ -1,7 +1,8 @@
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
-import { ACCOUNT_SETTINGS_REMEMBER_LOGIN,
+import type {
   AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
-import { CookieStore } from '../../../../../src/identity/interaction/account/util/CookieStore';
+import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../../../../../src/identity/interaction/account/util/AccountStore';
+import type { CookieStore } from '../../../../../src/identity/interaction/account/util/CookieStore';
 import type { JsonRepresentation } from '../../../../../src/identity/interaction/InteractionUtil';
 import type { JsonInteractionHandlerInput } from '../../../../../src/identity/interaction/JsonInteractionHandler';
 import type { LoginOutputType } from '../../../../../src/identity/interaction/login/ResolveLoginHandler';

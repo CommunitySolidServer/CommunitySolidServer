@@ -113,7 +113,7 @@ export class V6MigrationInitializer extends Initializer {
     this.accountStorage = args.accountStorage;
     this.clientCredentialsStorage = args.clientCredentialsStorage;
     this.cleanupStorages = args.cleanupStorages;
-    this.newAccountStorage = args.newAccountStorage;
+    this.newAccountStorage = args.newAccountStorage as AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
     this.newSetupStorage = args.newSetupStorage;
   }
 

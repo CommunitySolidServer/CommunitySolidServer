@@ -1,9 +1,9 @@
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { CreateTypeObject,
-  TypeObject,
-  StringKey,
+  IndexedQuery,
   IndexedStorage,
-  IndexTypeCollection, IndexedQuery, ValueType } from '../../../../storage/keyvalue/IndexedStorage';
+  IndexTypeCollection,
+  StringKey, TypeObject, ValueType } from '../../../../storage/keyvalue/IndexedStorage';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
 import { NotFoundHttpError } from '../../../../util/errors/NotFoundHttpError';
 import type { LoginStorage } from './LoginStorage';
@@ -145,6 +145,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
    * it doesn't have a login method when the timer runs out.
    */
   protected createAccountTimeout(id: string): void {
+    // eslint-disable-next-line ts/no-misused-promises
     const timer = setTimeout(async(): Promise<void> => {
       const account = await this.storage.get(ACCOUNT_TYPE, id);
       if (account && account[LOGIN_COUNT] === 0) {
@@ -181,7 +182,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
   /**
    * Removes the field that keeps track of the login counts, to hide this from the output.
    */
-  protected cleanOutput<TVal extends Record<string, unknown> | undefined>(value: TVal): TVal {
+  protected cleanOutput<TVal extends Record<string, unknown> | undefined>(this: void, value: TVal): TVal {
     if (value) {
       delete value[LOGIN_COUNT];
     }

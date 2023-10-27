@@ -37,7 +37,7 @@ describe('A KeyValueChannelStorage', (): void => {
     internalStorage = internalMap as any;
 
     locker = {
-      withWriteLock: jest.fn(async <T,>(rid: ResourceIdentifier, whileLocked: () => T | Promise<T>):
+      withWriteLock: jest.fn(async <T>(rid: ResourceIdentifier, whileLocked: () => T | Promise<T>):
       Promise<T> => whileLocked()),
       withReadLock: jest.fn(),
     };

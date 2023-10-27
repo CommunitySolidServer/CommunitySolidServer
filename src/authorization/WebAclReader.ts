@@ -58,7 +58,6 @@ export class WebAclReader extends PermissionReader {
   /**
    * Checks if an agent is allowed to execute the requested actions.
    * Will throw an error if this is not the case.
-   * @param input - Relevant data needed to check if access can be granted.
    */
   public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
     // Determine the required access modes

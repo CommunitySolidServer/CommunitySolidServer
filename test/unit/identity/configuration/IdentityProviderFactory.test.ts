@@ -1,23 +1,22 @@
 import { Readable } from 'stream';
 import { exportJWK, generateKeyPair } from 'jose';
 import type * as Koa from 'koa';
-import { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
-import { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
+import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
+import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
 import type { JwkGenerator } from '../../../../src/identity/configuration/JwkGenerator';
-import { PromptFactory } from '../../../../src/identity/configuration/PromptFactory';
-import {
+import type { PromptFactory } from '../../../../src/identity/configuration/PromptFactory';
+import type {
   ClientCredentialsStore,
 } from '../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
 import type { Interaction } from '../../../../src/identity/interaction/InteractionHandler';
 import type { InteractionRoute } from '../../../../src/identity/interaction/routing/InteractionRoute';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
-import { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
+import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
-import type { errors, Configuration, KoaContextWithOIDC } from '../../../../templates/types/oidc-provider';
+import type { Configuration, errors, KoaContextWithOIDC } from '../../../../templates/types/oidc-provider';
 
-/* eslint-disable @typescript-eslint/naming-convention */
 jest.mock('oidc-provider', (): any => {
   const fn = jest.fn((issuer: string, config: Configuration): any => ({ issuer, config, use: jest.fn() }));
   // The base export is the Provider class, but we also need some of the deeper exports like interactionPolicy
@@ -67,11 +66,6 @@ describe('An IdentityProviderFactory', (): void => {
     nodeEnv = process.env.NODE_ENV;
     delete process.env.JEST_WORKER_ID;
     delete process.env.NODE_ENV;
-  });
-
-  afterAll(async(): Promise<void> => {
-    process.env.JEST_WORKER_ID = jestWorkerId;
-    process.env.NODE_ENV = nodeEnv;
   });
 
   beforeEach(async(): Promise<void> => {
@@ -143,6 +137,11 @@ describe('An IdentityProviderFactory', (): void => {
       errorHandler,
       responseWriter,
     });
+  });
+
+  afterAll(async(): Promise<void> => {
+    process.env.JEST_WORKER_ID = jestWorkerId;
+    process.env.NODE_ENV = nodeEnv;
   });
 
   it('creates a correct configuration.', async(): Promise<void> => {

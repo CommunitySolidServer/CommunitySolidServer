@@ -5,6 +5,7 @@ import { BasicRepresentation } from '../../../../src/http/representation/BasicRe
 import { ErrorToQuadConverter } from '../../../../src/storage/conversion/ErrorToQuadConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { DC, SOLID_ERROR } from '../../../../src/util/Vocabularies';
+
 const { literal, namedNode, quad } = DataFactory;
 
 describe('An ErrorToQuadConverter', (): void => {

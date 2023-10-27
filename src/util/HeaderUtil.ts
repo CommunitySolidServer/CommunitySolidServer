@@ -10,9 +10,9 @@ import type {
   AcceptEncoding,
   AcceptHeader,
   AcceptLanguage,
-  LinkEntry,
+  LinkEntry, LinkEntryParameters,
 } from './Header';
-import { ContentType, SIMPLE_MEDIA_RANGE, QUOTED_STRING, QVALUE, TOKEN } from './Header';
+import { ContentType, QUOTED_STRING, QVALUE, SIMPLE_MEDIA_RANGE, TOKEN } from './Header';
 
 const logger = getLoggerFor('HeaderUtil');
 
@@ -132,6 +132,7 @@ export function parseParameters(parameters: string[], replacements: Record<strin
   }, []);
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Parses a single media range with corresponding parameters from an Accept header.
  * For every parameter value that is a double quoted string,
@@ -238,14 +239,14 @@ export function parseAccept(input: string, strict = false): Accept[] {
 
   return splitAndClean(result)
     .reduce<Accept[]>((acc, part): Accept[] => {
-    const partOrUndef = parseAcceptPart(part, replacements, strict);
+      const partOrUndef = parseAcceptPart(part, replacements, strict);
 
-    if (partOrUndef !== undefined) {
-      acc.push(partOrUndef);
-    }
+      if (partOrUndef !== undefined) {
+        acc.push(partOrUndef);
+      }
 
-    return acc;
-  }, [])
+      return acc;
+    }, [])
     .sort((left, right): number => right.weight - left.weight);
 }
 
@@ -381,12 +382,12 @@ export function parseContentType(input: string): ContentType {
 
   return parseParameters(params, replacements)
     .reduce<ContentType>(
-    (prev, cur): ContentType => {
-      prev.parameters[cur.name] = cur.value;
-      return prev;
-    },
-    new ContentType(value),
-  );
+      (prev, cur): ContentType => {
+        prev.parameters[cur.name] = cur.value;
+        return prev;
+      },
+      new ContentType(value),
+    );
 }
 
 /**
@@ -455,7 +456,7 @@ export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
       //     present but MUST NOT appear more than once in a given link-value;
       //     occurrences after the first MUST be ignored by parsers.
       //
-      const params: any = {};
+      const params: Record<string, string> = {};
       for (const { name, value } of parseParameters(parameters, replacements)) {
         if (name === 'rel' && 'rel' in params) {
           continue;
@@ -468,7 +469,7 @@ export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
         continue;
       }
 
-      links.push({ target: target.slice(1, -1), parameters: params });
+      links.push({ target: target.slice(1, -1), parameters: params as LinkEntryParameters });
     }
   }
   return links;

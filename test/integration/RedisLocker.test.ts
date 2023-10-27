@@ -7,6 +7,8 @@ import type { RedisReadWriteLock, RedisResourceLock } from '../../src/util/locki
 import { REDIS_LUA_SCRIPTS } from '../../src/util/locking/scripts/RedisLuaScripts';
 import { describeIf, getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
+
+/* eslint-disable jest/require-top-level-describe */
 /**
  * Test the general functionality of the server using a RedisLocker with Read-Write strategy.
  */
@@ -153,13 +155,13 @@ describeIf('docker')('A server with a RedisLocker', (): void => {
     it('can read a resource.', async(): Promise<void> => {
       const testFn = jest.fn();
       await expect(locker.withReadLock(identifier, (): any => testFn())).resolves.toBeUndefined();
-      expect(testFn).toHaveBeenCalled();
+      expect(testFn).toHaveBeenCalledWith();
     });
 
     it('can write a resource.', async(): Promise<void> => {
       const testFn = jest.fn();
       await expect(locker.withWriteLock(identifier, (): any => testFn())).resolves.toBeUndefined();
-      expect(testFn).toHaveBeenCalled();
+      expect(testFn).toHaveBeenCalledWith();
     });
 
     it('can read a resource twice again after it was unlocked.', async(): Promise<void> => {
@@ -199,7 +201,7 @@ describeIf('docker')('A server with a RedisLocker', (): void => {
           [ 1, 0, 2 ].forEach((num): unknown => releaseSignal.emit(`release${num}`));
         }
       });
-      const promises = [ 0, 1, 2 ].map((num): Promise<any> =>
+      const promises = [ 0, 1, 2 ].map(async(num): Promise<any> =>
         locker.withReadLock(identifier, async(): Promise<void> => {
           res += `l${num}`;
           await new Promise<void>((resolve): any => {
@@ -255,12 +257,12 @@ describeIf('docker')('A server with a RedisLocker', (): void => {
       await clearRedis();
     });
 
-    afterAll(async(): Promise<void> => {
-      await redis.quit();
-    });
-
     beforeEach(async(): Promise<void> => {
       await clearRedis();
+    });
+
+    afterAll(async(): Promise<void> => {
+      await redis.quit();
     });
 
     it('#acquireReadLock.', async(): Promise<void> => {

@@ -1,4 +1,5 @@
-import { ACCOUNT_TYPE, AccountLoginStorage } from '../../../../src/identity/interaction/account/util/LoginStorage';
+import type { AccountLoginStorage } from '../../../../src/identity/interaction/account/util/LoginStorage';
+import { ACCOUNT_TYPE } from '../../../../src/identity/interaction/account/util/LoginStorage';
 import {
   CLIENT_CREDENTIALS_STORAGE_TYPE,
 } from '../../../../src/identity/interaction/client-credentials/util/BaseClientCredentialsStore';
@@ -6,7 +7,7 @@ import { PASSWORD_STORAGE_TYPE } from '../../../../src/identity/interaction/pass
 import { OWNER_STORAGE_TYPE, POD_STORAGE_TYPE } from '../../../../src/identity/interaction/pod/util/BasePodStore';
 import { WEBID_STORAGE_TYPE } from '../../../../src/identity/interaction/webid/util/BaseWebIdStore';
 import { V6MigrationInitializer } from '../../../../src/init/migration/V6MigrationInitializer';
-import { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
+import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 
 type Account = {
   webId: string;

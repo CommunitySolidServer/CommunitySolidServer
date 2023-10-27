@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -10,8 +11,8 @@ import type { RepresentationPatcher,
   RepresentationPatcherInput } from '../../../../src/storage/patch/RepresentationPatcher';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { readableToQuads } from '../../../../src/util/StreamUtil';
+
 const { quad, namedNode } = DataFactory;
-import 'jest-rdf';
 
 describe('An RdfPatcher,', (): void => {
   let patcher: jest.Mocked<RepresentationPatcher<RdfDatasetRepresentation>>;

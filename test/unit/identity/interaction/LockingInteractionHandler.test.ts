@@ -1,7 +1,7 @@
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { AccountIdRoute } from '../../../../src/identity/interaction/account/AccountIdRoute';
-import type { InteractionHandlerInput,
-  InteractionHandler } from '../../../../src/identity/interaction/InteractionHandler';
+import type { InteractionHandler,
+  InteractionHandlerInput } from '../../../../src/identity/interaction/InteractionHandler';
 import { LockingInteractionHandler } from '../../../../src/identity/interaction/LockingInteractionHandler';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 

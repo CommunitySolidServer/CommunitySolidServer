@@ -1,3 +1,4 @@
+import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Term } from 'rdf-js';
@@ -25,27 +26,27 @@ import {
   ensureTrailingSlash,
   isContainerIdentifier,
   isContainerPath,
-  trimTrailingSlashes,
   toCanonicalUriPath,
+  trimTrailingSlashes,
 } from '../util/PathUtil';
 import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
 import {
-  DC,
-  SOLID_HTTP,
-  LDP,
-  POSIX,
-  PIM,
-  RDF,
-  XSD,
-  SOLID_META,
-  PREFERRED_PREFIX_TERM,
-  CONTENT_TYPE_TERM,
-  SOLID_AS,
   AS,
+  CONTENT_TYPE_TERM,
+  DC,
+  LDP,
+  PIM,
+  POSIX,
+  PREFERRED_PREFIX_TERM,
+  RDF,
+  SOLID_AS,
+  SOLID_HTTP,
+  SOLID_META,
+  XSD,
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 import namedNode = DataFactory.namedNode;
 
 /**
@@ -427,7 +428,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Transform representation data to quads and add them to the metadata object
     const metadata = new RepresentationMetadata(subjectIdentifier);
-    const quads = await arrayifyStream(representation.data);
+    const quads: Quad[] = await arrayifyStream(representation.data);
     metadata.addQuads(quads);
 
     // Remove the response metadata as this must not be stored
