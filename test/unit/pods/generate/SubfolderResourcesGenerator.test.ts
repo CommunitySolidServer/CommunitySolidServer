@@ -29,7 +29,7 @@ describe('A SubfolderResourcesGenerator', (): void => {
     extraResources = [];
 
     source = {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line unused-imports/no-unused-vars
       generate: jest.fn((folder, loc, opt): AsyncIterable<Resource> => {
         if (folder.endsWith('base')) {
           return yieldResources(baseResources);

@@ -45,7 +45,9 @@ export class HttpError<T extends number = number> extends Error implements HttpE
   }
 
   public static isInstance(error: any): error is HttpError {
-    return isError(error) && typeof (error as any).statusCode === 'number' && (error as any).metadata;
+    return isError(error) &&
+      typeof (error as HttpError).statusCode === 'number' &&
+      Boolean((error as HttpError).metadata);
   }
 
   /**

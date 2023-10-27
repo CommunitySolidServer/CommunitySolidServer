@@ -4,12 +4,12 @@ import type { RepresentationPreferences } from '../http/representation/Represent
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 
 /**
  * Base implementation of ResourceStore for implementers of custom stores.
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable unused-imports/no-unused-vars */
 export class BaseResourceStore implements ResourceStore {
   public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
     throw new NotImplementedHttpError();

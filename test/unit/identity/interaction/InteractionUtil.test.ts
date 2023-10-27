@@ -77,7 +77,6 @@ describe('InteractionUtil', (): void => {
 
     beforeEach(async(): Promise<void> => {
       provider = {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Session: {
           find: jest.fn().mockResolvedValue({
             accountId: 'accountId',

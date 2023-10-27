@@ -156,6 +156,7 @@ export function toCanonicalUriPath(path: string): string {
     encodeURIComponent(decodeURIComponent(part)));
 }
 
+/* eslint-disable ts/naming-convention */
 // Characters not allowed in a Windows file path
 const forbiddenSymbols = {
   '<': '%3C',
@@ -167,6 +168,7 @@ const forbiddenSymbols = {
   // `*` does not get converted by `encodeUriComponent`
   '*': '%2A',
 } as const;
+/* eslint-enable ts/naming-convention */
 const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`, 'ug');
 /**
  * This function is used when converting a URI to a file path. Decodes all components of a URI path,
@@ -302,7 +304,7 @@ export function resolveAssetPath(path = modulePathPlaceholder): string {
  * Reads the project package.json and returns it.
  */
 export async function readPackageJson(): Promise<Record<string, any>> {
-  return readJson(resolveModulePath('package.json'));
+  return readJson(resolveModulePath('package.json')) as Promise<Record<string, any>>;
 }
 
 /**

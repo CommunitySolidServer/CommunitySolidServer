@@ -1,8 +1,8 @@
-import type { HttpRequest,
+import type { HttpHandler,
+  HttpRequest,
   HttpResponse,
-  TargetExtractor,
   ResourceIdentifier,
-  HttpHandler } from '../../../../src';
+  TargetExtractor } from '../../../../src';
 import { joinUrl } from '../../../../src';
 import { RouterHandler } from '../../../../src/server/util/RouterHandler';
 

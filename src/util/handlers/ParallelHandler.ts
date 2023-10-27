@@ -12,10 +12,10 @@ export class ParallelHandler<TIn = void, TOut = void> extends AsyncHandler<TIn, 
   }
 
   public async canHandle(input: TIn): Promise<void> {
-    await Promise.all(this.handlers.map((handler): Promise<void> => handler.canHandle(input)));
+    await Promise.all(this.handlers.map(async(handler): Promise<void> => handler.canHandle(input)));
   }
 
   public async handle(input: TIn): Promise<TOut[]> {
-    return Promise.all(this.handlers.map((handler): Promise<TOut> => handler.handle(input)));
+    return Promise.all(this.handlers.map(async(handler): Promise<TOut> => handler.handle(input)));
   }
 }

@@ -2,7 +2,7 @@ import { SOLID_ERROR } from '../Vocabularies';
 import type { HttpErrorOptions } from './HttpError';
 import { generateHttpErrorClass } from './HttpError';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line ts/naming-convention
 const BaseHttpError = generateHttpErrorClass(405, 'MethodNotAllowedHttpError');
 
 /**

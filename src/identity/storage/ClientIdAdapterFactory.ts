@@ -46,9 +46,9 @@ export class ClientIdAdapter extends PassthroughAdapter {
         throw new Error(`Unable to access data at ${id}: ${await response.text()}`);
       }
       const data = await response.text();
-      let json: any | undefined;
+      let json: Record<string, unknown> | undefined;
       try {
-        json = JSON.parse(data);
+        json = JSON.parse(data) as Record<string, unknown>;
         const contexts = Array.isArray(json['@context']) ? json['@context'] : [ json['@context'] ];
         // We can only parse as simple JSON if the @context is correct
         if (!contexts.includes('https://www.w3.org/ns/solid/oidc-context.jsonld')) {
@@ -71,7 +71,7 @@ export class ClientIdAdapter extends PassthroughAdapter {
       }
 
       // `token_endpoint_auth_method: 'none'` prevents oidc-provider from requiring a client_secret
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+      // eslint-disable-next-line ts/naming-convention
       payload = { ...payload, token_endpoint_auth_method: 'none' };
     }
 
@@ -97,12 +97,12 @@ export class ClientIdAdapter extends PassthroughAdapter {
       }
     }
 
-    /* eslint-disable @typescript-eslint/naming-convention */
+    /* eslint-disable ts/naming-convention */
     return {
       client_id: id,
       redirect_uris: redirectUris,
     };
-    /* eslint-enable @typescript-eslint/naming-convention */
+    /* eslint-enable ts/naming-convention */
   }
 }
 

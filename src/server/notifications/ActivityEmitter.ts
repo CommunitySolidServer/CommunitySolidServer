@@ -18,5 +18,5 @@ export type ActivityEmitter =
 /**
  * A class implementation of {@link ActivityEmitter}.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line ts/naming-convention
 export const BaseActivityEmitter = createGenericEventEmitterClass<ActivityEmitter>();

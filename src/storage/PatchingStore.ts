@@ -4,7 +4,7 @@ import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError'
 import type { Conditions } from './conditions/Conditions';
 import { PassthroughStore } from './PassthroughStore';
 import type { PatchHandler } from './patch/PatchHandler';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 
 /**
  * {@link ResourceStore} using decorator pattern for the `modifyResource` function.

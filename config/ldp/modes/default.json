@@ -5,12 +5,12 @@
       "comment": "Caches the requested modes based on the incoming operation.",
       "@id": "urn:solid-server:default:ModesExtractor",
       "@type": "CachedHandler",
-      "source" : {
+      "source": {
         "comment": "Checks if an operation on a resource requires permissions on intermediate resources (such as newly created parent containers).",
         "@type": "IntermediateCreateExtractor",
         "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
         "strategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-        "source": { "@id": "urn:solid-server:default:HttpModesExtractor" },
+        "source": { "@id": "urn:solid-server:default:HttpModesExtractor" }
       }
     },
     {

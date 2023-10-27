@@ -22,7 +22,6 @@ function mockComponentsManagerFn(length: number): jest.Mocked<ComponentsManager<
 }
 
 jest.mock('jsonld-context-parser/lib/ContextParser', (): any => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   ContextParser: jest.fn().mockImplementation((): any => ({
     parse: jest.fn(async(): Promise<any> => ({
       expandTerm: jest.fn((): any => myExpandTerm()),
@@ -31,11 +30,9 @@ jest.mock('jsonld-context-parser/lib/ContextParser', (): any => ({
 }));
 
 jest.mock('componentsjs', (): any => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   ComponentsManager: {
     build: jest.fn(async(props: any): Promise<ComponentsManager<any>> => mockComponentsManagerFn(props.length)),
   },
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   PrefetchedDocumentLoader: jest.fn().mockImplementation((): any => ({
     load: jest.fn(),
   })),

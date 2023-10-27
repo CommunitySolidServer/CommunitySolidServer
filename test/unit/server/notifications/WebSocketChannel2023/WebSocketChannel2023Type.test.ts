@@ -3,7 +3,6 @@ import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
-
 import {
   generateWebSocketUrl,
 } from '../../../../../src/server/notifications/WebSocketChannel2023/WebSocket2023Util';

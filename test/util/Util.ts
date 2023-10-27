@@ -38,12 +38,10 @@ const portNames = [
   'BaseServerFactory',
 ] as const;
 
-/* eslint-disable @typescript-eslint/naming-convention */
 // These are ports that are not allowed to change for various reasons
 const fixedPorts = {
   V6Migration: 6999,
 } as const;
-/* eslint-enable @typescript-eslint/naming-convention */
 
 const socketNames = [
   // Unit

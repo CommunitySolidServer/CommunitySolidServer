@@ -27,7 +27,6 @@ describe('A ListeningActivityHandler', (): void => {
   let storage: jest.Mocked<NotificationChannelStorage>;
   let emitter: ActivityEmitter;
   let notificationHandler: jest.Mocked<NotificationHandler>;
-  let handler: ListeningActivityHandler;
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
@@ -49,8 +48,8 @@ describe('A ListeningActivityHandler', (): void => {
       handleSafe: jest.fn().mockResolvedValue(undefined),
     } as any;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    handler = new ListeningActivityHandler(storage, emitter, notificationHandler);
+    // eslint-disable-next-line no-new
+    new ListeningActivityHandler(storage, emitter, notificationHandler);
   });
 
   it('calls the NotificationHandler if there is an event.', async(): Promise<void> => {

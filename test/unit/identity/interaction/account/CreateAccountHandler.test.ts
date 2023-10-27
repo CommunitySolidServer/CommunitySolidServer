@@ -1,5 +1,5 @@
 import { CreateAccountHandler } from '../../../../../src/identity/interaction/account/CreateAccountHandler';
-import { AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
+import type { AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
 
 describe('A CreateAccountHandler', (): void => {
   const accountId = 'accountId';

@@ -6,6 +6,7 @@ import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 import { WebhookWebId } from '../../../../../src/server/notifications/WebhookChannel2023/WebhookWebId';
 import { readableToString } from '../../../../../src/util/StreamUtil';
 import { SOLID } from '../../../../../src/util/Vocabularies';
+
 const { namedNode, quad } = DataFactory;
 
 describe('A WebhookWebId', (): void => {

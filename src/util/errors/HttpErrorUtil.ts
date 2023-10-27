@@ -37,9 +37,9 @@ export function extractErrorTerms(metadata: RepresentationMetadata): Dict<string
   return metadata.quads()
     .filter((quad): boolean => quad.predicate.value.startsWith(SOLID_ERROR_TERM.namespace))
     .reduce<NodeJS.Dict<string>>((acc, quad): Dict<string> => {
-    acc[quad.predicate.value.slice(SOLID_ERROR_TERM.namespace.length)] = quad.object.value;
-    return acc;
-  }, {});
+      acc[quad.predicate.value.slice(SOLID_ERROR_TERM.namespace.length)] = quad.object.value;
+      return acc;
+    }, {});
 }
 
 /**

@@ -26,7 +26,6 @@ describe('A CancelOidcHandler', (): void => {
     expect(oidcInteraction.persist).toHaveBeenCalledTimes(1);
     expect(oidcInteraction.result).toEqual({
       error: 'access_denied',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       error_description: 'User cancelled the interaction.',
     });
   });

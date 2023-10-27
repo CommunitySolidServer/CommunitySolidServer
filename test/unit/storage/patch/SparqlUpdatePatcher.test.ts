@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { Store, DataFactory } from 'n3';
+import { DataFactory, Store } from 'n3';
 import type { Quad } from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';

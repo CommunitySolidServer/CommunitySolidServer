@@ -44,7 +44,7 @@ const allModes = [ AM.read, AM.append, AM.create, AM.write, AM.delete ];
 // Columns: method, target, C/ permissions, C/R permissions, body, content-type, target exists, target does not exist
 // `undefined` implies C/R inherits the permissions of C/
 // For PUT/PATCH/DELETE we return 205 instead of 200/204
-/* eslint-disable no-multi-spaces */
+/* eslint-disable style/no-multi-spaces */
 const table: [string, string, AM[], AM[] | undefined, string, string, number, number][] = [
   // No authorization headers are sent in an OPTIONS request making it impossible to grant permission.
   // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1246#issuecomment-1087325235
@@ -118,7 +118,7 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   [ 'DELETE',  'C/',  [ AM.write ],           undefined,              '',     '',  401, 401 ],
   [ 'DELETE',  'C/',  [ AM.read, AM.write ],  undefined,              '',     '',  205, 404 ],
 ];
-/* eslint-enable no-multi-spaces */
+/* eslint-enable style/no-multi-spaces */
 
 function toPermission(modes: AM[]): AclPermissionSet {
   return Object.fromEntries(modes.map((mode): [AM, boolean] => [ mode, true ]));
@@ -218,7 +218,7 @@ describe.each(stores)('A request on a server with %s authorization and %s', (aut
     await app.stop();
   });
 
-  describe.each(table)('%s %s with permissions C/: %s and C/R: %s.', (...entry): void => {
+  describe.each(table)('%s %s with permissions C/: %s and C/R: %s', (...entry): void => {
     const [ method, target, cPerm, crPermTemp, body, contentType, existsCode, notExistsCode ] = entry;
     const crPerm = crPermTemp ?? cPerm;
     const id = v4();

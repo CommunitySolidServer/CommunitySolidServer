@@ -1,6 +1,7 @@
+import type {
+  AccountLoginStorage } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import {
   ACCOUNT_TYPE,
-  AccountLoginStorage,
 } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import {
   BaseClientCredentialsStore,

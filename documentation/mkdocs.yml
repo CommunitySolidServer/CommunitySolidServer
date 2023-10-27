@@ -1,12 +1,12 @@
 docs_dir: markdown
 
 theme:
-  name: 'material'
+  name: material
   custom_dir: overrides
   icon:
     repo: fontawesome/brands/github
   palette:
-    - media: "(prefers-color-scheme: light)"
+    - media: '(prefers-color-scheme: light)'
       scheme: default
       toggle:
         icon: material/weather-night
@@ -15,7 +15,7 @@ theme:
       accent: deep orange
 
     # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
+    - media: '(prefers-color-scheme: dark)'
       scheme: slate
       toggle:
         icon: material/weather-sunny
@@ -28,12 +28,12 @@ theme:
     - navigation.top
     - navigation.indexes
 
-site_name: 'Community Solid Server'
+site_name: Community Solid Server
 site_url: https://communitysolidserver.github.io/CommunitySolidServer
 
 repo_url: https://github.com/CommunitySolidServer/CommunitySolidServer
 repo_name: CommunitySolidServer
-edit_uri: ""
+edit_uri: ''
 
 plugins:
   - search
@@ -76,40 +76,40 @@ extra:
 
 nav:
   - Welcome:
-    - README.md
+      - README.md
   - Usage:
-    - Example request: usage/example-requests.md
-    - Metadata: usage/metadata.md
-    - Identity provider:
-        - Overview: usage/identity-provider.md
-        - JSON API: usage/account/json-api.md
-        - New login method: usage/account/login-method.md
-        - Data migration: usage/account/migration.md
-    - Client credentials: usage/client-credentials.md
-    - Seeding pods: usage/seeding-pods.md
-    - Notifications: usage/notifications.md
-    - Development server: usage/dev-configuration.md
+      - Example request: usage/example-requests.md
+      - Metadata: usage/metadata.md
+      - Identity provider:
+          - Overview: usage/identity-provider.md
+          - JSON API: usage/account/json-api.md
+          - New login method: usage/account/login-method.md
+          - Data migration: usage/account/migration.md
+      - Client credentials: usage/client-credentials.md
+      - Seeding pods: usage/seeding-pods.md
+      - Notifications: usage/notifications.md
+      - Development server: usage/dev-configuration.md
   - Architecture:
-    - Overview: architecture/overview.md
-    - Dependency injection: architecture/dependency-injection.md
-    - Core: architecture/core.md
-    - Features:
-        - Command line arguments: architecture/features/cli.md
-        - Server initialization: architecture/features/initialization.md
-        - HTTP requests: architecture/features/http-handler.md
-        - Solid protocol:
-            - Overview: architecture/features/protocol/overview.md
-            - Parsing: architecture/features/protocol/parsing.md
-            - Authorization: architecture/features/protocol/authorization.md
-            - Resource Store: architecture/features/protocol/resource-store.md
-        - Account management:
-            - Overview: architecture/features/accounts/overview.md
-            - Controls: architecture/features/accounts/controls.md
-            - Routes: architecture/features/accounts/routes.md
-        - Notifications: architecture/features/notifications.md
+      - Overview: architecture/overview.md
+      - Dependency injection: architecture/dependency-injection.md
+      - Core: architecture/core.md
+      - Features:
+          - Command line arguments: architecture/features/cli.md
+          - Server initialization: architecture/features/initialization.md
+          - HTTP requests: architecture/features/http-handler.md
+          - Solid protocol:
+              - Overview: architecture/features/protocol/overview.md
+              - Parsing: architecture/features/protocol/parsing.md
+              - Authorization: architecture/features/protocol/authorization.md
+              - Resource Store: architecture/features/protocol/resource-store.md
+          - Account management:
+              - Overview: architecture/features/accounts/overview.md
+              - Controls: architecture/features/accounts/controls.md
+              - Routes: architecture/features/accounts/routes.md
+          - Notifications: architecture/features/notifications.md
   - Contributing:
-    - Pull requests: contributing/making-changes.md
-    - Releases: contributing/release.md
+      - Pull requests: contributing/making-changes.md
+      - Releases: contributing/release.md
   - API: ./docs/" target="_blank
 
 # To write documentation locally, execute the next line and browse to http://localhost:8000

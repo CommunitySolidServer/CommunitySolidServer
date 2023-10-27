@@ -38,11 +38,11 @@ export class RdfToQuadConverter extends BaseTypedRepresentationConverter {
       contentType: representation.metadata.contentType!,
       baseIRI: identifier.path,
       [KeysRdfParseJsonLd.documentLoader.name]: this.documentLoader,
-    } as any)
+    })
       // This works only for those cases where the data stream has been completely read before accessing the metadata.
       // Eg. the PATCH operation, which is the main case why we store the prefixes in metadata here if there are any.
       // See also https://github.com/CommunitySolidServer/CommunitySolidServer/issues/126
-      .on('prefix', (prefix, iri: NamedNode): void => {
+      .on('prefix', (prefix: string, iri: NamedNode): void => {
         newMetadata.addQuad(iri.value, PREFERRED_PREFIX_TERM, prefix, SOLID_META.terms.ResponseMetadata);
       });
 

@@ -1,6 +1,6 @@
 import { CreatePasswordHandler } from '../../../../../src/identity/interaction/password/CreatePasswordHandler';
 import type { PasswordIdRoute } from '../../../../../src/identity/interaction/password/util/PasswordIdRoute';
-import { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
+import type { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
 
 describe('A CreatePasswordHandler', (): void => {
   const id = 'id';

@@ -1,9 +1,9 @@
 import {
+  isUrl,
+  isValidFileName,
+  msToDuration,
   sanitizeUrlPart,
   splitCommaSeparated,
-  isValidFileName,
-  isUrl,
-  msToDuration,
 } from '../../../src/util/StringUtil';
 
 describe('HeaderUtil', (): void => {

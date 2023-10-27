@@ -21,7 +21,7 @@ export class AssetPathExtractor extends ShorthandExtractor {
     const path = args[this.key] ?? this.defaultPath;
     if (path) {
       if (typeof path !== 'string') {
-        throw new Error(`Invalid ${this.key} argument`);
+        throw new TypeError(`Invalid ${this.key} argument`);
       }
 
       return resolveAssetPath(path);

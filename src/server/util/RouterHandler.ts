@@ -1,6 +1,6 @@
 import type { TargetExtractor } from '../../http/input/identifier/TargetExtractor';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
-import type { HttpHandlerInput, HttpHandler } from '../HttpHandler';
+import type { HttpHandler, HttpHandlerInput } from '../HttpHandler';
 import { BaseRouterHandler } from './BaseRouterHandler';
 import type { BaseRouterHandlerArgs } from './BaseRouterHandler';
 

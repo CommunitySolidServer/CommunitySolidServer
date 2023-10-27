@@ -1,6 +1,6 @@
 import process from 'process';
 import { BaseLogger, WrappingLogger } from '../../../src/logging/Logger';
-import type { SimpleLogger, LogMetadata } from '../../../src/logging/Logger';
+import type { LogMetadata, SimpleLogger } from '../../../src/logging/Logger';
 
 describe('Logger', (): void => {
   describe('a BaseLogger', (): void => {

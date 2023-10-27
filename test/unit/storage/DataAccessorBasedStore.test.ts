@@ -24,7 +24,7 @@ import { ContentType } from '../../../src/util/Header';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC, SOLID_AS, AS } from '../../../src/util/Vocabularies';
+import { AS, CONTENT_TYPE, DC, LDP, PIM, RDF, SOLID_AS, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../util/SimpleSuffixStrategy';
 
 const { namedNode, quad, literal } = DataFactory;
@@ -107,7 +107,7 @@ describe('A DataAccessorBasedStore', (): void => {
   const metadataStrategy = new SimpleSuffixStrategy('.meta');
 
   beforeEach(async(): Promise<void> => {
-    mockDate = jest.spyOn(global, 'Date').mockReturnValue(now as any);
+    mockDate = jest.spyOn(globalThis, 'Date').mockReturnValue(now as any);
 
     accessor = new SimpleDataAccessor();
 
@@ -879,4 +879,3 @@ describe('A DataAccessorBasedStore', (): void => {
     });
   });
 });
-

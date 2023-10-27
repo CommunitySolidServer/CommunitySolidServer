@@ -1,4 +1,4 @@
-import { YargsParameter, YargsCliExtractor } from '../../../../src/init/cli/YargsCliExtractor';
+import { YargsCliExtractor, YargsParameter } from '../../../../src/init/cli/YargsCliExtractor';
 
 const error = jest.spyOn(console, 'error').mockImplementation(jest.fn());
 const log = jest.spyOn(console, 'log').mockImplementation(jest.fn());
@@ -76,7 +76,6 @@ describe('A YargsCliExtractor', (): void => {
     // This can probably be fixed by changing jest setup to already load the custom env before loading the tests,
     // but does not seem worth it just for this test.
     const { env } = process;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     process.env = { ...env, TEST_ENV_PORT: '3333' };
     extractor = new YargsCliExtractor(parameters, { loadFromEnv: true, envVarPrefix: 'TEST_ENV' });
     const argv = [ 'node', 'script', '-b', 'http://localhost:3333/' ];

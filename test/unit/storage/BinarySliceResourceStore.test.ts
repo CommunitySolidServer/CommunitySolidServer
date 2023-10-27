@@ -1,7 +1,7 @@
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { BinarySliceResourceStore } from '../../../src/storage/BinarySliceResourceStore';
-import { ResourceStore } from '../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { RangeNotSatisfiedHttpError } from '../../../src/util/errors/RangeNotSatisfiedHttpError';
 import { readableToString } from '../../../src/util/StreamUtil';

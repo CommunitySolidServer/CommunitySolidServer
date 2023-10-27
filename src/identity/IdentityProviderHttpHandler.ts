@@ -7,7 +7,7 @@ import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { SOLID_HTTP } from '../util/Vocabularies';
 import type { ProviderFactory } from './configuration/ProviderFactory';
 import type { CookieStore } from './interaction/account/util/CookieStore';
-import type { InteractionHandler, Interaction } from './interaction/InteractionHandler';
+import type { Interaction, InteractionHandler } from './interaction/InteractionHandler';
 
 export interface IdentityProviderHttpHandlerArgs {
   /**

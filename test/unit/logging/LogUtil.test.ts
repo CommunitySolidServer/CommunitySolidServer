@@ -1,4 +1,4 @@
-import { resetInternalLoggerFactory, getLoggerFor, setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
+import { getLoggerFor, resetInternalLoggerFactory, setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
 
 let currentFactory: any;
 

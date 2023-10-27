@@ -2,8 +2,8 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ContentType, SIMPLE_MEDIA_RANGE } from '../../util/Header';
-import { toNamedTerm, toObjectTerm, isTerm, toLiteral } from '../../util/TermUtil';
-import { CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
+import { isTerm, toLiteral, toNamedTerm, toObjectTerm } from '../../util/TermUtil';
+import { CONTENT_LENGTH_TERM, CONTENT_TYPE_TERM, RDFS, SOLID_META, XSD } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
@@ -16,7 +16,7 @@ export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
  * Determines whether the object is a `RepresentationMetadata`.
  */
 export function isRepresentationMetadata(object: any): object is RepresentationMetadata {
-  return typeof object?.setMetadata === 'function';
+  return typeof (object as RepresentationMetadata)?.setMetadata === 'function';
 }
 
 // Caches named node conversions
@@ -283,7 +283,8 @@ export class RepresentationMetadata {
   ): boolean {
     // This works with N3.js but at the time of writing the typings have not been updated yet.
     // If you see this line of code check if the typings are already correct and update this if so.
-    return (this.store.has as any)(this.id, predicate, object, graph);
+    // eslint-disable-next-line ts/no-unsafe-call
+    return (this.store.has as any)(this.id, predicate, object, graph) as boolean;
   }
 
   /**
@@ -426,8 +427,8 @@ export class RepresentationMetadata {
   }
 
   /**
-  * Shorthand for the CONTENT_LENGTH predicate.
-  */
+   * Shorthand for the CONTENT_LENGTH predicate.
+   */
   public get contentLength(): number | undefined {
     const length = this.get(CONTENT_LENGTH_TERM);
     return length?.value ? Number(length.value) : undefined;

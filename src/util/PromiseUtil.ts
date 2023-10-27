@@ -24,7 +24,6 @@ PromiseOrValue<TOut> {
   return callback(object);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 function noop(): void {}
 
 /**
@@ -46,7 +45,7 @@ export async function promiseSome(predicates: Promise<boolean>[]): Promise<boole
         resolve(true);
       }
     }
-    Promise.all(predicates.map((predicate): Promise<void> => predicate.then(resolveIfTrue, noop)))
+    Promise.all(predicates.map(async(predicate): Promise<void> => predicate.then(resolveIfTrue, noop)))
       .then((): void => resolve(false), noop);
   });
 }
@@ -63,7 +62,7 @@ export async function allFulfilled<T>(promises: Promise<T> [], ignoreErrors = fa
     if (result.status === 'fulfilled') {
       values.push(result.value);
     } else if (!ignoreErrors) {
-      errors.push(result.reason);
+      errors.push(result.reason as Error);
     }
   }
 

@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import type { ServerResponse, IncomingMessage, Server } from 'http';
+import type { IncomingMessage, Server, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';

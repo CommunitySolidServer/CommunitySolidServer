@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/filename-case,eslint-comments/no-unlimited-disable,unicorn/no-abusive-eslint-disable */
+/* eslint-disable unicorn/filename-case */
 /* eslint-disable */
 // Copy of the type definitions for oidc-provider 8.2
 // Workaround for https://github.com/microsoft/TypeScript/issues/49721

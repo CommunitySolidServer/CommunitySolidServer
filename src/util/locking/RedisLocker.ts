@@ -8,7 +8,7 @@ import { retryFunction } from '../LockUtils';
 import type { PromiseOrValue } from '../PromiseUtil';
 import type { ReadWriteLocker } from './ReadWriteLocker';
 import type { ResourceLocker } from './ResourceLocker';
-import type { RedisResourceLock, RedisReadWriteLock, RedisAnswer } from './scripts/RedisLuaScripts';
+import type { RedisAnswer, RedisReadWriteLock, RedisResourceLock } from './scripts/RedisLuaScripts';
 import { fromResp2ToBool, REDIS_LUA_SCRIPTS } from './scripts/RedisLuaScripts';
 
 const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay: 50, retryJitter: 30 };

@@ -3,7 +3,7 @@ import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { ValueType } from '../../../../storage/keyvalue/IndexedStorage';
 import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { InternalServerError } from '../../../../util/errors/InternalServerError';
-import type { AccountStore, AccountSettings } from './AccountStore';
+import type { AccountSettings, AccountStore } from './AccountStore';
 import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from './AccountStore';
 import type { AccountLoginStorage } from './LoginStorage';
 import { ACCOUNT_TYPE } from './LoginStorage';
@@ -24,7 +24,7 @@ export class BaseAccountStore extends Initializer implements AccountStore {
 
   public constructor(storage: AccountLoginStorage<any>) {
     super();
-    this.storage = storage;
+    this.storage = storage as typeof this.storage;
   }
 
   // Initialize the type definitions

@@ -52,6 +52,7 @@ class SimpleReadWriteLocker extends BaseReadWriteLocker {
   }
 }
 
+/* eslint-disable ts/no-floating-promises */
 describe('A BaseReadWriteLocker', (): void => {
   let resourceLocker: ResourceLocker;
   let countLocker: ResourceLocker;
@@ -163,7 +164,6 @@ describe('A BaseReadWriteLocker', (): void => {
     // Otherwise the internal write lock might not be acquired yet
     const delayedLockWrite = new Promise<void>((resolve): void => {
       emitter.on('readStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withWriteLock(resourceId, (): any => {
           order.push('write');
           resolve();
@@ -198,7 +198,6 @@ describe('A BaseReadWriteLocker', (): void => {
 
     const delayedLockWrite = new Promise<void>((resolve): void => {
       emitter.on('readStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withWriteLock(resource2Id, (): any => {
           order.push('write');
           resolve();
@@ -233,7 +232,6 @@ describe('A BaseReadWriteLocker', (): void => {
 
     const delayedLockWrite = new Promise<void>((resolve): void => {
       emitter.on('readStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withWriteLock(resourceId, (): any => {
           order.push('write');
           resolve();
@@ -243,7 +241,6 @@ describe('A BaseReadWriteLocker', (): void => {
 
     const delayedLockRead2 = new Promise<void>((resolve): void => {
       emitter.on('readStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withReadLock(resourceId, async(): Promise<void> => {
           order.push('read 2 start');
           await promRead2;
@@ -287,7 +284,6 @@ describe('A BaseReadWriteLocker', (): void => {
     // We want to make sure the read operation only starts while the write operation is busy
     const delayedLockRead = new Promise<void>((resolve): void => {
       emitter.on('writeStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withReadLock(resourceId, (): any => {
           order.push('read');
           resolve();

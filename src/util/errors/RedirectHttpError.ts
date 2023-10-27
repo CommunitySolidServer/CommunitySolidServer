@@ -17,7 +17,7 @@ export class RedirectHttpError<TCode extends number = number> extends HttpError<
   }
 
   public static isInstance(error: any): error is RedirectHttpError {
-    return HttpError.isInstance(error) && typeof (error as any).location === 'string';
+    return HttpError.isInstance(error) && typeof (error as RedirectHttpError).location === 'string';
   }
 }
 

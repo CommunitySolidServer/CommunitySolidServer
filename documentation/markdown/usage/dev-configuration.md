@@ -44,6 +44,6 @@ such as the following `.community-solid-server.config.js`:
 ```js
 module.exports = {
   port: 3001,
-  loggingLevel: "error"
+  loggingLevel: 'error'
 };
 ```

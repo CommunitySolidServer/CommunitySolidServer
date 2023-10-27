@@ -2,7 +2,7 @@ import type { RepresentationMetadata } from '../../http/representation/Represent
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
-import { RDF, PIM } from '../../util/Vocabularies';
+import { PIM, RDF } from '../../util/Vocabularies';
 import type { DataAccessor } from '../accessors/DataAccessor';
 import type { Size } from '../size-reporter/Size';
 import type { SizeReporter } from '../size-reporter/SizeReporter';
@@ -63,4 +63,3 @@ export class PodQuotaStrategy extends QuotaStrategy {
     return hasPimStorageMetadata ? identifier : this.searchPimStorage(parent);
   }
 }
-

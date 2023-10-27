@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import type { App, DataAccessorBasedStore, Initializable, ResourceLocker } from '../../src';
-import { readableToString, BasicRepresentation } from '../../src';
+import { BasicRepresentation, readableToString } from '../../src';
 import { describeIf, getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
@@ -24,6 +24,7 @@ const configs: [string, any][] = [
     }],
 ];
 
+/* eslint-disable jest/require-top-level-describe, jest/consistent-test-it */
 describeIf('docker').each(configs)('A server using %s locking', (id, { config, init, teardown }):
 void => {
   let app: App;

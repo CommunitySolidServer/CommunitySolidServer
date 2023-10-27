@@ -8,7 +8,7 @@ import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import { AclMode } from './permissions/AclPermissionSet';
 import type { AclPermissionSet } from './permissions/AclPermissionSet';
-import type { AccessMap, AccessMode, PermissionSet, PermissionMap } from './permissions/Permissions';
+import type { AccessMap, AccessMode, PermissionMap, PermissionSet } from './permissions/Permissions';
 
 /**
  * Determines the permission for authorization resources (such as ACL or ACR).

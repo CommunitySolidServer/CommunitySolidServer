@@ -6,6 +6,7 @@ import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { SystemError } from '../../util/errors/SystemError';
 import { ensureTrailingSlash, joinFilePath, resolveAssetPath, trimLeadingSlashes } from '../../util/PathUtil';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { HttpHandlerInput } from '../HttpHandler';
@@ -40,7 +41,8 @@ export class StaticAssetHandler extends HttpHandler {
    * Creates a handler for the provided static resources.
    * @param assets - A list of {@link StaticAssetEntry}.
    * @param baseUrl - The base URL of the server.
-   * @param options - Cache expiration time in seconds.
+   * @param options - Specific options.
+   * @param options.expires - Cache expiration time in seconds.
    */
   public constructor(assets: StaticAssetEntry[], baseUrl: string, options: { expires?: number } = {}) {
     super();
@@ -118,6 +120,7 @@ export class StaticAssetHandler extends HttpHandler {
       asset.once('readable', (): void => {
         const contentType = mime.lookup(filePath) || APPLICATION_OCTET_STREAM;
         response.writeHead(200, {
+          // eslint-disable-next-line ts/naming-convention
           'content-type': contentType,
           ...this.getCacheHeaders(),
         });
@@ -135,7 +138,7 @@ export class StaticAssetHandler extends HttpHandler {
 
       // Pass the error when something goes wrong
       asset.once('error', (error): void => {
-        const { code } = error as any;
+        const { code } = error as SystemError;
         // When the file if not found or a folder, signal a 404
         if (code === 'ENOENT' || code === 'EISDIR') {
           this.logger.debug(`Static asset ${filePath} not found`);
@@ -153,10 +156,11 @@ export class StaticAssetHandler extends HttpHandler {
 
   private getCacheHeaders(): Record<string, string> {
     return this.expires <= 0 ?
-      {} :
-      {
-        'cache-control': `max-age=${this.expires}`,
-        expires: new Date(Date.now() + (this.expires * 1000)).toUTCString(),
-      };
+        {} :
+        {
+          // eslint-disable-next-line ts/naming-convention
+          'cache-control': `max-age=${this.expires}`,
+          expires: new Date(Date.now() + (this.expires * 1000)).toUTCString(),
+        };
   }
 }

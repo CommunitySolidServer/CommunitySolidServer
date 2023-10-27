@@ -1,4 +1,4 @@
-import { StaticTemplateEngine, NotFoundHttpError } from '../../../../src';
+import { NotFoundHttpError, StaticTemplateEngine } from '../../../../src';
 import type { AsyncHandler, TemplateEngineInput } from '../../../../src';
 import Dict = NodeJS.Dict;
 

@@ -4,10 +4,10 @@ import { ForbiddenHttpError } from '../../util/errors/ForbiddenHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import {
+  createSubdomainRegexp,
   decodeUriPathComponents,
   encodeUriPathComponents,
   ensureTrailingSlash,
-  createSubdomainRegexp,
   extractScheme,
   trimTrailingSlashes,
 } from '../../util/PathUtil';

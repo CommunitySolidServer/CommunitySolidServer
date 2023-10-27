@@ -7,6 +7,7 @@ import { RepresentationMetadata } from '../../../../src/http/representation/Repr
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+
 const { namedNode } = DataFactory;
 
 describe('BasicRepresentation', (): void => {

@@ -62,7 +62,7 @@ export abstract class ResolveLoginHandler extends JsonInteractionHandler {
     // We are not reusing this cookie as it could be associated with a different account.
     const oldCookie = input.metadata.get(SOLID_HTTP.terms.accountCookie)?.value;
     if (oldCookie) {
-      this.logger.debug(`Replacing old cookie ${oldCookie} with ${json.cookie}`);
+      this.logger.debug(`Replacing old cookie ${oldCookie} with ${json.cookie as string}`);
       await this.cookieStore.delete(oldCookie);
     }
 

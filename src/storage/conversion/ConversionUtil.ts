@@ -25,7 +25,7 @@ export class ContextDocumentLoader extends FetchDocumentLoader {
     super(fetch);
     this.contexts = {};
     for (const [ key, path ] of Object.entries(contexts)) {
-      this.contexts[key] = readJsonSync(resolveAssetPath(path));
+      this.contexts[key] = readJsonSync(resolveAssetPath(path)) as IJsonLdContext;
     }
   }
 

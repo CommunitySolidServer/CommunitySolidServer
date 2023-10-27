@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
-import type { NamedNode, Literal } from 'n3';
+import type { Literal, NamedNode } from 'n3';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';

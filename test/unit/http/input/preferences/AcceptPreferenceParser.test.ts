@@ -34,7 +34,6 @@ describe('An AcceptPreferenceParser', (): void => {
   it('parses accept-datetime headers.', async(): Promise<void> => {
     request.headers = { 'accept-datetime': 'Tue, 20 Mar 2001 20:35:00 GMT' };
     await expect(preferenceParser.handle({ request }))
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       .resolves.toEqual({ datetime: { 'Tue, 20 Mar 2001 20:35:00 GMT': 1 }});
   });
 

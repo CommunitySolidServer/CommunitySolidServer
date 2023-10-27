@@ -75,7 +75,7 @@ export class LazyLoggerFactory implements LoggerFactory {
 
   public get loggerFactory(): LoggerFactory {
     if (this.factory instanceof TemporaryLoggerFactory) {
-      throw new Error('Logger factory not yet set.');
+      throw new TypeError('Logger factory not yet set.');
     }
     return this.factory;
   }

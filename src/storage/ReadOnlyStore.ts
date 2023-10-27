@@ -4,12 +4,12 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import type { Conditions } from './conditions/Conditions';
 import { PassthroughStore } from './PassthroughStore';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 
 /**
  * Store that only allow read operations on the underlying source.
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable unused-imports/no-unused-vars */
 export class ReadOnlyStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
   public constructor(source: T) {
     super(source);

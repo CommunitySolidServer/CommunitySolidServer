@@ -3,7 +3,7 @@ import { BasicRepresentation } from '../../http/representation/BasicRepresentati
 import type { Representation } from '../../http/representation/Representation';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { isContainerIdentifier } from '../../util/PathUtil';
-import { matchesMediaType, getTypeWeight, cleanPreferences } from './ConversionUtil';
+import { cleanPreferences, getTypeWeight, matchesMediaType } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -86,6 +86,7 @@ export class ConstantConverter extends RepresentationConverter {
     }
 
     // Do not replace the representation if the preference weight is too low
+    // eslint-disable-next-line ts/naming-convention
     const quality = getTypeWeight(this.contentType, cleanPreferences({ ...preferences.type, '*/*': 0 }));
     if (quality === 0) {
       throw new NotImplementedHttpError(`No preference for ${this.contentType}`);

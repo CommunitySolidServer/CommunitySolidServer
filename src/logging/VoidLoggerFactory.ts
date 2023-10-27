@@ -7,7 +7,7 @@ import { VoidLogger } from './VoidLogger';
 export class VoidLoggerFactory implements LoggerFactory {
   private readonly logger = new VoidLogger();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   public createLogger(label: string): VoidLogger {
     return this.logger;
   }

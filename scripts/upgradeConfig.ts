@@ -60,16 +60,16 @@ async function getFilePaths(path: string, regex: RegExp): Promise<string[]> {
  * that file are included in the release commit).
  */
 async function upgradeConfig(): Promise<void> {
-  const pkg = await readPackageJson();
-  const major = pkg.version.split('.')[0];
+  const pkg = await readPackageJson() as Record<string, unknown>;
+  const major = (pkg.version as string).split('.')[0];
 
-  console.log(`Changing ${pkg['lsd:module']} references to ${major}.0.0\n`);
+  console.log(`Changing ${pkg['lsd:module'] as string} references to ${major}.0.0\n`);
 
   const configs = await getFilePaths('config/', /.+\.json/u);
   configs.push(...await getFilePaths('test/integration/config/', /.+\.json/u));
   configs.push(...await getFilePaths('templates/config/', /.+\.json/u));
 
-  const escapedName = escapeStringRegexp(pkg['lsd:module']);
+  const escapedName = escapeStringRegexp(pkg['lsd:module'] as string);
   const regex = new RegExp(`(${escapedName}/)${/\^\d+\.\d+\.\d+/u.source}`, 'gmu');
 
   for (const config of configs) {
@@ -77,6 +77,7 @@ async function upgradeConfig(): Promise<void> {
   }
   await replaceComponentVersion('package.json', regex, `${major}.0.0`);
 
+  // eslint-disable-next-line ts/naming-convention
   await simpleGit().commit(`chore(release): Update configs to v${major}.0.0`, configs, { '--no-verify': null });
 }
 

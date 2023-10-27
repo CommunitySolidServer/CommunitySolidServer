@@ -6,7 +6,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import { BaseActivityEmitter } from '../server/notifications/ActivityEmitter';
 import { AS, SOLID_AS } from '../util/Vocabularies';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 
 // The ActivityStream terms for which we emit an event
 const knownActivities = [ AS.terms.Add, AS.terms.Create, AS.terms.Delete, AS.terms.Remove, AS.terms.Update ];

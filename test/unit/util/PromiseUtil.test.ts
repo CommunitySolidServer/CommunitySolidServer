@@ -5,7 +5,6 @@ describe('PromiseUtil', (): void => {
     const resultTrue = Promise.resolve(true);
     const resultFalse = Promise.resolve(false);
     const resultError = Promise.reject(new Error('generic error'));
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const resultInfinite = new Promise<boolean>((): void => {});
 
     it('returns false if no promise is provided.', async(): Promise<void> => {

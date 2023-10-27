@@ -10,7 +10,7 @@ import { HttpError } from './HttpError';
  */
 export interface OAuthErrorFields {
   error: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line ts/naming-convention
   error_description?: string | undefined;
   scope?: string | undefined;
   state?: string | undefined;

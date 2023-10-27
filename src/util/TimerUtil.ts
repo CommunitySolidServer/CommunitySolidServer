@@ -7,17 +7,17 @@ import { createErrorMessage } from './errors/ErrorUtil';
  * The logger and message will be used when the callback throws an error.
  * Supports asynchronous callback functions.
  */
-export function setSafeInterval(logger: Logger, message: string, callback: (...cbArgs: any[]) => void, ms?: number,
-  ...args: any[]): NodeJS.Timeout {
-  async function safeCallback(...cbArgs: any[]): Promise<void> {
+export function setSafeInterval<TArgs>(logger: Logger, message: string,
+  callback: (...cbArgs: TArgs[]) => Promise<void> | void, ms?: number, ...args: TArgs[]): NodeJS.Timeout {
+  async function safeCallback(...cbArgs: TArgs[]): Promise<void> {
     try {
       // We don't know if the callback is async or not so this way we make sure
       // the full function execution is done in the try block.
-      // eslint-disable-next-line @typescript-eslint/await-thenable
       return await callback(...cbArgs);
     } catch (error: unknown) {
       logger.error(`Error during interval callback: ${message} - ${createErrorMessage(error)}`);
     }
   }
+  // eslint-disable-next-line ts/no-misused-promises
   return setInterval(safeCallback, ms, ...args);
 }

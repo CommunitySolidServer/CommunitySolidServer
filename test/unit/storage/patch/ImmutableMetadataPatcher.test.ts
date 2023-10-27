@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { DataFactory, Store } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
@@ -12,7 +13,7 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 import { FilterPattern } from '../../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
-import 'jest-rdf';
+
 const { namedNode, quad } = DataFactory;
 
 function getPatch(): Patch {

@@ -13,7 +13,7 @@
       "cookieMap": [
         {
           "CookieParser:_cookieMap_key": { "@id": "urn:solid-server:default:value:accountCookieName" },
-          "CookieParser:_cookieMap_value": "urn:npm:solid:community-server:http:accountCookie",
+          "CookieParser:_cookieMap_value": "urn:npm:solid:community-server:http:accountCookie"
         }
       ]
     }

@@ -120,7 +120,7 @@ describe('A WrappedExpiringStorage', (): void => {
   it('removes expired entries after a given time.', async(): Promise<void> => {
     // Disable interval function and simply check it was called with the correct parameters
     // Otherwise it gets quite difficult to verify the async interval function gets executed
-    const mockInterval = jest.spyOn(global, 'setInterval');
+    const mockInterval = jest.spyOn(globalThis, 'setInterval');
 
     // We only need to call the timer.unref() once when the object is created
     const mockTimer = { unref: jest.fn() };

@@ -1,4 +1,4 @@
-import type { OperationHttpHandlerInput, OperationHttpHandler } from '../OperationHttpHandler';
+import type { OperationHttpHandler, OperationHttpHandlerInput } from '../OperationHttpHandler';
 import type { BaseRouterHandlerArgs } from './BaseRouterHandler';
 import { BaseRouterHandler } from './BaseRouterHandler';
 

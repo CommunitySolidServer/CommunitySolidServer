@@ -2,7 +2,7 @@ import { BasicRepresentation } from '../../../../src/http/representation/BasicRe
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { SingleContainerJsonStorage } from '../../../../src/init/migration/SingleContainerJsonStorage';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { isContainerIdentifier } from '../../../../src/util/PathUtil';
 import { LDP } from '../../../../src/util/Vocabularies';

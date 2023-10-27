@@ -10,7 +10,7 @@ import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteL
 import { endOfStream } from '../util/StreamUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 
 /**
  * Store that for every call acquires a lock before executing it on the requested resource,
@@ -106,7 +106,7 @@ export class LockingResourceStore implements AtomicResourceStore {
 
         // Release the lock when an error occurs or the data finished streaming
         await this.waitForStreamToEnd(representation.data);
-      }).catch((error): void => {
+      }).catch((error: Error): void => {
         // Destroy the source stream in case the lock times out
         representation?.data.destroy(error);
 
@@ -133,7 +133,7 @@ export class LockingResourceStore implements AtomicResourceStore {
           return source.read(size);
         },
       },
-    });
+    }) as Readable;
     return new BasicRepresentation(data, representation.metadata, representation.binary);
   }
 

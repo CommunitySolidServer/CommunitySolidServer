@@ -16,6 +16,7 @@ import { guardedStreamFrom, readableToString } from '../../../../src/util/Stream
 import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
+
 const { namedNode, quad } = DataFactory;
 
 jest.mock('fs');
@@ -221,7 +222,7 @@ describe('A FileDataAccessor', (): void => {
           }
           return result;
         }),
-        mapUrlToFilePath: jest.fn((...args): Promise<ResourceLink> => mapper.mapUrlToFilePath(...args)),
+        mapUrlToFilePath: jest.fn(async(...args): Promise<ResourceLink> => mapper.mapUrlToFilePath(...args)),
       };
 
       accessor = new FileDataAccessor(badMapper);

@@ -1,7 +1,7 @@
 import { CreatePodHandler } from '../../../../../src/identity/interaction/pod/CreatePodHandler';
 import type { PodIdRoute } from '../../../../../src/identity/interaction/pod/PodIdRoute';
-import { PodCreator } from '../../../../../src/identity/interaction/pod/util/PodCreator';
-import { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
+import type { PodCreator } from '../../../../../src/identity/interaction/pod/util/PodCreator';
+import type { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
 import type { WebIdLinkRoute } from '../../../../../src/identity/interaction/webid/WebIdLinkRoute';
 
 describe('A CreatePodHandler', (): void => {

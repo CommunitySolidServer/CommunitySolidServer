@@ -1,13 +1,13 @@
 import { DataFactory } from 'n3';
-import type { NamedNode, Literal, Term } from 'rdf-js';
+import type { Literal, NamedNode, Term } from 'rdf-js';
 
 const { namedNode, literal } = DataFactory;
 
 /**
  * @param input - Checks if this is a {@link Term}.
  */
-export function isTerm(input?: any): input is Term {
-  return input && typeof input.termType === 'string';
+export function isTerm(input?: unknown): input is Term {
+  return Boolean(input) && typeof (input as Term).termType === 'string';
 }
 
 /**
@@ -33,7 +33,7 @@ export function toObjectTerm<T extends Term>(object: T, preferLiteral?: boolean)
 export function toObjectTerm<T extends Term>(object: T | string, preferLiteral?: boolean): T | NamedNode;
 export function toObjectTerm(object: Term | string, preferLiteral = false): Term {
   if (typeof object === 'string') {
-    return (preferLiteral ? literal(object) : namedNode(object)) as any;
+    return preferLiteral ? literal(object) : namedNode(object);
   }
   return object;
 }

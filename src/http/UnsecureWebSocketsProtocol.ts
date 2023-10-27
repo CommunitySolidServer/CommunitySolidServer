@@ -16,7 +16,7 @@ import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid-0.1';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line ts/naming-convention
 const WebSocketListenerEmitter = createGenericEventEmitterClass<GenericEventEmitter<'closed', () => void>>();
 
 /**

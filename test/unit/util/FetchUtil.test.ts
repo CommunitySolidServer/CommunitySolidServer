@@ -6,6 +6,7 @@ import { DataFactory } from 'n3';
 import rdfDereferencer from 'rdf-dereference';
 import { RdfToQuadConverter } from '../../../src/storage/conversion/RdfToQuadConverter';
 import { fetchDataset, responseToDataset } from '../../../src/util/FetchUtil';
+
 const { namedNode, quad } = DataFactory;
 
 jest.mock('rdf-dereference', (): any => ({

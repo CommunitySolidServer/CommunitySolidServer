@@ -1,6 +1,6 @@
 import { BasePodCreator } from '../../../../../../src/identity/interaction/pod/util/BasePodCreator';
-import { PodStore } from '../../../../../../src/identity/interaction/pod/util/PodStore';
-import { WebIdStore } from '../../../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { PodStore } from '../../../../../../src/identity/interaction/pod/util/PodStore';
+import type { WebIdStore } from '../../../../../../src/identity/interaction/webid/util/WebIdStore';
 import type { IdentifierGenerator } from '../../../../../../src/pods/generate/IdentifierGenerator';
 
 describe('A BasePodCreator', (): void => {

@@ -33,7 +33,7 @@ export class ServerInitializer extends Initializer implements Finalizable {
     this.server = await this.serverFactory.createServer();
 
     if (this.socketPath) {
-      this.logger.info(`Listening to server at ${this.server.address()}`);
+      this.logger.info(`Listening to server at ${this.server.address() as string}`);
       this.server.listen(this.socketPath);
     } else {
       const url = new URL(`http${isHttpsServer(this.server) ? 's' : ''}://localhost:${this.port}/`).href;

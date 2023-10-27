@@ -90,7 +90,6 @@ jest.mock('../../../src/init/cluster/SingleThreaded', (): any => ({
 }));
 
 jest.mock('componentsjs', (): any => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   ComponentsManager: {
     build: jest.fn(async(): Promise<ComponentsManager<App>> => manager),
   },
@@ -439,7 +438,7 @@ describe('AppRunner', (): void => {
     it('checks for threading issues when starting in multithreaded mode.', async(): Promise<void> => {
       const createdApp = await new AppRunner().createCli();
       expect(createdApp).toBe(app);
-      expect(listSingleThreadedComponentsMock).toHaveBeenCalled();
+      expect(listSingleThreadedComponentsMock).toHaveBeenCalledWith();
     });
 
     it('throws an error if there are threading issues detected.', async(): Promise<void> => {

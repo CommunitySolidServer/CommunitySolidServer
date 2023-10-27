@@ -13,7 +13,7 @@ enum ClusterMode {
   /** Single threaded mode, no clustering */
   singleThreaded,
   /** Fixed amount of workers being forked. (limited to core_count) */
-  fixed
+  fixed,
 }
 
 /**

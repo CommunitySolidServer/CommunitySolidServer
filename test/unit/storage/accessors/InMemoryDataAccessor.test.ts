@@ -10,6 +10,7 @@ import type { Guarded } from '../../../../src/util/GuardedStream';
 import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIdentifierStrategy';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, LDP, POSIX, RDF } from '../../../../src/util/Vocabularies';
+
 const { namedNode } = DataFactory;
 
 class DummyStrategy extends BaseIdentifierStrategy {

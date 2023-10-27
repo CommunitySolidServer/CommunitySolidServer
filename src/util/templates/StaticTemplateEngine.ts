@@ -1,5 +1,5 @@
 import type { AsyncHandler } from '../handlers/AsyncHandler';
-import type { TemplateEngineInput, Template } from './TemplateEngine';
+import type { Template, TemplateEngineInput } from './TemplateEngine';
 import { TemplateEngine } from './TemplateEngine';
 import Dict = NodeJS.Dict;
 
@@ -24,7 +24,7 @@ export class StaticTemplateEngine<T extends Dict<any> = Dict<any>> extends Templ
 
   public async canHandle({ contents, template }: TemplateEngineInput<T>): Promise<void> {
     if (typeof template !== 'undefined') {
-      throw new Error('StaticTemplateEngine does not support template as handle input, ' +
+      throw new TypeError('StaticTemplateEngine does not support template as handle input, ' +
           'provide a template via the constructor instead!');
     }
     return this.templateEngine.canHandle({ contents, template: this.template });
