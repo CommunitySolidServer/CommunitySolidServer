@@ -147,7 +147,7 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: true });
-      expect(await arrayifyStream(result.data)).toEqual([ resourceData ]);
+      await expect(arrayifyStream(result.data)).resolves.toEqual([ resourceData ]);
       expect(result.metadata.contentType).toBe('text/plain');
       expect(result.metadata.get(namedNode('AUXILIARY'))?.value)
         .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
@@ -163,7 +163,7 @@ describe('A DataAccessorBasedStore', (): void => {
       await auxiliaryStrategy.addMetadata(metaMirror);
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: false });
-      expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaMirror.quads());
+      await expect(arrayifyStream(result.data)).resolves.toBeRdfIsomorphic(metaMirror.quads());
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
       expect(result.metadata.get(namedNode('AUXILIARY'))?.value)
         .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
@@ -451,7 +451,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create an auxiliary resource with invalid data.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource.dummy` };
-      auxiliaryStrategy.validate = jest.fn().mockRejectedValue(new Error('bad data!'));
+      jest.spyOn(auxiliaryStrategy, 'validate').mockRejectedValue(new Error('bad data!'));
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow('bad data!');
     });
 
@@ -703,7 +703,7 @@ describe('A DataAccessorBasedStore', (): void => {
     });
 
     it('re-throws the error if something goes wrong accessing the metadata.', async(): Promise<void> => {
-      accessor.getMetadata = jest.fn(async(): Promise<any> => {
+      jest.spyOn(accessor, 'getMetadata').mockImplementation(async(): Promise<any> => {
         throw new Error('error');
       });
 
@@ -738,7 +738,7 @@ describe('A DataAccessorBasedStore', (): void => {
       storageMetadata.add(RDF.terms.type, PIM.terms.Storage);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
-      auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
+      jest.spyOn(auxiliaryStrategy, 'isRequiredInRoot').mockReturnValue(true);
       const result = store.deleteResource({ path: `${root}container/.dummy` });
       await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
       await expect(result).rejects.toThrow(
@@ -787,7 +787,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const storageMetadata = new RepresentationMetadata(representation.metadata);
       accessor.data[resourceID.path] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[auxResourceID.path] = representation;
-      auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
+      jest.spyOn(auxiliaryStrategy, 'isRequiredInRoot').mockReturnValue(true);
       const result = await store.deleteResource(auxResourceID);
       expect(result.size).toBe(2);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Remove);
@@ -816,14 +816,15 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
       accessor.data[auxResourceID.path] = representation;
       const deleteFn = accessor.deleteResource;
-      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
-        if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
-          throw new Error('auxiliary error!');
-        }
-        await deleteFn.call(accessor, identifier);
-      });
+      jest.spyOn(accessor, 'deleteResource')
+        .mockImplementation(async(identifier: ResourceIdentifier): Promise<void> => {
+          if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
+            throw new Error('auxiliary error!');
+          }
+          await deleteFn.call(accessor, identifier);
+        });
       const { logger } = store as any;
-      logger.error = jest.fn();
+      jest.spyOn(logger, 'error').mockImplementation();
       const result = await store.deleteResource(resourceID);
       expect(result.size).toBe(2);
       expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Remove);
@@ -858,7 +859,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('should rethrow any unexpected errors from validateIdentifier.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       const originalMetaData = accessor.getMetadata;
-      accessor.getMetadata = jest.fn(async(): Promise<any> => {
+      jest.spyOn(accessor, 'getMetadata').mockImplementation(async(): Promise<any> => {
         throw new Error('error');
       });
       await expect(store.hasResource(resourceID)).rejects.toThrow('error');

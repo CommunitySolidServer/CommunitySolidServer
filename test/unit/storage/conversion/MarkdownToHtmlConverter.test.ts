@@ -11,7 +11,7 @@ describe('A MarkdownToHtmlConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     templateEngine = {
-      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+      handleSafe: jest.fn().mockResolvedValue('<html>'),
     } as any;
     converter = new MarkdownToHtmlConverter(templateEngine);
   });

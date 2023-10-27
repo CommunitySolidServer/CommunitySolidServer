@@ -21,7 +21,7 @@ describe('HandlerUtil', (): void => {
     });
 
     it('supports non-native Errors.', async(): Promise<void> => {
-      handlerFalse.canHandle = jest.fn().mockRejectedValue('apple');
+      jest.spyOn(handlerFalse, 'canHandle').mockRejectedValue('apple');
       await expect(findHandler([ handlerFalse ], null)).rejects.toThrow('Unknown error: apple');
     });
   });

@@ -42,7 +42,7 @@ describe('An HtmlViewHandler', (): void => {
     ];
 
     templateEngine = {
-      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+      handleSafe: jest.fn().mockResolvedValue('<html>'),
     } as any;
 
     handler = new HtmlViewHandler(index, templateEngine, templates);

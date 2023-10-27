@@ -66,6 +66,7 @@ describe('A ConsentHandler', (): void => {
     knownGrant = new DummyGrant({ accountId, clientId });
 
     grantFn = jest.fn((props): DummyGrant => new DummyGrant(props)) as any;
+    // eslint-disable-next-line jest/prefer-spy-on
     grantFn.find = jest.fn((grantId: string): any => grantId ? knownGrant : undefined);
     provider = {
       Grant: grantFn,

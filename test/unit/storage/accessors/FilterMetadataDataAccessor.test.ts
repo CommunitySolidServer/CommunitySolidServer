@@ -13,10 +13,10 @@ describe('FilterMetadataDataAccessor', (): void => {
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
     childAccessor = {
+      getChildren: jest.fn(),
       writeDocument: jest.fn(),
       writeContainer: jest.fn(),
     } as any;
-    childAccessor.getChildren = jest.fn();
   });
 
   it('removes only the matching metadata properties when calling writeDocument.', async(): Promise<void> => {

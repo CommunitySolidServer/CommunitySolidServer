@@ -223,6 +223,7 @@ describeIf('docker')('A server with a RedisLocker', (): void => {
         await expect(locker.withWriteLock(identifier, (): void => {
           res += 'l1';
           res += 'r1';
+          // eslint-disable-next-line jest/require-to-throw-message
         })).rejects.toThrow();
         res += 'r0';
       })).resolves.toBeUndefined();

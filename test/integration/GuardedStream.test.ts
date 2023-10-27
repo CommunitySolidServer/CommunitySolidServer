@@ -45,7 +45,7 @@ describe('A chained converter where data gets ignored', (): void => {
     jest.useFakeTimers();
     const result = await converter.handleSafe({ identifier, representation: rep, preferences: { type: { 'x/x': 1 }}});
 
-    expect(await readableToString(result.data)).toBe('dummy');
+    await expect(readableToString(result.data)).resolves.toBe('dummy');
 
     jest.advanceTimersByTime(1000);
     expect(logger.error).toHaveBeenCalledTimes(1);

@@ -260,7 +260,8 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws an error if there is a problem with the internal metadata.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': 'invalid metadata!.' };
-      await expect(accessor.getMetadata({ path: `${base}resource` })).rejects.toThrow();
+      await expect(accessor.getMetadata({ path: `${base}resource` }))
+        .rejects.toThrow('Unexpected "invalid" on line 1.');
     });
   });
 
@@ -465,7 +466,7 @@ describe('A FileDataAccessor', (): void => {
       jest.requireMock('fs-extra').remove = (): any => {
         throw new Error('error');
       };
-      await expect(accessor.deleteResource({ path: `${base}resource` })).rejects.toThrow();
+      await expect(accessor.deleteResource({ path: `${base}resource` })).rejects.toThrow('error');
     });
 
     it('removes the corresponding folder for containers.', async(): Promise<void> => {

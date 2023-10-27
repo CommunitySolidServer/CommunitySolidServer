@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import type { WebSocket } from 'ws';
 
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
@@ -36,9 +35,10 @@ describe('A WebSocket2023Listener', (): void => {
   let listener: WebSocket2023Listener;
 
   beforeEach(async(): Promise<void> => {
-    webSocket = new EventEmitter() as any;
-    webSocket.send = jest.fn();
-    webSocket.close = jest.fn();
+    webSocket = {
+      send: jest.fn(),
+      close: jest.fn(),
+    } as any;
 
     upgradeRequest = { url: `/foo/123456` } as any;
 

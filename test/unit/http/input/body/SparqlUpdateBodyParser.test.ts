@@ -64,7 +64,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata).toBe(input.metadata);
 
-    expect(await arrayifyStream(result.data)).toEqual(
+    await expect(arrayifyStream(result.data)).resolves.toEqual(
       [ 'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o> }' ],
     );
   });
@@ -84,7 +84,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata).toBe(input.metadata);
 
-    expect(await arrayifyStream(result.data)).toEqual(
+    await expect(arrayifyStream(result.data)).resolves.toEqual(
       [ 'INSERT DATA { <#it> <http://test.com/p> <http://test.com/o> }' ],
     );
   });

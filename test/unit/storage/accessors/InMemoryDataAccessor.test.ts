@@ -160,7 +160,8 @@ describe('An InMemoryDataAccessor', (): void => {
 
       await expect(accessor.getMetadata({ path: `${base}container/resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
-      expect(await readableToString(await accessor.getData({ path: `${base}container/resource` }))).toBe('data');
+      await expect(readableToString(await accessor.getData({ path: `${base}container/resource` })))
+        .resolves.toBe('data');
     });
 
     it('can write to the root container without overriding its children.', async(): Promise<void> => {
@@ -187,7 +188,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
       await expect(accessor.getMetadata({ path: `${base}resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
-      expect(await readableToString(await accessor.getData({ path: `${base}resource` }))).toBe('data');
+      await expect(readableToString(await accessor.getData({ path: `${base}resource` }))).resolves.toBe('data');
     });
 
     it('errors when writing to an invalid container path.', async(): Promise<void> => {

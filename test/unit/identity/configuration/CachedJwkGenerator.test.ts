@@ -40,7 +40,7 @@ describe('A CachedJwkGenerator', (): void => {
     });
 
     const otherKey = (await generateKeyPair(alg)).publicKey;
-    await expect(jwtVerify(signed, otherKey)).rejects.toThrow();
+    await expect(jwtVerify(signed, otherKey)).rejects.toThrow('signature verification failed');
   });
 
   it('caches the private key in memory.', async(): Promise<void> => {

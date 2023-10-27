@@ -25,7 +25,7 @@ describe('ValidatingDataAccessor', (): void => {
       getMetadata: jest.fn(),
       writeMetadata: jest.fn(),
     };
-    childAccessor.getChildren = jest.fn();
+    jest.spyOn(childAccessor, 'getChildren').mockImplementation();
     passthrough = new PassthroughDataAccessor(childAccessor);
   });
 
