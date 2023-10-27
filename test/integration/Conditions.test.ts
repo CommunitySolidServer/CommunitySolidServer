@@ -76,7 +76,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     await expect(response.text()).resolves.toBe('TESTFILE');
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('prevents creating new resources with "if-match: *" header.', async(): Promise<void> => {
@@ -112,7 +112,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     await expectQuads(response, expected, true);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('prevents operations if the "if-match" header does not match.', async(): Promise<void> => {
@@ -140,7 +140,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     expect(typeof documentUrl).toBe('string');
 
     // DELETE
-    expect(await deleteResource(documentUrl!)).toBeUndefined();
+    await expect(deleteResource(documentUrl!)).resolves.toBeUndefined();
   });
 
   it('prevents operations if the "if-none-match" header does match.', async(): Promise<void> => {
@@ -168,7 +168,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     expect(typeof documentUrl).toBe('string');
 
     // DELETE
-    expect(await deleteResource(documentUrl!)).toBeUndefined();
+    await expect(deleteResource(documentUrl!)).resolves.toBeUndefined();
   });
 
   it('throws 304 error if "if-none-match" header matches and request type is GET or HEAD.', async(): Promise<void> => {

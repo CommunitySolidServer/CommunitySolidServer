@@ -36,7 +36,7 @@ describe('A GreedyReadWriteLocker', (): void => {
   });
 
   it('errors if the read counter has an unexpected value.', async(): Promise<void> => {
-    storage.get = jest.fn().mockResolvedValue(0);
+    jest.spyOn(storage, 'get').mockResolvedValue(0);
     await expect(locker.withReadLock(resourceId, (): number => 5)).rejects.toThrow(InternalServerError);
   });
 });

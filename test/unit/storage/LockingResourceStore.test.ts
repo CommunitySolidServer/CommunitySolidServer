@@ -34,7 +34,7 @@ describe('A LockingResourceStore', (): void => {
 
     const readable = guardedStreamFrom([ 1, 2, 3 ]);
     const { destroy } = readable;
-    readable.destroy = jest.fn((error): any => destroy.call(readable, error));
+    jest.spyOn(readable, 'destroy').mockImplementation((error): any => destroy.call(readable, error));
     source = {
       getRepresentation: jest.fn((): any => addOrder('getRepresentation', { data: readable } as Representation)),
       addResource: jest.fn((): any => addOrder('addResource')),
@@ -272,7 +272,7 @@ describe('A LockingResourceStore', (): void => {
   });
 
   it('throws an error if a timeout happens before getting a resource.', async(): Promise<void> => {
-    source.getRepresentation = jest.fn(async(): Promise<any> => {
+    jest.spyOn(source, 'getRepresentation').mockImplementation(async(): Promise<any> => {
       order.push('useless get');
       // This will never resolve
       return new Promise(emptyFn);

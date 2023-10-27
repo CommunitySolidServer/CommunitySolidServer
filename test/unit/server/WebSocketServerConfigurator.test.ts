@@ -34,9 +34,10 @@ describe('A WebSocketServerConfigurator', (): void => {
     // Clearing the logger mock
     jest.clearAllMocks();
     server = new EventEmitter() as any;
-    webSocket = new EventEmitter() as any;
-    webSocket.send = jest.fn();
-    webSocket.close = jest.fn();
+    webSocket = {
+      send: jest.fn(),
+      close: jest.fn(),
+    } as any;
 
     upgradeRequest = new EventEmitter() as any;
 

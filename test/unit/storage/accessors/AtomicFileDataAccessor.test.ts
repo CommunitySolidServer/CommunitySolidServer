@@ -56,31 +56,31 @@ describe('AtomicFileDataAccessor', (): void => {
     });
 
     it('should throw an error when writing the data goes wrong.', async(): Promise<void> => {
-      data.read = jest.fn((): any => {
+      jest.spyOn(data, 'read').mockImplementation((): any => {
         data.emit('error', new Error('error'));
         return null;
       });
-      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
+      jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation((): any => ({
         isFile: (): boolean => false,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
     it('should throw when renaming / moving the file goes wrong.', async(): Promise<void> => {
-      jest.requireMock('fs-extra').rename = jest.fn((): any => {
+      jest.spyOn(jest.requireMock('fs-extra'), 'rename').mockImplementation((): any => {
         throw new Error('error');
       });
-      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
+      jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation((): any => ({
         isFile: (): boolean => true,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
     it('should (on error) not unlink the temp file if it does not exist.', async(): Promise<void> => {
-      jest.requireMock('fs-extra').rename = jest.fn((): any => {
+      jest.spyOn(jest.requireMock('fs-extra'), 'rename').mockImplementation((): any => {
         throw new Error('error');
       });
-      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
+      jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation((): any => ({
         isFile: (): boolean => false,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
@@ -88,10 +88,10 @@ describe('AtomicFileDataAccessor', (): void => {
 
     it('should throw when renaming / moving the file goes wrong and the temp file does not exist.',
       async(): Promise<void> => {
-        jest.requireMock('fs-extra').rename = jest.fn((): any => {
+        jest.spyOn(jest.requireMock('fs-extra'), 'rename').mockImplementation((): any => {
           throw new Error('error');
         });
-        jest.requireMock('fs-extra').stat = jest.fn();
+        jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation();
         await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
       });
   });

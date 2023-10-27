@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import type { WebSocket } from 'ws';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
@@ -20,9 +19,10 @@ describe('A WebSocket2023Emitter', (): void => {
   let emitter: WebSocket2023Emitter;
 
   beforeEach(async(): Promise<void> => {
-    webSocket = new EventEmitter() as any;
-    webSocket.send = jest.fn();
-    webSocket.close = jest.fn();
+    webSocket = {
+      send: jest.fn(),
+      close: jest.fn(),
+    } as any;
 
     socketMap = new WrappedSetMultiMap();
 
@@ -46,8 +46,9 @@ describe('A WebSocket2023Emitter', (): void => {
   });
 
   it('can send to multiple matching WebSockets.', async(): Promise<void> => {
-    const webSocket2: jest.Mocked<WebSocket> = new EventEmitter() as any;
-    webSocket2.send = jest.fn();
+    const webSocket2: jest.Mocked<WebSocket> = {
+      send: jest.fn(),
+    } as any;
 
     socketMap.add(channel.id, webSocket);
     socketMap.add(channel.id, webSocket2);
@@ -61,8 +62,9 @@ describe('A WebSocket2023Emitter', (): void => {
   });
 
   it('only sends to the matching WebSockets.', async(): Promise<void> => {
-    const webSocket2: jest.Mocked<WebSocket> = new EventEmitter() as any;
-    webSocket2.send = jest.fn();
+    const webSocket2: jest.Mocked<WebSocket> = {
+      send: jest.fn(),
+    } as any;
     const channel2: NotificationChannel = {
       ...channel,
       id: 'other',

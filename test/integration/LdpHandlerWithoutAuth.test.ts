@@ -107,7 +107,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can add and overwrite a document.', async(): Promise<void> => {
@@ -127,7 +127,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toBe('TESTFILE1');
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can create a container and delete it.', async(): Promise<void> => {
@@ -144,7 +144,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     ]);
 
     // DELETE
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   it('can create a container and retrieve it.', async(): Promise<void> => {
@@ -157,7 +157,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toContain('ldp:BasicContainer');
 
     // DELETE
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   it('can create a container and view it as HTML.', async(): Promise<void> => {
@@ -170,7 +170,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toContain('Contents of testcontainer0');
 
     // DELETE
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   it('can create a container and put a document in it.', async(): Promise<void> => {
@@ -187,8 +187,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   it('can create a container without content-type.', async(): Promise<void> => {
@@ -212,8 +212,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(postResponse.headers.get('location')).toBe(baseUrl + slug);
 
     // DELETE
-    expect(await deleteResource(containerUrl)).toBeUndefined();
-    expect(await deleteResource(baseUrl + slug)).toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
+    await expect(deleteResource(baseUrl + slug)).resolves.toBeUndefined();
   });
   it('cannot remove a container when the container contains a document.', async(): Promise<void> => {
     // Create container
@@ -230,8 +230,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toContain('ConflictHttpError: Can only delete empty containers.');
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   it('cannot remove a container when the container contains a subfolder.', async(): Promise<void> => {
@@ -249,8 +249,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toContain('ConflictHttpError: Can only delete empty containers.');
 
     // DELETE
-    expect(await deleteResource(subContainerUrl)).toBeUndefined();
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(subContainerUrl)).resolves.toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   it('can read the contents of a container.', async(): Promise<void> => {
@@ -273,9 +273,9 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     ]);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
-    expect(await deleteResource(subContainerUrl)).toBeUndefined();
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
+    await expect(deleteResource(subContainerUrl)).resolves.toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   it('can upload and delete an image.', async(): Promise<void> => {
@@ -295,7 +295,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await getResource(documentUrl, {}, { contentType: 'image/png' });
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can create a resource with a diamond identifier in the data.', async(): Promise<void> => {
@@ -314,7 +314,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     ]);
 
     // DELETE
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/498
@@ -333,7 +333,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await getResource(documentUrl);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can handle simple SPARQL updates.', async(): Promise<void> => {
@@ -382,7 +382,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expectQuads(response, expected, true);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can handle simple N3 Patch updates.', async(): Promise<void> => {
@@ -433,7 +433,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expectQuads(response, expected, true);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can not handle SPARQL updates on containers.', async(): Promise<void> => {
@@ -460,7 +460,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(response.status).toBe(409);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can not handle N3 Patch updates on containers.', async(): Promise<void> => {
@@ -488,7 +488,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(response.status).toBe(409);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('returns 405 for unsupported methods.', async(): Promise<void> => {
@@ -564,7 +564,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(quads).toHaveLength(3);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can not delete metadata resources directly.', async(): Promise<void> => {
@@ -578,7 +578,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(response.status).toBe(409);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can not create metadata directly.', async(): Promise<void> => {
@@ -630,7 +630,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expectQuads(response, [ quad(namedNode(`${baseUrl}a`), namedNode(`${baseUrl}b`), namedNode(`${baseUrl}c`)) ]);
 
     // DELETE
-    expect(await deleteResource(documentUrl)).toBeUndefined();
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
   });
 
   it('can not update metadata triples that are deemed immutable.', async(): Promise<void> => {
@@ -656,7 +656,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(ldpResponse.status).toBe(409);
 
     // DELETE
-    expect(await deleteResource(containerUrl)).toBeUndefined();
+    await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
   });
 
   it('can not create metadata resource of a metadata resource.', async(): Promise<void> => {

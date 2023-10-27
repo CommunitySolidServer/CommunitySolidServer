@@ -136,15 +136,16 @@ describe('A ImmutableMetadataPatcher', (): void => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
       new FilterPattern(undefined, `${base}p`, `${base}o`),
     ]);
-    patcher.handle = jest.fn(async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>):
-    Promise<RdfDatasetRepresentation> => {
-      const patcherStore = new Store([
-        quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
-        quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}o`)),
-      ]);
-      patcherInput.representation!.dataset = patcherStore;
-      return patcherInput.representation!;
-    });
+    jest.spyOn(patcher, 'handle').mockImplementation(
+      async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<RdfDatasetRepresentation> => {
+        const patcherStore = new Store([
+          quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
+          quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}o`)),
+        ]);
+        patcherInput.representation!.dataset = patcherStore;
+        return patcherInput.representation!;
+      },
+    );
 
     const result = await handler.handleSafe(input);
     expect(result.dataset).toBeRdfIsomorphic([
@@ -157,14 +158,15 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that replaces immutable triples.', async(): Promise<void> => {
     input.representation!.dataset.addQuad(namedNode(identifier.path), namedNode(`${base}p`), namedNode(`${base}o1`));
-    patcher.handle = jest.fn(async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>):
-    Promise<RdfDatasetRepresentation> => {
-      const patcherStore = new Store([
-        quad(namedNode(identifier.path), namedNode(`${base}p`), namedNode(`${base}o2`)),
-      ]);
-      patcherInput.representation!.dataset = patcherStore;
-      return patcherInput.representation!;
-    });
+    jest.spyOn(patcher, 'handle').mockImplementation(
+      async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<RdfDatasetRepresentation> => {
+        const patcherStore = new Store([
+          quad(namedNode(identifier.path), namedNode(`${base}p`), namedNode(`${base}o2`)),
+        ]);
+        patcherInput.representation!.dataset = patcherStore;
+        return patcherInput.representation!;
+      },
+    );
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
       new FilterPattern(`${base}foo`, `${base}p`),
     ]);

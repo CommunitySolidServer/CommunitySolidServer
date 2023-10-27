@@ -303,7 +303,7 @@ describe('A RepresentationMetadata', (): void => {
     it('errors if a shorthand has multiple values.', async(): Promise<void> => {
       metadata.add(CONTENT_TYPE_TERM, 'a/b');
       metadata.add(CONTENT_TYPE_TERM, 'c/d');
-      expect((): any => metadata.contentType).toThrow();
+      expect((): any => metadata.contentType).toThrow('Multiple results for http://www.w3.org/ns/ma-ont#format');
     });
 
     it('has a shorthand for Content-Type as string.', async(): Promise<void> => {

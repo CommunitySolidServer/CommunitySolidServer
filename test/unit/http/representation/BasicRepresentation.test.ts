@@ -48,7 +48,7 @@ describe('BasicRepresentation', (): void => {
     const data = [ 'my', 'data' ];
     const metadata = new RepresentationMetadata();
     const representation = new BasicRepresentation(data, metadata);
-    expect(await arrayifyStream(representation.data)).toEqual(data);
+    await expect(arrayifyStream(representation.data)).resolves.toEqual(data);
     expect(representation.metadata).toBe(metadata);
     expect(representation.binary).toBe(true);
   });
@@ -57,7 +57,7 @@ describe('BasicRepresentation', (): void => {
     const data = 'my data';
     const metadata = new RepresentationMetadata();
     const representation = new BasicRepresentation(data, metadata);
-    expect(await arrayifyStream(representation.data)).toEqual([ data ]);
+    await expect(arrayifyStream(representation.data)).resolves.toEqual([ data ]);
     expect(representation.metadata).toBe(metadata);
     expect(representation.binary).toBe(true);
   });

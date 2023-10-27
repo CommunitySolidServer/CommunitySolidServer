@@ -210,17 +210,11 @@ module.exports = antfu(
       // Default rules that are overkill
       'jest/no-hooks': 'off',
       'jest/max-expects': 'off',
+      'jest/no-conditional-in-test': 'off',
       'jest/prefer-expect-assertions': 'off',
       'jest/prefer-lowercase-title': 'off',
       'jest/prefer-strict-equal': 'off',
-
-      // Default rules that might be useful but would require too many files to be changed right now
-      'jest/no-conditional-in-test': 'off',
-      'jest/prefer-mock-promise-shorthand': 'off',
-      'jest/prefer-expect-resolves': 'off',
-      'jest/prefer-spy-on': 'off',
       'jest/require-hook': 'off',
-      'jest/require-to-throw-message': 'off',
 
       'ts/naming-convention': 'off',
       'ts/no-unsafe-argument': 'off',

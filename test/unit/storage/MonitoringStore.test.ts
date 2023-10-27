@@ -160,7 +160,7 @@ describe('A MonitoringStore', (): void => {
   });
 
   it('should not emit an event when the Activity is not a valid AS value.', async(): Promise<void> => {
-    source.addResource = jest.fn().mockResolvedValue(new IdentifierMap([
+    jest.spyOn(source, 'addResource').mockResolvedValue(new IdentifierMap([
       [{ path: 'http://example.org/path' }, new RepresentationMetadata({ [SOLID_AS.activity]: 'SomethingRandom' }) ],
     ]));
 

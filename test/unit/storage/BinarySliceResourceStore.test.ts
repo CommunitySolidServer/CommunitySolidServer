@@ -80,7 +80,7 @@ describe('A BinarySliceResourceStore', (): void => {
   });
 
   it('closes the source stream if there was an error creating the SliceStream.', async(): Promise<void> => {
-    representation.data.destroy = jest.fn();
+    jest.spyOn(representation.data, 'destroy').mockImplementation();
     await expect(store.getRepresentation(identifier, { range: { unit: 'bytes', parts: [{ start: -5 }]}}))
       .rejects.toThrow(RangeNotSatisfiedHttpError);
     expect(representation.data.destroy).toHaveBeenCalledTimes(1);

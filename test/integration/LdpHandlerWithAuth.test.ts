@@ -232,7 +232,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // GET file
     const response = await getResource(identifier.path);
-    expect(await response.text()).toContain('valid data');
+    await expect(response.text()).resolves.toContain('valid data');
   });
 
   it('prevents creation of intermediate intermediate containers if they are not allowed.', async(): Promise<void> => {

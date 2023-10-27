@@ -16,7 +16,7 @@ describe('A ContainerToTemplateConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     templateEngine = {
-      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+      handleSafe: jest.fn().mockResolvedValue('<html>'),
     } as any;
     converter = new ContainerToTemplateConverter(templateEngine, 'text/html', identifierStrategy);
   });

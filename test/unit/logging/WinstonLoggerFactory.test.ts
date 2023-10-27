@@ -17,7 +17,8 @@ describe('WinstonLoggerFactory', (): void => {
 
     // Create a dummy log transport
     transport = new PassThrough({ objectMode: true }) as any;
-    transport.write = jest.fn();
+    jest.spyOn(transport, 'write').mockImplementation();
+    // eslint-disable-next-line jest/prefer-spy-on
     transport.log = jest.fn();
   });
 

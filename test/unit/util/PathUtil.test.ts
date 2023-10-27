@@ -249,7 +249,7 @@ describe('PathUtil', (): void => {
       // Note that this test only makes sense as long as the dist folder is on the same level as the src folder
       const root = getModuleRoot();
       const packageJson = joinFilePath(root, 'package.json');
-      expect(await fsPromises.access(packageJson)).toBeUndefined();
+      await expect(fsPromises.access(packageJson)).resolves.toBeUndefined();
     });
   });
 
