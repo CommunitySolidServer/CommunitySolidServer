@@ -220,14 +220,18 @@ export class V6MigrationInitializer extends Initializer {
 
     const { id: accountId } = await this.newAccountStorage.create(ACCOUNT_TYPE, {});
     // The `toLowerCase` call is important here to have the expected value
-    await this.newAccountStorage.create(PASSWORD_STORAGE_TYPE,
-      { email: email.toLowerCase(), password, verified, accountId });
+    await this.newAccountStorage.create(
+      PASSWORD_STORAGE_TYPE,
+      { email: email.toLowerCase(), password, verified, accountId },
+    );
     if (settings.useIdp) {
       await this.newAccountStorage.create(WEBID_STORAGE_TYPE, { webId, accountId });
     }
     if (settings.podBaseUrl) {
-      const { id: podId } = await this.newAccountStorage.create(POD_STORAGE_TYPE,
-        { baseUrl: settings.podBaseUrl, accountId });
+      const { id: podId } = await this.newAccountStorage.create(
+        POD_STORAGE_TYPE,
+        { baseUrl: settings.podBaseUrl, accountId },
+      );
       await this.newAccountStorage.create(OWNER_STORAGE_TYPE, { webId, podId, visible: false });
     }
 

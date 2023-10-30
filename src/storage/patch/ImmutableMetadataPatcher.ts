@@ -24,8 +24,11 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
   private readonly metadataStrategy: AuxiliaryStrategy;
   private readonly immutablePatterns: FilterPattern[];
 
-  public constructor(patcher: RepresentationPatcher<RdfDatasetRepresentation>, metadataStrategy: AuxiliaryStrategy,
-    immutablePatterns: FilterPattern[]) {
+  public constructor(
+    patcher: RepresentationPatcher<RdfDatasetRepresentation>,
+    metadataStrategy: AuxiliaryStrategy,
+    immutablePatterns: FilterPattern[],
+  ) {
     super();
     this.patcher = patcher;
     this.metadataStrategy = metadataStrategy;

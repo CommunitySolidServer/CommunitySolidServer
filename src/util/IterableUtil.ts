@@ -9,8 +9,11 @@
  * @param callbackFn - Function that is called for every element.
  * @param thisArg - Value to use as `this` when executing `callbackFn`.
  */
-export function* map<TIn, TOut>(iterable: Iterable<TIn>, callbackFn: (element: TIn, index: number) => TOut,
-  thisArg?: any): Iterable<TOut> {
+export function* map<TIn, TOut>(
+  iterable: Iterable<TIn>,
+  callbackFn: (element: TIn, index: number) => TOut,
+  thisArg?: any,
+): Iterable<TOut> {
   const boundMapFn = callbackFn.bind(thisArg);
   let count = 0;
   for (const value of iterable) {
@@ -28,8 +31,8 @@ export function* map<TIn, TOut>(iterable: Iterable<TIn>, callbackFn: (element: T
  * @param callbackFn - Function that is called to test every element.
  * @param thisArg - Value to use as `this` when executing `callbackFn`.
  */
-export function* filter<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean,
-  thisArg?: any): Iterable<T> {
+export function* filter<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean, thisArg?: any):
+Iterable<T> {
   const boundFilterFn = callbackFn.bind(thisArg);
   let count = 0;
   for (const value of iterable) {
@@ -89,10 +92,15 @@ export function reduce<TIn>(iterable: Iterable<TIn>,
  * @param callbackFn - A reducer function.
  * @param initialValue - The value to start from.
  */
-export function reduce<TIn, TOut>(iterable: Iterable<TIn>,
-  callbackFn: (previousValue: TOut, currentValue: TIn, currentIndex: number) => TOut, initialValue: TOut): TOut;
-export function reduce<TIn, TOut>(iterable: Iterable<TIn>,
-  callbackFn: (previousValue: TOut, currentValue: TIn, currentIndex: number) => TOut, initialValue?: TOut): TOut {
+export function reduce<TIn, TOut>(
+  iterable: Iterable<TIn>,
+  callbackFn: (previousValue: TOut, currentValue: TIn, currentIndex: number) => TOut, initialValue: TOut
+): TOut;
+export function reduce<TIn, TOut>(
+  iterable: Iterable<TIn>,
+  callbackFn: (previousValue: TOut, currentValue: TIn, currentIndex: number) => TOut,
+  initialValue?: TOut,
+): TOut {
   const iterator = iterable[Symbol.iterator]();
   let count = 0;
   if (!initialValue) {
@@ -136,8 +144,11 @@ async function nextAsyncEntry<T>(iterator: AsyncIterator<T>): Promise<T | undefi
  * `results` should contain the first result of all these iterators.
  * This array will also be updated, replacing the result of the iterator whose result was chosen by the next one.
  */
-async function findNextSorted<T>(iterators: AsyncIterator<T>[], results: (T | undefined)[],
-  comparator: (left: T, right: T) => number): Promise<T | undefined> {
+async function findNextSorted<T>(
+  iterators: AsyncIterator<T>[],
+  results: (T | undefined)[],
+  comparator: (left: T, right: T) => number,
+): Promise<T | undefined> {
   let best: { idx: number; value: T } | undefined;
   // For every iterator: see if their next result is the best one so far
   for (let i = 0; i < iterators.length; ++i) {

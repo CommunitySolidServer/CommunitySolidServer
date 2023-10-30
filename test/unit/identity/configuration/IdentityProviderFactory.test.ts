@@ -287,13 +287,15 @@ describe('An IdentityProviderFactory', (): void => {
     await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
-      .toHaveBeenLastCalledWith({ error: expect.objectContaining({
-        statusCode: 400,
-        name: 'BadRequestHttpError',
-        message: 'Unknown client, you might need to clear the local storage on the client.',
-        errorCode: 'E0003',
-      }),
-      request: ctx.req });
+      .toHaveBeenLastCalledWith({
+        error: expect.objectContaining({
+          statusCode: 400,
+          name: 'BadRequestHttpError',
+          message: 'Unknown client, you might need to clear the local storage on the client.',
+          errorCode: 'E0003',
+        }),
+        request: ctx.req,
+      });
     expect(extractErrorTerms(errorHandler.handleSafe.mock.calls[0][0].error.metadata)).toEqual({
       client_id: 'CLIENT_ID',
       redirect_uri: 'REDIRECT_URI',

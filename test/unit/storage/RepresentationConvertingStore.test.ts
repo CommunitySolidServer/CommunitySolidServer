@@ -26,9 +26,11 @@ describe('A RepresentationConvertingStore', (): void => {
 
   const inPreferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
   const metadataStrategy = new SimpleSuffixStrategy('.meta');
-  const store = new RepresentationConvertingStore(source,
+  const store = new RepresentationConvertingStore(
+    source,
     metadataStrategy,
-    { inPreferences, inConverter, outConverter });
+    { inPreferences, inConverter, outConverter },
+  );
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();

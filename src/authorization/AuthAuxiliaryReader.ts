@@ -35,8 +35,10 @@ export class AuthAuxiliaryReader extends PermissionReader {
     const authMap = new Map(this.findAuth(requestedModes));
 
     // Replaces the ACL identifies with the corresponding subject identifiers
-    const updatedMap = modify(new IdentifierSetMultiMap(requestedModes),
-      { add: authMap.values(), remove: authMap.keys() });
+    const updatedMap = modify(
+      new IdentifierSetMultiMap(requestedModes),
+      { add: authMap.values(), remove: authMap.keys() },
+    );
     const result = await this.reader.handleSafe({ requestedModes: updatedMap, credentials });
 
     // Extracts the permissions based on the subject control permissions

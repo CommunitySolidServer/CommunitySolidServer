@@ -36,8 +36,11 @@ export class ListeningActivityHandler extends StaticHandler {
     });
   }
 
-  private async emit(topic: ResourceIdentifier, activity: VocabularyTerm<typeof AS>,
-    metadata: RepresentationMetadata): Promise<void> {
+  private async emit(
+    topic: ResourceIdentifier,
+    activity: VocabularyTerm<typeof AS>,
+    metadata: RepresentationMetadata,
+  ): Promise<void> {
     const channelIds = await this.storage.getAll(topic);
 
     for (const id of channelIds) {

@@ -137,7 +137,9 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
       await expect(accessor.writeDocument(
-        { path: `${base}container/resource` }, data, resourceMetadata,
+        { path: `${base}container/resource` },
+        data,
+        resourceMetadata,
       )).resolves.toBeUndefined();
 
       const newMetadata = new RepresentationMetadata(inputMetadata);
@@ -170,7 +172,9 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
       await expect(accessor.writeDocument(
-        { path: `${base}resource` }, data, resourceMetadata,
+        { path: `${base}resource` },
+        data,
+        resourceMetadata,
       )).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);

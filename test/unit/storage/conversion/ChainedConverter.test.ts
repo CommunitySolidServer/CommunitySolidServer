@@ -34,8 +34,10 @@ class DummyConverter extends BaseTypedRepresentationConverter {
       weight > 0 && matchesMediaType(range, outType))) {
       throw new Error(`Unsupported output: ${outType}`);
     }
-    const metadata = new RepresentationMetadata(input.representation.metadata,
-      { [CONTENT_TYPE]: outType });
+    const metadata = new RepresentationMetadata(
+      input.representation.metadata,
+      { [CONTENT_TYPE]: outType },
+    );
     return { ...input.representation, metadata };
   }
 }

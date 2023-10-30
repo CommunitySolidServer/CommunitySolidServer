@@ -16,7 +16,8 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig, removeFolder,
+  instantiateFromConfig,
+  removeFolder,
 } from './Config';
 
 const DEFAULT_BODY = `@prefix solid: <http://www.w3.org/ns/solid/terms#>.
@@ -124,8 +125,12 @@ function toPermission(modes: AM[]): AclPermissionSet {
   return Object.fromEntries(modes.map((mode): [AM, boolean] => [ mode, true ]));
 }
 
-async function setWebAclPermissions(store: ResourceStore, target: string, permissions: AclPermissionSet,
-  childPermissions: AclPermissionSet): Promise<void> {
+async function setWebAclPermissions(
+  store: ResourceStore,
+  target: string,
+  permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet,
+): Promise<void> {
   const aclHelper = new AclHelper(store);
   await aclHelper.setSimpleAcl(target, [
     { permissions, agentClass: 'agent', accessTo: true },
@@ -133,8 +138,12 @@ async function setWebAclPermissions(store: ResourceStore, target: string, permis
   ]);
 }
 
-async function setAcpPermissions(store: ResourceStore, target: string, permissions: AclPermissionSet,
-  childPermissions: AclPermissionSet): Promise<void> {
+async function setAcpPermissions(
+  store: ResourceStore,
+  target: string,
+  permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet,
+): Promise<void> {
   const acpHelper = new AcpHelper(store);
   const publicMatcher = acpHelper.createMatcher({ publicAgent: true });
   const policies = [ acpHelper.createPolicy({
@@ -162,34 +171,49 @@ type AuthFunctionType = (store: ResourceStore, target: string,
 const rootFilePath = getTestFolder('permissionTable');
 const stores: [string, string, { configs: string[]; authFunction: AuthFunctionType; teardown: () => Promise<void> }][] =
   [
-    [ 'WebACL',
-      'in-memory storage', {
+    [
+      'WebACL',
+      'in-memory storage',
+      {
         configs: [ 'ldp/authorization/webacl.json', 'util/auxiliary/acl.json', 'storage/backend/memory.json' ],
         authFunction: setWebAclPermissions,
         teardown: jest.fn(),
-      }],
-    [ 'WebACL',
-      'on-disk storage', {
+      },
+    ],
+    [
+      'WebACL',
+      'on-disk storage',
+      {
         configs: [ 'ldp/authorization/webacl.json', 'util/auxiliary/acl.json', 'storage/backend/file.json' ],
         authFunction: setWebAclPermissions,
         teardown: async(): Promise<void> => removeFolder(rootFilePath),
-      }],
-    [ 'ACP',
-      'in-memory storage', {
+      },
+    ],
+    [
+      'ACP',
+      'in-memory storage',
+      {
         configs: [ 'ldp/authorization/acp.json', 'util/auxiliary/acr.json', 'storage/backend/memory.json' ],
         authFunction: setAcpPermissions,
         teardown: jest.fn(),
-      }],
-    [ 'ACP',
-      'on-disk storage', {
+      },
+    ],
+    [
+      'ACP',
+      'on-disk storage',
+      {
         configs: [ 'ldp/authorization/acp.json', 'util/auxiliary/acr.json', 'storage/backend/file.json' ],
         authFunction: setAcpPermissions,
         teardown: async(): Promise<void> => removeFolder(rootFilePath),
-      }],
+      },
+    ],
   ];
 
-describe.each(stores)('A request on a server with %s authorization and %s', (auth, name,
-  { configs, authFunction, teardown }): void => {
+describe.each(stores)('A request on a server with %s authorization and %s', (
+  auth,
+  name,
+  { configs, authFunction, teardown },
+): void => {
   let app: App;
   let store: ResourceStore;
 
@@ -242,10 +266,12 @@ describe.each(stores)('A request on a server with %s authorization and %s', (aut
         }
       }
 
-      await authFunction(store,
+      await authFunction(
+        store,
         parent,
         toPermission(parent === root ? allModes : cPerm),
-        toPermission(parent === root ? cPerm : crPerm));
+        toPermission(parent === root ? cPerm : crPerm),
+      );
 
       // Set up fetch parameters
       init = { method };

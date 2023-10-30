@@ -58,8 +58,11 @@ export function parseSchema<T extends ObjectSchema<any>>(schema: T): Pick<Schema
 /**
  * Same functionality as the yup validate function, but throws a {@link BadRequestHttpError} if there is an error.
  */
-export async function validateWithError<T extends ObjectSchema<any>>(schema: T, data: unknown,
-  options?: ValidateOptions<any>): Promise<T['__outputType']> {
+export async function validateWithError<T extends ObjectSchema<any>>(
+  schema: T,
+  data: unknown,
+  options?: ValidateOptions<any>,
+): Promise<T['__outputType']> {
   try {
     // eslint-disable-next-line ts/no-unsafe-return
     return await schema.validate(data, options);

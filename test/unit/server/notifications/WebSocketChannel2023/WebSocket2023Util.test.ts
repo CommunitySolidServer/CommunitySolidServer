@@ -1,6 +1,7 @@
 import type { IncomingMessage } from 'http';
 import {
-  generateWebSocketUrl, parseWebSocketRequest,
+  generateWebSocketUrl,
+  parseWebSocketRequest,
 } from '../../../../../src/server/notifications/WebSocketChannel2023/WebSocket2023Util';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 

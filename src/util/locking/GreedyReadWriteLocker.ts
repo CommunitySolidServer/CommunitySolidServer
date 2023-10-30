@@ -22,8 +22,12 @@ export class GreedyReadWriteLocker extends BaseReadWriteLocker {
    * @param readSuffix - Used to generate the identifier for the lock that is applied when updating the counter.
    * @param countSuffix - Used to generate the identifier that will be used in the storage for storing the counter.
    */
-  public constructor(locker: ResourceLocker, storage: KeyValueStorage<string, number>,
-    readSuffix = 'read', countSuffix = 'count') {
+  public constructor(
+    locker: ResourceLocker,
+    storage: KeyValueStorage<string, number>,
+    readSuffix = 'read',
+    countSuffix = 'count',
+  ) {
     super(locker, locker);
     this.storage = storage;
     this.readSuffix = readSuffix;

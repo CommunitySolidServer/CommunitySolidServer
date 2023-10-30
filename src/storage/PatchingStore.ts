@@ -19,8 +19,11 @@ export class PatchingStore<T extends ResourceStore = ResourceStore> extends Pass
     this.patchHandler = patchHandler;
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async modifyResource(
+    identifier: ResourceIdentifier,
+    patch: Patch,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     try {
       return await this.source.modifyResource(identifier, patch, conditions);
     } catch (error: unknown) {

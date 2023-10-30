@@ -46,8 +46,10 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
       await this.storage.createIndex(PASSWORD_STORAGE_TYPE, 'email');
       this.initialized = true;
     } catch (cause: unknown) {
-      throw new InternalServerError(`Error defining email/password in storage: ${createErrorMessage(cause)}`,
-        { cause });
+      throw new InternalServerError(
+        `Error defining email/password in storage: ${createErrorMessage(cause)}`,
+        { cause },
+      );
     }
   }
 

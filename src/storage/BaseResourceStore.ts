@@ -15,28 +15,39 @@ export class BaseResourceStore implements ResourceStore {
     throw new NotImplementedHttpError();
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
+  public async getRepresentation(
+    identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences,
+    conditions?: Conditions,
+  ): Promise<Representation> {
     throw new NotImplementedHttpError();
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async setRepresentation(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     throw new NotImplementedHttpError();
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async addResource(
+    container: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     throw new NotImplementedHttpError();
   }
 
-  public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ChangeMap> {
     throw new NotImplementedHttpError();
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async modifyResource(
+    identifier: ResourceIdentifier,
+    patch: Patch,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     throw new NotImplementedHttpError();
   }
 }

@@ -7,8 +7,10 @@ import { compareMaps } from '../../util/Util';
 
 describe('A UnionPermissionReader', (): void => {
   const identifier = { path: 'http://example.com/foo' };
-  const input: PermissionReaderInput = { credentials: {},
-    requestedModes: new IdentifierSetMultiMap<AccessMode>([[ identifier, AccessMode.read ]]) };
+  const input: PermissionReaderInput = {
+    credentials: {},
+    requestedModes: new IdentifierSetMultiMap<AccessMode>([[ identifier, AccessMode.read ]]),
+  };
   let readers: jest.Mocked<PermissionReader>[];
   let unionReader: UnionPermissionReader;
 
@@ -35,8 +37,7 @@ describe('A UnionPermissionReader', (): void => {
     readers[1].handle.mockResolvedValue(
       new IdentifierMap([[ identifier, { write: true }]]),
     );
-    compareMaps(await unionReader.handle(input),
-      new IdentifierMap([[ identifier, { write: true }]]));
+    compareMaps(await unionReader.handle(input), new IdentifierMap([[ identifier, { write: true }]]));
   });
 
   it('combines results.', async(): Promise<void> => {

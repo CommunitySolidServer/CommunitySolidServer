@@ -8,8 +8,16 @@ import { JsonInteractionHandler } from '../JsonInteractionHandler';
 
 // Only extract specific fields to prevent leaking information
 // Based on https://www.w3.org/ns/solid/oidc-context.jsonld
-const CLIENT_KEYS = [ 'client_id', 'client_uri', 'logo_uri', 'policy_uri',
-  'client_name', 'contacts', 'grant_types', 'scope' ] as const;
+const CLIENT_KEYS = [
+  'client_id',
+  'client_uri',
+  'logo_uri',
+  'policy_uri',
+  'client_name',
+  'contacts',
+  'grant_types',
+  'scope',
+] as const;
 
 // Possible keys in client metadata
 type KeyType = ArrayElement<typeof CLIENT_KEYS>;

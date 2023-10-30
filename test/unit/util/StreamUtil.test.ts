@@ -5,8 +5,13 @@ import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
 import { isHttpRequest } from '../../../src/server/HttpRequest';
 import {
-  getSingleItem, guardedStreamFrom, pipeSafely,
-  readableToQuads, readableToString, readJsonStream, transformSafely,
+  getSingleItem,
+  guardedStreamFrom,
+  pipeSafely,
+  readableToQuads,
+  readableToString,
+  readJsonStream,
+  transformSafely,
 } from '../../../src/util/StreamUtil';
 import { flushPromises } from '../../util/Util';
 

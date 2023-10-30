@@ -83,8 +83,11 @@ const safeErrors = new Set([
  *
  * @returns The destination stream.
  */
-export function pipeSafely<T extends Writable>(readable: NodeJS.ReadableStream, destination: T,
-  mapError?: (error: Error) => Error): Guarded<T> {
+export function pipeSafely<T extends Writable>(
+  readable: NodeJS.ReadableStream,
+  destination: T,
+  mapError?: (error: Error) => Error,
+): Guarded<T> {
   // We never want to closes the incoming HttpRequest if there is an error
   // since that also closes the outgoing HttpResponse.
   // Since `pump` sends stream errors both up and down the pipe chain,

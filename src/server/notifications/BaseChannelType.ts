@@ -94,8 +94,12 @@ export abstract class BaseChannelType implements NotificationChannelType {
    *                   Values are expected to be full URIs, but the `notify:` prefix can also be used.
    * @param additionalShaclProperties - Any additional properties that need to be added to the default SHACL shape.
    */
-  protected constructor(type: NamedNode, route: InteractionRoute,
-    features: string[] = DEFAULT_NOTIFICATION_FEATURES, additionalShaclProperties: unknown[] = []) {
+  protected constructor(
+    type: NamedNode,
+    route: InteractionRoute,
+    features: string[] = DEFAULT_NOTIFICATION_FEATURES,
+    additionalShaclProperties: unknown[] = [],
+  ) {
     this.type = type;
     this.path = route.getPath();
     this.features = features.map((feature): NamedNode => {

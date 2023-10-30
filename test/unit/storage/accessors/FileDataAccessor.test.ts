@@ -116,8 +116,8 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.get(RDF.terms.type)?.value).toBe(LDP.Resource);
       expect(metadata.get(POSIX.terms.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
       expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(metadata.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
-        XSD.terms.integer));
+      expect(metadata.get(POSIX.terms.mtime))
+        .toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
       // `dc:modified` is in the default graph
       expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(2);
     });
@@ -145,8 +145,8 @@ describe('A FileDataAccessor', (): void => {
       );
       expect(metadata.get(POSIX.terms.size)).toBeUndefined();
       expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(metadata.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
-        XSD.terms.integer));
+      expect(metadata.get(POSIX.terms.mtime))
+        .toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
       // `dc:modified` is in the default graph
       expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(1);
     });
@@ -198,8 +198,8 @@ describe('A FileDataAccessor', (): void => {
       // All resources
       for (const child of children) {
         expect(child.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-        expect(child.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
-          XSD.terms.integer));
+        expect(child.get(POSIX.terms.mtime))
+          .toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
         // `dc:modified` is in the default graph
         expect(child.quads(null, null, null, SOLID_META.terms.ResponseMetadata))
           .toHaveLength(isContainerPath(child.identifier.value) ? 1 : 2);
@@ -277,8 +277,10 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('writes metadata to the corresponding metadata file.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata({ path: `${base}res.ttl` },
-        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' });
+      metadata = new RepresentationMetadata(
+        { path: `${base}res.ttl` },
+        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' },
+      );
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data['res.ttl']).toBe('data');
       expect(cache.data['res.ttl.meta']).toMatch(`<${base}res.ttl> <likes> "apples".`);

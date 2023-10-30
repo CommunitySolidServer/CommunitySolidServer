@@ -10,7 +10,8 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig, removeFolder,
+  instantiateFromConfig,
+  removeFolder,
 } from './Config';
 
 const port = getPort('AcpServer');
@@ -67,11 +68,13 @@ describe.each(stores)('An LDP handler with ACP using %s', (name, { storeConfig, 
   });
 
   it('provides access if the correct ACRs are defined.', async(): Promise<void> => {
-    await acpHelper.setAcp(baseUrl, acpHelper.createAcr({ resource: baseUrl,
+    await acpHelper.setAcp(baseUrl, acpHelper.createAcr({
+      resource: baseUrl,
       policies: [ acpHelper.createPolicy({
         allow: [ 'read' ],
         anyOf: [ acpHelper.createMatcher({ publicAgent: true }) ],
-      }) ]}));
+      }) ],
+    }));
     const response = await fetch(baseUrl);
     expect(response.status).toBe(200);
   });
@@ -79,37 +82,45 @@ describe.each(stores)('An LDP handler with ACP using %s', (name, { storeConfig, 
   it('uses ACP inheritance.', async(): Promise<void> => {
     const target = joinUrl(baseUrl, 'foo');
     await store.setRepresentation({ path: target }, new BasicRepresentation('test', 'text/plain'));
-    await acpHelper.setAcp(baseUrl, acpHelper.createAcr({ resource: baseUrl,
+    await acpHelper.setAcp(baseUrl, acpHelper.createAcr({
+      resource: baseUrl,
       memberPolicies: [ acpHelper.createPolicy({
         allow: [ 'read' ],
         anyOf: [ acpHelper.createMatcher({ publicAgent: true }) ],
-      }) ]}));
-    await acpHelper.setAcp(target, acpHelper.createAcr({ resource: baseUrl,
+      }) ],
+    }));
+    await acpHelper.setAcp(target, acpHelper.createAcr({
+      resource: baseUrl,
       policies: [ acpHelper.createPolicy({
         allow: [ 'write' ],
         anyOf: [ acpHelper.createMatcher({ publicAgent: true }) ],
-      }) ]}));
+      }) ],
+    }));
     const response = await fetch(target);
     expect(response.status).toBe(200);
   });
 
   it('requires control permissions to access ACRs.', async(): Promise<void> => {
     const baseAcr = joinUrl(baseUrl, '.acr');
-    const turtle = acpHelper.toTurtle(acpHelper.createAcr({ resource: baseUrl,
+    const turtle = acpHelper.toTurtle(acpHelper.createAcr({
+      resource: baseUrl,
       policies: [ acpHelper.createPolicy({
         allow: [ 'read' ],
         anyOf: [ acpHelper.createMatcher({ publicAgent: true }) ],
-      }) ]}));
+      }) ],
+    }));
     let response = await fetch(baseAcr);
     expect(response.status).toBe(401);
     response = await fetch(baseAcr, { method: 'PUT', headers: { 'content-type': 'text/turtle' }, body: turtle });
     expect(response.status).toBe(401);
 
-    await acpHelper.setAcp(baseUrl, acpHelper.createAcr({ resource: baseUrl,
+    await acpHelper.setAcp(baseUrl, acpHelper.createAcr({
+      resource: baseUrl,
       policies: [ acpHelper.createPolicy({
         allow: [ 'control' ],
         anyOf: [ acpHelper.createMatcher({ publicAgent: true }) ],
-      }) ]}));
+      }) ],
+    }));
     response = await fetch(baseAcr);
     expect(response.status).toBe(200);
     response = await fetch(baseAcr, { method: 'PUT', headers: { 'content-type': 'text/turtle' }, body: turtle });

@@ -21,8 +21,13 @@ export class ConditionalHandler<TIn, TOut> extends AsyncHandler<TIn, TOut> {
 
   private finished: boolean;
 
-  public constructor(source: AsyncHandler<TIn, TOut>, storage: KeyValueStorage<string, unknown>, storageKey: string,
-    storageValue: unknown, handleStorage = false) {
+  public constructor(
+    source: AsyncHandler<TIn, TOut>,
+    storage: KeyValueStorage<string, unknown>,
+    storageKey: string,
+    storageValue: unknown,
+    handleStorage = false,
+  ) {
     super();
     this.source = source;
     this.storage = storage;

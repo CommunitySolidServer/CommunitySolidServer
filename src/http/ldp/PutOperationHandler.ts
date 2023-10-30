@@ -52,7 +52,8 @@ export class PutOperationHandler extends OperationHandler {
     // can still use that function to update data.
     if (this.metadataStrategy.isAuxiliaryIdentifier(operation.target)) {
       throw new MethodNotAllowedHttpError(
-        [ 'PUT' ], 'Not allowed to create or edit metadata resources using PUT; use PATCH instead.',
+        [ 'PUT' ],
+        'Not allowed to create or edit metadata resources using PUT; use PATCH instead.',
       );
     }
 

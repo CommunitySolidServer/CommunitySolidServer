@@ -1,6 +1,7 @@
 import { hash } from 'bcryptjs';
 import type {
-  AccountLoginStorage } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
+  AccountLoginStorage,
+} from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import {
   ACCOUNT_TYPE,
 } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
@@ -67,8 +68,10 @@ describe('A BasePasswordStore', (): void => {
     expect(storage.find).toHaveBeenCalledTimes(1);
     expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { email: lowercase });
     expect(storage.create).toHaveBeenCalledTimes(1);
-    expect(storage.create).toHaveBeenLastCalledWith(STORAGE_TYPE,
-      { accountId, verified: false, email: lowercase, password: expect.any(String) });
+    expect(storage.create).toHaveBeenLastCalledWith(
+      STORAGE_TYPE,
+      { accountId, verified: false, email: lowercase, password: expect.any(String) },
+    );
   });
 
   it('errors when creating a second login for an email.', async(): Promise<void> => {

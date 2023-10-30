@@ -29,7 +29,8 @@ export class HandlerServerConfigurator extends ServerConfigurator {
   }
 
   public async handle(server: Server): Promise<void> {
-    server.on('request',
+    server.on(
+      'request',
       // eslint-disable-next-line ts/no-misused-promises
       async(request: IncomingMessage, response: ServerResponse): Promise<void> => {
         try {
@@ -51,7 +52,8 @@ export class HandlerServerConfigurator extends ServerConfigurator {
             response.writeHead(404).end();
           }
         }
-      });
+      },
+    );
   }
 
   /**

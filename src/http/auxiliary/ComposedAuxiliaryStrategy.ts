@@ -17,8 +17,13 @@ export class ComposedAuxiliaryStrategy implements AuxiliaryStrategy {
   private readonly ownAuthorization: boolean;
   private readonly requiredInRoot: boolean;
 
-  public constructor(identifierStrategy: AuxiliaryIdentifierStrategy, metadataGenerator?: MetadataGenerator,
-    validator?: Validator, ownAuthorization = false, requiredInRoot = false) {
+  public constructor(
+    identifierStrategy: AuxiliaryIdentifierStrategy,
+    metadataGenerator?: MetadataGenerator,
+    validator?: Validator,
+    ownAuthorization = false,
+    requiredInRoot = false,
+  ) {
     this.identifierStrategy = identifierStrategy;
     this.metadataGenerator = metadataGenerator;
     this.validator = validator;

@@ -74,9 +74,10 @@ describe('A BinarySliceResourceStore', (): void => {
   });
 
   it('does not support multipart ranges.', async(): Promise<void> => {
-    await expect(store.getRepresentation(identifier,
-      { range: { unit: 'bytes', parts: [{ start: 5, end: 6 }, { start: 7, end: 8 }]}}))
-      .rejects.toThrow(RangeNotSatisfiedHttpError);
+    await expect(store.getRepresentation(
+      identifier,
+      { range: { unit: 'bytes', parts: [{ start: 5, end: 6 }, { start: 7, end: 8 }]}},
+    )).rejects.toThrow(RangeNotSatisfiedHttpError);
   });
 
   it('closes the source stream if there was an error creating the SliceStream.', async(): Promise<void> => {

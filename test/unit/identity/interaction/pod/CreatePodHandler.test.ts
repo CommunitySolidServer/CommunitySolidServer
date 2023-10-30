@@ -69,9 +69,9 @@ describe('A CreatePodHandler', (): void => {
   });
 
   it('generates a pod and WebID.', async(): Promise<void> => {
-    await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({ json: {
-      pod: podUrl, webId, podResource, webIdResource,
-    }});
+    await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({
+      json: { pod: podUrl, webId, podResource, webIdResource },
+    });
     expect(podCreator.handleSafe).toHaveBeenCalledTimes(1);
     expect(podCreator.handleSafe).toHaveBeenLastCalledWith({ accountId, name, settings: {}});
   });
@@ -79,9 +79,9 @@ describe('A CreatePodHandler', (): void => {
   it('generates a pod with a WebID if there is one.', async(): Promise<void> => {
     const settings = { webId };
     json = { name, settings };
-    await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({ json: {
-      pod: podUrl, webId, podResource, webIdResource,
-    }});
+    await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({
+      json: { pod: podUrl, webId, podResource, webIdResource },
+    });
     expect(podCreator.handleSafe).toHaveBeenCalledTimes(1);
     expect(podCreator.handleSafe).toHaveBeenLastCalledWith({ accountId, name, webId, settings });
   });

@@ -37,8 +37,11 @@ export class IndexRepresentationStore extends PassthroughStore {
     this.mediaRange = mediaRange;
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
+  public async getRepresentation(
+    identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences,
+    conditions?: Conditions,
+  ): Promise<Representation> {
     if (isContainerIdentifier(identifier) && this.matchesPreferences(preferences)) {
       try {
         const indexIdentifier = { path: `${identifier.path}${this.indexName}` };

@@ -628,26 +628,28 @@ describe('A DataAccessorBasedStore', (): void => {
       const representationWithMetadata: Representation = {
         binary: true,
         data: guardedStreamFrom([ resourceData ]),
-        metadata: new RepresentationMetadata(
-          { [CONTENT_TYPE]: 'text/plain',
-            [RDF.type]: namedNode(LDP.Resource),
-            [RDF.type]: namedNode('http://example.org/Type') },
-        ),
+        metadata: new RepresentationMetadata({
+          [CONTENT_TYPE]: 'text/plain',
+          [RDF.type]: namedNode(LDP.Resource),
+          [RDF.type]: namedNode('http://example.org/Type'),
+        }),
         isEmpty: false,
       };
       await store.setRepresentation(resourceID, representationWithMetadata);
 
       const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
       representation.metadata.add(
-        SOLID_META.terms.preserve, namedNode(metaResourceID.path), SOLID_META.terms.ResponseMetadata,
+        SOLID_META.terms.preserve,
+        namedNode(metaResourceID.path),
+        SOLID_META.terms.ResponseMetadata,
       );
 
       await store.setRepresentation(resourceID, representation);
       expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toHaveLength(2);
-      expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic(
-        [ quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
-          quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')) ],
-      );
+      expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic([
+        quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
+        quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')),
+      ]);
     });
 
     it('preserves the old metadata of a resource even when the content-types have changed.', async(): Promise<void> => {
@@ -655,11 +657,11 @@ describe('A DataAccessorBasedStore', (): void => {
       const representationWithMetadata: Representation = {
         binary: true,
         data: guardedStreamFrom([ '<a> <b> <c>' ]),
-        metadata: new RepresentationMetadata(
-          { [CONTENT_TYPE]: 'text/turtle',
-            [RDF.type]: namedNode(LDP.Resource),
-            [RDF.type]: namedNode('http://example.org/Type') },
-        ),
+        metadata: new RepresentationMetadata({
+          [CONTENT_TYPE]: 'text/turtle',
+          [RDF.type]: namedNode(LDP.Resource),
+          [RDF.type]: namedNode('http://example.org/Type'),
+        }),
         isEmpty: false,
       };
       await store.setRepresentation(resourceID, representationWithMetadata);
@@ -667,16 +669,18 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
       representation.metadata.add(
-        SOLID_META.terms.preserve, namedNode(metaResourceID.path), SOLID_META.terms.ResponseMetadata,
+        SOLID_META.terms.preserve,
+        namedNode(metaResourceID.path),
+        SOLID_META.terms.ResponseMetadata,
       );
       representation.metadata.contentTypeObject = new ContentType('text/plain', { charset: 'UTF-8' });
       await store.setRepresentation(resourceID, representation);
       const { metadata } = accessor.data[resourceID.path];
       expect(metadata.quads(null, RDF.terms.type)).toHaveLength(2);
-      expect(metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic(
-        [ quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
-          quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')) ],
-      );
+      expect(metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic([
+        quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
+        quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')),
+      ]);
       expect(metadata.contentType).toBe('text/plain');
       expect(metadata.contentTypeObject?.parameters).toEqual({ charset: 'UTF-8' });
     });

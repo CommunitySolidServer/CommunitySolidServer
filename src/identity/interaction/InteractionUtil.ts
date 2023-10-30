@@ -57,8 +57,11 @@ export type AccountInteractionResults = { [ACCOUNT_PROMPT]?: string } & Interact
  * @param result - New data to add to the interaction.
  * @param mergeWithLastSubmission - If this new data needs to be merged with already existing data in the interaction.
  */
-export async function finishInteraction(oidcInteraction: Interaction, result: AccountInteractionResults,
-  mergeWithLastSubmission: boolean): Promise<string> {
+export async function finishInteraction(
+  oidcInteraction: Interaction,
+  result: AccountInteractionResults,
+  mergeWithLastSubmission: boolean,
+): Promise<string> {
   if (mergeWithLastSubmission) {
     result = { ...oidcInteraction.lastSubmission, ...result };
   }

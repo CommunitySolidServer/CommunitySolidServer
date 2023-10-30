@@ -39,8 +39,10 @@ export class BaseWebIdStore extends Initializer implements WebIdStore {
       await this.storage.createIndex(WEBID_STORAGE_TYPE, 'webId');
       this.initialized = true;
     } catch (cause: unknown) {
-      throw new InternalServerError(`Error defining WebID links in storage: ${createErrorMessage(cause)}`,
-        { cause });
+      throw new InternalServerError(
+        `Error defining WebID links in storage: ${createErrorMessage(cause)}`,
+        { cause },
+      );
     }
   }
 

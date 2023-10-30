@@ -1,6 +1,7 @@
 import type { Adapter } from 'oidc-provider';
 import {
-  ClientCredentialsAdapter, ClientCredentialsAdapterFactory,
+  ClientCredentialsAdapter,
+  ClientCredentialsAdapterFactory,
 } from '../../../../../src/identity/interaction/client-credentials/ClientCredentialsAdapterFactory';
 import type {
   ClientCredentials,

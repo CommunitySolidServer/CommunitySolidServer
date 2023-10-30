@@ -45,7 +45,8 @@ describe('A ImmutableMetadataPatcher', (): void => {
       handle: jest.fn(async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>):
       Promise<RdfDatasetRepresentation> => {
         const patcherStore = new Store([
-          quad(namedNode(`${base}foo`), namedNode(`${base}p`), namedNode(`${base}o`)) ]);
+          quad(namedNode(`${base}foo`), namedNode(`${base}p`), namedNode(`${base}o`)),
+        ]);
         patcherInput.representation!.dataset = patcherStore;
         return patcherInput.representation!;
       }),

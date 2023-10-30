@@ -57,7 +57,10 @@ describe('A SeededAccountInitializer', (): void => {
     await writeJson(configFilePath, dummyConfig);
 
     initializer = new SeededAccountInitializer({
-      accountStore, passwordStore, podCreator, configFilePath,
+      accountStore,
+      passwordStore,
+      podCreator,
+      configFilePath,
     });
   });
 

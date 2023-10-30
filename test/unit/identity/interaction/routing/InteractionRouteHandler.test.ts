@@ -1,6 +1,8 @@
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
-import type { JsonInteractionHandler,
-  JsonInteractionHandlerInput } from '../../../../../src/identity/interaction/JsonInteractionHandler';
+import type {
+  JsonInteractionHandler,
+  JsonInteractionHandlerInput,
+} from '../../../../../src/identity/interaction/JsonInteractionHandler';
 import type { InteractionRoute } from '../../../../../src/identity/interaction/routing/InteractionRoute';
 import { InteractionRouteHandler } from '../../../../../src/identity/interaction/routing/InteractionRouteHandler';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';

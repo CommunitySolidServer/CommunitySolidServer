@@ -25,8 +25,11 @@ import type { ResourceStore } from './ResourceStore';
 export class BinarySliceResourceStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
   protected readonly logger = getLoggerFor(this);
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
+  public async getRepresentation(
+    identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences,
+    conditions?: Conditions,
+  ): Promise<Representation> {
     const result = await this.source.getRepresentation(identifier, preferences, conditions);
 
     if (!preferences.range || preferences.range.unit !== 'bytes' || preferences.range.parts.length === 0) {

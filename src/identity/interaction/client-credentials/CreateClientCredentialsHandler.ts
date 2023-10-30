@@ -34,8 +34,11 @@ export class CreateClientCredentialsHandler extends JsonInteractionHandler<OutTy
   private readonly clientCredentialsStore: ClientCredentialsStore;
   private readonly clientCredentialsRoute: ClientCredentialsIdRoute;
 
-  public constructor(webIdStore: WebIdStore, clientCredentialsStore: ClientCredentialsStore,
-    clientCredentialsRoute: ClientCredentialsIdRoute) {
+  public constructor(
+    webIdStore: WebIdStore,
+    clientCredentialsStore: ClientCredentialsStore,
+    clientCredentialsRoute: ClientCredentialsIdRoute,
+  ) {
     super();
     this.webIdStore = webIdStore;
     this.clientCredentialsStore = clientCredentialsStore;

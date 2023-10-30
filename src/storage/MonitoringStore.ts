@@ -28,28 +28,42 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     return this.source.hasResource(identifier);
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
+  public async getRepresentation(
+    identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences,
+    conditions?: Conditions,
+  ): Promise<Representation> {
     return this.source.getRepresentation(identifier, preferences, conditions);
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async addResource(
+    container: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return this.emitChanged(await this.source.addResource(container, representation, conditions));
   }
 
-  public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async deleteResource(
+    identifier: ResourceIdentifier,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return this.emitChanged(await this.source.deleteResource(identifier, conditions));
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async setRepresentation(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return this.emitChanged(await this.source.setRepresentation(identifier, representation, conditions));
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async modifyResource(
+    identifier: ResourceIdentifier,
+    patch: Patch,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return this.emitChanged(await this.source.modifyResource(identifier, patch, conditions));
   }
 

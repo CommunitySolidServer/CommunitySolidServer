@@ -28,8 +28,10 @@ export class AuxiliaryReader extends PermissionReader {
     const auxiliaries = this.findAuxiliaries(requestedModes);
 
     // Replaces the dependent auxiliary identifies with the corresponding subject identifiers
-    const updatedMap = modify(new IdentifierSetMultiMap(requestedModes),
-      { add: auxiliaries.values(), remove: auxiliaries.keys() });
+    const updatedMap = modify(
+      new IdentifierSetMultiMap(requestedModes),
+      { add: auxiliaries.values(), remove: auxiliaries.keys() },
+    );
     const result = await this.reader.handleSafe({ requestedModes: updatedMap, credentials });
 
     // Extracts the auxiliary permissions based on the subject permissions

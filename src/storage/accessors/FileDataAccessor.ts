@@ -324,9 +324,11 @@ export class FileDataAccessor implements DataAccessor {
    */
   private addPosixMetadata(metadata: RepresentationMetadata, stats: Stats): void {
     updateModifiedDate(metadata, stats.mtime);
-    metadata.add(POSIX.terms.mtime,
+    metadata.add(
+      POSIX.terms.mtime,
       toLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer),
-      SOLID_META.terms.ResponseMetadata);
+      SOLID_META.terms.ResponseMetadata,
+    );
     if (!stats.isDirectory()) {
       metadata.add(POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer), SOLID_META.terms.ResponseMetadata);
     }

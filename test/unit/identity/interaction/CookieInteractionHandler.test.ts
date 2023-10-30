@@ -1,7 +1,8 @@
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type {
-  AccountStore } from '../../../../src/identity/interaction/account/util/AccountStore';
+  AccountStore,
+} from '../../../../src/identity/interaction/account/util/AccountStore';
 import {
   ACCOUNT_SETTINGS_REMEMBER_LOGIN,
 } from '../../../../src/identity/interaction/account/util/AccountStore';

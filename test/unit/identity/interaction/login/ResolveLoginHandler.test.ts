@@ -1,6 +1,7 @@
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type {
-  AccountStore } from '../../../../../src/identity/interaction/account/util/AccountStore';
+  AccountStore,
+} from '../../../../../src/identity/interaction/account/util/AccountStore';
 import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../../../../../src/identity/interaction/account/util/AccountStore';
 import type { CookieStore } from '../../../../../src/identity/interaction/account/util/CookieStore';
 import type { JsonRepresentation } from '../../../../../src/identity/interaction/InteractionUtil';
@@ -58,11 +59,10 @@ describe('A ResolveLoginHandler', (): void => {
   });
 
   it('removes the ID from the output and adds a cookie.', async(): Promise<void> => {
-    await expect(handler.handle(input)).resolves.toEqual({ json: {
-      data: 'data',
-      authorization,
-    },
-    metadata });
+    await expect(handler.handle(input)).resolves.toEqual({
+      json: { data: 'data', authorization },
+      metadata,
+    });
     expect(metadata.get(SOLID_HTTP.terms.accountCookie)?.value).toBe(authorization);
 
     expect(cookieStore.generate).toHaveBeenCalledTimes(1);
@@ -74,11 +74,10 @@ describe('A ResolveLoginHandler', (): void => {
   it('generates a metadata object if the login handler did not provide one.', async(): Promise<void> => {
     output = { json: { accountId, data: 'data' } as LoginOutputType };
     const result = await handler.handle(input);
-    expect(result).toEqual({ json: {
-      data: 'data',
-      authorization,
-    },
-    metadata: expect.any(RepresentationMetadata) });
+    expect(result).toEqual({
+      json: { data: 'data', authorization },
+      metadata: expect.any(RepresentationMetadata),
+    });
     expect(result.metadata).not.toBe(metadata);
     expect(result.metadata?.get(CONTENT_TYPE_TERM)).toBeUndefined();
     expect(accountStore.updateSetting).toHaveBeenCalledTimes(0);
@@ -90,12 +89,10 @@ describe('A ResolveLoginHandler', (): void => {
       persist: jest.fn(),
       returnTo: 'returnTo',
     } as any;
-    await expect(handler.handle(input)).resolves.toEqual({ json: {
-      data: 'data',
-      authorization,
-      location: 'returnTo',
-    },
-    metadata });
+    await expect(handler.handle(input)).resolves.toEqual({
+      json: { data: 'data', authorization, location: 'returnTo' },
+      metadata,
+    });
 
     expect(input.oidcInteraction!.persist).toHaveBeenCalledTimes(1);
     expect(input.oidcInteraction!.result).toEqual({
@@ -109,11 +106,10 @@ describe('A ResolveLoginHandler', (): void => {
       json: { ...output.json, remember: true },
       metadata,
     };
-    await expect(handler.handle(input)).resolves.toEqual({ json: {
-      data: 'data',
-      authorization,
-    },
-    metadata });
+    await expect(handler.handle(input)).resolves.toEqual({
+      json: { data: 'data', authorization },
+      metadata,
+    });
 
     expect(cookieStore.generate).toHaveBeenCalledTimes(1);
     expect(cookieStore.generate).toHaveBeenLastCalledWith(accountId);
@@ -123,11 +119,10 @@ describe('A ResolveLoginHandler', (): void => {
 
   it('deletes the old cookie if there was one in the input.', async(): Promise<void> => {
     input.metadata.set(SOLID_HTTP.terms.accountCookie, 'old-cookie-value');
-    await expect(handler.handle(input)).resolves.toEqual({ json: {
-      data: 'data',
-      authorization,
-    },
-    metadata });
+    await expect(handler.handle(input)).resolves.toEqual({
+      json: { data: 'data', authorization },
+      metadata,
+    });
     expect(metadata.get(SOLID_HTTP.terms.accountCookie)?.value).toBe(authorization);
 
     expect(cookieStore.generate).toHaveBeenCalledTimes(1);

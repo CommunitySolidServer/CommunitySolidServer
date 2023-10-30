@@ -45,8 +45,13 @@ export class WebAclReader extends PermissionReader {
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly accessChecker: AccessChecker;
 
-  public constructor(aclStrategy: AuxiliaryIdentifierStrategy, resourceSet: ResourceSet, aclStore: ResourceStore,
-    identifierStrategy: IdentifierStrategy, accessChecker: AccessChecker) {
+  public constructor(
+    aclStrategy: AuxiliaryIdentifierStrategy,
+    resourceSet: ResourceSet,
+    aclStore: ResourceStore,
+    identifierStrategy: IdentifierStrategy,
+    accessChecker: AccessChecker,
+  ) {
     super();
     this.aclStrategy = aclStrategy;
     this.resourceSet = resourceSet;

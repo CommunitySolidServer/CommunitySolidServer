@@ -16,8 +16,10 @@ export class WrappedSetMultiMap<TKey, TVal> implements SetMultiMap<TKey, TVal> {
    * @param mapConstructor - Will be used to instantiate the internal Map.
    * @param iterable - Entries to add to the map.
    */
-  public constructor(mapConstructor: new() => Map<TKey, Set<TVal>> = Map,
-    iterable?: Iterable<readonly [TKey, TVal | ReadonlySet<TVal>]>) {
+  public constructor(
+    mapConstructor: new() => Map<TKey, Set<TVal>> = Map,
+    iterable?: Iterable<readonly [TKey, TVal | ReadonlySet<TVal>]>,
+  ) {
     // eslint-disable-next-line new-cap
     this.map = new mapConstructor();
     this.count = 0;

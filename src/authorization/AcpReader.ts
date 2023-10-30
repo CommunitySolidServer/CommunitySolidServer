@@ -69,8 +69,11 @@ export class AcpReader extends PermissionReader {
    * @param credentials - Credentials that are trying to access the resource.
    * @param resourceCache - Cache used to store ACR data.
    */
-  private async extractPermissions(target: ResourceIdentifier, credentials: Credentials,
-    resourceCache: IdentifierMap<IAccessControlledResource[]>): Promise<PermissionSet> {
+  private async extractPermissions(
+    target: ResourceIdentifier,
+    credentials: Credentials,
+    resourceCache: IdentifierMap<IAccessControlledResource[]>,
+  ): Promise<PermissionSet> {
     const context = this.createContext(target, credentials);
     const policies: IPolicy[] = [];
 

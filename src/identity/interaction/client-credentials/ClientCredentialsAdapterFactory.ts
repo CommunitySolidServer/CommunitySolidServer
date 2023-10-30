@@ -16,8 +16,12 @@ export class ClientCredentialsAdapter extends PassthroughAdapter {
   private readonly webIdStore: WebIdStore;
   private readonly clientCredentialsStore: ClientCredentialsStore;
 
-  public constructor(name: string, source: Adapter, webIdStore: WebIdStore,
-    clientCredentialsStore: ClientCredentialsStore) {
+  public constructor(
+    name: string,
+    source: Adapter,
+    webIdStore: WebIdStore,
+    clientCredentialsStore: ClientCredentialsStore,
+  ) {
     super(name, source);
     this.webIdStore = webIdStore;
     this.clientCredentialsStore = clientCredentialsStore;
@@ -62,8 +66,7 @@ export class ClientCredentialsAdapterFactory extends PassthroughAdapterFactory {
   private readonly webIdStore: WebIdStore;
   private readonly clientCredentialsStore: ClientCredentialsStore;
 
-  public constructor(source: AdapterFactory, webIdStore: WebIdStore,
-    clientCredentialsStore: ClientCredentialsStore) {
+  public constructor(source: AdapterFactory, webIdStore: WebIdStore, clientCredentialsStore: ClientCredentialsStore) {
     super(source);
     this.webIdStore = webIdStore;
     this.clientCredentialsStore = clientCredentialsStore;

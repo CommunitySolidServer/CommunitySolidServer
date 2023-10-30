@@ -39,8 +39,13 @@ export class TemplatedPodGenerator implements PodGenerator {
    * @param baseUrl - Base URL of the server.
    * @param configTemplatePath - Where to find the configuration templates.
    */
-  public constructor(storeFactory: ComponentsJsFactory, variableHandler: VariableHandler,
-    configStorage: KeyValueStorage<string, unknown>, baseUrl: string, configTemplatePath?: string) {
+  public constructor(
+    storeFactory: ComponentsJsFactory,
+    variableHandler: VariableHandler,
+    configStorage: KeyValueStorage<string, unknown>,
+    baseUrl: string,
+    configTemplatePath?: string,
+  ) {
     this.storeFactory = storeFactory;
     this.variableHandler = variableHandler;
     this.configStorage = configStorage;

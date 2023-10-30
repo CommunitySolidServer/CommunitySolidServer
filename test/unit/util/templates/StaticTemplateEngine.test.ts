@@ -5,7 +5,8 @@ import Dict = NodeJS.Dict;
 describe('A StaticTemplateEngine', (): void => {
   let templateEngine: jest.Mocked<AsyncHandler<TemplateEngineInput<Dict<any>>, string>>;
 
-  it('forwards calls to the handle method of the provided templateEngine, adding the template as an argument.',
+  it(
+    'forwards calls to the handle method of the provided templateEngine, adding the template as an argument.',
     async(): Promise<void> => {
       templateEngine = {
         canHandle: jest.fn(),
@@ -18,7 +19,8 @@ describe('A StaticTemplateEngine', (): void => {
       expect(templateEngine.canHandle).toHaveBeenLastCalledWith({ contents: {}, template: 'template' });
       expect(templateEngine.handle).toHaveBeenCalledTimes(1);
       expect(templateEngine.handle).toHaveBeenLastCalledWith({ contents: {}, template: 'template' });
-    });
+    },
+  );
 
   it('propagates errors that occur in the handle method of the provided handler.', async(): Promise<void> => {
     templateEngine = {

@@ -1,9 +1,13 @@
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { CreateTypeObject,
+import type {
+  CreateTypeObject,
   IndexedQuery,
   IndexedStorage,
   IndexTypeCollection,
-  StringKey, TypeObject, ValueType } from '../../../../storage/keyvalue/IndexedStorage';
+  StringKey,
+  TypeObject,
+  ValueType,
+} from '../../../../storage/keyvalue/IndexedStorage';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
 import { NotFoundHttpError } from '../../../../util/errors/NotFoundHttpError';
 import type { LoginStorage } from './LoginStorage';
@@ -116,8 +120,12 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
     return this.storage.set(type, value);
   }
 
-  public async setField<TType extends StringKey<T>, TKey extends StringKey<T[TType]>>(type: TType, id: string,
-    key: TKey, value: ValueType<T[TType][TKey]>): Promise<void> {
+  public async setField<TType extends StringKey<T>, TKey extends StringKey<T[TType]>>(
+    type: TType,
+    id: string,
+    key: TKey,
+    value: ValueType<T[TType][TKey]>,
+  ): Promise<void> {
     return this.storage.setField(type, id, key, value);
   }
 
