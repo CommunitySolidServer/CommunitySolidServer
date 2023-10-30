@@ -18,15 +18,16 @@ export class UnionPreferenceParser extends UnionHandler<PreferenceParser> {
       throw new InternalServerError('Found multiple range values. This implies a misconfiguration.');
     }
 
-    return results.reduce<RepresentationPreferences>((acc, val): RepresentationPreferences => {
-      for (const key of Object.keys(val) as (keyof RepresentationPreferences)[]) {
+    const preferences: RepresentationPreferences = {};
+    for (const result of results) {
+      for (const key of Object.keys(result) as (keyof RepresentationPreferences)[]) {
         if (key === 'range') {
-          acc[key] = val[key];
+          preferences[key] = result[key];
         } else {
-          acc[key] = { ...acc[key], ...val[key] };
+          preferences[key] = { ...preferences[key], ...result[key] };
         }
       }
-      return acc;
-    }, {});
+    }
+    return preferences;
   }
 }

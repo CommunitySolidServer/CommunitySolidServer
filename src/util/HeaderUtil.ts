@@ -111,7 +111,8 @@ function handleInvalidValue(message: string, strict: boolean): void | never {
  */
 export function parseParameters(parameters: string[], replacements: Record<string, string>, strict = false):
 { name: string; value: string }[] {
-  return parameters.reduce<{ name: string; value: string }[]>((acc, param): { name: string; value: string }[] => {
+  const parsed: { name: string; value: string }[] = [];
+  for (const param of parameters) {
     const [ name, rawValue ] = param.split('=').map((str): string => str.trim());
 
     // Test replaced string for easier check
@@ -120,7 +121,7 @@ export function parseParameters(parameters: string[], replacements: Record<strin
     if (!(TOKEN.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || TOKEN.test(rawValue)))) {
       handleInvalidValue(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
         `does not match (token ( "=" ( token / quoted-string ))?). `, strict);
-      return acc;
+      continue;
     }
 
     let value = rawValue;
@@ -128,9 +129,9 @@ export function parseParameters(parameters: string[], replacements: Record<strin
       value = replacements[rawValue];
     }
 
-    acc.push({ name, value });
-    return acc;
-  }, []);
+    parsed.push({ name, value });
+  }
+  return parsed;
 }
 
 // eslint-disable-next-line jsdoc/require-returns-check
@@ -239,17 +240,15 @@ export function parseAccept(input: string, strict = false): Accept[] {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
 
-  return splitAndClean(result)
-    .reduce<Accept[]>((acc, part): Accept[] => {
-      const partOrUndef = parseAcceptPart(part, replacements, strict);
+  const accepts: Accept[] = [];
+  for (const part of splitAndClean(result)) {
+    const partOrUndef = parseAcceptPart(part, replacements, strict);
 
-      if (partOrUndef !== undefined) {
-        acc.push(partOrUndef);
-      }
-
-      return acc;
-    }, [])
-    .sort((left, right): number => right.weight - left.weight);
+    if (partOrUndef !== undefined) {
+      accepts.push(partOrUndef);
+    }
+  }
+  return accepts.sort((left, right): number => right.weight - left.weight);
 }
 
 /**
@@ -384,14 +383,11 @@ export function parseContentType(input: string): ContentType {
     throw new BadRequestHttpError(`Invalid content-type: ${value} does not match ( token "/" token )`);
   }
 
-  return parseParameters(params, replacements)
-    .reduce<ContentType>(
-      (prev, cur): ContentType => {
-        prev.parameters[cur.name] = cur.value;
-        return prev;
-      },
-      new ContentType(value),
-    );
+  const contentType = new ContentType(value);
+  for (const param of parseParameters(params, replacements)) {
+    contentType.parameters[param.name] = param.value;
+  }
+  return contentType;
 }
 
 /**

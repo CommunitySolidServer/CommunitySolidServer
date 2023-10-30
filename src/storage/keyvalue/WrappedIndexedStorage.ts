@@ -526,7 +526,11 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
       indexResults.push(rootIds);
     }
 
-    return indexResults.reduce((acc, ids): string[] => acc.filter((id): boolean => ids.includes(id)));
+    let indexedRoots: string[] = indexResults[0];
+    for (const ids of indexResults.slice(1)) {
+      indexedRoots = indexedRoots.filter((id): boolean => ids.includes(id));
+    }
+    return indexedRoots;
   }
 
   /**
@@ -581,9 +585,13 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
     }
 
     // For all keys that were not handled recursively: make sure that it matches the found objects
-    const remainingKeys = Object.keys(query).filter((key): boolean =>
-      key !== relation?.child.key || typeof query[key] === 'string');
-    return remainingKeys.reduce((acc, key): any[] => acc.filter((obj): boolean => obj[key] === query[key]), objs);
+    const remainingKeys = Object.keys(query).filter(
+      (key): boolean => key !== relation?.child.key || typeof query[key] === 'string',
+    );
+    for (const key of remainingKeys) {
+      objs = objs.filter((obj): boolean => obj[key] === query[key]);
+    }
+    return objs;
   }
 
   // --------------------------------- INDEX HELPERS ---------------------------------
