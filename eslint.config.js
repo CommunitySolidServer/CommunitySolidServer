@@ -238,6 +238,7 @@ const configs = antfu(
       'unicorn/no-lonely-if': 'error',
       'unicorn/no-negated-condition': 'error',
       'unicorn/no-nested-ternary': 'error',
+      'unicorn/no-object-as-default-parameter': 'error',
       'unicorn/no-process-exit': 'error',
       'unicorn/no-thenable': 'error',
       'unicorn/no-useless-fallback-in-spread': 'error',
@@ -268,9 +269,6 @@ const configs = antfu(
       'unicorn/prefer-string-slice': 'error',
       'unicorn/require-array-join-separator': 'error',
       'unicorn/require-number-to-fixed-digits-argument': 'error',
-
-      // Might want to enable these
-      'unicorn/no-object-as-default-parameter': 'off',
 
       'unused-imports/no-unused-vars': [
         'error',
