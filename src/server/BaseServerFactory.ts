@@ -38,9 +38,9 @@ export class BaseServerFactory implements HttpServerFactory {
   private readonly configurator: ServerConfigurator;
   private readonly options: BaseServerFactoryOptions;
 
-  public constructor(configurator: ServerConfigurator, options: BaseServerFactoryOptions = { https: false }) {
+  public constructor(configurator: ServerConfigurator, options?: BaseServerFactoryOptions) {
     this.configurator = configurator;
-    this.options = { ...options };
+    this.options = { https: false, ...options };
   }
 
   /**
