@@ -143,7 +143,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       return { folder: cache, name: 'data' };
     }
 
-    const name = parts.slice(-1)[0];
+    const name = parts.at(-1) as string;
     parts = parts.slice(0, -1);
     let folder = cache.data;
     parts.forEach((part): any => {

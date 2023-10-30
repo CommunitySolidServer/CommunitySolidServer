@@ -55,7 +55,7 @@ describe('A ChainedConverter', (): void => {
 
   it('needs at least 1 converter.', async(): Promise<void> => {
     expect((): any => new ChainedConverter([])).toThrow('At least 1 converter is required.');
-    expect(new ChainedConverter([ new DummyConverter({ }, { }) ])).toBeInstanceOf(ChainedConverter);
+    expect(new ChainedConverter([ new DummyConverter({}, {}) ])).toBeInstanceOf(ChainedConverter);
   });
 
   it('errors if there are no content-type or preferences.', async(): Promise<void> => {
@@ -106,7 +106,7 @@ describe('A ChainedConverter', (): void => {
     expect(result.metadata.contentType).toBe('b/b');
     expect(result.metadata.get(POSIX.terms.size)?.value).toBe('500');
 
-    args.preferences.type = { };
+    args.preferences.type = {};
     result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('b/b');
     expect(result.metadata.get(POSIX.terms.size)?.value).toBe('500');

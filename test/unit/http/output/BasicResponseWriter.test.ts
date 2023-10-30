@@ -60,7 +60,7 @@ describe('A BasicResponseWriter', (): void => {
 
   it('serializes metadata if there is metadata.', async(): Promise<void> => {
     result = { statusCode: 201, metadata: new RepresentationMetadata() };
-    metadataWriter.handle = jest.fn();
+    jest.spyOn(metadataWriter, 'handle').mockImplementation();
     await writer.handle({ response, result });
     expect(metadataWriter.handle).toHaveBeenCalledTimes(1);
     expect(metadataWriter.handle).toHaveBeenLastCalledWith({ response, metadata: result.metadata });
@@ -77,6 +77,7 @@ describe('A BasicResponseWriter', (): void => {
     result = { statusCode: 201, data };
 
     response = new PassThrough();
+    // eslint-disable-next-line jest/prefer-spy-on
     response.writeHead = jest.fn();
 
     const end = new Promise<void>((resolve): void => {

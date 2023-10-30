@@ -25,7 +25,7 @@ function simplifyQuery(query: string | string[]): string {
   if (Array.isArray(query)) {
     query = query.join(' ');
   }
-  return query.replace(/\n/gu, ' ').trim();
+  return query.replaceAll('\n', ' ').trim();
 }
 
 describe('A SparqlDataAccessor', (): void => {

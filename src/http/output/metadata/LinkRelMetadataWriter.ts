@@ -29,7 +29,7 @@ export class LinkRelMetadataWriter extends MetadataWriter {
       const values = input.metadata.getAll(predicate)
         .map((term): string => `<${term.value}>; rel="${relValue}"`);
       if (values.length > 0) {
-        this.logger.debug(`Adding Link header ${values}`);
+        this.logger.debug(`Adding Link header ${values.join(',')}`);
         addHeader(input.response, 'Link', values);
       }
     }

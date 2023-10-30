@@ -38,7 +38,7 @@ export function isGuarded<T extends NodeJS.EventEmitter>(stream: T): stream is G
 function guardingErrorListener(this: Guarded, error: Error): void {
   // Only fall back to this if no new listeners are attached since guarding started.
   const errorListeners = this.listeners('error');
-  if (errorListeners[errorListeners.length - 1] === guardingErrorListener) {
+  if (errorListeners.at(-1) === guardingErrorListener) {
     this[guardedErrors].push(error);
     if (!this[guardedTimeout]) {
       this[guardedTimeout] = setTimeout((): void => {

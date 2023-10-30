@@ -8,7 +8,7 @@ interface CreateExtractorArgs {
 }
 
 // Helper function for instantiating an OriginalUrlExtractor
-function createExtractor(args: CreateExtractorArgs = { }): OriginalUrlExtractor {
+function createExtractor(args: CreateExtractorArgs = {}): OriginalUrlExtractor {
   const identifierStrategy = new SingleRootIdentifierStrategy(args.baseUrl ?? 'http://test.com');
   const extractor = new OriginalUrlExtractor({ identifierStrategy, includeQueryString: args.includeQueryString });
   return extractor;

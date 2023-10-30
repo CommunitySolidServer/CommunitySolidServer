@@ -72,7 +72,7 @@ describe('A WebAclReader', (): void => {
   });
 
   it('handles all input.', async(): Promise<void> => {
-    await expect(reader.canHandle({ } as any)).resolves.toBeUndefined();
+    await expect(reader.canHandle({} as any)).resolves.toBeUndefined();
   });
 
   it('returns undefined permissions for undefined credentials.', async(): Promise<void> => {

@@ -39,7 +39,7 @@ describe('An RdfPatcher,', (): void => {
     };
     patcher.handle.mockImplementation(
       async(input: RepresentationPatcherInput<RdfDatasetRepresentation>):
-      Promise<RdfDatasetRepresentation> => Promise.resolve(input.representation!),
+      Promise<RdfDatasetRepresentation> => input.representation!,
     );
 
     rdfPatcher = new RdfPatcher(patcher);

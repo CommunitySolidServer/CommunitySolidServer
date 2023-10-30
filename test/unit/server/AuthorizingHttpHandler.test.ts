@@ -17,7 +17,7 @@ import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/Iden
 import { SOLID_META } from '../../../src/util/Vocabularies';
 
 describe('An AuthorizingHttpHandler', (): void => {
-  const credentials = { };
+  const credentials = {};
   const target = { path: 'http://example.com/foo' };
   const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>(
     [[ target, new Set([ AccessMode.read, AccessMode.write ]) ]],

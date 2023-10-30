@@ -37,7 +37,7 @@ describe('RangeMetadataWriter', (): void => {
 
   it('does nothing if there is no range metadata.', async(): Promise<void> => {
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ });
+    expect(response.getHeaders()).toEqual({});
   });
 
   it('adds a content-length header if the size is known.', async(): Promise<void> => {

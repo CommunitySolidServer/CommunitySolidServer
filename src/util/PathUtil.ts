@@ -15,7 +15,7 @@ import { errorTermsToMetadata } from './errors/HttpErrorUtil';
  * @returns The potentially changed path (POSIX).
  */
 function windowsToPosixPath(path: string): string {
-  return path.replace(/\\+/gu, '/');
+  return path.replaceAll(/\\+/gu, '/');
 }
 
 /**

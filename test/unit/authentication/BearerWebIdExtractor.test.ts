@@ -25,7 +25,7 @@ describe('A BearerWebIdExtractor', (): void => {
   describe('on a request without Authorization header', (): void => {
     const request = {
       method: 'GET',
-      headers: { },
+      headers: {},
     } as any as HttpRequest;
 
     it('throws an error.', async(): Promise<void> => {
