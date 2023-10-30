@@ -1,5 +1,5 @@
 #!/usr/bin/env ts-node
-/* eslint-disable no-console */
+/* eslint-disable import/extensions, no-console */
 import * as readline from 'readline';
 import simpleGit from 'simple-git';
 import { version } from '../package.json';

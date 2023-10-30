@@ -27,7 +27,7 @@ describe('A LogoutHandler', (): void => {
     expect(outputMetadata?.get(SOLID_HTTP.terms.accountCookie)?.value).toBe(cookie);
     const date = outputMetadata?.get(SOLID_HTTP.terms.accountCookieExpiration);
     expect(date).toBeDefined();
-    expect(new Date(date!.value).getTime()).toBeLessThan(new Date().getTime());
+    expect(new Date(date!.value).getTime()).toBeLessThan(Date.now());
     expect(cookieStore.delete).toHaveBeenCalledTimes(1);
     expect(cookieStore.delete).toHaveBeenLastCalledWith(cookie);
   });

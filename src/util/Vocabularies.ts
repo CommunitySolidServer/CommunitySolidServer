@@ -51,7 +51,7 @@ export type VocabularyTerm<T> = T extends Vocabulary<any, infer TKey> ? T['terms
  */
 function createValueVocabulary<TBase extends string, TLocal extends string>(baseUri: TBase, localNames: TLocal[]):
 ValueVocabulary<TBase, TLocal> {
-  const expanded: Partial<ExpandedRecord<TBase, TLocal>> = { };
+  const expanded: Partial<ExpandedRecord<TBase, TLocal>> = {};
   // Expose the listed local names as properties
   for (const localName of localNames) {
     expanded[localName] = `${baseUri}${localName}`;

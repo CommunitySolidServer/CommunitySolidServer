@@ -3,7 +3,7 @@ import { BaseLogger, WrappingLogger } from '../../../src/logging/Logger';
 import type { LogMetadata, SimpleLogger } from '../../../src/logging/Logger';
 
 class DummyLogger extends BaseLogger {
-  log(): this {
+  public log(): this {
     return this;
   }
 }

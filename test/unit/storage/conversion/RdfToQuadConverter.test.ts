@@ -43,7 +43,7 @@ describe('A RdfToQuadConverter', (): void => {
   });
 
   it('may not handle application/json to quad conversion.', async(): Promise<void> => {
-    await expect(converter.getOutputTypes('application/json')).resolves.toEqual({ });
+    await expect(converter.getOutputTypes('application/json')).resolves.toEqual({});
   });
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {

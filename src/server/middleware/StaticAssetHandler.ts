@@ -21,7 +21,7 @@ export class StaticAssetEntry {
   public constructor(
     public readonly relativeUrl: string,
     public readonly filePath: string,
-  ) { }
+  ) {}
 }
 
 /**

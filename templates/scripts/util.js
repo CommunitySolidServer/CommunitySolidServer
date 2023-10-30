@@ -4,7 +4,7 @@
  * @param ids - IDs of the element (empty to retrieve all elements)
  */
 export function getElements(...ids) {
-  ids = ids.length ? ids : [ ...document.querySelectorAll('[id]') ].map(e => e.id);
+  ids = ids.length > 0 ? ids : [ ...document.querySelectorAll('[id]') ].map(e => e.id);
   return Object.fromEntries(ids.map(id => [ id, document.getElementById(id) ]));
 }
 

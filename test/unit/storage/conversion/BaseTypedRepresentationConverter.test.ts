@@ -29,7 +29,7 @@ describe('A BaseTypedRepresentationConverter', (): void => {
   });
 
   it('can not handle input without a Content-Type.', async(): Promise<void> => {
-    const args: RepresentationConverterArgs = { representation: { metadata: { }}, preferences: {}} as any;
+    const args: RepresentationConverterArgs = { representation: { metadata: {}}, preferences: {}} as any;
     const converter = new CustomTypedRepresentationConverter('*/*', 'b/b');
     await expect(converter.canHandle(args)).rejects.toThrow(NotImplementedHttpError);
   });

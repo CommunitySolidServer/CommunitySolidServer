@@ -16,13 +16,13 @@ describe('A WwwAuthMetadataWriter', (): void => {
   it('adds no header if there is no relevant metadata.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata();
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ });
+    expect(response.getHeaders()).toEqual({});
   });
 
   it('adds no header if the status code is not 401.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata({ [HTTP.statusCodeNumber]: '403' });
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ });
+    expect(response.getHeaders()).toEqual({});
   });
 
   it('adds a WWW-Authenticate header if the status code is 401.', async(): Promise<void> => {

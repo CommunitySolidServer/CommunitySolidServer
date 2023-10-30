@@ -85,7 +85,7 @@ export class AcpReader extends PermissionReader {
     }
     const modes = allowAccessModes(policies, context);
 
-    const permissionSet: PermissionSet = { };
+    const permissionSet: PermissionSet = {};
     for (const aclMode of modes) {
       if (aclMode in modesMap) {
         for (const mode of modesMap[aclMode]) {

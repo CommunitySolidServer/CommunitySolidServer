@@ -160,7 +160,7 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
   private async groupLinks(folderPath: string, mapper: FileIdentifierMapper):
   Promise<Record<string, { link: TemplateResourceLink; meta?: TemplateResourceLink }>> {
     const files = await fsPromises.readdir(folderPath);
-    const links: Record<string, { link: TemplateResourceLink; meta?: TemplateResourceLink }> = { };
+    const links: Record<string, { link: TemplateResourceLink; meta?: TemplateResourceLink }> = {};
     for (const name of files) {
       const link = await this.toTemplateLink(joinFilePath(folderPath, name), mapper);
       const { path } = link.identifier;

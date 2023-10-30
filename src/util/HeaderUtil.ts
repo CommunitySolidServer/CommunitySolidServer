@@ -38,7 +38,7 @@ const logger = getLoggerFor('HeaderUtil');
 export function transformQuotedStrings(input: string): { result: string; replacements: Record<string, string> } {
   let idx = 0;
   const replacements: Record<string, string> = {};
-  const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
+  const result = input.replaceAll(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
     // Not all characters allowed in quoted strings, see BNF above
     if (!QUOTED_STRING.test(match)) {
       logger.warn(`Invalid quoted string in header: ${match}`);

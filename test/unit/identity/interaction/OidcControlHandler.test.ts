@@ -12,6 +12,6 @@ describe('An OidcControlHandler', (): void => {
   });
 
   it('returns an empty object if there is no OIDC interaction.', async(): Promise<void> => {
-    await expect(handler.handle({ } as any)).resolves.toEqual({ json: { }});
+    await expect(handler.handle({} as any)).resolves.toEqual({ json: {}});
   });
 });

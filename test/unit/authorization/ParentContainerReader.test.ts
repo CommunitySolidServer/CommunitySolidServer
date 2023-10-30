@@ -39,7 +39,7 @@ describe('A ParentContainerReader', (): void => {
 
     const result = await reader.handle({ requestedModes, credentials });
     expect(result.get(target1)).toEqual({ create: true });
-    expect(result.get(target2)).toEqual({ });
+    expect(result.get(target2)).toEqual({});
 
     const updatedMap = new IdentifierSetMultiMap(requestedModes);
     updatedMap.set(parent1, AccessMode.append);
@@ -61,7 +61,7 @@ describe('A ParentContainerReader', (): void => {
 
     const result = await reader.handle({ requestedModes, credentials });
     expect(result.get(target1)).toEqual({ delete: true, write: true });
-    expect(result.get(target2)).toEqual({ });
+    expect(result.get(target2)).toEqual({});
     expect(result.get(target3)).toEqual({ write: true });
 
     const updatedMap = new IdentifierSetMultiMap(requestedModes);

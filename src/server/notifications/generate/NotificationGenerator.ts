@@ -5,4 +5,4 @@ import type { NotificationHandlerInput } from '../NotificationHandler';
 /**
  * Creates a {@link Notification} based on the provided input.
  */
-export abstract class NotificationGenerator extends AsyncHandler<NotificationHandlerInput, Notification> { }
+export abstract class NotificationGenerator extends AsyncHandler<NotificationHandlerInput, Notification> {}

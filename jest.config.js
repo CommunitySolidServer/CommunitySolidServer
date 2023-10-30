@@ -3,7 +3,7 @@ const v8 = require('v8');
 
 // Several parts inspired by https://github.com/renovatebot/renovate/blob/main/package.json
 
-const ci = !!process.env.CI;
+const ci = Boolean(process.env.CI);
 
 const cpus = os.cpus();
 const mem = os.totalmem();

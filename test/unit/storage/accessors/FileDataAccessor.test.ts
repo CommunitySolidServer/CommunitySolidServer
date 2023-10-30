@@ -485,7 +485,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('can delete the root container.', async(): Promise<void> => {
-      cache.data = { };
+      cache.data = {};
       await expect(accessor.deleteResource({ path: `${base}` })).resolves.toBeUndefined();
       expect(cache.data).toBeUndefined();
     });

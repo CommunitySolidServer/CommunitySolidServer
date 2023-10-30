@@ -33,7 +33,7 @@ export class WacAllowMetadataWriter extends MetadataWriter {
     }
   }
 
-  private aclToPermission(aclTerm: Term): string {
+  private aclToPermission(this: void, aclTerm: Term): string {
     return aclTerm.value.slice(ACL.namespace.length).toLowerCase();
   }
 

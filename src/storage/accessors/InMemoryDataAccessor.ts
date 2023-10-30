@@ -30,7 +30,7 @@ export class InMemoryDataAccessor implements DataAccessor, SingleThreaded {
   public constructor(identifierStrategy: IdentifierStrategy) {
     this.identifierStrategy = identifierStrategy;
 
-    this.store = { entries: { }};
+    this.store = { entries: {}};
   }
 
   public async canHandle(): Promise<void> {
