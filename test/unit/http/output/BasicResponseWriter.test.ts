@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import { PassThrough } from 'stream';
+import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import { BasicResponseWriter } from '../../../../src/http/output/BasicResponseWriter';

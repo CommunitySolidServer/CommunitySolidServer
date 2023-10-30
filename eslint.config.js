@@ -166,7 +166,6 @@ const configs = antfu(
 
       'jsdoc/no-multi-asterisks': [ 'error', { allowWhitespace: true }],
 
-      // Might want to enable these
       'node/prefer-global/buffer': 'off',
       'node/prefer-global/process': 'off',
 
@@ -273,7 +272,6 @@ const configs = antfu(
       'unicorn/no-await-expression-member': 'off',
       'unicorn/no-negated-condition': 'off',
       'unicorn/no-object-as-default-parameter': 'off',
-      'unicorn/prefer-node-protocol': 'off',
 
       'unused-imports/no-unused-vars': [
         'error',

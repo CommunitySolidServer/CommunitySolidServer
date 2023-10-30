@@ -1,5 +1,5 @@
-import type { IncomingMessage } from 'http';
-import type { TLSSocket } from 'tls';
+import type { IncomingMessage } from 'node:http';
+import type { TLSSocket } from 'node:tls';
 import type { WebSocket } from 'ws';
 import type { SingleThreaded } from '../init/cluster/SingleThreaded';
 import { getLoggerFor } from '../logging/LogUtil';

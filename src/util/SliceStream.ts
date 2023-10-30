@@ -1,5 +1,5 @@
-import type { Readable, TransformCallback, TransformOptions } from 'stream';
-import { Transform } from 'stream';
+import type { Readable, TransformCallback, TransformOptions } from 'node:stream';
+import { Transform } from 'node:stream';
 import { RangeNotSatisfiedHttpError } from './errors/RangeNotSatisfiedHttpError';
 import { pipeSafely } from './StreamUtil';
 

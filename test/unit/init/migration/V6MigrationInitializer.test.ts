@@ -29,7 +29,7 @@ type ClientCredentials = {
 
 const questionMock = jest.fn().mockImplementation((input, callback): void => callback('y'));
 const closeMock = jest.fn();
-jest.mock('readline', (): any => ({
+jest.mock('node:readline', (): any => ({
   createInterface: jest.fn().mockImplementation((): any => ({
     question: questionMock,
     close: closeMock,

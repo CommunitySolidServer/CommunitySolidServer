@@ -3,7 +3,7 @@ import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpE
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../../../../src/util/PathUtil';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 describe('An FixedContentTypeMapper', (): void => {
   const base = 'http://test.com/';

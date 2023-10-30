@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import type { Server } from 'http';
+import { EventEmitter } from 'node:events';
+import type { Server } from 'node:http';
 import type { WebSocket } from 'ws';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';

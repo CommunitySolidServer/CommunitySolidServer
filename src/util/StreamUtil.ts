@@ -1,6 +1,6 @@
-import type { DuplexOptions, ReadableOptions, Writable } from 'stream';
-import { Readable, Transform } from 'stream';
-import { promisify } from 'util';
+import type { DuplexOptions, ReadableOptions, Writable } from 'node:stream';
+import { Readable, Transform } from 'node:stream';
+import { promisify } from 'node:util';
 import arrayifyStream from 'arrayify-stream';
 import eos from 'end-of-stream';
 import { Store } from 'n3';

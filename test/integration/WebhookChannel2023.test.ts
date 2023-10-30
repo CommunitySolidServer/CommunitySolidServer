@@ -1,5 +1,5 @@
-import { createServer } from 'http';
-import type { IncomingMessage, Server, ServerResponse } from 'http';
+import { createServer } from 'node:http';
+import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import { fetch } from 'cross-fetch';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import type { NamedNode } from 'n3';

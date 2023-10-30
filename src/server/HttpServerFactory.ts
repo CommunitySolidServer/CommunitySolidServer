@@ -1,5 +1,5 @@
-import type { Server } from 'http';
-import { Server as HttpsServer } from 'https';
+import type { Server } from 'node:http';
+import { Server as HttpsServer } from 'node:https';
 
 /**
  * Returns `true` if the server is an HTTPS server.

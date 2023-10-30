@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 /* eslint-disable import/extensions, no-console */
-import * as readline from 'readline';
+import * as readline from 'node:readline';
 import simpleGit from 'simple-git';
 import { version } from '../package.json';
 

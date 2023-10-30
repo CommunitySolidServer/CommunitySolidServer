@@ -1,4 +1,4 @@
-import type { TLSSocket } from 'tls';
+import type { TLSSocket } from 'node:tls';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { errorTermsToMetadata } from '../../../util/errors/HttpErrorUtil';

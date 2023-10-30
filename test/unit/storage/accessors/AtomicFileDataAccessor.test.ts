@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { AtomicFileDataAccessor } from '../../../../src/storage/accessors/AtomicFileDataAccessor';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
@@ -9,7 +9,7 @@ import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 describe('AtomicFileDataAccessor', (): void => {

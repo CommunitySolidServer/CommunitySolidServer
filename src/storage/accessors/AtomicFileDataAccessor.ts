@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { ensureDirSync, rename, unlink } from 'fs-extra';
 import { v4 } from 'uuid';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';

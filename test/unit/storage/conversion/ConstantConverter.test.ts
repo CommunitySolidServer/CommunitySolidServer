@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ConstantConverterOptions } from '../../../../src/storage/conversion/ConstantConverter';

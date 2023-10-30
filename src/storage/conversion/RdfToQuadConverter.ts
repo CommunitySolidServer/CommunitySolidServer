@@ -1,4 +1,4 @@
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import type { NamedNode } from '@rdfjs/types';
 import rdfParser from 'rdf-parse';

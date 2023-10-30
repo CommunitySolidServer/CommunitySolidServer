@@ -1,5 +1,5 @@
-const os = require('os');
-const v8 = require('v8');
+const os = require('node:os');
+const v8 = require('node:v8');
 
 // Several parts inspired by https://github.com/renovatebot/renovate/blob/main/package.json
 

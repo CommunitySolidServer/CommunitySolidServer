@@ -115,7 +115,7 @@ const packageJSON = {
   },
 };
 
-jest.mock('fs', (): Partial<Record<string, jest.Mock>> => ({
+jest.mock('node:fs', (): Partial<Record<string, jest.Mock>> => ({
   cwd: jest.fn((): string => __dirname),
   existsSync: jest.fn((pth: string): boolean => typeof pth === 'string' && pth in files),
 }));

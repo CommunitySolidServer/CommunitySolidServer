@@ -2,7 +2,7 @@ import { resolveAssetPath } from '../../../../src/util/PathUtil';
 import { getTemplateFilePath, readTemplate } from '../../../../src/util/templates/TemplateUtil';
 import { mockFileSystem } from '../../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 describe('TemplateUtil', (): void => {
   describe('#getTemplateFilePath', (): void => {

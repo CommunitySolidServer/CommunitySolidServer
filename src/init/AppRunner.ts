@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-process-exit */
-import { existsSync } from 'fs';
-import type { WriteStream } from 'tty';
+import { existsSync } from 'node:fs';
+import type { WriteStream } from 'node:tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import { readJSON } from 'fs-extra';

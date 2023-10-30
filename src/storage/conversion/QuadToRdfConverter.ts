@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { DataFactory, StreamWriter } from 'n3';
 import type { Quad } from 'rdf-js';
 import rdfSerializer from 'rdf-serialize';

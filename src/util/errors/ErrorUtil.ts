@@ -1,4 +1,4 @@
-import { types } from 'util';
+import { types } from 'node:util';
 
 /**
  * Checks if the input is an {@link Error}.

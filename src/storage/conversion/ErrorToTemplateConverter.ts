@@ -1,4 +1,4 @@
-import assert from 'assert';
+import assert from 'node:assert';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { INTERNAL_ERROR } from '../../util/ContentTypes';

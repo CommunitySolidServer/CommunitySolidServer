@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 import fetch from 'cross-fetch';
 import Redis, { ReplyError } from 'ioredis';
 import type { App } from '../../src';

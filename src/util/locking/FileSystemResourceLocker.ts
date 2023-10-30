@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { ensureDir, remove } from 'fs-extra';
 import type { LockOptions, UnlockOptions } from 'proper-lockfile';
 import { lock, unlock } from 'proper-lockfile';

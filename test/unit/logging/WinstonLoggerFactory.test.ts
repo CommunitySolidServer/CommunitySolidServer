@@ -1,4 +1,4 @@
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import type { Logger } from 'winston';
 import type * as Transport from 'winston-transport';
 import { WinstonLogger } from '../../../src/logging/WinstonLogger';

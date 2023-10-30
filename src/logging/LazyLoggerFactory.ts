@@ -1,4 +1,4 @@
-import cluster from 'cluster';
+import cluster from 'node:cluster';
 import { WrappingLogger } from './Logger';
 import type { Logger } from './Logger';
 import type { LoggerFactory } from './LoggerFactory';

@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { Response } from 'cross-fetch';

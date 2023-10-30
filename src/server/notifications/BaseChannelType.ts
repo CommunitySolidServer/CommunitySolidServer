@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { parse, toSeconds } from 'iso8601-duration';
 import { DataFactory } from 'n3';

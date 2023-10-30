@@ -14,7 +14,7 @@ import { InternalServerError } from '../../../../../../src/util/errors/InternalS
 
 const STORAGE_TYPE = 'clientCredentials';
 const secret = 'verylongstringof64bytes';
-jest.mock('crypto', (): any => ({ randomBytes: (): string => secret }));
+jest.mock('node:crypto', (): any => ({ randomBytes: (): string => secret }));
 
 describe('A BaseClientCredentialsStore', (): void => {
   const webId = 'http://example.com/card#me';

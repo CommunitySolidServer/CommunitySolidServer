@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import {
   ExtensionBasedMapper,
   ExtensionBasedMapperFactory,
@@ -8,7 +8,7 @@ import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { trimTrailingSlashes } from '../../../../src/util/PathUtil';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 describe('An ExtensionBasedMapper', (): void => {
   const base = 'http://test.com/';

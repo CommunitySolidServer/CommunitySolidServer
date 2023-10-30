@@ -1,6 +1,6 @@
-import { EventEmitter } from 'events';
-import type { IncomingMessage, Server, ServerResponse } from 'http';
-import { Readable } from 'stream';
+import { EventEmitter } from 'node:events';
+import type { IncomingMessage, Server, ServerResponse } from 'node:http';
+import { Readable } from 'node:stream';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
 import { HandlerServerConfigurator } from '../../../src/server/HandlerServerConfigurator';

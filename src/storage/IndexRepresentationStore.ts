@@ -1,4 +1,4 @@
-import assert from 'assert';
+import assert from 'node:assert';
 import type { Representation } from '../http/representation/Representation';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';

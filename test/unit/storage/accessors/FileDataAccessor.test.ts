@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { DataFactory } from 'n3';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -19,7 +19,7 @@ import { mockFileSystem } from '../../../util/Util';
 
 const { namedNode, quad } = DataFactory;
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 const rootFilePath = 'uploads';

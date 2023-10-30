@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'node:fs';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
@@ -7,7 +7,7 @@ import { UNIT_BYTES } from '../../../../src/storage/size-reporter/Size';
 import { joinFilePath } from '../../../../src/util/PathUtil';
 import { mockFileSystem } from '../../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 describe('A FileSizeReporter', (): void => {
   // Folder size is fixed to 4 in the mock

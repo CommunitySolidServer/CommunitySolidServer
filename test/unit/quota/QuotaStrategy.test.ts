@@ -6,7 +6,7 @@ import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReport
 import { guardedStreamFrom, pipeSafely } from '../../../src/util/StreamUtil';
 import { mockFileSystem } from '../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 class QuotaStrategyWrapper extends QuotaStrategy {
   public constructor(reporter: SizeReporter<any>, limit: Size) {

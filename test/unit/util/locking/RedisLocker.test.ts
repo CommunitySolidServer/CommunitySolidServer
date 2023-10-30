@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 import type { Redis } from 'ioredis';
 import type { ReadWriteLocker, ResourceLocker } from '../../../../src';
 import { InternalServerError } from '../../../../src';

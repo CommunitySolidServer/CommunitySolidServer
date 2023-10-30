@@ -1,4 +1,4 @@
-import { types } from 'util';
+import { types } from 'node:util';
 import { createAggregateError } from './errors/HttpErrorUtil';
 
 export type PromiseOrValue<T> = T | Promise<T>;
