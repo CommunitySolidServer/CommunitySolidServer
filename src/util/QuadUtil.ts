@@ -37,12 +37,13 @@ export async function parseQuads(readable: Guarded<Readable>, options: ParserOpt
  * @returns A new array containing the unique quads.
  */
 export function uniqueQuads(quads: Quad[]): Quad[] {
-  return quads.reduce<Quad[]>((result, quad): Quad[] => {
-    if (!result.some((item): boolean => quad.equals(item))) {
-      result.push(quad);
+  const uniques: Quad[] = [];
+  for (const quad of quads) {
+    if (!uniques.some((item): boolean => quad.equals(item))) {
+      uniques.push(quad);
     }
-    return result;
-  }, []);
+  }
+  return uniques;
 }
 
 /**

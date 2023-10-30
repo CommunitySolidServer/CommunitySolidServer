@@ -97,10 +97,10 @@ export class RedirectingHttpHandler extends HttpHandler {
 
     // Build redirect URL from regexp result
     const { match, redirectPattern } = result;
-    const redirect = match.reduce(
-      (prev, param, index): string => prev.replace(`$${index}`, param),
-      redirectPattern,
-    );
+    let redirect = redirectPattern;
+    for (const [ i, element ] of match.entries()) {
+      redirect = redirect.replace(`$${i}`, element);
+    }
 
     // Don't redirect if target is already correct
     if (redirect === target) {

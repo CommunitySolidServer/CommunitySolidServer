@@ -188,13 +188,13 @@ export class ChainedConverter extends RepresentationConverter {
    * Will return undefined if there are no matches.
    */
   private findBest(paths: ConversionPath[]): ConversionPath | undefined {
-    // Need to use null instead of undefined so `reduce` doesn't take the first element of the array as `best`
-    return paths.reduce((best: ConversionPath | null, path): ConversionPath | null => {
+    let best: ConversionPath | undefined;
+    for (const path of paths) {
       if (path.weight > 0 && !(best && best.weight >= path.weight)) {
-        return path;
+        best = path;
       }
-      return best;
-    }, null) ?? undefined;
+    }
+    return best;
   }
 
   /**
