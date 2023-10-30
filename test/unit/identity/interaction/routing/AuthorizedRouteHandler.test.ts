@@ -1,8 +1,10 @@
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../../src/http/representation/ResourceIdentifier';
 import type { AccountIdRoute } from '../../../../../src/identity/interaction/account/AccountIdRoute';
-import type { JsonInteractionHandler,
-  JsonInteractionHandlerInput } from '../../../../../src/identity/interaction/JsonInteractionHandler';
+import type {
+  JsonInteractionHandler,
+  JsonInteractionHandlerInput,
+} from '../../../../../src/identity/interaction/JsonInteractionHandler';
 import { AuthorizedRouteHandler } from '../../../../../src/identity/interaction/routing/AuthorizedRouteHandler';
 import { ForbiddenHttpError } from '../../../../../src/util/errors/ForbiddenHttpError';
 import { UnauthorizedHttpError } from '../../../../../src/util/errors/UnauthorizedHttpError';

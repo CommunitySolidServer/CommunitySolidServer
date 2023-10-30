@@ -4,9 +4,11 @@ import {
   getBestPreference,
   getConversionTarget,
   getTypeWeight,
-  getWeightedPreferences, isInternalContentType,
+  getWeightedPreferences,
+  isInternalContentType,
   matchesMediaPreferences,
-  matchesMediaType, preferencesToString,
+  matchesMediaType,
+  preferencesToString,
 } from '../../../../src/storage/conversion/ConversionUtil';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 

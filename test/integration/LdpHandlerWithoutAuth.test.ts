@@ -338,20 +338,24 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   it('can handle simple SPARQL updates.', async(): Promise<void> => {
     // POST
-    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
-      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    const body = [
+      '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
+    ].join('\n');
     let response = await postResource(baseUrl, { contentType: 'text/turtle', body });
     const documentUrl = response.headers.get('location')!;
 
     // PATCH
-    const query = [ 'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
+    const query = [
+      'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
       'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
       'WHERE {}',
     ].join('\n');
     await patchResource(documentUrl, query, 'sparql', true);
 
     // PATCH using a content-type header with charset
-    const query2 = [ 'DELETE { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
+    const query2 = [
+      'DELETE { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
       'INSERT {<#s4> <#p4> <#o4>}',
       'WHERE {}',
     ].join('\n');
@@ -387,13 +391,16 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   it('can handle simple N3 Patch updates.', async(): Promise<void> => {
     // POST
-    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
-      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    const body = [
+      '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
+    ].join('\n');
     let response = await postResource(baseUrl, { contentType: 'text/turtle', body });
     const documentUrl = response.headers.get('location')!;
 
     // PATCH
-    const query = [ '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
+    const query = [
+      '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
       '<> a solid:InsertDeletePatch;',
       'solid:deletes { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> };',
       'solid:inserts { <http://test.com/s3> <http://test.com/p3> <http://test.com/o3> }.',
@@ -401,7 +408,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await patchResource(documentUrl, query, 'n3', true);
 
     // PATCH using a content-type header with charset
-    const query2 = [ '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
+    const query2 = [
+      '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
       '<> a solid:InsertDeletePatch;',
       'solid:deletes { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> };',
       'solid:inserts {<#s4> <#p4> <#o4>}.',
@@ -438,13 +446,16 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   it('can not handle SPARQL updates on containers.', async(): Promise<void> => {
     // POST
-    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
-      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    const body = [
+      '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
+    ].join('\n');
     let response = await postResource(baseUrl, { contentType: 'text/turtle', body, isContainer: true });
     const documentUrl = response.headers.get('location')!;
 
     // PATCH
-    const query = [ 'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
+    const query = [
+      'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
       'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
       'WHERE {}',
     ].join('\n');
@@ -465,13 +476,16 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   it('can not handle N3 Patch updates on containers.', async(): Promise<void> => {
     // POST
-    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
-      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    const body = [
+      '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
+    ].join('\n');
     let response = await postResource(baseUrl, { contentType: 'text/turtle', body, isContainer: true });
     const documentUrl = response.headers.get('location')!;
 
     // PATCH
-    const query = [ '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
+    const query = [
+      '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
       '<> a solid:InsertDeletePatch;',
       'solid:deletes { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> };',
       'solid:inserts { <http://test.com/s3> <http://test.com/p3> <http://test.com/o3> }.',
@@ -503,14 +517,17 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   it('maintains prefixes after PATCH operations.', async(): Promise<void> => {
     // POST
-    const body = [ '@prefix test: <http://test.com/>.',
+    const body = [
+      '@prefix test: <http://test.com/>.',
       'test:s1 test:p1 test:o1.',
-      'test:s2 test:p2 test:o2.' ].join('\n');
+      'test:s2 test:p2 test:o2.',
+    ].join('\n');
     let response = await postResource(baseUrl, { contentType: 'text/turtle', body });
     const documentUrl = response.headers.get('location')!;
 
     // PATCH
-    const query = [ 'PREFIX test: <http://test.com/>',
+    const query = [
+      'PREFIX test: <http://test.com/>',
       'DELETE { test:s1 test:p1 test:o1 }',
       'INSERT { test:s3 test:p3 test:o3. test:s4 test:p4 test:o4 }',
       'WHERE {}',

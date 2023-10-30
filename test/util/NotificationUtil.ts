@@ -8,8 +8,13 @@ import { fetch } from 'cross-fetch';
  * @param topic - The topic to subscribe to.
  * @param features - Any extra fields that need to be added to the subscription body.
  */
-export async function subscribe(type: string, webId: string, subscriptionUrl: string, topic: string,
-  features: Record<string, unknown> = {}): Promise<unknown> {
+export async function subscribe(
+  type: string,
+  webId: string,
+  subscriptionUrl: string,
+  topic: string,
+  features: Record<string, unknown> = {},
+): Promise<unknown> {
   const channel = {
     '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
     type,

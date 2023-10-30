@@ -15,8 +15,12 @@ export class AcpHeaderHandler extends HttpHandler {
   private readonly modes: string[];
   private readonly attributes: string[];
 
-  public constructor(targetExtractor: TargetExtractor, strategy: AuxiliaryIdentifierStrategy,
-    modes: string[], attributes: string[]) {
+  public constructor(
+    targetExtractor: TargetExtractor,
+    strategy: AuxiliaryIdentifierStrategy,
+    modes: string[],
+    attributes: string[],
+  ) {
     super();
     this.targetExtractor = targetExtractor;
     this.strategy = strategy;

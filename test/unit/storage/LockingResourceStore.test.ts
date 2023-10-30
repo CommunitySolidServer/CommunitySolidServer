@@ -47,8 +47,10 @@ describe('A LockingResourceStore', (): void => {
     timeoutTrigger = new EventEmitter();
 
     locker = {
-      withReadLock: jest.fn(async <T>(id: ResourceIdentifier,
-        whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> => {
+      withReadLock: jest.fn(async <T>(
+        id: ResourceIdentifier,
+        whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
+      ): Promise<T> => {
         order.push('lock read');
         try {
           // Allows simulating a timeout event
@@ -61,8 +63,10 @@ describe('A LockingResourceStore', (): void => {
           order.push('unlock read');
         }
       }),
-      withWriteLock: jest.fn(async <T>(identifier: ResourceIdentifier,
-        whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> => {
+      withWriteLock: jest.fn(async <T>(
+        identifier: ResourceIdentifier,
+        whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
+      ): Promise<T> => {
         order.push('lock write');
         try {
           return await whileLocked(emptyFn);

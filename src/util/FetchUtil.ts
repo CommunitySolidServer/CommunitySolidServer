@@ -25,8 +25,10 @@ export async function fetchDataset(url: string): Promise<Representation> {
       const quadArray = await arrayifyStream<Quad>(quadStream);
       return new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
     } catch (error: unknown) {
-      throw new BadRequestHttpError(`Could not parse resource at URL (${url})! ${createErrorMessage(error)}`,
-        { cause: error });
+      throw new BadRequestHttpError(
+        `Could not parse resource at URL (${url})! ${createErrorMessage(error)}`,
+        { cause: error },
+      );
     }
   })();
 }

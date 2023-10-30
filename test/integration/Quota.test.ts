@@ -119,7 +119,8 @@ describe('A quota server', (): void => {
       expect((await response2).status).toBe(413);
     });
 
-    it('should not generate metadata files (the only possible entry content-length is removed after quota validation).',
+    it(
+      'should not generate metadata files (the only possible entry content-length is removed after quota validation).',
       async(): Promise<void> => {
         const testFile3 = `${pod1}/test3.txt`;
         const response1 = performSimplePutWithLength(testFile3, 100);
@@ -129,7 +130,8 @@ describe('A quota server', (): void => {
         // Validate that a meta file was not created
         const check = await pathExists(`${rootFilePath}/${podName1}/test3.txt.meta`);
         expect(check).toBe(false);
-      });
+      },
+    );
   });
 
   /** Test the general functionality of the server using global quota */
@@ -197,7 +199,8 @@ describe('A quota server', (): void => {
       expect(awaitedRes2.status).toBe(413);
     });
 
-    it('should not generate metadata files (the only possible entry content-length is removed after quota validation).',
+    it(
+      'should not generate metadata files (the only possible entry content-length is removed after quota validation).',
       async(): Promise<void> => {
         const testFile3 = `${pod1}/test5.txt`;
         const response1 = performSimplePutWithLength(testFile3, 100);
@@ -207,6 +210,7 @@ describe('A quota server', (): void => {
         // Validate that a meta file was not created
         const check = await pathExists(`${rootFilePath}/${podName1}/test5.txt.meta`);
         expect(check).toBe(false);
-      });
+      },
+    );
   });
 });

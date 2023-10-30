@@ -1,6 +1,7 @@
 /* eslint-disable ts/naming-convention */
 import { randomBytes } from 'crypto';
-import type { Account,
+import type {
+  Account,
   Adapter,
   AsymmetricSigningAlgorithm,
   Configuration,
@@ -8,7 +9,8 @@ import type { Account,
   errors,
   KoaContextWithOIDC,
   ResourceServer,
-  UnknownObject } from '../../../templates/types/oidc-provider';
+  UnknownObject,
+} from '../../../templates/types/oidc-provider';
 import type Provider from '../../../templates/types/oidc-provider';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
@@ -399,7 +401,8 @@ export class IdentityProviderFactory implements ProviderFactory {
       // so we want to provide a more detailed error message explaining what to do.
       if (oidcError.error_description === 'client is invalid' && oidcError.error_detail === 'client not found') {
         const unknownClientError = new BadRequestHttpError(
-          'Unknown client, you might need to clear the local storage on the client.', {
+          'Unknown client, you might need to clear the local storage on the client.',
+          {
             errorCode: 'E0003',
             metadata: errorTermsToMetadata({
               client_id: ctx.request.query.client_id as string,

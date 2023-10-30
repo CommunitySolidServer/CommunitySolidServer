@@ -23,10 +23,12 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
    */
   public constructor(source: KeyValueStorage<TKey, Expires<TValue>>, timeout = 60) {
     this.source = source;
-    this.timer = setSafeInterval(this.logger,
+    this.timer = setSafeInterval(
+      this.logger,
       'Failed to remove expired entries',
       this.removeExpiredEntries.bind(this),
-      timeout * 60 * 1000);
+      timeout * 60 * 1000,
+    );
     this.timer.unref();
   }
 

@@ -8,8 +8,11 @@ let cachedModuleState: IModuleState;
 /**
  * Returns a component instantiated from a Components.js configuration.
  */
-export async function instantiateFromConfig(componentUrl: string, configPaths: string | string[],
-  variables?: Record<string, any>): Promise<any> {
+export async function instantiateFromConfig(
+  componentUrl: string,
+  configPaths: string | string[],
+  variables?: Record<string, any>,
+): Promise<any> {
   // Initialize the Components.js loader
   const mainModulePath = joinFilePath(__dirname, '../../');
   const manager = await ComponentsManager.build({

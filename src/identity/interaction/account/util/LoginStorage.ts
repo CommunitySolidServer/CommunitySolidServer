@@ -1,6 +1,9 @@
-import type { IndexedStorage,
+import type {
+  IndexedStorage,
   IndexTypeCollection,
-  StringKey, ValueTypeDescription } from '../../../../storage/keyvalue/IndexedStorage';
+  StringKey,
+  ValueTypeDescription,
+} from '../../../../storage/keyvalue/IndexedStorage';
 
 export const ACCOUNT_TYPE = 'account';
 

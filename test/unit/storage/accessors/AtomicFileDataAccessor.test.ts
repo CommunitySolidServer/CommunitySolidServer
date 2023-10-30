@@ -42,8 +42,10 @@ describe('AtomicFileDataAccessor', (): void => {
     });
 
     it('writes metadata to the corresponding metadata file.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata({ path: `${base}res.ttl` },
-        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' });
+      metadata = new RepresentationMetadata(
+        { path: `${base}res.ttl` },
+        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' },
+      );
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data['res.ttl']).toBe('data');
       expect(cache.data['res.ttl.meta']).toMatch(`<${base}res.ttl> <likes> "apples".`);
@@ -86,13 +88,15 @@ describe('AtomicFileDataAccessor', (): void => {
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
-    it('should throw when renaming / moving the file goes wrong and the temp file does not exist.',
+    it(
+      'should throw when renaming / moving the file goes wrong and the temp file does not exist.',
       async(): Promise<void> => {
         jest.spyOn(jest.requireMock('fs-extra'), 'rename').mockImplementation((): any => {
           throw new Error('error');
         });
         jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation();
         await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
-      });
+      },
+    );
   });
 });

@@ -257,12 +257,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // This covers all required permissions
     await aclHelper.setSimpleAcl(baseUrl, [
-      { permissions: { append: true },
-        agentClass: 'agent',
-        accessTo: true },
-      { permissions: { write: true },
-        agentClass: 'agent',
-        default: true },
+      { permissions: { append: true }, agentClass: 'agent', accessTo: true },
+      { permissions: { write: true }, agentClass: 'agent', default: true },
     ]);
     await putResource(url, { contentType: 'text/plain', exists: false });
   });

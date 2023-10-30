@@ -254,8 +254,11 @@ export class ChainedConverter extends RepresentationConverter {
    * Finds all converters in the given list that support taking any of the given types as input.
    * Filters out converters that would produce an already seen type.
    */
-  private async supportedConverters(types: ValuePreferences, metadata: RepresentationMetadata,
-    converters: TypedRepresentationConverter[]): Promise<ConverterPreference[]> {
+  private async supportedConverters(
+    types: ValuePreferences,
+    metadata: RepresentationMetadata,
+    converters: TypedRepresentationConverter[],
+  ): Promise<ConverterPreference[]> {
     const typeEntries = Object.entries(types);
     const results: ConverterPreference[] = [];
     for (const converter of converters) {
@@ -275,8 +278,12 @@ export class ChainedConverter extends RepresentationConverter {
    * Returns a ConverterPreference if the given converter supports the given type.
    * All types that have already been used will be removed from the output types.
    */
-  private async findConverterPreference(inType: string, weight: number, metadata: RepresentationMetadata,
-    converter: TypedRepresentationConverter): Promise<ConverterPreference | undefined> {
+  private async findConverterPreference(
+    inType: string,
+    weight: number,
+    metadata: RepresentationMetadata,
+    converter: TypedRepresentationConverter,
+  ): Promise<ConverterPreference | undefined> {
     const representation = new BasicRepresentation([], metadata);
     try {
       const identifier = { path: representation.metadata.identifier.value };

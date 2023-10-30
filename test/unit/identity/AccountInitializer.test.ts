@@ -26,7 +26,11 @@ describe('An AccountInitializer', (): void => {
     } satisfies Partial<PodCreator> as any;
 
     initializer = new AccountInitializer({
-      accountStore, passwordStore, podCreator, email, password,
+      accountStore,
+      passwordStore,
+      podCreator,
+      email,
+      password,
     });
   });
 
@@ -42,7 +46,12 @@ describe('An AccountInitializer', (): void => {
 
   it('can create a pod with a name.', async(): Promise<void> => {
     initializer = new AccountInitializer({
-      accountStore, passwordStore, podCreator, email, password, name: 'name',
+      accountStore,
+      passwordStore,
+      podCreator,
+      email,
+      password,
+      name: 'name',
     });
     await expect(initializer.handle()).resolves.toBeUndefined();
     expect(accountStore.create).toHaveBeenCalledTimes(1);

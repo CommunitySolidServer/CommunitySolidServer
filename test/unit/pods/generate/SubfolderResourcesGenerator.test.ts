@@ -49,9 +49,9 @@ describe('A SubfolderResourcesGenerator', (): void => {
     extraResources = [ createResource('b'), createResource('e'), createResource('g') ];
 
     const resources = await asyncToArray(generator.generate(templateFolder, identifier, options));
-    expect(resources.map((resource): string => resource.identifier.path)).toEqual([
-      'a', 'b', 'c', 'd', 'e', 'f', 'g',
-    ]);
+    expect(resources.map((resource): string => resource.identifier.path)).toEqual(
+      [ 'a', 'b', 'c', 'd', 'e', 'f', 'g' ],
+    );
     expect(source.generate).toHaveBeenCalledTimes(3);
     expect(source.generate).toHaveBeenNthCalledWith(1, '/data/templates/base', identifier, options);
     expect(source.generate).toHaveBeenNthCalledWith(2, '/data/templates/empty', identifier, options);
@@ -64,18 +64,26 @@ describe('A SubfolderResourcesGenerator', (): void => {
     baseResources = [ createResource('b'), resource1, createResource('g') ];
     extraResources = [ createResource('a'), resource2, createResource('h') ];
     const resources = await asyncToArray(generator.generate(templateFolder, identifier, options));
-    expect(resources.map((resource): string => resource.identifier.path)).toEqual([
-      'a', 'b', 'foo', 'g', 'h',
-    ]);
+    expect(resources.map((resource): string => resource.identifier.path)).toEqual(
+      [ 'a', 'b', 'foo', 'g', 'h' ],
+    );
     expect(resources[2]).toBe(resource1);
     expect(resource2.representation.data.destroyed).toBe(true);
   });
 
   it('correctly sorts containers.', async(): Promise<void> => {
-    baseResources = [ createResource('/'), createResource('/container/'),
-      createResource('/container/foo.acl'), createResource('README.acl') ];
-    extraResources = [ createResource('/'), createResource('/container/'),
-      createResource('/container/foo'), createResource('README') ];
+    baseResources = [
+      createResource('/'),
+      createResource('/container/'),
+      createResource('/container/foo.acl'),
+      createResource('README.acl'),
+    ];
+    extraResources = [
+      createResource('/'),
+      createResource('/container/'),
+      createResource('/container/foo'),
+      createResource('README'),
+    ];
 
     const resources = await asyncToArray(generator.generate(templateFolder, identifier, options));
     expect(resources.map((resource): string => resource.identifier.path)).toEqual([

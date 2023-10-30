@@ -115,8 +115,10 @@ export class AppRunner {
 
     // Create the application using the translated variable values.
     // `variableBindings` override those resolved from the `shorthand` input.
-    return this.createApp(componentsManager as ComponentsManager<App>,
-      { ...parsedVariables, ...input.variableBindings });
+    return this.createApp(
+      componentsManager as ComponentsManager<App>,
+      { ...parsedVariables, ...input.variableBindings },
+    );
   }
 
   /**

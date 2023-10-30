@@ -84,8 +84,10 @@ export class NotificationSubscriber extends OperationHttpHandler {
     if (operation.method === 'GET' || operation.method === 'HEAD') {
       const description = JSON.stringify(this.channelType.getDescription(), null, 2);
       const representation = new BasicRepresentation(description, operation.target, APPLICATION_LD_JSON);
-      return new OkResponseDescription(representation.metadata,
-        operation.method === 'GET' ? representation.data : undefined);
+      return new OkResponseDescription(
+        representation.metadata,
+        operation.method === 'GET' ? representation.data : undefined,
+      );
     }
 
     const credentials = await this.credentialsExtractor.handleSafe(request);
@@ -100,8 +102,10 @@ export class NotificationSubscriber extends OperationHttpHandler {
       });
       channel = await this.channelType.initChannel(await readableToQuads(quadStream.data), credentials);
     } catch (error: unknown) {
-      throw new UnprocessableEntityHttpError(`Unable to process notification channel: ${createErrorMessage(error)}`,
-        { cause: error });
+      throw new UnprocessableEntityHttpError(
+        `Unable to process notification channel: ${createErrorMessage(error)}`,
+        { cause: error },
+      );
     }
 
     if (this.maxDuration) {

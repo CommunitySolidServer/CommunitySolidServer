@@ -10,7 +10,8 @@ import type {
   AcceptEncoding,
   AcceptHeader,
   AcceptLanguage,
-  LinkEntry, LinkEntryParameters,
+  LinkEntry,
+  LinkEntryParameters,
 } from './Header';
 import { ContentType, QUOTED_STRING, QVALUE, SIMPLE_MEDIA_RANGE, TOKEN } from './Header';
 
@@ -153,7 +154,8 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
   // No reason to test differently for * since we don't check if the type exists
   if (!SIMPLE_MEDIA_RANGE.test(range)) {
     handleInvalidValue(
-      `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`, strict,
+      `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`,
+      strict,
     );
     return;
   }
@@ -264,7 +266,8 @@ export function parseAcceptCharset(input: string, strict = false): AcceptCharset
   return results.filter((result): boolean => {
     if (!TOKEN.test(result.range)) {
       handleInvalidValue(
-        `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`, strict,
+        `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`,
+        strict,
       );
       return false;
     }
@@ -307,7 +310,8 @@ export function parseAcceptLanguage(input: string, strict = false): AcceptLangua
     // (1*8ALPHA *("-" 1*8alphanum)) / "*"
     if (result.range !== '*' && !/^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$/u.test(result.range)) {
       handleInvalidValue(
-        `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`, strict,
+        `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`,
+        strict,
       );
       return false;
     }

@@ -138,21 +138,33 @@ describe('A V6MigrationInitializer', (): void => {
 
     expect(newAccountStorage.create).toHaveBeenCalledTimes(11);
     expect(newAccountStorage.create).toHaveBeenCalledWith(ACCOUNT_TYPE, {});
-    expect(newAccountStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
-      { email: 'email@example.com', password: '123', verified: true, accountId: 'account-id' });
-    expect(newAccountStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
-      { email: 'email2@example.com', password: '1234', verified: true, accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      PASSWORD_STORAGE_TYPE,
+      { email: 'email@example.com', password: '123', verified: true, accountId: 'account-id' },
+    );
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      PASSWORD_STORAGE_TYPE,
+      { email: 'email2@example.com', password: '1234', verified: true, accountId: 'account-id' },
+    );
     expect(newAccountStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE, { webId, accountId: 'account-id' });
-    expect(newAccountStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE,
-      { webId: webId2, accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      WEBID_STORAGE_TYPE,
+      { webId: webId2, accountId: 'account-id' },
+    );
     expect(newAccountStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test/', accountId: 'account-id' });
     expect(newAccountStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test2/', accountId: 'account-id' });
-    expect(newAccountStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE,
-      { webId, podId: 'pod-id', visible: false });
-    expect(newAccountStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE,
-      { webId: webId2, podId: 'pod-id', visible: false });
-    expect(newAccountStorage.create).toHaveBeenCalledWith(CLIENT_CREDENTIALS_STORAGE_TYPE,
-      { label: 'token', secret: 'secret!', webId, accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      OWNER_STORAGE_TYPE,
+      { webId, podId: 'pod-id', visible: false },
+    );
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      OWNER_STORAGE_TYPE,
+      { webId: webId2, podId: 'pod-id', visible: false },
+    );
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      CLIENT_CREDENTIALS_STORAGE_TYPE,
+      { label: 'token', secret: 'secret!', webId, accountId: 'account-id' },
+    );
 
     expect(newSetupStorage.set).toHaveBeenCalledTimes(1);
     expect(newSetupStorage.set).toHaveBeenLastCalledWith('version', '6.0.0');
@@ -191,13 +203,19 @@ describe('A V6MigrationInitializer', (): void => {
 
     expect(newAccountStorage.create).toHaveBeenCalledTimes(5);
     expect(newAccountStorage.create).toHaveBeenCalledWith(ACCOUNT_TYPE, {});
-    expect(newAccountStorage.create).toHaveBeenCalledWith(PASSWORD_STORAGE_TYPE,
-      { email: 'email2@example.com', password: '1234', verified: true, accountId: 'account-id' });
-    expect(newAccountStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE,
-      { webId: webId2, accountId: 'account-id' });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      PASSWORD_STORAGE_TYPE,
+      { email: 'email2@example.com', password: '1234', verified: true, accountId: 'account-id' },
+    );
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      WEBID_STORAGE_TYPE,
+      { webId: webId2, accountId: 'account-id' },
+    );
     expect(newAccountStorage.create).toHaveBeenCalledWith(POD_STORAGE_TYPE, { baseUrl: 'http://example.com/test2/', accountId: 'account-id' });
-    expect(newAccountStorage.create).toHaveBeenCalledWith(OWNER_STORAGE_TYPE,
-      { webId: webId2, podId: 'pod-id', visible: false });
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      OWNER_STORAGE_TYPE,
+      { webId: webId2, podId: 'pod-id', visible: false },
+    );
 
     expect(newSetupStorage.set).toHaveBeenCalledTimes(1);
     expect(newSetupStorage.set).toHaveBeenLastCalledWith('version', '6.0.0');

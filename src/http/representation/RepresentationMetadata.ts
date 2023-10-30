@@ -187,10 +187,12 @@ export class RepresentationMetadata {
     object: NamedNode | BlankNode | Literal | string,
     graph?: MetadataGraph,
   ): this {
-    this.store.addQuad(toNamedTerm(subject),
+    this.store.addQuad(
+      toNamedTerm(subject),
       predicate,
       toObjectTerm(object, true),
-      graph ? toNamedTerm(graph) : undefined);
+      graph ? toNamedTerm(graph) : undefined,
+    );
     return this;
   }
 
@@ -214,10 +216,12 @@ export class RepresentationMetadata {
     object: NamedNode | BlankNode | Literal | string,
     graph?: MetadataGraph,
   ): this {
-    const quads = this.quads(toNamedTerm(subject),
+    const quads = this.quads(
+      toNamedTerm(subject),
       predicate,
       toObjectTerm(object, true),
-      graph ? toNamedTerm(graph) : undefined);
+      graph ? toNamedTerm(graph) : undefined,
+    );
     return this.removeQuads(quads);
   }
 
@@ -253,8 +257,11 @@ export class RepresentationMetadata {
    * Helper function to simplify add/remove
    * Runs the given function on all predicate/object pairs, but only converts the predicate to a named node once.
    */
-  private forQuads(predicate: NamedNode, object: MetadataValue,
-    forFn: (pred: NamedNode, obj: NamedNode | BlankNode | Literal) => void): this {
+  private forQuads(
+    predicate: NamedNode,
+    object: MetadataValue,
+    forFn: (pred: NamedNode, obj: NamedNode | BlankNode | Literal) => void,
+  ): this {
     const objects = Array.isArray(object) ? object : [ object ];
     for (const obj of objects) {
       forFn(predicate, toObjectTerm(obj, true));

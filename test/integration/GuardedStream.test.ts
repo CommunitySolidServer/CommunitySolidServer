@@ -8,9 +8,7 @@ import {
   readableToString,
   RepresentationMetadata,
 } from '../../src';
-import type { Logger,
-  Representation,
-  RepresentationConverterArgs } from '../../src';
+import type { Logger, Representation, RepresentationConverterArgs } from '../../src';
 import { BaseTypedRepresentationConverter } from '../../src/storage/conversion/BaseTypedRepresentationConverter';
 
 jest.mock('../../src/logging/LogUtil', (): any => {

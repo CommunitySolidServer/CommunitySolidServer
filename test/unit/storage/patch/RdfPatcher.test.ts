@@ -7,8 +7,10 @@ import type { RdfDatasetRepresentation } from '../../../../src/http/representati
 import type { Representation } from '../../../../src/http/representation/Representation';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { RdfPatcher } from '../../../../src/storage/patch/RdfPatcher';
-import type { RepresentationPatcher,
-  RepresentationPatcherInput } from '../../../../src/storage/patch/RepresentationPatcher';
+import type {
+  RepresentationPatcher,
+  RepresentationPatcherInput,
+} from '../../../../src/storage/patch/RepresentationPatcher';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { readableToQuads } from '../../../../src/util/StreamUtil';
 

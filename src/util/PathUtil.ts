@@ -237,8 +237,10 @@ Promise<string> {
   baseUrl = ensureTrailingSlash(baseUrl);
   const target = await targetExtractor.handleSafe({ request });
   if (!target.path.startsWith(baseUrl)) {
-    throw new BadRequestHttpError(`The identifier ${target.path} is outside the configured identifier space.`,
-      { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: target.path }) });
+    throw new BadRequestHttpError(
+      `The identifier ${target.path} is outside the configured identifier space.`,
+      { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: target.path }) },
+    );
   }
   return target.path.slice(baseUrl.length - 1);
 }

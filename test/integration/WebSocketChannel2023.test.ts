@@ -14,7 +14,8 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig, removeFolder,
+  instantiateFromConfig,
+  removeFolder,
 } from './Config';
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;

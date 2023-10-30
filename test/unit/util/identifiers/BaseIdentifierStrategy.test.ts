@@ -29,8 +29,10 @@ describe('A BaseIdentifierStrategy', (): void => {
       } catch (err: unknown) {
         error = err;
       }
-      expect(error).toEqual(expect.objectContaining({ errorCode: 'E0001',
-        message: 'The identifier /unsupported is outside the configured identifier space.' }));
+      expect(error).toEqual(expect.objectContaining({
+        errorCode: 'E0001',
+        message: 'The identifier /unsupported is outside the configured identifier space.',
+      }));
       expect(InternalServerError.isInstance(error)).toBe(true);
       expect(extractErrorTerms((error as InternalServerError).metadata)).toEqual({ path: '/unsupported' });
     });

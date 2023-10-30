@@ -43,14 +43,20 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     this.inPreferences = inPreferences ?? {};
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
+  public async getRepresentation(
+    identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences,
+    conditions?: Conditions,
+  ): Promise<Representation> {
     const representation = await super.getRepresentation(identifier, preferences, conditions);
     return this.outConverter.handleSafe({ identifier, representation, preferences });
   }
 
-  public async addResource(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async addResource(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     // In case of containers, no content-type is required and the representation is not used.
     if (representation.metadata.contentType) {
       // We can potentially run into problems here if we convert a turtle document where the base IRI is required,
@@ -62,8 +68,11 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     return this.source.addResource(identifier, representation, conditions);
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async setRepresentation(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     // When it is a metadata resource, convert it to Quads as those are expected in the later stores
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       representation = await this.inConverter.handleSafe(

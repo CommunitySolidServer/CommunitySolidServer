@@ -117,8 +117,7 @@ const configs = antfu(
   },
   {
     rules: {
-      // Might want to enable this one but has a drastic impact on the already existing code
-      'antfu/consistent-list-newline': 'off',
+      'antfu/consistent-list-newline': 'error',
 
       'arrow-body-style': [ 'error', 'as-needed', { requireReturnForObjectLiteral: false }],
       'capitalized-comments': [ 'error', 'always', { ignoreConsecutiveComments: true }],

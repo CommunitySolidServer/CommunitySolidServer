@@ -24,13 +24,17 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
     this.expiration = expiration;
   }
 
-  public async withReadLock<T>(identifier: ResourceIdentifier,
-    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> {
+  public async withReadLock<T>(
+    identifier: ResourceIdentifier,
+    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
+  ): Promise<T> {
     return this.locker.withReadLock(identifier, async(): Promise<T> => this.expiringPromise(identifier, whileLocked));
   }
 
-  public async withWriteLock<T>(identifier: ResourceIdentifier,
-    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> {
+  public async withWriteLock<T>(
+    identifier: ResourceIdentifier,
+    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
+  ): Promise<T> {
     return this.locker.withWriteLock(identifier, async(): Promise<T> => this.expiringPromise(identifier, whileLocked));
   }
 
@@ -39,8 +43,10 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
    * whichever happens first. The input function can reset the timer by calling the `maintainLock` function
    * it receives. The ResourceIdentifier is only used for logging.
    */
-  private async expiringPromise<T>(identifier: ResourceIdentifier,
-    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>): Promise<T> {
+  private async expiringPromise<T>(
+    identifier: ResourceIdentifier,
+    whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
+  ): Promise<T> {
     let timer: Timeout;
     let createTimeout: () => Timeout;
 

@@ -112,8 +112,10 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
         this.attemptSettings,
       );
     } catch (err: unknown) {
-      throw new InternalServerError(`Error trying to acquire lock for ${path}. ${createErrorMessage(err)}`,
-        { cause: err });
+      throw new InternalServerError(
+        `Error trying to acquire lock for ${path}. ${createErrorMessage(err)}`,
+        { cause: err },
+      );
     }
   }
 
@@ -127,8 +129,10 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
         this.attemptSettings,
       );
     } catch (err: unknown) {
-      throw new InternalServerError(`Error trying to release lock for ${path}.  ${createErrorMessage(err)}`,
-        { cause: err });
+      throw new InternalServerError(
+        `Error trying to release lock for ${path}.  ${createErrorMessage(err)}`,
+        { cause: err },
+      );
     }
   }
 

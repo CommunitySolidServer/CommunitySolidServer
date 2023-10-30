@@ -1,15 +1,19 @@
 import { createVocabulary } from '../../../util/Vocabularies';
 
-export const TEMPLATE = createVocabulary('urn:solid-server:template:',
-  'ResourceStore');
+export const TEMPLATE = createVocabulary(
+  'urn:solid-server:template:',
+  'ResourceStore',
+);
 
 // Variables used for configuration templates
 // This is not an exclusive list
-export const TEMPLATE_VARIABLE = createVocabulary(`${TEMPLATE.namespace}variable:`,
+export const TEMPLATE_VARIABLE = createVocabulary(
+  `${TEMPLATE.namespace}variable:`,
   'baseUrl',
   'rootFilePath',
   'sparqlEndpoint',
-  'templateConfig');
+  'templateConfig',
+);
 
 /**
  * Checks if the given variable is one that is supported.

@@ -51,8 +51,8 @@ describe('A server with account management', (): void => {
     // Create a public container where we can write any data
     await store.setRepresentation(
       { path: joinUrl(publicContainer, '.acl') },
-      new BasicRepresentation(`
-        @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+      new BasicRepresentation(
+        `@prefix acl: <http://www.w3.org/ns/auth/acl#>.
         @prefix foaf: <http://xmlns.com/foaf/0.1/>.
         <#public>
           a acl:Authorization;
@@ -60,7 +60,8 @@ describe('A server with account management', (): void => {
           acl:accessTo <./>;
           acl:default <./>;
           acl:mode acl:Read, acl:Write, acl:Control.`,
-      'text/turtle'),
+        'text/turtle',
+      ),
     );
 
     controls = { main: {}, account: {}, login: {}, password: {}} as any;

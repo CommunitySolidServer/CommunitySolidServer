@@ -131,8 +131,12 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
    * Will be added if the Allow header was added, or in case of a 415 error.
    * Specific Accept-[Method] headers will only be added if the method is in the `methods` set.
    */
-  private generateAccept(methods: Set<string>, generateAllow: boolean, response: HttpResponse,
-    metadata: RepresentationMetadata): void {
+  private generateAccept(
+    methods: Set<string>,
+    generateAllow: boolean,
+    response: HttpResponse,
+    metadata: RepresentationMetadata,
+  ): void {
     const typeWasUnsupported = metadata.has(SOLID_ERROR.terms.errorResponse, UnsupportedMediaTypeHttpError.uri);
     const generateAccept = generateAllow || typeWasUnsupported;
     if (generateAccept) {

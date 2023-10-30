@@ -11,17 +11,21 @@ const resourceIdentifier = { path: `${baseUrl}container1/test.txt` };
 
 const configs: [string, any][] = [
   [
-    'file-based', {
+    'file-based',
+    {
       config: 'server-file.json',
       init: async(initializable: Initializable): Promise<void> => initializable.initialize(),
       teardown: async(): Promise<void> => removeFolder(rootFilePath),
-    }],
+    },
+  ],
   [
-    'redis-based', {
+    'redis-based',
+    {
       config: 'server-redis-lock.json',
       init: jest.fn(),
       teardown: jest.fn(),
-    }],
+    },
+  ],
 ];
 
 /* eslint-disable jest/require-top-level-describe, jest/consistent-test-it */

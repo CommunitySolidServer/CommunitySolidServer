@@ -97,7 +97,8 @@ describe('A server with a file backend storage', (): void => {
     expect(check).toBe(true);
   });
 
-  it('prevents accessing a document via a different identifier that results in the same path after URL decoding.',
+  it(
+    'prevents accessing a document via a different identifier that results in the same path after URL decoding.',
     async(): Promise<void> => {
       // First put a resource using a path without encoded separator characters: foo/bar
       const url = `${baseUrl}foo/bar`;
@@ -145,9 +146,11 @@ describe('A server with a file backend storage', (): void => {
       // Check that the the appropriate file path for bar%foo exists
       const check4 = await pathExists(`${rootFilePath}/bar%2Ffoo$.txt`);
       expect(check4).toBe(true);
-    });
+    },
+  );
 
-  it('supports content types for which no extension mapping can be found (and falls back to using .unknown).',
+  it(
+    'supports content types for which no extension mapping can be found (and falls back to using .unknown).',
     async(): Promise<void> => {
       const url = `${baseUrl}test`;
       const res = await fetch(url, {
@@ -176,5 +179,6 @@ describe('A server with a file backend storage', (): void => {
       // Check if the expected file was created
       const check2 = await pathExists(`${rootFilePath}/test$.unknown`);
       expect(check2).toBe(true);
-    });
+    },
+  );
 });

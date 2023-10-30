@@ -7,8 +7,13 @@ import { createErrorMessage } from './errors/ErrorUtil';
  * The logger and message will be used when the callback throws an error.
  * Supports asynchronous callback functions.
  */
-export function setSafeInterval<TArgs>(logger: Logger, message: string,
-  callback: (...cbArgs: TArgs[]) => Promise<void> | void, ms?: number, ...args: TArgs[]): NodeJS.Timeout {
+export function setSafeInterval<TArgs>(
+  logger: Logger,
+  message: string,
+  callback: (...cbArgs: TArgs[]) => Promise<void> | void,
+  ms?: number,
+  ...args: TArgs[]
+): NodeJS.Timeout {
   async function safeCallback(...cbArgs: TArgs[]): Promise<void> {
     try {
       // We don't know if the callback is async or not so this way we make sure

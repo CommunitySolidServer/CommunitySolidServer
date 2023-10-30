@@ -20,8 +20,11 @@ export class OwnerPermissionReader extends PermissionReader {
   private readonly authStrategy: AuxiliaryIdentifierStrategy;
   private readonly storageStrategy: StorageLocationStrategy;
 
-  public constructor(podStore: PodStore, authStrategy: AuxiliaryIdentifierStrategy,
-    storageStrategy: StorageLocationStrategy) {
+  public constructor(
+    podStore: PodStore,
+    authStrategy: AuxiliaryIdentifierStrategy,
+    storageStrategy: StorageLocationStrategy,
+  ) {
     super();
     this.podStore = podStore;
     this.authStrategy = authStrategy;

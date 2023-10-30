@@ -118,10 +118,12 @@ describe('A ClientIdAdapterFactory', (): void => {
       'http://randomField': { '@value': 'this will not be there since RDF parsing only takes preset fields' },
     };
     fetchMock.mockResolvedValueOnce(
-      { url: id,
+      {
+        url: id,
         status: 200,
         text: (): string => JSON.stringify(json),
-        headers: { get: (): any => 'application/ld+json' }},
+        headers: { get: (): any => 'application/ld+json' },
+      },
     );
     await expect(adapter.find(id)).resolves.toEqual({
       client_id: id,

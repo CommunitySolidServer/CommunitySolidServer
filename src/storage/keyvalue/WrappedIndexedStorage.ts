@@ -4,12 +4,15 @@ import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { INDEX_ID_KEY } from './IndexedStorage';
-import type { CreateTypeObject,
+import type {
+  CreateTypeObject,
   IndexedQuery,
   IndexedStorage,
   IndexTypeCollection,
   StringKey,
-  TypeObject, ValueType } from './IndexedStorage';
+  TypeObject,
+  ValueType,
+} from './IndexedStorage';
 import type { KeyValueStorage } from './KeyValueStorage';
 
 /**
@@ -78,8 +81,10 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
    */
   private readonly relations: IndexRelation<T>[];
 
-  public constructor(valueStorage: KeyValueStorage<string, VirtualObject>,
-    indexStorage: KeyValueStorage<string, string[]>) {
+  public constructor(
+    valueStorage: KeyValueStorage<string, VirtualObject>,
+    indexStorage: KeyValueStorage<string, string[]>,
+  ) {
     this.valueStorage = valueStorage;
     this.indexStorage = indexStorage;
     this.indexes = {};
@@ -185,12 +190,17 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
   }
 
   public async setField<TType extends StringKey<T>, TKey extends StringKey<T[TType]>>(
-    type: TType, id: string, key: TKey, value: ValueType<T[TType][TKey]>,
+    type: TType,
+    id: string,
+    key: TKey,
+    value: ValueType<T[TType][TKey]>,
   ): Promise<void> {
     this.validateDefinition(type);
-    return this.updateValue(type,
+    return this.updateValue(
+      type,
       { [INDEX_ID_KEY]: id, [key]: value } as Partial<TypeObject<T[TType]>> & { [INDEX_ID_KEY]: string },
-      false);
+      false,
+    );
   }
 
   public async delete<TType extends StringKey<T>>(type: TType, id: string): Promise<void> {
@@ -359,8 +369,11 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
   protected updateValue<TType extends StringKey<T>>(type: TType,
     partial: Partial<TypeObject<T[TType]>> & { [INDEX_ID_KEY]: string }, replace: false): Promise<void>;
 
-  protected async updateValue<TType extends StringKey<T>>(type: TType,
-    partial: Partial<TypeObject<T[TType]>> & { [INDEX_ID_KEY]: string }, replace: boolean): Promise<void> {
+  protected async updateValue<TType extends StringKey<T>>(
+    type: TType,
+    partial: Partial<TypeObject<T[TType]>> & { [INDEX_ID_KEY]: string },
+    replace: boolean,
+  ): Promise<void> {
     const id = partial[INDEX_ID_KEY];
     let root = await this.getRoot(type, id);
     if (!root) {
@@ -479,8 +492,11 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
    * while an `undefined` result means there is no index matching any of the query keys,
    * so a result can't be determined.
    */
-  protected async findIndexedRoots<TType extends StringKey<T>>(type: TType, match: IndexedQuery<T, TType>,
-    rootIds?: string[]): Promise<string[] | undefined> {
+  protected async findIndexedRoots<TType extends StringKey<T>>(
+    type: TType,
+    match: IndexedQuery<T, TType>,
+    rootIds?: string[],
+  ): Promise<string[] | undefined> {
     if (type === this.rootType && match[INDEX_ID_KEY]) {
       // If the input is the root type with a known ID in the query,
       // and we have already established that it is not this ID,
@@ -520,8 +536,11 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
    *
    * Will throw an error if there is no index that can be used to solve the query.
    */
-  protected async solveQuery<TType extends StringKey<T>>(type: TType, query: IndexedQuery<T, TType>,
-    rootIds?: string[]): Promise<VirtualObject[]> {
+  protected async solveQuery<TType extends StringKey<T>>(
+    type: TType,
+    query: IndexedQuery<T, TType>,
+    rootIds?: string[],
+  ): Promise<VirtualObject[]> {
     // eslint-disable-next-line ts/restrict-template-expressions
     this.logger.debug(`Executing "${type}" query ${JSON.stringify(query)}. Already found roots ${rootIds}.`);
 
@@ -579,8 +598,12 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
   /**
    * Update all indexes for an object of the given type, and all its children.
    */
-  protected async updateDeepTypeIndex<TType extends StringKey<T>>(type: TType, rootId: string,
-    oldObj: VirtualObject, newObj?: VirtualObject): Promise<void> {
+  protected async updateDeepTypeIndex<TType extends StringKey<T>>(
+    type: TType,
+    rootId: string,
+    oldObj: VirtualObject,
+    newObj?: VirtualObject,
+  ): Promise<void> {
     const promises: Promise<void>[] = [];
     promises.push(this.updateTypeIndex(type, rootId, oldObj, newObj));
 
@@ -599,8 +622,12 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
   /**
    * Updates all indexes for an object of the given type.
    */
-  protected async updateTypeIndex<TType extends StringKey<T>>(type: TType, rootId: string,
-    oldObj?: VirtualObject, newObj?: VirtualObject): Promise<void> {
+  protected async updateTypeIndex<TType extends StringKey<T>>(
+    type: TType,
+    rootId: string,
+    oldObj?: VirtualObject,
+    newObj?: VirtualObject,
+  ): Promise<void> {
     const added: { key: string; value: string }[] = [];
     const removed: { key: string; value: string }[] = [];
 

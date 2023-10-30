@@ -60,8 +60,10 @@ describe('A MethodModesExtractor', (): void => {
 
   it('requires create for PUT operations if the target does not exist.', async(): Promise<void> => {
     resourceSet.hasResource.mockResolvedValueOnce(false);
-    compareMaps(await extractor.handle({ ...operation, method: 'PUT' }),
-      getMap([ AccessMode.write, AccessMode.create ]));
+    compareMaps(
+      await extractor.handle({ ...operation, method: 'PUT' }),
+      getMap([ AccessMode.write, AccessMode.create ]),
+    );
   });
 
   it('requires delete for DELETE operations.', async(): Promise<void> => {
@@ -70,7 +72,9 @@ describe('A MethodModesExtractor', (): void => {
 
   it('also requires read for DELETE operations on containers.', async(): Promise<void> => {
     const identifier = { path: 'http://example.com/foo/' };
-    compareMaps(await extractor.handle({ ...operation, method: 'DELETE', target: identifier }),
-      getMap([ AccessMode.delete, AccessMode.read ], identifier));
+    compareMaps(
+      await extractor.handle({ ...operation, method: 'DELETE', target: identifier }),
+      getMap([ AccessMode.delete, AccessMode.read ], identifier),
+    );
   });
 });

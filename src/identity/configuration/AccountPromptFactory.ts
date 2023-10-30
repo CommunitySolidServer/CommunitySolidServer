@@ -57,7 +57,8 @@ export class AccountPromptFactory extends PromptFactory {
   }
 
   private addWebIdVerificationPrompt(policy: interactionPolicy.DefaultPolicy, ip: typeof interactionPolicy): void {
-    const check = new ip.Check('no_webid_ownserhip',
+    const check = new ip.Check(
+      'no_webid_ownserhip',
       'The stored WebID does not belong to the account.',
       async(ctx): Promise<boolean> => {
         const webId = ctx.oidc.session?.accountId;
@@ -76,7 +77,8 @@ export class AccountPromptFactory extends PromptFactory {
         }, which ${isLinked ? 'belongs' : 'does not belong'} to the authenticated account`);
 
         return !isLinked;
-      });
+      },
+    );
     const loginPrompt = policy.get('login');
     if (!loginPrompt) {
       throw new InternalServerError('Missing default login policy');
