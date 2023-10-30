@@ -31,11 +31,11 @@ export class SliceStream extends Transform {
     let start = options.start;
     const end = options.end ?? Number.POSITIVE_INFINITY;
     if (options.start < 0) {
-      if (typeof options.size !== 'number') {
-        throw new RangeNotSatisfiedHttpError('Slicing data at the end of a stream requires a known size.');
-      } else {
+      if (typeof options.size === 'number') {
         // `start` is a negative number here so need to add
         start = options.size + start;
+      } else {
+        throw new RangeNotSatisfiedHttpError('Slicing data at the end of a stream requires a known size.');
       }
     }
 

@@ -72,8 +72,8 @@ export class FilterPattern {
    * @param object - Optionally filter based on a specific object.
    */
   public constructor(subject?: string, predicate?: string, object?: string) {
-    this.subject = typeof subject !== 'undefined' ? toNamedTerm(subject) : null;
-    this.predicate = typeof predicate !== 'undefined' ? toNamedTerm(predicate) : null;
-    this.object = typeof object !== 'undefined' ? toNamedTerm(object) : null;
+    this.subject = typeof subject === 'string' ? toNamedTerm(subject) : null;
+    this.predicate = typeof predicate === 'string' ? toNamedTerm(predicate) : null;
+    this.object = typeof object === 'string' ? toNamedTerm(object) : null;
   }
 }

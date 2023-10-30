@@ -139,7 +139,7 @@ function transformPathComponents(path: string, transform: (part: string) => stri
     .map((part, index): string =>
       index % 2 === 0 ? transform(part) : part.toUpperCase())
     .join('');
-  return !queryString ? transformed : `${transformed}${queryString}`;
+  return queryString ? `${transformed}${queryString}` : transformed;
 }
 
 /**

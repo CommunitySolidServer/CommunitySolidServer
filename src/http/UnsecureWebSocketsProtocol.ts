@@ -44,14 +44,14 @@ class WebSocketListener extends WebSocketListenerEmitter {
 
     // Verify the WebSocket protocol version
     const protocolHeader = headers['sec-websocket-protocol'];
-    if (!protocolHeader) {
-      this.sendMessage('warning', `Missing Sec-WebSocket-Protocol header, expected value '${VERSION}'`);
-    } else {
+    if (protocolHeader) {
       const supportedProtocols = splitCommaSeparated(protocolHeader);
       if (!supportedProtocols.includes(VERSION)) {
         this.sendMessage('error', `Client does not support protocol ${VERSION}`);
         this.stop();
       }
+    } else {
+      this.sendMessage('warning', `Missing Sec-WebSocket-Protocol header, expected value '${VERSION}'`);
     }
 
     // Store the HTTP host and protocol

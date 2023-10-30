@@ -383,11 +383,7 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
     let oldObj: VirtualObject;
     let newObj: VirtualObject;
     const relation = this.getParentRelation(type);
-    if (!relation) {
-      oldObj = root;
-      newObj = (replace ? { ...partial } : { ...oldObj, ...partial }) as VirtualObject;
-      root = newObj;
-    } else {
+    if (relation) {
       const objs = this.getContainingRecord(root, type, id);
       if (partial[relation.child.key] && objs[id][relation.child.key] !== partial[relation.child.key]) {
         // eslint-disable-next-line ts/restrict-template-expressions
@@ -397,6 +393,10 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
       oldObj = objs[id];
       newObj = (replace ? { ...partial } : { ...oldObj, ...partial }) as VirtualObject;
       objs[id] = newObj;
+    } else {
+      oldObj = root;
+      newObj = (replace ? { ...partial } : { ...oldObj, ...partial }) as VirtualObject;
+      root = newObj;
     }
 
     // Copy over the child relations
