@@ -156,6 +156,7 @@ describe('A WrappedSetMultiMap', (): void => {
   it('supports a forEach call.', async(): Promise<void> => {
     expect(map.set(key, new Set([ 123, 456 ]))).toBe(map);
     const result: number[] = [];
+    // eslint-disable-next-line unicorn/no-array-for-each
     map.forEach((value): void => {
       result.push(value);
     });

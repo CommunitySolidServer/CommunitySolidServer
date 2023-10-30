@@ -166,7 +166,7 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
   const extensionParams: Record<string, string> = {};
   let map = mediaTypeParams;
   const parsedParams = parseParameters(parameters, replacements);
-  parsedParams.forEach(({ name, value }): void => {
+  for (const { name, value } of parsedParams) {
     if (name === 'q') {
       // Extension parameters appear after the q value
       map = extensionParams;
@@ -179,11 +179,11 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
       if (!value && map !== extensionParams) {
         handleInvalidValue(`Invalid Accept parameter ${name}: ` +
           `Accept parameter values are not optional when preceding the q value`, strict);
-        return;
+        continue;
       }
       map[name] = value || '';
     }
-  });
+  }
 
   return {
     range,

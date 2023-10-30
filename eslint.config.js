@@ -231,6 +231,7 @@ const configs = antfu(
       }],
       'unicorn/explicit-length-check': 'error',
       'unicorn/new-for-builtins': 'error',
+      'unicorn/no-array-for-each': 'error',
       'unicorn/no-array-reduce': 'error',
       'unicorn/no-for-loop': 'error',
       'unicorn/no-invalid-remove-event-listener': 'error',
@@ -268,7 +269,6 @@ const configs = antfu(
       'unicorn/require-number-to-fixed-digits-argument': 'error',
 
       // Might want to enable these
-      'unicorn/no-array-for-each': 'off',
       'unicorn/no-await-expression-member': 'off',
       'unicorn/no-negated-condition': 'off',
       'unicorn/no-object-as-default-parameter': 'off',
