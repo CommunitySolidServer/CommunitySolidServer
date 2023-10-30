@@ -5,7 +5,7 @@ import type { PodCreator } from '../../../src/identity/interaction/pod/util/PodC
 import { SeededAccountInitializer } from '../../../src/init/SeededAccountInitializer';
 import { mockFileSystem } from '../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 describe('A SeededAccountInitializer', (): void => {

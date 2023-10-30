@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { KeyValueStorage } from './KeyValueStorage';

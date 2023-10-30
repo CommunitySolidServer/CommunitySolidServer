@@ -1,4 +1,4 @@
-import assert from 'assert';
+import assert from 'node:assert';
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
 import { getPort } from '../util/Util';

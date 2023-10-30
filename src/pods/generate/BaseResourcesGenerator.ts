@@ -1,5 +1,5 @@
-import { createReadStream, promises as fsPromises } from 'fs';
-import type { Readable } from 'stream';
+import { createReadStream, promises as fsPromises } from 'node:fs';
+import type { Readable } from 'node:stream';
 import { pathExists } from 'fs-extra';
 import { Parser } from 'n3';
 import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';

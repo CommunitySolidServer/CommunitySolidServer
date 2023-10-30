@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { joinFilePath } from '../../src/';
 import type { App } from '../../src/';
 import { putResource } from '../util/FetchUtil';

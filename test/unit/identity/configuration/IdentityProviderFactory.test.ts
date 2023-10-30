@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { exportJWK, generateKeyPair } from 'jose';
 import type * as Koa from 'koa';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';

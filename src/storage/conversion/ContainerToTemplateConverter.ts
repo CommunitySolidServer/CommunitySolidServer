@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import orderBy from 'lodash.orderby';
 import type { Quad } from 'rdf-js';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';

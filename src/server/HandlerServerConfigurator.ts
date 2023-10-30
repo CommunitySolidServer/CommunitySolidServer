@@ -1,4 +1,4 @@
-import type { IncomingMessage, Server, ServerResponse } from 'http';
+import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import { getLoggerFor } from '../logging/LogUtil';
 import { isError } from '../util/errors/ErrorUtil';
 import { guardStream } from '../util/GuardedStream';

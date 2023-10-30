@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import fetch, { Headers } from 'cross-fetch';
 import { DataFactory } from 'n3';

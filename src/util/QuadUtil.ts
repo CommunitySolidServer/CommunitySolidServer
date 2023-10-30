@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import type { NamedNode } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';

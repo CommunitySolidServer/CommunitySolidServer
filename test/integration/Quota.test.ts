@@ -1,4 +1,4 @@
-import type { Stats } from 'fs';
+import type { Stats } from 'node:fs';
 import fetch from 'cross-fetch';
 import type { Response } from 'cross-fetch';
 import { ensureDir, pathExists, stat } from 'fs-extra';

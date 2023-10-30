@@ -1,5 +1,5 @@
-import type { IncomingMessage, Server } from 'http';
-import type { Socket } from 'net';
+import type { IncomingMessage, Server } from 'node:http';
+import type { Socket } from 'node:net';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
 import { getLoggerFor } from '../logging/LogUtil';

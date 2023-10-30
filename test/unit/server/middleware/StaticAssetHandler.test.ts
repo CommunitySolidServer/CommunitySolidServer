@@ -1,6 +1,6 @@
-import { EventEmitter } from 'events';
-import fs from 'fs';
-import { PassThrough, Readable } from 'stream';
+import { EventEmitter } from 'node:events';
+import fs from 'node:fs';
+import { PassThrough, Readable } from 'node:stream';
 import { createResponse } from 'node-mocks-http';
 import { StaticAssetEntry, StaticAssetHandler } from '../../../../src/server/middleware/StaticAssetHandler';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';

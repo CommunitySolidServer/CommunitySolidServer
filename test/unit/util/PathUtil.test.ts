@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'node:fs';
 import type { TargetExtractor } from '../../../src/http/input/identifier/TargetExtractor';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { HttpRequest } from '../../../src/server/HttpRequest';

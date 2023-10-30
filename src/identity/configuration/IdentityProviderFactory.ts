@@ -1,5 +1,5 @@
 /* eslint-disable ts/naming-convention */
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import type {
   Account,
   Adapter,

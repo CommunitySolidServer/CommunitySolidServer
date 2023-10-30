@@ -1,4 +1,4 @@
-import type { ServerResponse } from 'http';
+import type { ServerResponse } from 'node:http';
 import { createResponse } from 'node-mocks-http';
 import { RepresentationMetadata } from '../../../../../../src/http/representation/RepresentationMetadata';
 import { OwnerMetadataWriter } from '../../../../../../src/identity/interaction/pod/util/OwnerMetadataWriter';

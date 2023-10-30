@@ -1,4 +1,4 @@
-import { createInterface } from 'readline';
+import { createInterface } from 'node:readline';
 import { ACCOUNT_STORAGE_DESCRIPTION } from '../../identity/interaction/account/util/BaseAccountStore';
 import type { AccountLoginStorage } from '../../identity/interaction/account/util/LoginStorage';
 import { ACCOUNT_TYPE } from '../../identity/interaction/account/util/LoginStorage';

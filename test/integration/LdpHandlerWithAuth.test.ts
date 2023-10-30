@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'node:fs';
 import fetch from 'cross-fetch';
 import type { App, ResourceStore } from '../../src/';
 import { BasicRepresentation, isSystemError, joinFilePath, joinUrl } from '../../src/';

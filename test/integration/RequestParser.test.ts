@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { BasicETagHandler, SingleRootIdentifierStrategy } from '../../src';
 import { BasicRequestParser } from '../../src/http/input/BasicRequestParser';

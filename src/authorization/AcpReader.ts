@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import type { IAccessControlledResource, IContext, IPolicy } from '@solid/access-control-policy';
 import { allowAccessModes } from '@solid/access-control-policy';
 import type { Store } from 'n3';

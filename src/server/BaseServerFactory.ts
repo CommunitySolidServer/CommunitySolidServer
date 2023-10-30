@@ -1,8 +1,8 @@
-import { readFileSync } from 'fs';
-import type { Server } from 'http';
-import { createServer as createHttpServer } from 'http';
-import type { ServerOptions } from 'https';
-import { createServer as createHttpsServer } from 'https';
+import { readFileSync } from 'node:fs';
+import type { Server } from 'node:http';
+import { createServer as createHttpServer } from 'node:http';
+import type { ServerOptions } from 'node:https';
+import { createServer as createHttpsServer } from 'node:https';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpServerFactory } from './HttpServerFactory';
 import type { ServerConfigurator } from './ServerConfigurator';

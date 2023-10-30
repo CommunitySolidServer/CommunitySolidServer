@@ -1,4 +1,4 @@
-import { createReadStream } from 'fs';
+import { createReadStream } from 'node:fs';
 import fetch from 'cross-fetch';
 import type { Quad } from 'n3';
 import { DataFactory, Parser, Store } from 'n3';

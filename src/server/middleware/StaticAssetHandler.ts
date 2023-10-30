@@ -1,4 +1,4 @@
-import { createReadStream } from 'fs';
+import { createReadStream } from 'node:fs';
 import escapeStringRegexp from 'escape-string-regexp';
 import * as mime from 'mime-types';
 import { getLoggerFor } from '../../logging/LogUtil';

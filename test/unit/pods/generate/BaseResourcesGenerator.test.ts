@@ -13,7 +13,7 @@ import { HandlebarsTemplateEngine } from '../../../../src/util/templates/Handleb
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 import { mockFileSystem } from '../../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 class DummyFactory implements FileIdentifierMapperFactory {

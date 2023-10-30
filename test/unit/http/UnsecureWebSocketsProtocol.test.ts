@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import type { WebSocket } from 'ws';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import { UnsecureWebSocketsProtocol } from '../../../src/http/UnsecureWebSocketsProtocol';

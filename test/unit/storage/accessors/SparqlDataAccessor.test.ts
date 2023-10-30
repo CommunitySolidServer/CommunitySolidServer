@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'n3';

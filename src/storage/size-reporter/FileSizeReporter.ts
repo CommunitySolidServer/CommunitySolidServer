@@ -1,5 +1,5 @@
-import type { Stats } from 'fs';
-import { promises as fsPromises } from 'fs';
+import type { Stats } from 'node:fs';
+import { promises as fsPromises } from 'node:fs';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { joinFilePath, normalizeFilePath, trimTrailingSlashes } from '../../util/PathUtil';

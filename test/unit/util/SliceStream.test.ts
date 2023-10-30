@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { RangeNotSatisfiedHttpError } from '../../../src/util/errors/RangeNotSatisfiedHttpError';
 import { SliceStream } from '../../../src/util/SliceStream';
 import { readableToString } from '../../../src/util/StreamUtil';

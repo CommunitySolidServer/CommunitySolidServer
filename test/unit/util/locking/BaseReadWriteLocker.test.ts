@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { BaseReadWriteLocker } from '../../../../src/util/locking/BaseReadWriteLocker';
 import type { ResourceLocker } from '../../../../src/util/locking/ResourceLocker';

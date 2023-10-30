@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'node:fs';
 import { joinFilePath, resolveAssetPath } from '../PathUtil';
 import type { Template } from './TemplateEngine';
 

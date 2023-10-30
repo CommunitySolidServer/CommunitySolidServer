@@ -1,4 +1,4 @@
-import { PassThrough, Readable } from 'stream';
+import { PassThrough, Readable } from 'node:stream';
 import { Validator } from '../../http/auxiliary/Validator';
 import type { ValidatorInput } from '../../http/auxiliary/Validator';
 import type { Representation } from '../../http/representation/Representation';

@@ -1,4 +1,4 @@
-import { parse } from 'querystring';
+import { parse } from 'node:querystring';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
