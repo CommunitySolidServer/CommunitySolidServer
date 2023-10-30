@@ -236,6 +236,7 @@ const configs = antfu(
       'unicorn/no-for-loop': 'error',
       'unicorn/no-invalid-remove-event-listener': 'error',
       'unicorn/no-lonely-if': 'error',
+      'unicorn/no-negated-condition': 'error',
       'unicorn/no-nested-ternary': 'error',
       'unicorn/no-process-exit': 'error',
       'unicorn/no-thenable': 'error',
@@ -269,8 +270,6 @@ const configs = antfu(
       'unicorn/require-number-to-fixed-digits-argument': 'error',
 
       // Might want to enable these
-      'unicorn/no-await-expression-member': 'off',
-      'unicorn/no-negated-condition': 'off',
       'unicorn/no-object-as-default-parameter': 'off',
 
       'unused-imports/no-unused-vars': [

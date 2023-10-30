@@ -88,14 +88,14 @@ function emitStoredErrors(this: Guarded, event: string, func: (error: Error) => 
  */
 export function guardStream<T extends NodeJS.EventEmitter>(stream: T): Guarded<T> {
   const guarded = stream as Guarded<T>;
-  if (!isGuarded(stream)) {
-    guarded[guardedErrors] = [];
-    guarded.on('error', guardingErrorListener);
-    guarded.on('newListener', emitStoredErrors);
-  } else {
+  if (isGuarded(stream)) {
     // This makes sure the guarding error listener is the last one in the list again
     guarded.removeListener('error', guardingErrorListener);
     guarded.on('error', guardingErrorListener);
+  } else {
+    guarded[guardedErrors] = [];
+    guarded.on('error', guardingErrorListener);
+    guarded.on('newListener', emitStoredErrors);
   }
   return guarded;
 }

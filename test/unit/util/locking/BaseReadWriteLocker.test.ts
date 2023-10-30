@@ -14,13 +14,12 @@ class MemoryLocker implements ResourceLocker {
 
   public async acquire(identifier: ResourceIdentifier): Promise<void> {
     const { path } = identifier;
-    if (!this.locks[path]) {
-      this.locks[path] = [];
-    } else {
+    if (this.locks[path]) {
       return new Promise((resolve): void => {
         this.locks[path].push(resolve);
       });
     }
+    this.locks[path] = [];
   }
 
   public async release(identifier: ResourceIdentifier): Promise<void> {
