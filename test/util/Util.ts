@@ -146,7 +146,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
     const name = parts.at(-1) as string;
     parts = parts.slice(0, -1);
     let folder = cache.data;
-    parts.forEach((part): any => {
+    for (const part of parts) {
       if (typeof folder === 'string') {
         throwSystemError('ENOTDIR');
       }
@@ -154,7 +154,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       if (!folder) {
         throwSystemError('ENOENT');
       }
-    });
+    }
 
     return { folder, name };
   }

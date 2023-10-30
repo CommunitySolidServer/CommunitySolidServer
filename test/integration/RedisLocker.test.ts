@@ -198,7 +198,9 @@ describeIf('docker')('A server with a RedisLocker', (): void => {
         countdown -= 1;
         // Start releasing locks after 3 inits of the promises below
         if (countdown === 0) {
-          [ 1, 0, 2 ].forEach((num): unknown => releaseSignal.emit(`release${num}`));
+          for (const num of [ 1, 0, 2 ]) {
+            releaseSignal.emit(`release${num}`);
+          }
         }
       });
       const promises = [ 0, 1, 2 ].map(async(num): Promise<any> =>
