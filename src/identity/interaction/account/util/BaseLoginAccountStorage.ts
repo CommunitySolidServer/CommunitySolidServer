@@ -48,7 +48,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
   Promise<void> {
     // Determine potential new key pointing to account ID
     this.accountKeys[type] = Object.entries(description)
-      .find(([ , desc ]): boolean => desc === `id:${ACCOUNT_TYPE}`)?.[0];
+      .find(([ , desc ]): boolean => desc === `id:${ACCOUNT_TYPE}` as `id:${string & keyof T}`)?.[0];
 
     if (type === ACCOUNT_TYPE) {
       description = { ...description, ...MINIMUM_ACCOUNT_DESCRIPTION };
