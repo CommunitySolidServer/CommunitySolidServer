@@ -172,7 +172,7 @@
     "@types/supertest": "^2.0.14",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.3.0",
-    "commit-and-tag-version": "^11.3.0",
+    "commit-and-tag-version": "^12.0.0",
     "componentsjs-generator": "^3.1.2",
     "eslint": "^8.21.0",
     "eslint-config-es": "4.1.0",
