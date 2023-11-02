@@ -25,5 +25,7 @@ jobs:
           days-before-pr-stale: -1
           operations-per-run: 700
           exempt-issue-labels: "🐛 bug,☀️ enhancement,📚 documentation,➕ feature,🐌 performance,
-            ➕ test,📝 task,:ant: worker threads,👩🏾‍💻 developer experience"
+            ➕ test,📝 task,:ant: worker threads,👩🏾‍💻 developer experience, :id: identity-provider,
+            :scroll: solid:protocol:v0.9,⚙️ dependencies,⌛ has dependency, error-handling
+            storage:sparql-endpoint,storage:routing"
           exempt-all-assignees: true
