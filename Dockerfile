@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine AS build
+FROM node:21-alpine AS build
 
 # Set current working directory
 WORKDIR /community-server
@@ -13,7 +13,7 @@ RUN npm ci --unsafe-perm && npm run build
 
 
 # Runtime stage
-FROM node:18-alpine
+FROM node:21-alpine
 
 # Add contact informations for questions about the container
 LABEL maintainer="Solid Community Server Docker Image Maintainer <thomas.dupont@ugent.be>"
