@@ -1,9 +1,10 @@
+/* eslint-disable unused-imports/no-unused-vars */
 /**
  * Returns an object that maps IDs to the corresponding element.
  *
  * @param ids - IDs of the element (empty to retrieve all elements)
  */
-export function getElements(...ids) {
+function getElements(...ids) {
   ids = ids.length > 0 ? ids : [ ...document.querySelectorAll('[id]') ].map(e => e.id);
   return Object.fromEntries(ids.map(id => [ id, document.getElementById(id) ]));
 }
@@ -21,7 +22,7 @@ export function getElements(...ids) {
  *                    Defaults to identity function.
  * @param formId - The ID of the form. Defaults to "mainForm".
  */
-export async function postJsonForm(target = '', expectRedirect = false, transform = json => json, formId = 'mainForm') {
+async function postJsonForm(target = '', expectRedirect = false, transform = json => json, formId = 'mainForm') {
   const form = document.getElementById(formId);
   const formData = new FormData(form);
   const json = transform(Object.fromEntries(formData));
@@ -50,7 +51,7 @@ export async function postJsonForm(target = '', expectRedirect = false, transfor
  * @param formId - ID of the form. Defaults to "mainForm".
  * @param errorId - ID of the error block. Defaults to "error".
  */
-export function addPostListener(callback, formId = 'mainForm', errorId = 'error') {
+function addPostListener(callback, formId = 'mainForm', errorId = 'error') {
   const form = document.getElementById(formId);
 
   form.addEventListener('submit', async(event) => {
@@ -69,7 +70,7 @@ export function addPostListener(callback, formId = 'mainForm', errorId = 'error'
  * @param id - ID of the element.
  * @param visible - If it should be visible.
  */
-export function setVisibility(id, visible) {
+function setVisibility(id, visible) {
   const element = document.getElementById(id);
   element.classList[visible ? 'remove' : 'add']('hidden');
   // Disable children of hidden elements,
@@ -85,7 +86,7 @@ export function setVisibility(id, visible) {
  * Obtains all children, grandchildren, etc. of the given element.
  * @param element - Element to get all descendants from.
  */
-export function getDescendants(element) {
+function getDescendants(element) {
   return [ ...element.querySelectorAll('*') ];
 }
 
@@ -96,12 +97,15 @@ export function getDescendants(element) {
  * @param options - Indicates which fields should be updated.
  *                  Keys should be `innerText` and/or `href`, values should be booleans.
  */
-export function updateElement(id, text, options) {
+function updateElement(id, text, options) {
   const element = document.getElementById(id);
   setVisibility(id, Boolean(text));
-  if (options.textContent) {
-    element.textContent = text;
+  // Keeping innerText for now as not to suddenly change the name of an option.
+  /* eslint-disable unicorn/prefer-dom-node-text-content */
+  if (options.innerText) {
+    element.innerText = text;
   }
+  /* eslint-enable unicorn/prefer-dom-node-text-content */
   if (options.href) {
     element.href = text;
   }
@@ -112,7 +116,7 @@ export function updateElement(id, text, options) {
  * @param url - URL to fetch JSON from.
  * @param redirectUrl - URL to redirect to in case the response code is >= 400. No redirect happens if undefined.
  */
-export async function fetchJson(url, redirectUrl) {
+async function fetchJson(url, redirectUrl) {
   const res = await fetch(url, { headers: { accept: 'application/json' }});
 
   if (redirectUrl && res.status >= 400) {
@@ -126,14 +130,14 @@ export async function fetchJson(url, redirectUrl) {
 /**
  * Returns the controls object that can be found accessing the given URL.
  */
-export async function fetchControls(url) {
+async function fetchControls(url) {
   return (await fetchJson(url)).controls;
 }
 
 /**
  * POSTs JSON to the given URL and returns the response.
  */
-export async function postJson(url, json) {
+async function postJson(url, json) {
   return fetch(url, {
     method: 'POST',
     headers: { accept: 'application/json', 'content-type': 'application/json' },
@@ -145,7 +149,7 @@ export async function postJson(url, json) {
  * Sets the contents of the error block to the given error message.
  * Default ID of the error block is `error`.
  */
-export function setError(message, errorId = 'error') {
+function setError(message, errorId = 'error') {
   updateElement(errorId, message, { innerText: true });
 }
 
@@ -154,7 +158,7 @@ export function setError(message, errorId = 'error') {
  * @param element - The id of the button.
  * @param url - The URL to redirect to.
  */
-export function setRedirectClick(element, url) {
+function setRedirectClick(element, url) {
   document.getElementById(element).addEventListener('click', () => location.href = url);
 }
 
@@ -165,7 +169,7 @@ export function setRedirectClick(element, url) {
  * @param formId - ID of the form. Defaults to "mainForm".
  * @param confirmPasswordId - ID of the password confirmation field. Defaults to "confirmPassword".
  */
-export function validatePasswordConfirmation(passwordId, formId = 'mainForm', confirmPasswordId = 'confirmPassword') {
+function validatePasswordConfirmation(passwordId, formId = 'mainForm', confirmPasswordId = 'confirmPassword') {
   const formData = new FormData(document.getElementById(formId));
   if (formData.get(passwordId) !== formData.get(confirmPasswordId)) {
     throw new Error('Password confirmation does not match the password!');
@@ -183,7 +187,7 @@ export function validatePasswordConfirmation(passwordId, formId = 'mainForm', co
  *
  * @returns The HTML object representing the `(delete)` link.
  */
-export function createUrlDeleteElement(parent, url, fetchParams, confirmMsg, finishMsg) {
+function createUrlDeleteElement(parent, url, fetchParams, confirmMsg, finishMsg) {
   const del = document.createElement('a');
   del.textContent = '(delete)';
   del.href = '#';
