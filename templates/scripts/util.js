@@ -54,6 +54,10 @@ async function postJsonForm(target = '', expectRedirect = false, transform = jso
 function addPostListener(callback, formId = 'mainForm', errorId = 'error') {
   const form = document.getElementById(formId);
 
+  // By default, we disable all submit buttons to prevent them from being clicked before content is loaded
+  const submit = form.querySelector('button[type="submit"]');
+  submit.disabled = false;
+
   form.addEventListener('submit', async(event) => {
     event.preventDefault();
 
