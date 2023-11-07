@@ -29,3 +29,4 @@ Below are sections that go deeper into the specific steps.
 * [How input gets parsed and output gets returned](parsing.md)
 * [How authentication and authorization work](authorization.md)
 * [What the `ResourceStore` looks like](resource-store.md)
+* [How resources can be modified](patching.md)

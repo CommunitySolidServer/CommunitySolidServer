@@ -102,6 +102,7 @@ nav:
               - Parsing: architecture/features/protocol/parsing.md
               - Authorization: architecture/features/protocol/authorization.md
               - Resource Store: architecture/features/protocol/resource-store.md
+              - Modifying resources: architecture/features/protocol/patching.md
           - Account management:
               - Overview: architecture/features/accounts/overview.md
               - Controls: architecture/features/accounts/controls.md
