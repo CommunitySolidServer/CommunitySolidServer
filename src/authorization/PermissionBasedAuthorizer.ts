@@ -16,8 +16,7 @@ import { AccessMode } from './permissions/Permissions';
  * if yes, authorization is granted.
  * `undefined` values for reader results are interpreted as `false`.
  */
-export class PermissionBasedAuthorizer<TCredentials extends Record<string, unknown> = Credentials>
-  extends Authorizer<TCredentials> {
+export class PermissionBasedAuthorizer extends Authorizer {
   protected readonly logger = getLoggerFor(this);
 
   private readonly resourceSet: ResourceSet;
@@ -32,7 +31,7 @@ export class PermissionBasedAuthorizer<TCredentials extends Record<string, unkno
     this.resourceSet = resourceSet;
   }
 
-  public async handle(input: AuthorizerInput<TCredentials>): Promise<void> {
+  public async handle(input: AuthorizerInput): Promise<void> {
     const { credentials, requestedModes, availablePermissions } = input;
 
     // Ensure all required modes are within the agent's permissions.
@@ -61,10 +60,10 @@ export class PermissionBasedAuthorizer<TCredentials extends Record<string, unkno
    * Otherwise, deny access based on existing grounds.
    */
   private async reportAccessError(
-    identifier: ResourceIdentifier,
+    identifier: ResourceIdentifier, 
     modes: ReadonlySet<AccessMode>,
-    permissionSet: PermissionSet,
-    cause: unknown,
+    permissionSet: PermissionSet, 
+    cause: unknown
   ): Promise<never> {
     const exposeExistence = permissionSet[AccessMode.read];
     if (exposeExistence && !modes.has(AccessMode.create) && !await this.resourceSet.hasResource(identifier)) {
@@ -82,7 +81,7 @@ export class PermissionBasedAuthorizer<TCredentials extends Record<string, unkno
    * @param permissionSet - PermissionSet describing the available permissions of the credentials.
    * @param mode - Which mode is requested.
    */
-  private requireModePermission(credentials: TCredentials, permissionSet: PermissionSet, mode: AccessMode): void {
+  private requireModePermission(credentials: Credentials, permissionSet: PermissionSet, mode: AccessMode): void {
     if (!permissionSet[mode]) {
       if (this.isAuthenticated(credentials)) {
         this.logger.warn(`Agent ${JSON.stringify(credentials)} has no ${mode} permissions`);
@@ -101,7 +100,7 @@ export class PermissionBasedAuthorizer<TCredentials extends Record<string, unkno
    * Checks whether the agent is authenticated (logged in) or not (public/anonymous).
    * @param credentials - Credentials to check.
    */
-  private isAuthenticated(credentials: TCredentials): boolean {
+  private isAuthenticated(credentials: Credentials): boolean {
     return Object.values(credentials).some((cred): boolean => cred !== undefined);
   }
 }

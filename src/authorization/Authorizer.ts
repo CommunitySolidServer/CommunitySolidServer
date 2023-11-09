@@ -2,11 +2,11 @@ import type { Credentials } from '../authentication/Credentials';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
 import type { AccessMap, PermissionMap } from './permissions/Permissions';
 
-export interface AuthorizerInput<TCredentials extends Record<string, unknown> = Credentials> {
+export interface AuthorizerInput {
   /**
    * Credentials of the entity that wants to use the resource.
    */
-  credentials: TCredentials;
+  credentials: Credentials;
   /**
    * Requested access modes per resource.
    */
@@ -21,5 +21,4 @@ export interface AuthorizerInput<TCredentials extends Record<string, unknown> = 
  * Verifies whether the credentials provide access with the given permissions on the resource.
  * An {@link Error} with the necessary explanation will be thrown if permissions are not granted.
  */
-export abstract class Authorizer<TCredentials extends Record<string, unknown> = Credentials>
-  extends AsyncHandler<AuthorizerInput<TCredentials>> {}
+export abstract class Authorizer extends AsyncHandler<AuthorizerInput> {}
