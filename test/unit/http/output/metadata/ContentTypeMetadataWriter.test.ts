@@ -15,7 +15,7 @@ describe('A ContentTypeMetadataWriter', (): void => {
   it('adds no header if there is no relevant metadata.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata();
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ });
+    expect(response.getHeaders()).toEqual({});
   });
 
   it('adds a Content-Type header with parameters if present.', async(): Promise<void> => {

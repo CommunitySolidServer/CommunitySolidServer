@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { AtomicFileDataAccessor } from '../../../../src/storage/accessors/AtomicFileDataAccessor';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
@@ -9,7 +9,7 @@ import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 describe('AtomicFileDataAccessor', (): void => {
@@ -42,8 +42,10 @@ describe('AtomicFileDataAccessor', (): void => {
     });
 
     it('writes metadata to the corresponding metadata file.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata({ path: `${base}res.ttl` },
-        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' });
+      metadata = new RepresentationMetadata(
+        { path: `${base}res.ttl` },
+        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' },
+      );
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data['res.ttl']).toBe('data');
       expect(cache.data['res.ttl.meta']).toMatch(`<${base}res.ttl> <likes> "apples".`);
@@ -56,43 +58,45 @@ describe('AtomicFileDataAccessor', (): void => {
     });
 
     it('should throw an error when writing the data goes wrong.', async(): Promise<void> => {
-      data.read = jest.fn((): any => {
+      jest.spyOn(data, 'read').mockImplementation((): any => {
         data.emit('error', new Error('error'));
         return null;
       });
-      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
+      jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation((): any => ({
         isFile: (): boolean => false,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
     it('should throw when renaming / moving the file goes wrong.', async(): Promise<void> => {
-      jest.requireMock('fs-extra').rename = jest.fn((): any => {
+      jest.spyOn(jest.requireMock('fs-extra'), 'rename').mockImplementation((): any => {
         throw new Error('error');
       });
-      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
+      jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation((): any => ({
         isFile: (): boolean => true,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
     it('should (on error) not unlink the temp file if it does not exist.', async(): Promise<void> => {
-      jest.requireMock('fs-extra').rename = jest.fn((): any => {
+      jest.spyOn(jest.requireMock('fs-extra'), 'rename').mockImplementation((): any => {
         throw new Error('error');
       });
-      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
+      jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation((): any => ({
         isFile: (): boolean => false,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
-    it('should throw when renaming / moving the file goes wrong and the temp file does not exist.',
+    it(
+      'should throw when renaming / moving the file goes wrong and the temp file does not exist.',
       async(): Promise<void> => {
-        jest.requireMock('fs-extra').rename = jest.fn((): any => {
+        jest.spyOn(jest.requireMock('fs-extra'), 'rename').mockImplementation((): any => {
           throw new Error('error');
         });
-        jest.requireMock('fs-extra').stat = jest.fn();
+        jest.spyOn(jest.requireMock('fs-extra'), 'stat').mockImplementation();
         await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
-      });
+      },
+    );
   });
 });

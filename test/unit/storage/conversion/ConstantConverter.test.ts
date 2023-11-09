@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ConstantConverterOptions } from '../../../../src/storage/conversion/ConstantConverter';
@@ -114,7 +114,7 @@ describe('A ConstantConverter', (): void => {
     expect(createReadStream).toHaveBeenCalledWith('abc/def/index.html', 'utf8');
 
     expect(converted.metadata.contentType).toBe('text/html');
-    expect(await arrayifyStream(converted.data)).toEqual([ 'file contents' ]);
+    await expect(arrayifyStream(converted.data)).resolves.toEqual([ 'file contents' ]);
   });
 
   it('defaults to the most permissive options.', async(): Promise<void> => {

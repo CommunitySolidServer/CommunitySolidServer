@@ -14,12 +14,13 @@ export class UnionCredentialsExtractor extends UnionHandler<CredentialsExtractor
 
   public async combine(results: Credentials[]): Promise<Credentials> {
     // Combine all the results into a single object
-    return results.reduce((result, credentials): Credentials => {
-      for (const key of Object.keys(credentials) as (keyof Credentials)[]) {
-        this.setValue(result, key, credentials[key]);
+    const credentials: Credentials = {};
+    for (const result of results) {
+      for (const key of Object.keys(result) as (keyof Credentials)[]) {
+        this.setValue(credentials, key, result[key]);
       }
-      return result;
-    }, {});
+    }
+    return credentials;
   }
 
   /**

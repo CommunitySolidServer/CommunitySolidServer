@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'node:fs';
 import { joinFilePath, resolveAssetPath } from '../PathUtil';
 import type { Template } from './TemplateEngine';
 
@@ -23,10 +23,10 @@ export function getTemplateFilePath(template?: Template): string | undefined {
 /**
  * Reads the template and returns it as a string.
  */
-export async function readTemplate(template: Template = { templateString: '' }): Promise<string> {
+export async function readTemplate(template?: Template): Promise<string> {
   // The template has already been given as a string
-  if (typeof template === 'object' && 'templateString' in template) {
-    return template.templateString;
+  if (typeof template === 'undefined' || (typeof template === 'object' && 'templateString' in template)) {
+    return template?.templateString ?? '';
   }
   // The template needs to be read from disk
   return fsPromises.readFile(getTemplateFilePath(template)!, 'utf8');

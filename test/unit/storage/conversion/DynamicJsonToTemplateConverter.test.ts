@@ -33,7 +33,7 @@ describe('A DynamicJsonToTemplateConverter', (): void => {
     input = { identifier, representation, preferences };
 
     templateEngine = {
-      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+      handleSafe: jest.fn().mockResolvedValue('<html>'),
     } as any;
     converter = new DynamicJsonToTemplateConverter(templateEngine);
   });

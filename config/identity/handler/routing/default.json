@@ -44,7 +44,7 @@
       "comment": "Adds the API version to the JSON response.",
       "@id": "urn:solid-server:default:VersionHandler",
       "@type": "VersionHandler",
-      "source" : { "@id": "urn:solid-server:default:CookieInteractionHandler" }
+      "source": { "@id": "urn:solid-server:default:CookieInteractionHandler" }
     },
     {
       "comment": "Updates the cookie values as necessary.",
@@ -67,13 +67,13 @@
           "controls": []
         }
       }],
-      "source" : { "@id": "urn:solid-server:default:LocationInteractionHandler" }
+      "source": { "@id": "urn:solid-server:default:LocationInteractionHandler" }
     },
     {
       "comment": "Converts 3xx redirects to 200 JSON responses for consumption by browser scripts.",
       "@id": "urn:solid-server:default:LocationInteractionHandler",
       "@type": "LocationInteractionHandler",
-      "source" : { "@id": "urn:solid-server:default:InteractionRouteHandler" }
+      "source": { "@id": "urn:solid-server:default:InteractionRouteHandler" }
     },
     {
       "comment": "Contains all JsonInteractionHandlers that can potentially handle the input request.",

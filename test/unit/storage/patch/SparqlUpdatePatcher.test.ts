@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { Store, DataFactory } from 'n3';
+import { DataFactory, Store } from 'n3';
 import type { Quad } from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
@@ -83,9 +83,11 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch('DELETE DATA { :startS1 :startP1 :startO1 }');
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/startS2'),
+      quad(
+        namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2')),
+        namedNode('http://test.com/startO2'),
+      ),
     ]);
   });
 
@@ -93,9 +95,11 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch('DELETE WHERE { :startS1 :startP1 :startO1 }');
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/startS2'),
+      quad(
+        namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2')),
+        namedNode('http://test.com/startO2'),
+      ),
     ]);
   });
 
@@ -103,9 +107,11 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch('DELETE WHERE { :startS1 :startP1 ?o }');
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/startS2'),
+      quad(
+        namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2')),
+        namedNode('http://test.com/startO2'),
+      ),
     ]);
   });
 
@@ -113,12 +119,16 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch('DELETE { :startS1 :startP1 :startO1 } INSERT { :s1 :p1 :o1 . } WHERE {}');
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/startS2'),
+      quad(
+        namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2')),
-      quad(namedNode('http://test.com/s1'),
+        namedNode('http://test.com/startO2'),
+      ),
+      quad(
+        namedNode('http://test.com/s1'),
         namedNode('http://test.com/p1'),
-        namedNode('http://test.com/o1')),
+        namedNode('http://test.com/o1'),
+      ),
     ]);
   });
 
@@ -128,12 +138,16 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch(query);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/startS2'),
+      quad(
+        namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2')),
-      quad(namedNode('http://test.com/s2'),
+        namedNode('http://test.com/startO2'),
+      ),
+      quad(
+        namedNode('http://test.com/s2'),
         namedNode('http://test.com/p2'),
-        namedNode('http://test.com/o2')),
+        namedNode('http://test.com/o2'),
+      ),
     ]);
   });
 
@@ -143,15 +157,21 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch(query);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/startS2'),
+      quad(
+        namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2')),
-      quad(namedNode('http://test.com/s1'),
+        namedNode('http://test.com/startO2'),
+      ),
+      quad(
+        namedNode('http://test.com/s1'),
         namedNode('http://test.com/p1'),
-        namedNode('http://test.com/o1')),
-      quad(namedNode('http://test.com/s2'),
+        namedNode('http://test.com/o1'),
+      ),
+      quad(
+        namedNode('http://test.com/s2'),
         namedNode('http://test.com/p2'),
-        namedNode('http://test.com/o2')),
+        namedNode('http://test.com/o2'),
+      ),
     ]);
   });
 

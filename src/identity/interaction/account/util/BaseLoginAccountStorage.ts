@@ -1,9 +1,13 @@
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { CreateTypeObject,
-  TypeObject,
-  StringKey,
+import type {
+  CreateTypeObject,
+  IndexedQuery,
   IndexedStorage,
-  IndexTypeCollection, IndexedQuery, ValueType } from '../../../../storage/keyvalue/IndexedStorage';
+  IndexTypeCollection,
+  StringKey,
+  TypeObject,
+  ValueType,
+} from '../../../../storage/keyvalue/IndexedStorage';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
 import { NotFoundHttpError } from '../../../../util/errors/NotFoundHttpError';
 import type { LoginStorage } from './LoginStorage';
@@ -44,7 +48,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
   Promise<void> {
     // Determine potential new key pointing to account ID
     this.accountKeys[type] = Object.entries(description)
-      .find(([ , desc ]): boolean => desc === `id:${ACCOUNT_TYPE}`)?.[0];
+      .find(([ , desc ]): boolean => desc === `id:${ACCOUNT_TYPE}` as `id:${string & keyof T}`)?.[0];
 
     if (type === ACCOUNT_TYPE) {
       description = { ...description, ...MINIMUM_ACCOUNT_DESCRIPTION };
@@ -116,8 +120,12 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
     return this.storage.set(type, value);
   }
 
-  public async setField<TType extends StringKey<T>, TKey extends StringKey<T[TType]>>(type: TType, id: string,
-    key: TKey, value: ValueType<T[TType][TKey]>): Promise<void> {
+  public async setField<TType extends StringKey<T>, TKey extends StringKey<T[TType]>>(
+    type: TType,
+    id: string,
+    key: TKey,
+    value: ValueType<T[TType][TKey]>,
+  ): Promise<void> {
     return this.storage.setField(type, id, key, value);
   }
 
@@ -145,6 +153,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
    * it doesn't have a login method when the timer runs out.
    */
   protected createAccountTimeout(id: string): void {
+    // eslint-disable-next-line ts/no-misused-promises
     const timer = setTimeout(async(): Promise<void> => {
       const account = await this.storage.get(ACCOUNT_TYPE, id);
       if (account && account[LOGIN_COUNT] === 0) {
@@ -181,7 +190,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
   /**
    * Removes the field that keeps track of the login counts, to hide this from the output.
    */
-  protected cleanOutput<TVal extends Record<string, unknown> | undefined>(value: TVal): TVal {
+  protected cleanOutput<TVal extends Record<string, unknown> | undefined>(this: void, value: TVal): TVal {
     if (value) {
       delete value[LOGIN_COUNT];
     }

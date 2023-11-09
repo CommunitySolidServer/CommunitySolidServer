@@ -13,15 +13,17 @@ describe('FilterMetadataDataAccessor', (): void => {
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
     childAccessor = {
+      getChildren: jest.fn(),
       writeDocument: jest.fn(),
       writeContainer: jest.fn(),
     } as any;
-    childAccessor.getChildren = jest.fn();
   });
 
   it('removes only the matching metadata properties when calling writeDocument.', async(): Promise<void> => {
-    const filterMetadataAccessor = new FilterMetadataDataAccessor(childAccessor,
-      [ new FilterPattern(undefined, CONTENT_LENGTH) ]);
+    const filterMetadataAccessor = new FilterMetadataDataAccessor(
+      childAccessor,
+      [ new FilterPattern(undefined, CONTENT_LENGTH) ],
+    );
     const mockMetadata = new RepresentationMetadata();
     mockMetadata.contentLength = 40;
     mockMetadata.contentType = APPLICATION_JSON;
@@ -49,8 +51,10 @@ describe('FilterMetadataDataAccessor', (): void => {
   });
 
   it('removes only the matching metadata properties when calling writeContainer.', async(): Promise<void> => {
-    const filterMetadataAccessor = new FilterMetadataDataAccessor(childAccessor,
-      [ new FilterPattern(undefined, CONTENT_LENGTH) ]);
+    const filterMetadataAccessor = new FilterMetadataDataAccessor(
+      childAccessor,
+      [ new FilterPattern(undefined, CONTENT_LENGTH) ],
+    );
     const mockMetadata = new RepresentationMetadata();
     mockMetadata.contentLength = 40;
     mockMetadata.contentType = APPLICATION_JSON;

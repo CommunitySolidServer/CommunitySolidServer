@@ -89,9 +89,9 @@ export class ExpiringAdapter implements Adapter {
       return;
     }
     const deletePromises: Promise<unknown>[] = [];
-    grants.forEach((grant): void => {
+    for (const grant of grants) {
       deletePromises.push(this.storage.delete(grant));
-    });
+    }
     deletePromises.push(this.storage.delete(grantKey));
     await Promise.all(deletePromises);
   }

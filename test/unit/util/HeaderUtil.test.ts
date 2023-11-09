@@ -1,7 +1,8 @@
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { ContentType } from '../../../src/util/Header';
-import { addHeader,
+import {
+  addHeader,
   hasScheme,
   matchesAuthorizationScheme,
   parseAccept,
@@ -11,7 +12,8 @@ import { addHeader,
   parseAcceptLanguage,
   parseContentType,
   parseForwarded,
-  parseLinkHeader } from '../../../src/util/HeaderUtil';
+  parseLinkHeader,
+} from '../../../src/util/HeaderUtil';
 
 describe('HeaderUtil', (): void => {
   describe('#parseAccept', (): void => {
@@ -57,47 +59,46 @@ describe('HeaderUtil', (): void => {
       expect(parseAccept('*')).toEqual([]);
       expect(parseAccept('"bad"/text')).toEqual([]);
       expect(parseAccept('*/\\bad')).toEqual([]);
-      expect(parseAccept('*/*')).toEqual([{
-        parameters: { extension: {}, mediaType: {}}, range: '*/*', weight: 1,
-      }]);
+      expect(parseAccept('*/*')).toEqual([
+        { parameters: { extension: {}, mediaType: {}}, range: '*/*', weight: 1 },
+      ]);
     });
 
     it('ignores the weight of Accept Headers with q values it can not parse.', async(): Promise<void> => {
-      expect(parseAccept('a/b; q=text')).toEqual([{
-        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
-      }]);
+      expect(parseAccept('a/b; q=text')).toEqual([
+        { range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}}},
+      ]);
       // Invalid Q value but can be parsed
-      expect(parseAccept('a/b; q=0.1234')).toEqual([{
-        range: 'a/b', weight: 0.1234, parameters: { extension: {}, mediaType: {}},
-      }]);
-      expect(parseAccept('a/b; q=1.1')).toEqual([{
-        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
-      }]);
-      expect(parseAccept('a/b; q=1.000')).toEqual([{
-        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
-      }]);
-      expect(parseAccept('a/b; q=-5')).toEqual([{
-        range: 'a/b', weight: 0, parameters: { extension: {}, mediaType: {}},
-      }]);
-      expect(parseAccept('a/b; q=0.123')).toEqual([{
-        range: 'a/b', weight: 0.123, parameters: { extension: {}, mediaType: {}},
-      }]);
+      expect(parseAccept('a/b; q=0.1234')).toEqual([
+        { range: 'a/b', weight: 0.1234, parameters: { extension: {}, mediaType: {}}},
+      ]);
+      expect(parseAccept('a/b; q=1.1')).toEqual([
+        { range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}}},
+      ]);
+      expect(parseAccept('a/b; q=1.000')).toEqual([
+        { range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}}},
+      ]);
+      expect(parseAccept('a/b; q=-5')).toEqual([
+        { range: 'a/b', weight: 0, parameters: { extension: {}, mediaType: {}}},
+      ]);
+      expect(parseAccept('a/b; q=0.123')).toEqual([
+        { range: 'a/b', weight: 0.123, parameters: { extension: {}, mediaType: {}}},
+      ]);
     });
 
     it('ignores Accept Headers with invalid parameters.', async(): Promise<void> => {
-      expect(parseAccept('a/b; a')).toEqual([{
-        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
-      }]);
-      expect(parseAccept('a/b; a=\\')).toEqual([{
-        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
-      }]);
-      expect(parseAccept('a/b; q=1 ; a=\\')).toEqual([{
-        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
-      }]);
-      expect(parseAccept('a/b; q=1 ; a')).toEqual([{
-        // eslint-disable-next-line id-length
-        range: 'a/b', weight: 1, parameters: { extension: { a: '' }, mediaType: {}},
-      }]);
+      expect(parseAccept('a/b; a')).toEqual([
+        { range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}}},
+      ]);
+      expect(parseAccept('a/b; a=\\')).toEqual([
+        { range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}}},
+      ]);
+      expect(parseAccept('a/b; q=1 ; a=\\')).toEqual([
+        { range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}}},
+      ]);
+      expect(parseAccept('a/b; q=1 ; a')).toEqual([
+        { range: 'a/b', weight: 1, parameters: { extension: { a: '' }, mediaType: {}}},
+      ]);
     });
 
     it('rejects Accept Headers with quoted parameters.', async(): Promise<void> => {

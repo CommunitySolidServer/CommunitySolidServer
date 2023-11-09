@@ -32,7 +32,7 @@ This only needs to be done once, afterwards this token can be used for all futur
 // as described in the API documentation.
 const indexResponse = await fetch('http://localhost:3000/.account/', { headers: { cookie }});
 const { controls } = await indexResponse.json();
-const res = await fetch(controls.account.clientCredentials, {
+const response = await fetch(controls.account.clientCredentials, {
   method: 'POST',
   headers: { cookie, 'content-type': 'application/json' },
   // The name field will be used when generating the ID of your token.

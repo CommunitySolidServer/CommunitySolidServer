@@ -1,4 +1,4 @@
-import type { TLSSocket } from 'tls';
+import type { TLSSocket } from 'node:tls';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { errorTermsToMetadata } from '../../../util/errors/HttpErrorUtil';
@@ -73,8 +73,10 @@ export class OriginalUrlExtractor extends TargetExtractor {
 
     // Check if the configured IdentifierStrategy supports the identifier
     if (!this.identifierStrategy.supportsIdentifier(identifier)) {
-      throw new InternalServerError(`The identifier ${identifier.path} is outside the configured identifier space.`,
-        { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: identifier.path }) });
+      throw new InternalServerError(
+        `The identifier ${identifier.path} is outside the configured identifier space.`,
+        { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: identifier.path }) },
+      );
     }
 
     return identifier;

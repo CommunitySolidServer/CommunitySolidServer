@@ -44,7 +44,7 @@ describe('An AuthAuxiliaryReader', (): void => {
 
     const result = await reader.handle({ requestedModes, credentials });
     expect(result.get(acl1)).toEqual({ read: true, append: true, write: true, control: true });
-    expect(result.get(acl2)).toEqual({ });
+    expect(result.get(acl2)).toEqual({});
 
     const updatedMap = new IdentifierMap();
     updatedMap.set(subject1, new Set([ AclMode.control ]));

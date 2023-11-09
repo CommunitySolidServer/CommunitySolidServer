@@ -16,7 +16,7 @@ export function splitCommaSeparated(input: string): string[] {
  * @returns The sanitized output.
  */
 export function sanitizeUrlPart(urlPart: string): string {
-  return urlPart.replace(/\W/gu, '-');
+  return urlPart.replaceAll(/\W/gu, '-');
 }
 
 /**

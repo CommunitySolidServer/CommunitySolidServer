@@ -1,4 +1,4 @@
-import { posix, win32 } from 'path';
+import { posix, win32 } from 'node:path';
 import { readJson } from 'fs-extra';
 import urljoin from 'url-join';
 import type { TargetExtractor } from '../http/input/identifier/TargetExtractor';
@@ -15,7 +15,7 @@ import { errorTermsToMetadata } from './errors/HttpErrorUtil';
  * @returns The potentially changed path (POSIX).
  */
 function windowsToPosixPath(path: string): string {
-  return path.replace(/\\+/gu, '/');
+  return path.replaceAll(/\\+/gu, '/');
 }
 
 /**
@@ -139,7 +139,7 @@ function transformPathComponents(path: string, transform: (part: string) => stri
     .map((part, index): string =>
       index % 2 === 0 ? transform(part) : part.toUpperCase())
     .join('');
-  return !queryString ? transformed : `${transformed}${queryString}`;
+  return queryString ? `${transformed}${queryString}` : transformed;
 }
 
 /**
@@ -156,6 +156,7 @@ export function toCanonicalUriPath(path: string): string {
     encodeURIComponent(decodeURIComponent(part)));
 }
 
+/* eslint-disable ts/naming-convention */
 // Characters not allowed in a Windows file path
 const forbiddenSymbols = {
   '<': '%3C',
@@ -167,6 +168,7 @@ const forbiddenSymbols = {
   // `*` does not get converted by `encodeUriComponent`
   '*': '%2A',
 } as const;
+/* eslint-enable ts/naming-convention */
 const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`, 'ug');
 /**
  * This function is used when converting a URI to a file path. Decodes all components of a URI path,
@@ -235,8 +237,10 @@ Promise<string> {
   baseUrl = ensureTrailingSlash(baseUrl);
   const target = await targetExtractor.handleSafe({ request });
   if (!target.path.startsWith(baseUrl)) {
-    throw new BadRequestHttpError(`The identifier ${target.path} is outside the configured identifier space.`,
-      { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: target.path }) });
+    throw new BadRequestHttpError(
+      `The identifier ${target.path} is outside the configured identifier space.`,
+      { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: target.path }) },
+    );
   }
   return target.path.slice(baseUrl.length - 1);
 }
@@ -302,7 +306,7 @@ export function resolveAssetPath(path = modulePathPlaceholder): string {
  * Reads the project package.json and returns it.
  */
 export async function readPackageJson(): Promise<Record<string, any>> {
-  return readJson(resolveModulePath('package.json'));
+  return readJson(resolveModulePath('package.json')) as Promise<Record<string, any>>;
 }
 
 /**

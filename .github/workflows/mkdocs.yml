@@ -2,29 +2,29 @@ name: Documentation
 on:
   workflow_call:
 
-# Additional trigger to deploy changes to the documentation/ folder
-#   on push to main, ignoring tags so we don't trigger twice upon release
+  # Additional trigger to deploy changes to the documentation/ folder
+  #   on push to main, ignoring tags so we don't trigger twice upon release
   push:
     branches:
       - main
     paths:
       - documentation/**
     tags-ignore:
-      - "*"
+      - '*'
 
 jobs:
   mkdocs-prep:
-  # Runs the markdown linter to ensure we don't release faulty markdown.
-  # Also gets the correct major version, whether the job is triggered by a version tag
-  #   or a push to main to update the latest documentation.
+    # Runs the markdown linter to ensure we don't release faulty markdown.
+    # Also gets the correct major version, whether the job is triggered by a version tag
+    #   or a push to main to update the latest documentation.
     runs-on: ubuntu-latest
     outputs:
       major: ${{ steps.tagged_version.outputs.major || steps.current_version.outputs.major }}
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - run: npm ci --ignore-scripts
       - name: Lint documentation markdown
         run: npm run lint:markdown -- documentation/**/*.md
@@ -55,7 +55,6 @@ jobs:
       - run: |
           cd documentation && mike deploy --push --update-aliases \
             ${{ needs.mkdocs-prep.outputs.major }}.x latest
-  
 
   typedocs:
     # Build typedocs and publish them to the GH page.
@@ -64,9 +63,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - run: npm ci --ignore-scripts
       - name: Generate typedocs
         run: npm run typedocs
@@ -75,4 +74,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-          destination_dir:  ${{ needs.mkdocs-prep.outputs.major }}.x/docs
+          destination_dir: ${{ needs.mkdocs-prep.outputs.major }}.x/docs

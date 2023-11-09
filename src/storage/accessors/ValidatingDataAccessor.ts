@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import type { Validator } from '../../http/auxiliary/Validator';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';

@@ -10,7 +10,7 @@
         "@type": "BasePodIdRoute",
         "base": { "@id": "urn:solid-server:default:AccountPodRoute" }
       },
-      "source":{
+      "source": {
         "@type": "ViewInteractionHandler",
         "source": {
           "@id": "urn:solid-server:default:PodResourceHandler",
@@ -20,7 +20,6 @@
         }
       }
     },
-
 
     {
       "@id": "urn:solid-server:default:MetadataWriter",

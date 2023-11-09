@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 import type { RouterRule } from './routing/RouterRule';
 
 /**
@@ -25,28 +25,42 @@ export class RoutingResourceStore implements ResourceStore {
     return (await this.getStore(identifier)).hasResource(identifier);
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
+  public async getRepresentation(
+    identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences,
+    conditions?: Conditions,
+  ): Promise<Representation> {
     return (await this.getStore(identifier)).getRepresentation(identifier, preferences, conditions);
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async addResource(
+    container: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return (await this.getStore(container, representation)).addResource(container, representation, conditions);
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async setRepresentation(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return (await this.getStore(identifier, representation)).setRepresentation(identifier, representation, conditions);
   }
 
-  public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async deleteResource(
+    identifier: ResourceIdentifier,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return (await this.getStore(identifier)).deleteResource(identifier, conditions);
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async modifyResource(
+    identifier: ResourceIdentifier,
+    patch: Patch,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return (await this.getStore(identifier)).modifyResource(identifier, patch, conditions);
   }
 

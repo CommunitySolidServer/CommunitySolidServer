@@ -57,7 +57,7 @@ describe('A ConsentHandler', (): void => {
         accountId,
         persist: jest.fn(),
       },
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+
       params: { client_id: clientId },
       prompt: { details: {}},
       persist: jest.fn(),
@@ -66,14 +66,13 @@ describe('A ConsentHandler', (): void => {
     knownGrant = new DummyGrant({ accountId, clientId });
 
     grantFn = jest.fn((props): DummyGrant => new DummyGrant(props)) as any;
+    // eslint-disable-next-line jest/prefer-spy-on
     grantFn.find = jest.fn((grantId: string): any => grantId ? knownGrant : undefined);
     provider = {
-      /* eslint-disable @typescript-eslint/naming-convention */
       Grant: grantFn,
       Session: {
         find: (): unknown => oidcInteraction.session,
       },
-      /* eslint-enable @typescript-eslint/naming-convention */
     } as any;
 
     providerFactory = {

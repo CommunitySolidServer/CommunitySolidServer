@@ -1,11 +1,12 @@
+/* eslint-disable unused-imports/no-unused-vars */
 /**
  * Returns an object that maps IDs to the corresponding element.
  *
  * @param ids - IDs of the element (empty to retrieve all elements)
  */
 function getElements(...ids) {
-  ids = ids.length ? ids : [...document.querySelectorAll("[id]")].map(e => e.id);
-  return Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+  ids = ids.length > 0 ? ids : [ ...document.querySelectorAll('[id]') ].map(e => e.id);
+  return Object.fromEntries(ids.map(id => [ id, document.getElementById(id) ]));
 }
 
 /**
@@ -17,10 +18,11 @@ function getElements(...ids) {
  *
  * @param target - Target URL to POST to. Defaults to the current URL.
  * @param expectRedirect - If a redirect is expected. Defaults to `false`.
- * @param transform - A function that gets as input a JSON representation of the form. The output will be POSTed. Defaults to identity function.
+ * @param transform - A function that gets as input a JSON representation of the form. The output will be POSTed.
+ *                    Defaults to identity function.
  * @param formId - The ID of the form. Defaults to "mainForm".
  */
-async function postJsonForm(target = '', expectRedirect = false, transform = (json) => json, formId = 'mainForm') {
+async function postJsonForm(target = '', expectRedirect = false, transform = json => json, formId = 'mainForm') {
   const form = document.getElementById(formId);
   const formData = new FormData(form);
   const json = transform(Object.fromEntries(formData));
@@ -52,6 +54,10 @@ async function postJsonForm(target = '', expectRedirect = false, transform = (js
 function addPostListener(callback, formId = 'mainForm', errorId = 'error') {
   const form = document.getElementById(formId);
 
+  // By default, we disable all submit buttons to prevent them from being clicked before content is loaded
+  const submit = form.querySelector('button[type="submit"]');
+  submit.disabled = false;
+
   form.addEventListener('submit', async(event) => {
     event.preventDefault();
 
@@ -74,8 +80,9 @@ function setVisibility(id, visible) {
   // Disable children of hidden elements,
   // such that the browser does not expect input for them
   for (const child of getDescendants(element)) {
-    if ('disabled' in child)
+    if ('disabled' in child) {
       child.disabled = !visible;
+    }
   }
 }
 
@@ -84,7 +91,7 @@ function setVisibility(id, visible) {
  * @param element - Element to get all descendants from.
  */
 function getDescendants(element) {
-  return [...element.querySelectorAll("*")];
+  return [ ...element.querySelectorAll('*') ];
 }
 
 /**
@@ -97,9 +104,12 @@ function getDescendants(element) {
 function updateElement(id, text, options) {
   const element = document.getElementById(id);
   setVisibility(id, Boolean(text));
+  // Keeping innerText for now as not to suddenly change the name of an option.
+  /* eslint-disable unicorn/prefer-dom-node-text-content */
   if (options.innerText) {
     element.innerText = text;
   }
+  /* eslint-enable unicorn/prefer-dom-node-text-content */
   if (options.href) {
     element.href = text;
   }
@@ -111,7 +121,7 @@ function updateElement(id, text, options) {
  * @param redirectUrl - URL to redirect to in case the response code is >= 400. No redirect happens if undefined.
  */
 async function fetchJson(url, redirectUrl) {
-  const res = await fetch(url, { headers: { accept: 'application/json' } });
+  const res = await fetch(url, { headers: { accept: 'application/json' }});
 
   if (redirectUrl && res.status >= 400) {
     location.href = redirectUrl;
@@ -183,9 +193,10 @@ function validatePasswordConfirmation(passwordId, formId = 'mainForm', confirmPa
  */
 function createUrlDeleteElement(parent, url, fetchParams, confirmMsg, finishMsg) {
   const del = document.createElement('a');
-  del.innerText = '(delete)';
+  del.textContent = '(delete)';
   del.href = '#';
   del.addEventListener('click', async() => {
+    // eslint-disable-next-line no-alert
     if (!confirm(confirmMsg)) {
       return;
     }

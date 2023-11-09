@@ -1,4 +1,4 @@
-import { stringify } from 'querystring';
+import { stringify } from 'node:querystring';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { FormToJsonConverter } from '../../../../src/storage/conversion/FormToJsonConverter';
 import { readableToString } from '../../../../src/util/StreamUtil';

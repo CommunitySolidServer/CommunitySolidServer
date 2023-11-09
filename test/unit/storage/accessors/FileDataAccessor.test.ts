@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { DataFactory } from 'n3';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -16,9 +16,10 @@ import { guardedStreamFrom, readableToString } from '../../../../src/util/Stream
 import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
+
 const { namedNode, quad } = DataFactory;
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 const rootFilePath = 'uploads';
@@ -115,8 +116,8 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.get(RDF.terms.type)?.value).toBe(LDP.Resource);
       expect(metadata.get(POSIX.terms.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
       expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(metadata.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
-        XSD.terms.integer));
+      expect(metadata.get(POSIX.terms.mtime))
+        .toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
       // `dc:modified` is in the default graph
       expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(2);
     });
@@ -144,8 +145,8 @@ describe('A FileDataAccessor', (): void => {
       );
       expect(metadata.get(POSIX.terms.size)).toBeUndefined();
       expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(metadata.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
-        XSD.terms.integer));
+      expect(metadata.get(POSIX.terms.mtime))
+        .toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
       // `dc:modified` is in the default graph
       expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(1);
     });
@@ -197,8 +198,8 @@ describe('A FileDataAccessor', (): void => {
       // All resources
       for (const child of children) {
         expect(child.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-        expect(child.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
-          XSD.terms.integer));
+        expect(child.get(POSIX.terms.mtime))
+          .toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
         // `dc:modified` is in the default graph
         expect(child.quads(null, null, null, SOLID_META.terms.ResponseMetadata))
           .toHaveLength(isContainerPath(child.identifier.value) ? 1 : 2);
@@ -221,7 +222,7 @@ describe('A FileDataAccessor', (): void => {
           }
           return result;
         }),
-        mapUrlToFilePath: jest.fn((...args): Promise<ResourceLink> => mapper.mapUrlToFilePath(...args)),
+        mapUrlToFilePath: jest.fn(async(...args): Promise<ResourceLink> => mapper.mapUrlToFilePath(...args)),
       };
 
       accessor = new FileDataAccessor(badMapper);
@@ -259,7 +260,8 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws an error if there is a problem with the internal metadata.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': 'invalid metadata!.' };
-      await expect(accessor.getMetadata({ path: `${base}resource` })).rejects.toThrow();
+      await expect(accessor.getMetadata({ path: `${base}resource` }))
+        .rejects.toThrow('Unexpected "invalid" on line 1.');
     });
   });
 
@@ -275,8 +277,10 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('writes metadata to the corresponding metadata file.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata({ path: `${base}res.ttl` },
-        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' });
+      metadata = new RepresentationMetadata(
+        { path: `${base}res.ttl` },
+        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' },
+      );
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data['res.ttl']).toBe('data');
       expect(cache.data['res.ttl.meta']).toMatch(`<${base}res.ttl> <likes> "apples".`);
@@ -464,7 +468,7 @@ describe('A FileDataAccessor', (): void => {
       jest.requireMock('fs-extra').remove = (): any => {
         throw new Error('error');
       };
-      await expect(accessor.deleteResource({ path: `${base}resource` })).rejects.toThrow();
+      await expect(accessor.deleteResource({ path: `${base}resource` })).rejects.toThrow('error');
     });
 
     it('removes the corresponding folder for containers.', async(): Promise<void> => {
@@ -483,7 +487,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('can delete the root container.', async(): Promise<void> => {
-      cache.data = { };
+      cache.data = {};
       await expect(accessor.deleteResource({ path: `${base}` })).resolves.toBeUndefined();
       expect(cache.data).toBeUndefined();
     });

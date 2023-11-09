@@ -11,7 +11,7 @@ import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/Sing
 import { PIM, RDF } from '../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 describe('PodQuotaStrategy', (): void => {
   let strategy: PodQuotaStrategy;

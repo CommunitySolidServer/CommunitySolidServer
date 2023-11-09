@@ -33,7 +33,7 @@
           "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
             "key": "socket",
-            "defaultValue" : ""
+            "defaultValue": ""
           }
         },
         {

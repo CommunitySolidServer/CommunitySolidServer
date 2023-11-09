@@ -1,9 +1,9 @@
-import { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
+import type { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
 import { LinkWebIdHandler } from '../../../../../src/identity/interaction/webid/LinkWebIdHandler';
-import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
 import type { WebIdLinkRoute } from '../../../../../src/identity/interaction/webid/WebIdLinkRoute';
-import { OwnershipValidator } from '../../../../../src/identity/ownership/OwnershipValidator';
-import { StorageLocationStrategy } from '../../../../../src/server/description/StorageLocationStrategy';
+import type { OwnershipValidator } from '../../../../../src/identity/ownership/OwnershipValidator';
+import type { StorageLocationStrategy } from '../../../../../src/server/description/StorageLocationStrategy';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 
 describe('A LinkWebIdHandler', (): void => {

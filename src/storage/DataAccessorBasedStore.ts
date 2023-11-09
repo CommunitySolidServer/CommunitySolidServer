@@ -1,3 +1,4 @@
+import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Term } from 'rdf-js';
@@ -25,27 +26,27 @@ import {
   ensureTrailingSlash,
   isContainerIdentifier,
   isContainerPath,
-  trimTrailingSlashes,
   toCanonicalUriPath,
+  trimTrailingSlashes,
 } from '../util/PathUtil';
 import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
 import {
-  DC,
-  SOLID_HTTP,
-  LDP,
-  POSIX,
-  PIM,
-  RDF,
-  XSD,
-  SOLID_META,
-  PREFERRED_PREFIX_TERM,
-  CONTENT_TYPE_TERM,
-  SOLID_AS,
   AS,
+  CONTENT_TYPE_TERM,
+  DC,
+  LDP,
+  PIM,
+  POSIX,
+  PREFERRED_PREFIX_TERM,
+  RDF,
+  SOLID_AS,
+  SOLID_HTTP,
+  SOLID_META,
+  XSD,
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 import namedNode = DataFactory.namedNode;
 
 /**
@@ -79,8 +80,12 @@ export class DataAccessorBasedStore implements ResourceStore {
   private readonly auxiliaryStrategy: AuxiliaryStrategy;
   private readonly metadataStrategy: AuxiliaryStrategy;
 
-  public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy,
-    auxiliaryStrategy: AuxiliaryStrategy, metadataStrategy: AuxiliaryStrategy) {
+  public constructor(
+    accessor: DataAccessor,
+    identifierStrategy: IdentifierStrategy,
+    auxiliaryStrategy: AuxiliaryStrategy,
+    metadataStrategy: AuxiliaryStrategy,
+  ) {
     this.accessor = accessor;
     this.identifierStrategy = identifierStrategy;
     this.auxiliaryStrategy = auxiliaryStrategy;
@@ -151,7 +156,9 @@ export class DataAccessorBasedStore implements ResourceStore {
       representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
     } else if (isMetadata) {
       representation = new BasicRepresentation(
-        metadata.quads(), this.metadataStrategy.getAuxiliaryIdentifier(identifier), INTERNAL_QUADS,
+        metadata.quads(),
+        this.metadataStrategy.getAuxiliaryIdentifier(identifier),
+        INTERNAL_QUADS,
       );
     } else {
       representation = new BasicRepresentation(await this.accessor.getData(identifier), metadata);
@@ -200,8 +207,11 @@ export class DataAccessorBasedStore implements ResourceStore {
     return this.writeData(newID, representation, isContainer, false, false);
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async setRepresentation(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     this.validateIdentifier(identifier);
 
     // Check if the resource already exists
@@ -256,8 +266,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     return this.writeData(identifier, representation, isContainer, !oldMetadata, Boolean(oldMetadata));
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<never> {
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<never> {
     if (conditions) {
       let metadata: RepresentationMetadata | undefined;
       try {
@@ -295,8 +304,10 @@ export class DataAccessorBasedStore implements ResourceStore {
       const subjectIdentifier = this.auxiliaryStrategy.getSubjectIdentifier(identifier);
       const parentMetadata = await this.accessor.getMetadata(subjectIdentifier);
       if (this.isRootStorage(parentMetadata)) {
-        throw new MethodNotAllowedHttpError([ 'DELETE' ],
-          `Cannot delete ${identifier.path} from a root storage container.`);
+        throw new MethodNotAllowedHttpError(
+          [ 'DELETE' ],
+`Cannot delete ${identifier.path} from a root storage container.`,
+        );
       }
     }
 
@@ -427,7 +438,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Transform representation data to quads and add them to the metadata object
     const metadata = new RepresentationMetadata(subjectIdentifier);
-    const quads = await arrayifyStream(representation.data);
+    const quads: Quad[] = await arrayifyStream(representation.data);
     metadata.addQuads(quads);
 
     // Remove the response metadata as this must not be stored
@@ -449,8 +460,13 @@ export class DataAccessorBasedStore implements ResourceStore {
    *
    * @returns Identifiers of resources that were possibly modified.
    */
-  protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers: boolean, exists: boolean): Promise<ChangeMap> {
+  protected async writeData(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    isContainer: boolean,
+    createContainers: boolean,
+    exists: boolean,
+  ): Promise<ChangeMap> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);

@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { DataFactory } from 'n3';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
@@ -10,6 +10,7 @@ import type { Guarded } from '../../../../src/util/GuardedStream';
 import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIdentifierStrategy';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, LDP, POSIX, RDF } from '../../../../src/util/Vocabularies';
+
 const { namedNode } = DataFactory;
 
 class DummyStrategy extends BaseIdentifierStrategy {
@@ -136,7 +137,9 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
       await expect(accessor.writeDocument(
-        { path: `${base}container/resource` }, data, resourceMetadata,
+        { path: `${base}container/resource` },
+        data,
+        resourceMetadata,
       )).resolves.toBeUndefined();
 
       const newMetadata = new RepresentationMetadata(inputMetadata);
@@ -159,7 +162,8 @@ describe('An InMemoryDataAccessor', (): void => {
 
       await expect(accessor.getMetadata({ path: `${base}container/resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
-      expect(await readableToString(await accessor.getData({ path: `${base}container/resource` }))).toBe('data');
+      await expect(readableToString(await accessor.getData({ path: `${base}container/resource` })))
+        .resolves.toBe('data');
     });
 
     it('can write to the root container without overriding its children.', async(): Promise<void> => {
@@ -168,7 +172,9 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
       await expect(accessor.writeDocument(
-        { path: `${base}resource` }, data, resourceMetadata,
+        { path: `${base}resource` },
+        data,
+        resourceMetadata,
       )).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
@@ -186,7 +192,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
       await expect(accessor.getMetadata({ path: `${base}resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
-      expect(await readableToString(await accessor.getData({ path: `${base}resource` }))).toBe('data');
+      await expect(readableToString(await accessor.getData({ path: `${base}resource` }))).resolves.toBe('data');
     });
 
     it('errors when writing to an invalid container path.', async(): Promise<void> => {

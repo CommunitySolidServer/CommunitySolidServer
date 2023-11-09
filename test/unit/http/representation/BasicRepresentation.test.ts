@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -7,6 +7,7 @@ import { RepresentationMetadata } from '../../../../src/http/representation/Repr
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+
 const { namedNode } = DataFactory;
 
 describe('BasicRepresentation', (): void => {
@@ -47,7 +48,7 @@ describe('BasicRepresentation', (): void => {
     const data = [ 'my', 'data' ];
     const metadata = new RepresentationMetadata();
     const representation = new BasicRepresentation(data, metadata);
-    expect(await arrayifyStream(representation.data)).toEqual(data);
+    await expect(arrayifyStream(representation.data)).resolves.toEqual(data);
     expect(representation.metadata).toBe(metadata);
     expect(representation.binary).toBe(true);
   });
@@ -56,7 +57,7 @@ describe('BasicRepresentation', (): void => {
     const data = 'my data';
     const metadata = new RepresentationMetadata();
     const representation = new BasicRepresentation(data, metadata);
-    expect(await arrayifyStream(representation.data)).toEqual([ data ]);
+    await expect(arrayifyStream(representation.data)).resolves.toEqual([ data ]);
     expect(representation.metadata).toBe(metadata);
     expect(representation.binary).toBe(true);
   });

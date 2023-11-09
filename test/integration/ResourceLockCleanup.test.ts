@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import type { App, DataAccessorBasedStore, Initializable, ResourceLocker } from '../../src';
-import { readableToString, BasicRepresentation } from '../../src';
+import { BasicRepresentation, readableToString } from '../../src';
 import { describeIf, getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
@@ -11,19 +11,24 @@ const resourceIdentifier = { path: `${baseUrl}container1/test.txt` };
 
 const configs: [string, any][] = [
   [
-    'file-based', {
+    'file-based',
+    {
       config: 'server-file.json',
       init: async(initializable: Initializable): Promise<void> => initializable.initialize(),
       teardown: async(): Promise<void> => removeFolder(rootFilePath),
-    }],
+    },
+  ],
   [
-    'redis-based', {
+    'redis-based',
+    {
       config: 'server-redis-lock.json',
       init: jest.fn(),
       teardown: jest.fn(),
-    }],
+    },
+  ],
 ];
 
+/* eslint-disable jest/require-top-level-describe, jest/consistent-test-it */
 describeIf('docker').each(configs)('A server using %s locking', (id, { config, init, teardown }):
 void => {
   let app: App;

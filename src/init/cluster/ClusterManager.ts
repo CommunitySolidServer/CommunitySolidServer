@@ -1,6 +1,6 @@
-import type { Worker } from 'cluster';
-import cluster from 'cluster';
-import { cpus } from 'os';
+import type { Worker } from 'node:cluster';
+import cluster from 'node:cluster';
+import { cpus } from 'node:os';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 
@@ -13,7 +13,7 @@ enum ClusterMode {
   /** Single threaded mode, no clustering */
   singleThreaded,
   /** Fixed amount of workers being forked. (limited to core_count) */
-  fixed
+  fixed,
 }
 
 /**

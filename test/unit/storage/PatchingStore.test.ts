@@ -28,7 +28,7 @@ describe('A PatchingStore', (): void => {
   });
 
   it('calls its patcher if modifyResource is not implemented.', async(): Promise<void> => {
-    source.modifyResource = jest.fn(async(): Promise<any> => {
+    jest.spyOn(source, 'modifyResource').mockImplementation(async(): Promise<any> => {
       throw new NotImplementedHttpError();
     });
     await expect(store.modifyResource({ path: 'modifyPath' }, {} as Patch)).resolves.toBe('patcher');
@@ -40,7 +40,7 @@ describe('A PatchingStore', (): void => {
   });
 
   it('rethrows source modifyResource errors.', async(): Promise<void> => {
-    source.modifyResource = jest.fn(async(): Promise<any> => {
+    jest.spyOn(source, 'modifyResource').mockImplementation(async(): Promise<any> => {
       throw new Error('dummy');
     });
     await expect(store.modifyResource({ path: 'modifyPath' }, {} as Patch)).rejects.toThrow('dummy');

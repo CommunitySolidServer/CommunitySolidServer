@@ -1,8 +1,7 @@
 // These two eslint lines are needed to store 'this' in a variable so it can be used
 // in the PassThrough of createQuotaGuard
-/* eslint-disable @typescript-eslint/no-this-alias */
-/* eslint-disable consistent-this */
-import { PassThrough } from 'stream';
+/* eslint-disable ts/no-this-alias */
+import { PassThrough } from 'node:stream';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { PayloadHttpError } from '../../util/errors/PayloadHttpError';

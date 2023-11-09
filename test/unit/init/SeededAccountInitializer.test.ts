@@ -1,11 +1,11 @@
 import { writeJson } from 'fs-extra';
-import { AccountStore } from '../../../src/identity/interaction/account/util/AccountStore';
-import { PasswordStore } from '../../../src/identity/interaction/password/util/PasswordStore';
-import { PodCreator } from '../../../src/identity/interaction/pod/util/PodCreator';
+import type { AccountStore } from '../../../src/identity/interaction/account/util/AccountStore';
+import type { PasswordStore } from '../../../src/identity/interaction/password/util/PasswordStore';
+import type { PodCreator } from '../../../src/identity/interaction/pod/util/PodCreator';
 import { SeededAccountInitializer } from '../../../src/init/SeededAccountInitializer';
 import { mockFileSystem } from '../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 describe('A SeededAccountInitializer', (): void => {
@@ -57,7 +57,10 @@ describe('A SeededAccountInitializer', (): void => {
     await writeJson(configFilePath, dummyConfig);
 
     initializer = new SeededAccountInitializer({
-      accountStore, passwordStore, podCreator, configFilePath,
+      accountStore,
+      passwordStore,
+      podCreator,
+      configFilePath,
     });
   });
 

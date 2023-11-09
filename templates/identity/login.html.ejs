@@ -8,7 +8,7 @@
     </ol>
   </fieldset>
 
-  <p class="actions"><button id="submit" type="submit" name="submit">Confirm login method</button></p>
+  <p class="actions"><button id="submit" type="submit" name="submit" disabled>Confirm login method</button></p>
 </form>
 
 <script>
@@ -37,13 +37,13 @@
           </label>
         </li>`);
     }
-  })();
 
-  addPostListener(() => {
-    const formData = new FormData(form);
-    const url = formData.get('loginMethod');
-    if (url) {
-      location.href = url;
-    }
-  });
+    addPostListener(() => {
+      const formData = new FormData(mainForm);
+      const url = formData.get('loginMethod');
+      if (url) {
+        location.href = url;
+      }
+    });
+  })();
 </script>

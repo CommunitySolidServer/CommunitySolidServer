@@ -1,4 +1,4 @@
-import { Readable, PassThrough } from 'stream';
+import { PassThrough, Readable } from 'node:stream';
 import { Validator } from '../../http/auxiliary/Validator';
 import type { ValidatorInput } from '../../http/auxiliary/Validator';
 import type { Representation } from '../../http/representation/Representation';
@@ -47,6 +47,7 @@ export class QuotaValidator extends Validator {
 
     // 4. Double check quota is not exceeded after write (concurrent writing possible)
     const afterWrite = new PassThrough({
+      // eslint-disable-next-line ts/no-misused-promises
       flush: async(done): Promise<void> => {
         const availableSpace = (await this.strategy.getAvailableSpace(identifier)).amount;
         done(availableSpace < 0 ? new PayloadHttpError('Quota exceeded after write completed') : undefined);

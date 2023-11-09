@@ -9,18 +9,26 @@ import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/Un
 import { LDP, PIM, RDF, SOLID_ERROR } from '../../../../../src/util/Vocabularies';
 
 describe('An AllowAcceptHeaderWriter', (): void => {
-  const document = new RepresentationMetadata({ path: 'http://example.com/foo/bar' },
-    { [RDF.type]: LDP.terms.Resource });
-  const emptyContainer = new RepresentationMetadata({ path: 'http://example.com/foo/' },
-    { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
-  const fullContainer = new RepresentationMetadata({ path: 'http://example.com/foo/' },
+  const document = new RepresentationMetadata(
+    { path: 'http://example.com/foo/bar' },
+    { [RDF.type]: LDP.terms.Resource },
+  );
+  const emptyContainer = new RepresentationMetadata(
+    { path: 'http://example.com/foo/' },
+    { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]},
+  );
+  const fullContainer = new RepresentationMetadata(
+    { path: 'http://example.com/foo/' },
     {
       [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ],
       [LDP.contains]: [ document.identifier ],
       // Typescript doesn't find the correct constructor without the cast
-    } as MetadataRecord);
-  const storageContainer = new RepresentationMetadata({ path: 'http://example.com/foo/' },
-    { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container, PIM.terms.Storage ]});
+    } as MetadataRecord,
+  );
+  const storageContainer = new RepresentationMetadata(
+    { path: 'http://example.com/foo/' },
+    { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container, PIM.terms.Storage ]},
+  );
   const error404 = new RepresentationMetadata({ [SOLID_ERROR.errorResponse]: NotFoundHttpError.uri });
   const error405 = new RepresentationMetadata(
     { [SOLID_ERROR.errorResponse]: MethodNotAllowedHttpError.uri, [SOLID_ERROR.disallowedMethod]: 'PUT' },

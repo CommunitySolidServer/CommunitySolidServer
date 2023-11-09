@@ -36,10 +36,16 @@ export class TemplatedPodGenerator implements PodGenerator {
    * @param storeFactory - Factory used for Components.js instantiation.
    * @param variableHandler - Handler used for setting variable values.
    * @param configStorage - Where to store the configuration values to instantiate the store for this pod.
+   * @param baseUrl - Base URL of the server.
    * @param configTemplatePath - Where to find the configuration templates.
    */
-  public constructor(storeFactory: ComponentsJsFactory, variableHandler: VariableHandler,
-    configStorage: KeyValueStorage<string, unknown>, baseUrl: string, configTemplatePath?: string) {
+  public constructor(
+    storeFactory: ComponentsJsFactory,
+    variableHandler: VariableHandler,
+    configStorage: KeyValueStorage<string, unknown>,
+    baseUrl: string,
+    configTemplatePath?: string,
+  ) {
     this.storeFactory = storeFactory;
     this.variableHandler = variableHandler;
     this.configStorage = configStorage;
@@ -80,6 +86,7 @@ export class TemplatedPodGenerator implements PodGenerator {
       await this.storeFactory.generate(
         variables[TEMPLATE_VARIABLE.templateConfig] as string,
         TEMPLATE.ResourceStore,
+        // eslint-disable-next-line ts/naming-convention
         { ...variables, 'urn:solid-server:default:variable:baseUrl': this.baseUrl },
       );
     this.logger.debug(`Generating store ${identifier.path} with variables ${JSON.stringify(variables)}`);

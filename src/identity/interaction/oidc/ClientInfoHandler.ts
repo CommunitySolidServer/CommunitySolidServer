@@ -8,8 +8,16 @@ import { JsonInteractionHandler } from '../JsonInteractionHandler';
 
 // Only extract specific fields to prevent leaking information
 // Based on https://www.w3.org/ns/solid/oidc-context.jsonld
-const CLIENT_KEYS = [ 'client_id', 'client_uri', 'logo_uri', 'policy_uri',
-  'client_name', 'contacts', 'grant_types', 'scope' ] as const;
+const CLIENT_KEYS = [
+  'client_id',
+  'client_uri',
+  'logo_uri',
+  'policy_uri',
+  'client_name',
+  'contacts',
+  'grant_types',
+  'scope',
+] as const;
 
 // Possible keys in client metadata
 type KeyType = ArrayElement<typeof CLIENT_KEYS>;
@@ -41,6 +49,7 @@ export class ClientInfoHandler extends JsonInteractionHandler<OutType> {
     const jsonLd = Object.fromEntries(
       CLIENT_KEYS.filter((key): boolean => key in metadata)
         .map((key): [ KeyType, ValType ] => [ key, metadata[key] ]),
+      // eslint-disable-next-line ts/naming-convention
     ) as Record<KeyType, ValType> & { '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld' };
     jsonLd['@context'] = 'https://www.w3.org/ns/solid/oidc-context.jsonld';
 

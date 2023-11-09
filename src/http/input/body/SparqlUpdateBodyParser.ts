@@ -9,6 +9,7 @@ import { guardedStreamFrom, readableToString } from '../../../util/StreamUtil';
 import type { SparqlUpdatePatch } from '../../representation/SparqlUpdatePatch';
 import type { BodyParserArgs } from './BodyParser';
 import { BodyParser } from './BodyParser';
+
 /**
  * {@link BodyParser} that supports `application/sparql-update` content.
  * Will convert the incoming update string to algebra in a {@link SparqlUpdatePatch}.

@@ -1,16 +1,14 @@
 import {
-  RepresentationMetadata,
-  readableToString,
-  ChainedConverter,
-  guardedStreamFrom,
-  RdfToQuadConverter,
   BasicRepresentation,
+  ChainedConverter,
   getLoggerFor,
+  guardedStreamFrom,
   INTERNAL_QUADS,
+  RdfToQuadConverter,
+  readableToString,
+  RepresentationMetadata,
 } from '../../src';
-import type { Representation,
-  RepresentationConverterArgs,
-  Logger } from '../../src';
+import type { Logger, Representation, RepresentationConverterArgs } from '../../src';
 import { BaseTypedRepresentationConverter } from '../../src/storage/conversion/BaseTypedRepresentationConverter';
 
 jest.mock('../../src/logging/LogUtil', (): any => {
@@ -45,7 +43,7 @@ describe('A chained converter where data gets ignored', (): void => {
     jest.useFakeTimers();
     const result = await converter.handleSafe({ identifier, representation: rep, preferences: { type: { 'x/x': 1 }}});
 
-    expect(await readableToString(result.data)).toBe('dummy');
+    await expect(readableToString(result.data)).resolves.toBe('dummy');
 
     jest.advanceTimersByTime(1000);
     expect(logger.error).toHaveBeenCalledTimes(1);

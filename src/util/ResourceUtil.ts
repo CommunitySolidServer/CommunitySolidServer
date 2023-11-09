@@ -15,8 +15,6 @@ import namedNode = DataFactory.namedNode;
  * Helper function to generate type quads for a Container or Resource.
  * @param metadata - Metadata to add to.
  * @param isContainer - If the identifier corresponds to a container.
- *
- * @returns The generated quads.
  */
 export function addResourceMetadata(metadata: RepresentationMetadata, isContainer: boolean): void {
   if (isContainer) {

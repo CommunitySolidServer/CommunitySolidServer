@@ -1,4 +1,4 @@
-import { PreferenceParser } from '../../../../../src/http/input/preferences/PreferenceParser';
+import type { PreferenceParser } from '../../../../../src/http/input/preferences/PreferenceParser';
 import { UnionPreferenceParser } from '../../../../../src/http/input/preferences/UnionPreferenceParser';
 import { InternalServerError } from '../../../../../src/util/errors/InternalServerError';
 

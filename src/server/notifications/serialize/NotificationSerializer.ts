@@ -14,4 +14,4 @@ export interface NotificationSerializerInput {
  * This is a separate class between a generator and emitter,
  * so that a specific notification channel type can add extra metadata to the Representation if needed.
  */
-export abstract class NotificationSerializer extends AsyncHandler<NotificationSerializerInput, Representation> { }
+export abstract class NotificationSerializer extends AsyncHandler<NotificationSerializerInput, Representation> {}

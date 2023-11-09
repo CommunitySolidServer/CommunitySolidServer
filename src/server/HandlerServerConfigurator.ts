@@ -1,4 +1,4 @@
-import type { Server, IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import { getLoggerFor } from '../logging/LogUtil';
 import { isError } from '../util/errors/ErrorUtil';
 import { guardStream } from '../util/GuardedStream';
@@ -29,7 +29,9 @@ export class HandlerServerConfigurator extends ServerConfigurator {
   }
 
   public async handle(server: Server): Promise<void> {
-    server.on('request',
+    server.on(
+      'request',
+      // eslint-disable-next-line ts/no-misused-promises
       async(request: IncomingMessage, response: ServerResponse): Promise<void> => {
         try {
           this.logger.info(`Received ${request.method} request for ${request.url}`);
@@ -50,7 +52,8 @@ export class HandlerServerConfigurator extends ServerConfigurator {
             response.writeHead(404).end();
           }
         }
-      });
+      },
+    );
   }
 
   /**
@@ -58,6 +61,7 @@ export class HandlerServerConfigurator extends ServerConfigurator {
    */
   private createErrorMessage(error: unknown): string {
     if (!isError(error)) {
+      // eslint-disable-next-line ts/restrict-template-expressions
       return `Unknown error: ${error}.\n`;
     }
     if (this.showStackTrace && error.stack) {

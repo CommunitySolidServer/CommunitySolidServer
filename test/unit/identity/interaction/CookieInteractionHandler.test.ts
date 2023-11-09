@@ -1,10 +1,12 @@
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
-import {
-  ACCOUNT_SETTINGS_REMEMBER_LOGIN,
+import type {
   AccountStore,
 } from '../../../../src/identity/interaction/account/util/AccountStore';
-import { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
+import {
+  ACCOUNT_SETTINGS_REMEMBER_LOGIN,
+} from '../../../../src/identity/interaction/account/util/AccountStore';
+import type { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
 import { CookieInteractionHandler } from '../../../../src/identity/interaction/CookieInteractionHandler';
 import type { JsonRepresentation } from '../../../../src/identity/interaction/InteractionUtil';
 import type {

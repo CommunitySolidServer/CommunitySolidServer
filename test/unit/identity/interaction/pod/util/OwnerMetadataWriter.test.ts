@@ -1,8 +1,8 @@
-import type { ServerResponse } from 'http';
+import type { ServerResponse } from 'node:http';
 import { createResponse } from 'node-mocks-http';
 import { RepresentationMetadata } from '../../../../../../src/http/representation/RepresentationMetadata';
 import { OwnerMetadataWriter } from '../../../../../../src/identity/interaction/pod/util/OwnerMetadataWriter';
-import { PodStore } from '../../../../../../src/identity/interaction/pod/util/PodStore';
+import type { PodStore } from '../../../../../../src/identity/interaction/pod/util/PodStore';
 import type { StorageLocationStrategy } from '../../../../../../src/server/description/StorageLocationStrategy';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
 import { joinUrl } from '../../../../../../src/util/PathUtil';

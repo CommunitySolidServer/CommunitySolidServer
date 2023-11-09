@@ -1,5 +1,5 @@
-import type { Readable } from 'stream';
-import { PassThrough } from 'stream';
+import type { Readable } from 'node:stream';
+import { PassThrough } from 'node:stream';
 import type { ValidatorInput } from '../../../../src/http/auxiliary/Validator';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';

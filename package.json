@@ -1,14 +1,30 @@
 {
   "name": "@solid/community-server",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
+  "license": "MIT",
+  "homepage": "https://github.com/CommunitySolidServer/CommunitySolidServer#readme",
+  "repository": "git@github.com:CommunitySolidServer/CommunitySolidServer.git",
+  "bugs": {
+    "url": "https://github.com/CommunitySolidServer/CommunitySolidServer/issues"
+  },
   "keywords": [
     "solid",
     "linked-data",
     "rdf",
     "ldp"
   ],
-  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "community-solid-server": "bin/server.js"
+  },
+  "files": [
+    "bin",
+    "config",
+    "dist",
+    "templates"
+  ],
   "engines": {
     "node": ">=18.0"
   },
@@ -23,16 +39,6 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/dist/": "dist/",
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/templates/config/": "templates/config/"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "community-solid-server": "bin/server.js"
-  },
-  "repository": "git@github.com:CommunitySolidServer/CommunitySolidServer.git",
-  "bugs": {
-    "url": "https://github.com/CommunitySolidServer/CommunitySolidServer/issues"
-  },
-  "homepage": "https://github.com/CommunitySolidServer/CommunitySolidServer#readme",
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:components": "componentsjs-generator -s src -c dist/components -r css -i .componentsignore",
@@ -47,8 +53,8 @@
     "docker:stop": "./test/docker/docker-stop.sh",
     "typedocs": "typedoc --customCss ./documentation/typedoc.css",
     "jest": "jest --coverageReporters text-summary --",
-    "lint": "npm run lint:ts && npm run lint:markdown",
-    "lint:ts": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
+    "lint": "npm run lint:eslint && npm run lint:markdown",
+    "lint:eslint": "eslint . --cache --max-warnings 0",
     "lint:markdown": "markdownlint-cli2",
     "lint:markdown:fix": "markdownlint-cli2-fix",
     "prepare": "npm run build",
@@ -66,30 +72,6 @@
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run build && npm run lint && npm run test:unit && npm run test:integration",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "commit-and-tag-version": {
-    "scripts": {
-      "postbump": "ts-node ./scripts/upgradeConfig.ts",
-      "postchangelog": "ts-node ./scripts/formatChangelog.ts && markdownlint-cli2-fix"
-    },
-    "writerOpts": {
-      "commitsSort": false
-    },
-    "skip": {
-      "tag": true
-    }
-  },
-  "files": [
-    "bin",
-    "dist",
-    "config",
-    "templates"
-  ],
   "dependencies": {
     "@comunica/context-entries": "^2.8.2",
     "@comunica/query-sparql": "^2.9.0",
@@ -105,7 +87,7 @@
     "@types/fs-extra": "^11.0.2",
     "@types/lodash.orderby": "^4.6.7",
     "@types/mime-types": "^2.1.2",
-    "@types/n3": "^1.16.2",
+    "@types/n3": "^1.16.3",
     "@types/node": "^18.18.4",
     "@types/nodemailer": "^6.4.11",
     "@types/oidc-provider": "^8.4.0",
@@ -161,28 +143,18 @@
     "yup": "^1.3.2"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^1.0.0-beta.27",
     "@commitlint/cli": "^17.7.2",
     "@commitlint/config-conventional": "^17.7.0",
     "@inrupt/solid-client-authn-core": "^1.17.3",
     "@inrupt/solid-client-authn-node": "^1.17.3",
-    "@microsoft/tsdoc-config": "^0.16.2",
     "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.5.5",
     "@types/set-cookie-parser": "^2.4.4",
     "@types/supertest": "^2.0.14",
-    "@typescript-eslint/eslint-plugin": "^5.3.0",
-    "@typescript-eslint/parser": "^5.3.0",
     "commit-and-tag-version": "^11.3.0",
     "componentsjs-generator": "^3.1.2",
-    "eslint": "^8.21.0",
-    "eslint-config-es": "4.1.0",
-    "eslint-import-resolver-typescript": "^3.2.5",
-    "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-jest": "^27.2.1",
-    "eslint-plugin-tsdoc": "^0.2.14",
-    "eslint-plugin-unicorn": "^37.0.1",
-    "eslint-plugin-unused-imports": "^2.0.0",
+    "eslint-plugin-jest": "^27.4.3",
     "husky": "^4.3.8",
     "jest": "^29.7.0",
     "jest-esm-transformer-2": "^1.0.0",
@@ -196,6 +168,24 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typedoc": "^0.25.2",
-    "typescript": "^5.0.4"
+    "typescript": "^5.2.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build && npm run lint && npm run test:unit && npm run test:integration",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "commit-and-tag-version": {
+    "scripts": {
+      "postbump": "ts-node ./scripts/upgradeConfig.ts",
+      "postchangelog": "ts-node ./scripts/formatChangelog.ts && markdownlint-cli2-fix"
+    },
+    "writerOpts": {
+      "commitsSort": false
+    },
+    "skip": {
+      "tag": true
+    }
   }
 }

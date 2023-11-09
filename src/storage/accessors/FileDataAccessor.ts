@@ -1,6 +1,6 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import type { Stats } from 'fs-extra';
-import { ensureDir, remove, stat, lstat, createWriteStream, createReadStream, opendir } from 'fs-extra';
+import { createReadStream, createWriteStream, ensureDir, lstat, opendir, remove, stat } from 'fs-extra';
 import type { Quad } from 'rdf-js';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
@@ -12,7 +12,7 @@ import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMedi
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { parseContentType } from '../../util/HeaderUtil';
-import { joinFilePath, isContainerIdentifier, isContainerPath } from '../../util/PathUtil';
+import { isContainerIdentifier, isContainerPath, joinFilePath } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../../util/ResourceUtil';
 import { toLiteral, toNamedTerm } from '../../util/TermUtil';
@@ -324,9 +324,11 @@ export class FileDataAccessor implements DataAccessor {
    */
   private addPosixMetadata(metadata: RepresentationMetadata, stats: Stats): void {
     updateModifiedDate(metadata, stats.mtime);
-    metadata.add(POSIX.terms.mtime,
+    metadata.add(
+      POSIX.terms.mtime,
       toLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer),
-      SOLID_META.terms.ResponseMetadata);
+      SOLID_META.terms.ResponseMetadata,
+    );
     if (!stats.isDirectory()) {
       metadata.add(POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer), SOLID_META.terms.ResponseMetadata);
     }

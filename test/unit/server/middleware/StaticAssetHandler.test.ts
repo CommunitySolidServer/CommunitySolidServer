@@ -1,6 +1,6 @@
-import { EventEmitter } from 'events';
-import fs from 'fs';
-import { PassThrough, Readable } from 'stream';
+import { EventEmitter } from 'node:events';
+import fs from 'node:fs';
+import { PassThrough, Readable } from 'node:stream';
 import { createResponse } from 'node-mocks-http';
 import { StaticAssetEntry, StaticAssetHandler } from '../../../../src/server/middleware/StaticAssetHandler';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
@@ -222,7 +222,8 @@ describe('A StaticAssetHandler', (): void => {
   it('does not handle a request to a known folder URL with parent path segments.', async(): Promise<void> => {
     const request = { method: 'GET', url: '/foo/bar/folder/../def.css' };
     const response = createResponse({ eventEmitter: EventEmitter });
-    await expect(handler.canHandle({ request, response } as any)).rejects.toThrow();
+    await expect(handler.canHandle({ request, response } as any))
+      .rejects.toThrow('No static resource configured at /foo/bar/folder/../def.css');
   });
 
   it('caches responses when the expires option is set.', async(): Promise<void> => {

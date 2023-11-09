@@ -70,6 +70,7 @@ describe('A HashMap', (): void => {
 
   it('supports a forEach call.', async(): Promise<void> => {
     const result: string[] = [];
+    // eslint-disable-next-line unicorn/no-array-for-each
     map.forEach((value): void => {
       result.push(value.field3);
     });

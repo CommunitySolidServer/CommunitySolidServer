@@ -81,12 +81,12 @@ type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ...0[]];
  */
 export type IndexedQuery<T extends IndexTypeCollection<T>, TType extends keyof T, TDepth extends number = 10> =
   [TDepth] extends [never] ? never :
-    {[K in keyof T[TType] | typeof INDEX_ID_KEY]?:
-      ValueType<T[TType][K]> |
-      (T[TType][K] extends `${typeof INDEX_ID_KEY}:${infer U}` ? IndexedQuery<T, U, Prev[TDepth]> : never)
-    };
+      {[K in keyof T[TType] | typeof INDEX_ID_KEY]?:
+        ValueType<T[TType][K]> |
+        (T[TType][K] extends `${typeof INDEX_ID_KEY}:${infer U}` ? IndexedQuery<T, U, Prev[TDepth]> : never)
+      };
 
-/* eslint-disable @typescript-eslint/method-signature-style */
+/* eslint-disable ts/method-signature-style */
 /**
  * A storage solution that allows for more complex queries than a key/value storage
  * and allows setting indexes on specific keys.

@@ -1,5 +1,5 @@
 import { readdir } from 'fs-extra';
-import { InternalServerError, FileSystemResourceLocker, joinFilePath } from '../../../../src';
+import { FileSystemResourceLocker, InternalServerError, joinFilePath } from '../../../../src';
 import { getTestFolder, removeFolder } from '../../../integration/Config';
 
 // Due to the nature of using a file locking library, this is a unit test that writes to disk.
@@ -125,7 +125,7 @@ describe('A FileSystemResourceLocker', (): void => {
   it('stops proper-lock from throwing errors after finalize was called.', async(): Promise<void> => {
     // Tests should never access private fields so we need to change this after splitting the test as mentioned above.
     // Once we have a mock we can check which parameters `unlock` was called with and extract the function from there.
-    expect((): void => (locker as any).customOnCompromised(new Error('test'))).toThrow();
+    expect((): void => (locker as any).customOnCompromised(new Error('test'))).toThrow('test');
     await locker.finalize();
     expect((locker as any).customOnCompromised(new Error('test'))).toBeUndefined();
   });

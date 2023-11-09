@@ -6,7 +6,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import { BaseActivityEmitter } from '../server/notifications/ActivityEmitter';
 import { AS, SOLID_AS } from '../util/Vocabularies';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 
 // The ActivityStream terms for which we emit an event
 const knownActivities = [ AS.terms.Add, AS.terms.Create, AS.terms.Delete, AS.terms.Remove, AS.terms.Update ];
@@ -28,28 +28,42 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     return this.source.hasResource(identifier);
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
+  public async getRepresentation(
+    identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences,
+    conditions?: Conditions,
+  ): Promise<Representation> {
     return this.source.getRepresentation(identifier, preferences, conditions);
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async addResource(
+    container: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return this.emitChanged(await this.source.addResource(container, representation, conditions));
   }
 
-  public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async deleteResource(
+    identifier: ResourceIdentifier,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return this.emitChanged(await this.source.deleteResource(identifier, conditions));
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async setRepresentation(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return this.emitChanged(await this.source.setRepresentation(identifier, representation, conditions));
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async modifyResource(
+    identifier: ResourceIdentifier,
+    patch: Patch,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     return this.emitChanged(await this.source.modifyResource(identifier, patch, conditions));
   }
 

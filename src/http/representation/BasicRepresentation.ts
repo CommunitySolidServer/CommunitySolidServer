@@ -1,11 +1,11 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import type { Guarded } from '../../util/GuardedStream';
 import { guardStream } from '../../util/GuardedStream';
 import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { Representation } from './Representation';
 import type { MetadataIdentifier, MetadataRecord } from './RepresentationMetadata';
-import { RepresentationMetadata, isRepresentationMetadata } from './RepresentationMetadata';
+import { isRepresentationMetadata, RepresentationMetadata } from './RepresentationMetadata';
 
 /**
  * Class with various constructors to facilitate creating a representation.
@@ -108,6 +108,8 @@ export class BasicRepresentation implements Representation {
       metadataRest = undefined;
     }
     if (!isRepresentationMetadata(metadata) || typeof metadataRest === 'string') {
+      // This combination will always match with a valid overload
+      // eslint-disable-next-line ts/no-unsafe-argument
       metadata = new RepresentationMetadata(metadata as any, metadataRest as any);
     }
     this.metadata = metadata;

@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { Store } from 'n3';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';

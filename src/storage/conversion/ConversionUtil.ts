@@ -25,7 +25,7 @@ export class ContextDocumentLoader extends FetchDocumentLoader {
     super(fetch);
     this.contexts = {};
     for (const [ key, path ] of Object.entries(contexts)) {
-      this.contexts[key] = readJsonSync(resolveAssetPath(path));
+      this.contexts[key] = readJsonSync(resolveAssetPath(path)) as IJsonLdContext;
     }
   }
 
@@ -113,20 +113,20 @@ export function getWeightedPreferences(types: ValuePreferences, preferred: Value
  * Undefined if there is no match.
  */
 export function getBestPreference(types: ValuePreferences, preferred: ValuePreferences): ValuePreference | undefined {
-  // Could also return the first entry of the above function but this is more efficient
-  const result = Object.entries(types).reduce((best, [ value, quality ]): ValuePreference => {
+  // Could also return the first entry of `getWeightedPreferences` but this is more efficient
+  let best: ValuePreference = { value: '', weight: 0 };
+  for (const [ value, quality ] of Object.entries(types)) {
     if (best.weight >= quality) {
-      return best;
+      continue;
     }
     const weight = quality * getTypeWeight(value, preferred);
     if (weight > best.weight) {
-      return { value, weight };
+      best = { value, weight };
     }
-    return best;
-  }, { value: '', weight: 0 });
+  }
 
-  if (result.weight > 0) {
-    return result;
+  if (best.weight > 0) {
+    return best;
   }
 }
 

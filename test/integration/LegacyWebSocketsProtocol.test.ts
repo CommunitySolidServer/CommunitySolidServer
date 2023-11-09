@@ -51,12 +51,12 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
       await new Promise((resolve): any => client.on('open', resolve));
     });
 
-    afterAll((): void => {
-      client.close();
-    });
-
     afterEach((): void => {
       messages.length = 0;
+    });
+
+    afterAll((): void => {
+      client.close();
     });
 
     it('sends the protocol version.', (): void => {

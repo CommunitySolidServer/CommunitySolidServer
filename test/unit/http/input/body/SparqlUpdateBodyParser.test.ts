@@ -11,6 +11,7 @@ import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHt
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { ContentType } from '../../../../../src/util/Header';
 import { guardedStreamFrom } from '../../../../../src/util/StreamUtil';
+
 const { namedNode, quad } = DataFactory;
 
 describe('A SparqlUpdateBodyParser', (): void => {
@@ -39,6 +40,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
 
   it('errors when receiving an unexpected error.', async(): Promise<void> => {
     const mock = jest.spyOn(algebra, 'translate').mockImplementationOnce((): any => {
+      // eslint-disable-next-line ts/no-throw-literal
       throw 'apple';
     });
     input.request = guardedStreamFrom(
@@ -62,7 +64,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata).toBe(input.metadata);
 
-    expect(await arrayifyStream(result.data)).toEqual(
+    await expect(arrayifyStream(result.data)).resolves.toEqual(
       [ 'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o> }' ],
     );
   });
@@ -82,7 +84,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata).toBe(input.metadata);
 
-    expect(await arrayifyStream(result.data)).toEqual(
+    await expect(arrayifyStream(result.data)).resolves.toEqual(
       [ 'INSERT DATA { <#it> <http://test.com/p> <http://test.com/o> }' ],
     );
   });

@@ -12,7 +12,7 @@ export class CancelOidcHandler extends JsonInteractionHandler<never> {
     assertOidcInteraction(oidcInteraction);
     const error = {
       error: 'access_denied',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+      // eslint-disable-next-line ts/naming-convention
       error_description: 'User cancelled the interaction.',
     };
 

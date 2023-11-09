@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { ensureDir, remove } from 'fs-extra';
 import type { LockOptions, UnlockOptions } from 'proper-lockfile';
 import { lock, unlock } from 'proper-lockfile';
@@ -112,8 +112,10 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
         this.attemptSettings,
       );
     } catch (err: unknown) {
-      throw new InternalServerError(`Error trying to acquire lock for ${path}. ${createErrorMessage(err)}`,
-        { cause: err });
+      throw new InternalServerError(
+        `Error trying to acquire lock for ${path}. ${createErrorMessage(err)}`,
+        { cause: err },
+      );
     }
   }
 
@@ -127,8 +129,10 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
         this.attemptSettings,
       );
     } catch (err: unknown) {
-      throw new InternalServerError(`Error trying to release lock for ${path}.  ${createErrorMessage(err)}`,
-        { cause: err });
+      throw new InternalServerError(
+        `Error trying to release lock for ${path}.  ${createErrorMessage(err)}`,
+        { cause: err },
+      );
     }
   }
 
@@ -144,12 +148,12 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
   }
 
   /**
- * Generate LockOptions or UnlockOptions depending on the type of defauls given.
- * A custom lockFilePath mapping strategy will be used.
- * @param identifier - ResourceIdentifier to generate (Un)LockOptions for
- * @param defaults - The default options. (lockFilePath will get overwritten)
- * @returns LockOptions or UnlockOptions
- */
+   * Generate LockOptions or UnlockOptions depending on the type of defauls given.
+   * A custom lockFilePath mapping strategy will be used.
+   * @param identifier - ResourceIdentifier to generate (Un)LockOptions for
+   * @param defaults - The default options. (lockFilePath will get overwritten)
+   * @returns LockOptions or UnlockOptions
+   */
   private generateOptions<T>(identifier: ResourceIdentifier, defaults: T): T {
     const lockfilePath = this.toLockfilePath(identifier);
     return {
@@ -184,7 +188,7 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
    * Once the locker was finalized, it will log the provided error instead of throwing it
    * This allows for a clean shutdown procedure.
    */
-  private customOnCompromised(err: any): void {
+  private customOnCompromised(err: Error): void {
     if (!this.finalized) {
       throw err;
     }

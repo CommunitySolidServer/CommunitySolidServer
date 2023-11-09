@@ -8,7 +8,7 @@ import { retryFunction } from '../LockUtils';
 import type { PromiseOrValue } from '../PromiseUtil';
 import type { ReadWriteLocker } from './ReadWriteLocker';
 import type { ResourceLocker } from './ResourceLocker';
-import type { RedisResourceLock, RedisReadWriteLock, RedisAnswer } from './scripts/RedisLuaScripts';
+import type { RedisAnswer, RedisReadWriteLock, RedisResourceLock } from './scripts/RedisLuaScripts';
 import { fromResp2ToBool, REDIS_LUA_SCRIPTS } from './scripts/RedisLuaScripts';
 
 const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay: 50, retryJitter: 30 };
@@ -19,7 +19,7 @@ const PREFIX_LOCK = '__L__';
 
 export interface RedisSettings {
   /* Override default namespacePrefixes (used to prefix keys in Redis) */
-  namespacePrefix: string;
+  namespacePrefix?: string;
   /* Username used for AUTH on the Redis server */
   username?: string;
   /* Password used for AUTH on the Redis server */
@@ -74,12 +74,13 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
   public constructor(
     redisClient = '127.0.0.1:6379',
     attemptSettings: AttemptSettings = {},
-    redisSettings: RedisSettings = { namespacePrefix: '' },
+    redisSettings?: RedisSettings,
   ) {
+    redisSettings = { namespacePrefix: '', ...redisSettings };
     const { namespacePrefix, ...options } = redisSettings;
     this.redis = this.createRedisClient(redisClient, options);
     this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
-    this.namespacePrefix = namespacePrefix;
+    this.namespacePrefix = namespacePrefix!;
 
     // Register lua scripts
     for (const [ name, script ] of Object.entries(REDIS_LUA_SCRIPTS)) {

@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { Initializer } from '../../../../init/Initializer';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
@@ -29,7 +29,7 @@ export class BaseClientCredentialsStore extends Initializer implements ClientCre
 
   public constructor(storage: AccountLoginStorage<any>) {
     super();
-    this.storage = storage;
+    this.storage = storage as typeof this.storage;
   }
 
   // Initialize the type definitions
@@ -43,8 +43,10 @@ export class BaseClientCredentialsStore extends Initializer implements ClientCre
       await this.storage.createIndex(CLIENT_CREDENTIALS_STORAGE_TYPE, 'label');
       this.initialized = true;
     } catch (cause: unknown) {
-      throw new InternalServerError(`Error defining client credentials in storage: ${createErrorMessage(cause)}`,
-        { cause });
+      throw new InternalServerError(
+        `Error defining client credentials in storage: ${createErrorMessage(cause)}`,
+        { cause },
+      );
     }
   }
 

@@ -1,8 +1,8 @@
 import { interactionPolicy } from 'oidc-provider';
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import { AccountPromptFactory } from '../../../../src/identity/configuration/AccountPromptFactory';
-import { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
-import { WebIdStore } from '../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { CookieStore } from '../../../../src/identity/interaction/account/util/CookieStore';
+import type { WebIdStore } from '../../../../src/identity/interaction/webid/util/WebIdStore';
 import DefaultPolicy = interactionPolicy.DefaultPolicy;
 import Prompt = interactionPolicy.Prompt;
 
@@ -18,7 +18,9 @@ describe('An AccountPromptFactory', (): void => {
 
   beforeEach(async(): Promise<void> => {
     policy = [] as any;
+    // eslint-disable-next-line jest/prefer-spy-on
     policy.add = jest.fn();
+    // eslint-disable-next-line jest/prefer-spy-on
     policy.get = jest.fn().mockReturnValue(new Prompt({ name: 'login' }));
 
     ctx = {
@@ -57,7 +59,7 @@ describe('An AccountPromptFactory', (): void => {
     });
 
     it('returns true if there is no cookie.', async(): Promise<void> => {
-      ctx.cookies.get = jest.fn();
+      jest.spyOn(ctx.cookies, 'get').mockImplementation();
       await expect(factory.handle(policy)).resolves.toBeUndefined();
       const prompt = policy.add.mock.calls[0][0];
       const check = prompt.checks[1];
@@ -66,7 +68,7 @@ describe('An AccountPromptFactory', (): void => {
 
     it('returns true if there is no matching account.', async(): Promise<void> => {
       cookieStore.get.mockResolvedValueOnce(undefined);
-      ctx.cookies.get = jest.fn();
+      jest.spyOn(ctx.cookies, 'get').mockImplementation();
       await expect(factory.handle(policy)).resolves.toBeUndefined();
       const prompt = policy.add.mock.calls[0][0];
       const check = prompt.checks[1];

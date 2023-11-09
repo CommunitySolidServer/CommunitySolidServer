@@ -72,10 +72,12 @@ describe('An AcpReader', (): void => {
     `, baseUrl);
     const requestedModes = new IdentifierSetMultiMap([
       [{ path: baseUrl }, AccessMode.read ],
-      [ target, AccessMode.read ]]);
+      [ target, AccessMode.read ],
+    ]);
     const expectedPermissions = new IdentifierMap([
       [{ path: baseUrl }, { read: true }],
-      [ target, {}]]);
+      [ target, {}],
+    ]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
   });
 
@@ -98,10 +100,12 @@ describe('An AcpReader', (): void => {
     `, baseUrl);
     const requestedModes = new IdentifierSetMultiMap([
       [{ path: baseUrl }, AccessMode.read ],
-      [ target, AccessMode.read ]]);
+      [ target, AccessMode.read ],
+    ]);
     const expectedPermissions = new IdentifierMap([
       [{ path: baseUrl }, {}],
-      [ target, { read: true }]]);
+      [ target, { read: true }],
+    ]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
   });
 
@@ -131,10 +135,12 @@ describe('An AcpReader', (): void => {
     `, target.path);
     const requestedModes = new IdentifierSetMultiMap([
       [{ path: baseUrl }, AccessMode.read ],
-      [ target, AccessMode.read ]]);
+      [ target, AccessMode.read ],
+    ]);
     const expectedPermissions = new IdentifierMap([
       [{ path: baseUrl }, { control: true }],
-      [ target, { read: true, append: true }]]);
+      [ target, { read: true, append: true }],
+    ]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
   });
 
@@ -153,11 +159,13 @@ describe('An AcpReader', (): void => {
     const requestedModes = new IdentifierSetMultiMap([
       [{ path: baseUrl }, AccessMode.read ],
       [ target1, AccessMode.read ],
-      [ target2, AccessMode.read ]]);
+      [ target2, AccessMode.read ],
+    ]);
     const expectedPermissions = new IdentifierMap([
       [{ path: baseUrl }, {}],
       [ target1, { read: true }],
-      [ target2, { read: true }]]);
+      [ target2, { read: true }],
+    ]);
     compareMaps(await acpReader.handle({ credentials, requestedModes }), expectedPermissions);
     expect(acrStore.getRepresentation).toHaveBeenCalledTimes(3);
     expect(acrStore.getRepresentation)

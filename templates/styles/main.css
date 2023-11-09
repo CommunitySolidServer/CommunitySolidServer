@@ -228,6 +228,9 @@ button:hover {
 button[type=submit] {
   font-weight: 600;
 }
+button:disabled {
+  background-color: var(--solid-gray);
+}
 
 button.alternate {
   display: block;

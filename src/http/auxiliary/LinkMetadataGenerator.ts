@@ -24,9 +24,11 @@ export class LinkMetadataGenerator extends MetadataGenerator {
   public async handle(metadata: RepresentationMetadata): Promise<void> {
     const identifier = { path: metadata.identifier.value };
     if (!this.identifierStrategy.isAuxiliaryIdentifier(identifier)) {
-      metadata.add(this.link,
+      metadata.add(
+        this.link,
         DataFactory.namedNode(this.identifierStrategy.getAuxiliaryIdentifier(identifier).path),
-        SOLID_META.terms.ResponseMetadata);
+        SOLID_META.terms.ResponseMetadata,
+      );
     }
   }
 }

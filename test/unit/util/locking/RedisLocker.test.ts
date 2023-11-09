@@ -1,9 +1,9 @@
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 import type { Redis } from 'ioredis';
 import type { ReadWriteLocker, ResourceLocker } from '../../../../src';
 import { InternalServerError } from '../../../../src';
 import { RedisLocker } from '../../../../src/util/locking/RedisLocker';
-import type { RedisResourceLock, RedisReadWriteLock } from '../../../../src/util/locking/scripts/RedisLuaScripts';
+import type { RedisReadWriteLock, RedisResourceLock } from '../../../../src/util/locking/scripts/RedisLuaScripts';
 import { flushPromises } from '../../../util/Util';
 
 interface LockState {
@@ -99,6 +99,7 @@ const redis: jest.Mocked<Redis & RedisResourceLock & RedisReadWriteLock> = {
 
 jest.mock('ioredis', (): any => jest.fn().mockImplementation((): Redis => redis));
 
+/* eslint-disable ts/no-floating-promises */
 describe('A RedisLocker', (): void => {
   it('will generate keys with the given namespacePrefix.', async(): Promise<void> => {
     const identifier = { path: 'http://test.com/resource' };
@@ -243,7 +244,6 @@ describe('A RedisLocker', (): void => {
       // Otherwise the internal write lock might not be acquired yet
       const delayedLockWrite = new Promise<void>((resolve): void => {
         emitter.on('readStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
           locker.withWriteLock(resource1, (): any => {
             order.push('write');
             resolve();
@@ -278,7 +278,6 @@ describe('A RedisLocker', (): void => {
 
       const delayedLockWrite = new Promise<void>((resolve): void => {
         emitter.on('readStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
           locker.withWriteLock(resource2, (): any => {
             order.push('write');
             resolve();
@@ -313,7 +312,6 @@ describe('A RedisLocker', (): void => {
 
       const delayedLockWrite = new Promise<void>((resolve): void => {
         emitter.on('readStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
           locker.withWriteLock(resource1, (): any => {
             order.push('write');
             resolve();
@@ -323,7 +321,6 @@ describe('A RedisLocker', (): void => {
 
       const delayedLockRead2 = new Promise<void>((resolve): void => {
         emitter.on('readStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
           locker.withReadLock(resource1, async(): Promise<void> => {
             order.push('read 2 start');
             await promRead2;
@@ -367,7 +364,6 @@ describe('A RedisLocker', (): void => {
       // We want to make sure the read operation only starts while the write operation is busy
       const delayedLockRead = new Promise<void>((resolve): void => {
         emitter.on('writeStarted', (): void => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
           locker.withReadLock(resource1, (): any => {
             order.push('read');
             resolve();

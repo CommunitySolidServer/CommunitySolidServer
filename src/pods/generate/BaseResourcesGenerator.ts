@@ -1,5 +1,5 @@
-import { createReadStream, promises as fsPromises } from 'fs';
-import type { Readable } from 'stream';
+import { createReadStream, promises as fsPromises } from 'node:fs';
+import type { Readable } from 'node:stream';
 import { pathExists } from 'fs-extra';
 import { Parser } from 'n3';
 import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
@@ -16,7 +16,7 @@ import type { ResourceSet } from '../../storage/ResourceSet';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
-import { joinFilePath, isContainerIdentifier, resolveAssetPath } from '../../util/PathUtil';
+import { isContainerIdentifier, joinFilePath, resolveAssetPath } from '../../util/PathUtil';
 import { addResourceMetadata } from '../../util/ResourceUtil';
 import { guardedStreamFrom, readableToString } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
@@ -160,7 +160,7 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
   private async groupLinks(folderPath: string, mapper: FileIdentifierMapper):
   Promise<Record<string, { link: TemplateResourceLink; meta?: TemplateResourceLink }>> {
     const files = await fsPromises.readdir(folderPath);
-    const links: Record<string, { link: TemplateResourceLink; meta?: TemplateResourceLink }> = { };
+    const links: Record<string, { link: TemplateResourceLink; meta?: TemplateResourceLink }> = {};
     for (const name of files) {
       const link = await this.toTemplateLink(joinFilePath(folderPath, name), mapper);
       const { path } = link.identifier;

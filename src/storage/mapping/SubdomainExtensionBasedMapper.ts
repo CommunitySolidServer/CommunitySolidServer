@@ -4,10 +4,10 @@ import { ForbiddenHttpError } from '../../util/errors/ForbiddenHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import {
+  createSubdomainRegexp,
   decodeUriPathComponents,
   encodeUriPathComponents,
   ensureTrailingSlash,
-  createSubdomainRegexp,
   extractScheme,
   trimTrailingSlashes,
 } from '../../util/PathUtil';
@@ -34,8 +34,12 @@ export class SubdomainExtensionBasedMapper extends ExtensionBasedMapper {
   private readonly regex: RegExp;
   private readonly baseParts: { scheme: string; rest: string };
 
-  public constructor(base: string, rootFilepath: string, baseSubdomain = 'www',
-    customTypes?: Record<string, string>) {
+  public constructor(
+    base: string,
+    rootFilepath: string,
+    baseSubdomain = 'www',
+    customTypes?: Record<string, string>,
+  ) {
     super(base, rootFilepath, customTypes);
     this.baseSubdomain = baseSubdomain;
     this.regex = createSubdomainRegexp(ensureTrailingSlash(base));

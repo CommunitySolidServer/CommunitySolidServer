@@ -1,33 +1,33 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: "daily"
-      time: "02:13"
-      timezone: "Europe/Brussels"
+      interval: daily
+      time: '02:13'
+      timezone: Europe/Brussels
     labels:
-      - "⚙️ dependencies"
-  - package-ecosystem: "npm"
+      - ⚙️ dependencies
+  - package-ecosystem: npm
     directory: /
     schedule:
-      interval: "daily"
-      time: "03:35"
-      timezone: "Europe/Brussels"
-    target-branch: "versions/next-major"
+      interval: daily
+      time: '03:35'
+      timezone: Europe/Brussels
+    target-branch: versions/next-major
     ignore:
       # Ignore minor and patch version updates
-      - dependency-name: "*"
-        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: '*'
+        update-types: ['version-update:semver-minor', 'version-update:semver-patch']
       # Sticking with Husky 4.x
-      - dependency-name: "husky"
+      - dependency-name: husky
     labels:
-      - "⚙️ dependencies"
-  - package-ecosystem: "docker"
+      - ⚙️ dependencies
+  - package-ecosystem: docker
     directory: /
     schedule:
-      interval: "daily"
-      time: "04:22"
-      timezone: "Europe/Brussels"
+      interval: daily
+      time: '04:22'
+      timezone: Europe/Brussels
     labels:
-      - "⚙️ dependencies"
+      - ⚙️ dependencies

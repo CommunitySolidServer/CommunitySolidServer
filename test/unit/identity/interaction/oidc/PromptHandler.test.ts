@@ -17,7 +17,7 @@ describe('A PromptHandler', (): void => {
   });
 
   it('errors if there is no interaction.', async(): Promise<void> => {
-    await expect(handler.handle({ } as any)).rejects.toThrow(BadRequestHttpError);
+    await expect(handler.handle({} as any)).rejects.toThrow(BadRequestHttpError);
   });
 
   it('errors if the prompt is unsupported.', async(): Promise<void> => {

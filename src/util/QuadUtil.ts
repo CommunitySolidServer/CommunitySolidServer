@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import type { NamedNode } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';
@@ -37,12 +37,13 @@ export async function parseQuads(readable: Guarded<Readable>, options: ParserOpt
  * @returns A new array containing the unique quads.
  */
 export function uniqueQuads(quads: Quad[]): Quad[] {
-  return quads.reduce<Quad[]>((result, quad): Quad[] => {
-    if (!result.some((item): boolean => quad.equals(item))) {
-      result.push(quad);
+  const uniques: Quad[] = [];
+  for (const quad of quads) {
+    if (!uniques.some((item): boolean => quad.equals(item))) {
+      uniques.push(quad);
     }
-    return result;
-  }, []);
+  }
+  return uniques;
 }
 
 /**
@@ -71,8 +72,8 @@ export class FilterPattern {
    * @param object - Optionally filter based on a specific object.
    */
   public constructor(subject?: string, predicate?: string, object?: string) {
-    this.subject = typeof subject !== 'undefined' ? toNamedTerm(subject) : null;
-    this.predicate = typeof predicate !== 'undefined' ? toNamedTerm(predicate) : null;
-    this.object = typeof object !== 'undefined' ? toNamedTerm(object) : null;
+    this.subject = typeof subject === 'string' ? toNamedTerm(subject) : null;
+    this.predicate = typeof predicate === 'string' ? toNamedTerm(predicate) : null;
+    this.object = typeof object === 'string' ? toNamedTerm(object) : null;
   }
 }

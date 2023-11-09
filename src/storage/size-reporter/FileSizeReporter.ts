@@ -1,5 +1,5 @@
-import type { Stats } from 'fs';
-import { promises as fsPromises } from 'fs';
+import type { Stats } from 'node:fs';
+import { promises as fsPromises } from 'node:fs';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { joinFilePath, normalizeFilePath, trimTrailingSlashes } from '../../util/PathUtil';
@@ -71,17 +71,16 @@ export class FileSizeReporter implements SizeReporter<string> {
     const childFiles = await fsPromises.readdir(fileLocation);
     const rootFilePathLength = trimTrailingSlashes(this.rootFilePath).length;
 
-    return await childFiles.reduce(async(acc: Promise<number>, current): Promise<number> => {
+    let totalSize = stat.size;
+    for (const current of childFiles) {
       const childFileLocation = normalizeFilePath(joinFilePath(fileLocation, current));
-      let result = await acc;
 
       // Exclude internal files
       if (!this.ignoreFolders.some((folder: RegExp): boolean =>
         folder.test(childFileLocation.slice(rootFilePathLength)))) {
-        result += await this.getTotalSize(childFileLocation);
+        totalSize += await this.getTotalSize(childFileLocation);
       }
-
-      return result;
-    }, Promise.resolve(stat.size));
+    }
+    return totalSize;
   }
 }

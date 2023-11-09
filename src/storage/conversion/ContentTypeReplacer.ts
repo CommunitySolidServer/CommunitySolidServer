@@ -2,7 +2,7 @@ import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { matchesMediaType, getConversionTarget } from './ConversionUtil';
+import { getConversionTarget, matchesMediaType } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -21,7 +21,7 @@ export class ContentTypeReplacer extends TypedRepresentationConverter {
    */
   public constructor(replacements: Record<string, string>);
   public constructor(replacements: Record<string, Iterable<string>>);
-  public constructor(replacements: Record<string, any>) {
+  public constructor(replacements: Record<string, string | Iterable<string>>) {
     super();
     // Store the replacements as value preferences,
     // completing any transitive chains (A:B, B:C, C:D => A:B,C,D)
@@ -44,7 +44,7 @@ export class ContentTypeReplacer extends TypedRepresentationConverter {
     const supported = Object.keys(this.contentTypeMap)
       .filter((type): boolean => matchesMediaType(contentType, type))
       .map((type): ValuePreferences => this.contentTypeMap[type]);
-    return Object.assign({} as ValuePreferences, ...supported);
+    return Object.assign({}, ...supported) as ValuePreferences;
   }
 
   public async canHandle({ representation, preferences }: RepresentationConverterArgs): Promise<void> {
@@ -72,7 +72,7 @@ export class ContentTypeReplacer extends TypedRepresentationConverter {
     const supported = await this.getOutputTypes(contentType);
     const match = getConversionTarget(supported, preferred);
     if (!match) {
-      throw new NotImplementedHttpError(`Cannot convert from ${contentType} to ${Object.keys(preferred)}`);
+      throw new NotImplementedHttpError(`Cannot convert from ${contentType} to ${Object.keys(preferred).join(',')}`);
     }
     return match;
   }

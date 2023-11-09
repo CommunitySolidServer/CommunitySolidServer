@@ -1,5 +1,5 @@
-import type { IncomingMessage } from 'http';
-import type { TLSSocket } from 'tls';
+import type { IncomingMessage } from 'node:http';
+import type { TLSSocket } from 'node:tls';
 import type { WebSocket } from 'ws';
 import type { SingleThreaded } from '../init/cluster/SingleThreaded';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -16,7 +16,7 @@ import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid-0.1';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line ts/naming-convention
 const WebSocketListenerEmitter = createGenericEventEmitterClass<GenericEventEmitter<'closed', () => void>>();
 
 /**
@@ -44,14 +44,14 @@ class WebSocketListener extends WebSocketListenerEmitter {
 
     // Verify the WebSocket protocol version
     const protocolHeader = headers['sec-websocket-protocol'];
-    if (!protocolHeader) {
-      this.sendMessage('warning', `Missing Sec-WebSocket-Protocol header, expected value '${VERSION}'`);
-    } else {
+    if (protocolHeader) {
       const supportedProtocols = splitCommaSeparated(protocolHeader);
       if (!supportedProtocols.includes(VERSION)) {
         this.sendMessage('error', `Client does not support protocol ${VERSION}`);
         this.stop();
       }
+    } else {
+      this.sendMessage('warning', `Missing Sec-WebSocket-Protocol header, expected value '${VERSION}'`);
     }
 
     // Store the HTTP host and protocol

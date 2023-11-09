@@ -5,6 +5,7 @@ import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/S
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 import { LDP, RDF } from '../../../../src/util/Vocabularies';
+
 const { namedNode: nn, quad } = DataFactory;
 
 describe('A ContainerToTemplateConverter', (): void => {
@@ -15,7 +16,7 @@ describe('A ContainerToTemplateConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     templateEngine = {
-      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+      handleSafe: jest.fn().mockResolvedValue('<html>'),
     } as any;
     converter = new ContainerToTemplateConverter(templateEngine, 'text/html', identifierStrategy);
   });

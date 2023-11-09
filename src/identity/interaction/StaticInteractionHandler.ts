@@ -1,6 +1,4 @@
-/* eslint-disable tsdoc/syntax */
 import type { Json, JsonRepresentation } from './InteractionUtil';
-// Tsdoc/syntax cannot handle `@range`
 import { JsonInteractionHandler } from './JsonInteractionHandler';
 
 /**

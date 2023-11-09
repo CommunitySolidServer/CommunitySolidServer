@@ -59,8 +59,8 @@
         "@id": "urn:solid-server:default:PasswordHtmlControlHandler",
         "@type": "ControlHandler",
         "controls": [{
-            "ControlHandler:_controls_key": "forgot",
-            "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:ForgotPasswordRoute" }
+          "ControlHandler:_controls_key": "forgot",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:ForgotPasswordRoute" }
         }]
       }
     }

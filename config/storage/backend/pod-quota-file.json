@@ -13,7 +13,7 @@
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
       "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
-      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
     },
     {
       "comment": "Add content-length parser to the MetadataParser.",

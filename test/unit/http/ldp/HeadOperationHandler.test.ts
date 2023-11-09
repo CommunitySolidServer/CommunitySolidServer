@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import { HeadOperationHandler } from '../../../../src/http/ldp/HeadOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';

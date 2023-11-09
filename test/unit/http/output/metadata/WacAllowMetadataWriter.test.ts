@@ -15,7 +15,7 @@ describe('A WacAllowMetadataWriter', (): void => {
   it('adds no header if there is no relevant metadata.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata();
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ });
+    expect(response.getHeaders()).toEqual({});
   });
 
   it('adds a WAC-Allow header if there is relevant metadata.', async(): Promise<void> => {

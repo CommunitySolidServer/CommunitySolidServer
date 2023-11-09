@@ -1,6 +1,6 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'node:fs';
 import fetch from 'cross-fetch';
-import type { ResourceStore, App } from '../../src/';
+import type { App, ResourceStore } from '../../src/';
 import { BasicRepresentation, isSystemError, joinFilePath, joinUrl } from '../../src/';
 import { AclHelper } from '../util/AclHelper';
 import { deleteResource, getResource, postResource, putResource } from '../util/FetchUtil';
@@ -232,7 +232,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // GET file
     const response = await getResource(identifier.path);
-    expect(await response.text()).toContain('valid data');
+    await expect(response.text()).resolves.toContain('valid data');
   });
 
   it('prevents creation of intermediate intermediate containers if they are not allowed.', async(): Promise<void> => {
@@ -257,12 +257,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // This covers all required permissions
     await aclHelper.setSimpleAcl(baseUrl, [
-      { permissions: { append: true },
-        agentClass: 'agent',
-        accessTo: true },
-      { permissions: { write: true },
-        agentClass: 'agent',
-        default: true },
+      { permissions: { append: true }, agentClass: 'agent', accessTo: true },
+      { permissions: { write: true }, agentClass: 'agent', default: true },
     ]);
     await putResource(url, { contentType: 'text/plain', exists: false });
   });

@@ -1,7 +1,7 @@
 import { AccountInitializer } from '../../../src/identity/AccountInitializer';
-import { AccountStore } from '../../../src/identity/interaction/account/util/AccountStore';
-import { PasswordStore } from '../../../src/identity/interaction/password/util/PasswordStore';
-import { PodCreator } from '../../../src/identity/interaction/pod/util/PodCreator';
+import type { AccountStore } from '../../../src/identity/interaction/account/util/AccountStore';
+import type { PasswordStore } from '../../../src/identity/interaction/password/util/PasswordStore';
+import type { PodCreator } from '../../../src/identity/interaction/pod/util/PodCreator';
 
 describe('An AccountInitializer', (): void => {
   const email = 'email@example.com';
@@ -26,7 +26,11 @@ describe('An AccountInitializer', (): void => {
     } satisfies Partial<PodCreator> as any;
 
     initializer = new AccountInitializer({
-      accountStore, passwordStore, podCreator, email, password,
+      accountStore,
+      passwordStore,
+      podCreator,
+      email,
+      password,
     });
   });
 
@@ -42,7 +46,12 @@ describe('An AccountInitializer', (): void => {
 
   it('can create a pod with a name.', async(): Promise<void> => {
     initializer = new AccountInitializer({
-      accountStore, passwordStore, podCreator, email, password, name: 'name',
+      accountStore,
+      passwordStore,
+      podCreator,
+      email,
+      password,
+      name: 'name',
     });
     await expect(initializer.handle()).resolves.toBeUndefined();
     expect(accountStore.create).toHaveBeenCalledTimes(1);

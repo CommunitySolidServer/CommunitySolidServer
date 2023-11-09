@@ -1,4 +1,4 @@
-import type { Server } from 'http';
+import type { Server } from 'node:http';
 import request from 'supertest';
 import type { App } from '../../src/init/App';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';

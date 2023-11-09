@@ -8,7 +8,6 @@ import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
 let clientId: string | undefined;
 const solidTokenVerifier = jest.fn(async(): Promise<SolidAccessTokenPayload> =>
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   ({ aud: 'solid', exp: 1234, iat: 1234, iss: 'example.com/idp', webid: 'http://alice.example/card#me', client_id: clientId }));
 jest.mock('@solid/access-token-verifier', (): any =>
   ({ createSolidTokenVerifier: (): SolidTokenVerifierFunction => solidTokenVerifier }));

@@ -1,7 +1,9 @@
 import type { Interaction } from '../../../../src/identity/interaction/InteractionHandler';
 import type { AccountInteractionResults } from '../../../../src/identity/interaction/InteractionUtil';
 import {
-  assertOidcInteraction, finishInteraction, forgetWebId,
+  assertOidcInteraction,
+  finishInteraction,
+  forgetWebId,
 } from '../../../../src/identity/interaction/InteractionUtil';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import type Provider from '../../../../templates/types/oidc-provider';
@@ -77,7 +79,6 @@ describe('InteractionUtil', (): void => {
 
     beforeEach(async(): Promise<void> => {
       provider = {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Session: {
           find: jest.fn().mockResolvedValue({
             accountId: 'accountId',

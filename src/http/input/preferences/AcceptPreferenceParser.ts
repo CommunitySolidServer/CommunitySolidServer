@@ -3,9 +3,9 @@ import type { AcceptHeader } from '../../../util/Header';
 import {
   parseAccept,
   parseAcceptCharset,
+  parseAcceptDateTime,
   parseAcceptEncoding,
   parseAcceptLanguage,
-  parseAcceptDateTime,
 } from '../../../util/HeaderUtil';
 import type { RepresentationPreferences } from '../../representation/RepresentationPreferences';
 import { PreferenceParser } from './PreferenceParser';

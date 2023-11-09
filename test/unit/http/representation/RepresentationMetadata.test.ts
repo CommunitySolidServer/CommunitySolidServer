@@ -4,7 +4,8 @@ import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { ContentType } from '../../../../src/util/Header';
-import { CONTENT_TYPE_TERM, SOLID_META, RDFS } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE_TERM, RDFS, SOLID_META } from '../../../../src/util/Vocabularies';
+
 const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
 // Helper functions to filter quads
@@ -78,7 +79,8 @@ describe('A RepresentationMetadata', (): void => {
       metadata = new RepresentationMetadata(other);
       expect(metadata.identifier).toEqualRdfTerm(namedNode('otherId'));
       expect(metadata.quads()).toBeRdfIsomorphic([
-        quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal')) ]);
+        quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal')),
+      ]);
     });
 
     it('takes overrides for specific predicates.', async(): Promise<void> => {
@@ -96,14 +98,16 @@ describe('A RepresentationMetadata', (): void => {
     it('can combine overrides with an identifier.', async(): Promise<void> => {
       metadata = new RepresentationMetadata(identifier, { predVal: 'objVal' });
       expect(metadata.quads()).toBeRdfIsomorphic([
-        quad(identifier, namedNode('predVal'), literal('objVal')) ]);
+        quad(identifier, namedNode('predVal'), literal('objVal')),
+      ]);
     });
 
     it('can combine overrides with other metadata.', async(): Promise<void> => {
       const other = new RepresentationMetadata({ path: 'otherId' }, { 'test:pred': 'objVal' });
       metadata = new RepresentationMetadata(other, { 'test:pred': 'objVal2' });
       expect(metadata.quads()).toBeRdfIsomorphic([
-        quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal2')) ]);
+        quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal2')),
+      ]);
     });
   });
 
@@ -143,8 +147,10 @@ describe('A RepresentationMetadata', (): void => {
       metadata.setMetadata(other);
 
       expect(metadata.identifier).toEqual(other.identifier);
-      expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads,
-        quad(identifier, namedNode('test:pred'), literal('objVal')) ]);
+      expect(metadata.quads()).toBeRdfIsomorphic([
+        ...inputQuads,
+        quad(identifier, namedNode('test:pred'), literal('objVal')),
+      ]);
     });
 
     it('updates its identifier when copying metadata.', async(): Promise<void> => {
@@ -302,7 +308,7 @@ describe('A RepresentationMetadata', (): void => {
     it('errors if a shorthand has multiple values.', async(): Promise<void> => {
       metadata.add(CONTENT_TYPE_TERM, 'a/b');
       metadata.add(CONTENT_TYPE_TERM, 'c/d');
-      expect((): any => metadata.contentType).toThrow();
+      expect((): any => metadata.contentType).toThrow('Multiple results for http://www.w3.org/ns/ma-ont#format');
     });
 
     it('has a shorthand for Content-Type as string.', async(): Promise<void> => {
