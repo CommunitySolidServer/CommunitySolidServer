@@ -60,10 +60,10 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * Otherwise, deny access based on existing grounds.
    */
   private async reportAccessError(
-    identifier: ResourceIdentifier, 
+    identifier: ResourceIdentifier,
     modes: ReadonlySet<AccessMode>,
-    permissionSet: PermissionSet, 
-    cause: unknown
+    permissionSet: PermissionSet,
+    cause: unknown,
   ): Promise<never> {
     const exposeExistence = permissionSet[AccessMode.read];
     if (exposeExistence && !modes.has(AccessMode.create) && !await this.resourceSet.hasResource(identifier)) {
