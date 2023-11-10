@@ -5,4 +5,5 @@ export type Credentials = {
   agent?: { webId: string };
   client?: { clientId: string };
   issuer?: { url: string };
+  [key: string]: unknown;
 };
