@@ -13,7 +13,7 @@ import { HandlebarsTemplateEngine } from '../../../../src/util/templates/Handleb
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 import { mockFileSystem } from '../../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 class DummyFactory implements FileIdentifierMapperFactory {
@@ -149,7 +149,7 @@ describe('A BaseResourcesGenerator', (): void => {
   it('does not create container when it already exists.', async(): Promise<void> => {
     const meta = '<> <pre:has> "metadata".';
     cache.data = { '.meta': meta };
-    store.hasResource = jest.fn().mockResolvedValue(true);
+    jest.spyOn(store, 'hasResource').mockResolvedValue(true);
 
     const result = await asyncToArray(generator.generate(rootFilePath, location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);

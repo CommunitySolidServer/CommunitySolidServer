@@ -85,7 +85,9 @@ describe('LazyLoggerFactory', (): void => {
     expect(wrappedB.log).toHaveBeenCalledTimes(49);
     expect(warningLogger.log).toHaveBeenCalledTimes(1);
     expect(warningLogger.log).toHaveBeenCalledWith(
-      'warn', 'Memory-buffered logging limit of 100 reached', expect.any(Object),
+      'warn',
+      'Memory-buffered logging limit of 100 reached',
+      expect.any(Object),
     );
   });
 });

@@ -1,19 +1,20 @@
-import { types } from 'util';
+import { types } from 'node:util';
 
 /**
  * Checks if the input is an {@link Error}.
  */
-export function isError(error: any): error is Error {
+export function isError(error: unknown): error is Error {
   return types.isNativeError(error) ||
-    (error &&
-    typeof error.name === 'string' &&
-    typeof error.message === 'string' &&
-    (typeof error.stack === 'undefined' || typeof error.stack === 'string'));
+    (Boolean(error) &&
+    typeof (error as Error).name === 'string' &&
+    typeof (error as Error).message === 'string' &&
+    (typeof (error as Error).stack === 'undefined' || typeof (error as Error).stack === 'string'));
 }
 
 /**
  * Creates a string representing the error message of this object.
  */
 export function createErrorMessage(error: unknown): string {
+  // eslint-disable-next-line ts/restrict-template-expressions
   return isError(error) ? error.message : `Unknown error: ${error}`;
 }

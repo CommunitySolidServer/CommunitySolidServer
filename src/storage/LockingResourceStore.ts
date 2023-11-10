@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
@@ -10,7 +10,7 @@ import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteL
 import { endOfStream } from '../util/StreamUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './conditions/Conditions';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 
 /**
  * Store that for every call acquires a lock before executing it on the requested resource,
@@ -27,46 +27,72 @@ export class LockingResourceStore implements AtomicResourceStore {
   private readonly locks: ExpiringReadWriteLocker;
   private readonly auxiliaryStrategy: AuxiliaryIdentifierStrategy;
 
-  public constructor(source: ResourceStore, locks: ExpiringReadWriteLocker,
-    auxiliaryStrategy: AuxiliaryIdentifierStrategy) {
+  public constructor(
+    source: ResourceStore,
+    locks: ExpiringReadWriteLocker,
+    auxiliaryStrategy: AuxiliaryIdentifierStrategy,
+  ) {
     this.source = source;
     this.locks = locks;
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
   public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
-    return this.locks.withReadLock(this.getLockIdentifier(identifier),
-      async(): Promise<boolean> => this.source.hasResource(identifier));
+    return this.locks.withReadLock(
+      this.getLockIdentifier(identifier),
+      async(): Promise<boolean> => this.source.hasResource(identifier),
+    );
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
-    return this.lockedRepresentationRun(this.getLockIdentifier(identifier),
-      async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions));
+  public async getRepresentation(
+    identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences,
+    conditions?: Conditions,
+  ): Promise<Representation> {
+    return this.lockedRepresentationRun(
+      this.getLockIdentifier(identifier),
+      async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions),
+    );
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
-    return this.locks.withWriteLock(this.getLockIdentifier(container),
-      async(): Promise<ChangeMap> => this.source.addResource(container, representation, conditions));
+  public async addResource(
+    container: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
+    return this.locks.withWriteLock(
+      this.getLockIdentifier(container),
+      async(): Promise<ChangeMap> => this.source.addResource(container, representation, conditions),
+    );
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ChangeMap> {
-    return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ChangeMap> => this.source.setRepresentation(identifier, representation, conditions));
+  public async setRepresentation(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
+    return this.locks.withWriteLock(
+      this.getLockIdentifier(identifier),
+      async(): Promise<ChangeMap> => this.source.setRepresentation(identifier, representation, conditions),
+    );
   }
 
-  public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ChangeMap> {
-    return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ChangeMap> => this.source.deleteResource(identifier, conditions));
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ChangeMap> {
+    return this.locks.withWriteLock(
+      this.getLockIdentifier(identifier),
+      async(): Promise<ChangeMap> => this.source.deleteResource(identifier, conditions),
+    );
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ChangeMap> {
-    return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<ChangeMap> => this.source.modifyResource(identifier, patch, conditions));
+  public async modifyResource(
+    identifier: ResourceIdentifier,
+    patch: Patch,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
+    return this.locks.withWriteLock(
+      this.getLockIdentifier(identifier),
+      async(): Promise<ChangeMap> => this.source.modifyResource(identifier, patch, conditions),
+    );
   }
 
   /**
@@ -106,7 +132,7 @@ export class LockingResourceStore implements AtomicResourceStore {
 
         // Release the lock when an error occurs or the data finished streaming
         await this.waitForStreamToEnd(representation.data);
-      }).catch((error): void => {
+      }).catch((error: Error): void => {
         // Destroy the source stream in case the lock times out
         representation?.data.destroy(error);
 
@@ -133,7 +159,7 @@ export class LockingResourceStore implements AtomicResourceStore {
           return source.read(size);
         },
       },
-    });
+    }) as Readable;
     return new BasicRepresentation(data, representation.metadata, representation.binary);
   }
 

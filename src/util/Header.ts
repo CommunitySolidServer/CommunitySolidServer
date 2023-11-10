@@ -58,9 +58,10 @@ export class ContentType {
    * @returns The value string, including parameters, if present.
    */
   public toHeaderValueString(): string {
-    return Object.entries(this.parameters)
+    const parameterStrings = Object.entries(this.parameters)
       .sort((entry1, entry2): number => entry1[0].localeCompare(entry2[0]))
-      .reduce((acc, entry): string => `${acc}; ${entry[0]}=${entry[1]}`, this.value);
+      .map(([ key, value ]): string => `${key}=${value}`);
+    return [ this.value, ...parameterStrings ].join('; ');
   }
 }
 

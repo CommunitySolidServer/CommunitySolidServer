@@ -1,9 +1,9 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'node:fs';
 import * as mime from 'mime-types';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { DEFAULT_CUSTOM_TYPES } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { joinFilePath, getExtension } from '../../util/PathUtil';
+import { getExtension, joinFilePath } from '../../util/PathUtil';
 import { BaseFileIdentifierMapper } from './BaseFileIdentifierMapper';
 import type { FileIdentifierMapperFactory, ResourceLink } from './FileIdentifierMapper';
 

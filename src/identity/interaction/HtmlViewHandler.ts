@@ -20,7 +20,7 @@ export class HtmlViewEntry {
   public constructor(
     public readonly route: InteractionRoute,
     public readonly filePath: string,
-  ) { }
+  ) {}
 }
 
 /**

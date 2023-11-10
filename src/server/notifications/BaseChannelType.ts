@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { parse, toSeconds } from 'iso8601-duration';
 import { DataFactory } from 'n3';
@@ -54,7 +54,9 @@ const CONTEXT_SHACL = 'https://w3c.github.io/shacl/shacl-jsonld-context/shacl.co
  * The SHACL shape for the minimum requirements on a notification channel subscription request.
  */
 export const DEFAULT_SUBSCRIPTION_SHACL = {
+  // eslint-disable-next-line ts/naming-convention
   '@context': [ CONTEXT_SHACL ],
+  // eslint-disable-next-line ts/naming-convention
   '@type': 'sh:NodeShape',
   // Use the topic predicate to find the focus node
   targetSubjectsOf: NOTIFY.topic,
@@ -92,8 +94,12 @@ export abstract class BaseChannelType implements NotificationChannelType {
    *                   Values are expected to be full URIs, but the `notify:` prefix can also be used.
    * @param additionalShaclProperties - Any additional properties that need to be added to the default SHACL shape.
    */
-  protected constructor(type: NamedNode, route: InteractionRoute,
-    features: string[] = DEFAULT_NOTIFICATION_FEATURES, additionalShaclProperties: unknown[] = []) {
+  protected constructor(
+    type: NamedNode,
+    route: InteractionRoute,
+    features: string[] = DEFAULT_NOTIFICATION_FEATURES,
+    additionalShaclProperties: unknown[] = [],
+  ) {
     this.type = type;
     this.path = route.getPath();
     this.features = features.map((feature): NamedNode => {
@@ -109,6 +115,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
       property: [
         ...DEFAULT_SUBSCRIPTION_SHACL.property,
         // Add type check
+        // eslint-disable-next-line ts/naming-convention
         { path: RDF.type, hasValue: { '@id': type.value }},
         ...additionalShaclProperties,
       ],
@@ -117,6 +124,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
 
   public getDescription(): SubscriptionService {
     return {
+      // eslint-disable-next-line ts/naming-convention
       '@context': [ CONTEXT_NOTIFICATION ],
       id: this.path,
       // At the time of writing, there is no base value for URIs in the notification context,
@@ -139,7 +147,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
    * Initiates the channel by first calling {@link validateSubscription} followed by {@link quadsToChannel}.
    * Subclasses can override either function safely to impact the result of the function.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   public async initChannel(data: Store, credentials: Credentials): Promise<NotificationChannel> {
     const subject = await this.validateSubscription(data);
     return this.quadsToChannel(data, subject);
@@ -255,6 +263,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
    */
   public async toJsonLd(channel: NotificationChannel): Promise<Record<string, unknown>> {
     const result: Record<string, unknown> = {
+      // eslint-disable-next-line ts/naming-convention
       '@context': [
         CONTEXT_NOTIFICATION,
       ],
@@ -282,7 +291,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
     return new IdentifierSetMultiMap<AccessMode>([[{ path: channel.topic }, AccessMode.read ]]);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   public async completeChannel(channel: NotificationChannel): Promise<void> {
     // Do nothing
   }

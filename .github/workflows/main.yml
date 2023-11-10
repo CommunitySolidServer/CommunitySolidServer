@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
+      - main
       - 'versions/*'
     tags:
       - 'v*'
@@ -14,11 +14,11 @@ concurrency:
 
 jobs:
   npm-test:
-  # Run the tests in every case
+    # Run the tests in every case
     uses: ./.github/workflows/npm-test.yml
 
   cth-test:
-  # Run the Conformance Test Harness on PRs targeting main or versions/
+    # Run the Conformance Test Harness on PRs targeting main or versions/
     if: github.event_name == 'pull_request' && ( github.base_ref == 'main' || startsWith( github.base_ref, 'versions/' ) )
     uses: ./.github/workflows/cth-test.yml
     with:
@@ -26,7 +26,7 @@ jobs:
       version: 1.1.14 # The latest version that CSS is confirmed to pass
 
   docker:
-  # Build docker containers on version tag, push to main and push to versions/
+    # Build docker containers on version tag, push to main and push to versions/
     needs: npm-test
     if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/heads/versions/')
     uses: ./.github/workflows/docker.yml
@@ -35,6 +35,6 @@ jobs:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   mkdocs-release:
-  # Release documentation on version tag, but ignore pre-releases
+    # Release documentation on version tag, but ignore pre-releases
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
     uses: ./.github/workflows/mkdocs.yml

@@ -20,7 +20,7 @@
   </fieldset>
 
   <p class="actions">
-    <button type="submit" name="submit">Log in</button>
+    <button type="submit" name="submit" disabled>Log in</button>
     <button class="hidden" type="button" id="cancel">Cancel</button>
   </p>
 
@@ -51,7 +51,7 @@
         controls = await fetchControls('<%= idpIndex %>');
         location.href = controls.html.account.account;
       }
-    })
+    });
 
     updateElement('register-link', controls.html.password.register, { href: true });
     updateElement('forgot-link', controls.html.password.forgot, { href: true });

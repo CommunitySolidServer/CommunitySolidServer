@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { KeyValueStorage } from './KeyValueStorage';
@@ -65,7 +65,7 @@ export class MaxKeyLengthStorage<T> implements KeyValueStorage<string, T> {
     const parts = key.split('/');
 
     // Prevent non-hashed keys with the prefix to prevent false hits
-    if (parts[parts.length - 1].startsWith(this.hashPrefix)) {
+    if (parts.at(-1)?.startsWith(this.hashPrefix)) {
       throw new NotImplementedHttpError(`Unable to store keys starting with ${this.hashPrefix}`);
     }
 

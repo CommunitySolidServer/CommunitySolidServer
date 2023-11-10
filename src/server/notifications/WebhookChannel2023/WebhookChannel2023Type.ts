@@ -45,12 +45,13 @@ export class WebhookChannel2023Type extends BaseChannelType {
    * @param stateHandler - The {@link StateHandler} that will be called after a successful subscription.
    * @param features - The features that need to be enabled for this channel type.
    */
-  public constructor(route: InteractionRoute, webIdRoute: InteractionRoute, stateHandler: StateHandler,
-    features?: string[]) {
-    super(NOTIFY.terms.WebhookChannel2023,
-      route,
-      features,
-      [{ path: NOTIFY.sendTo, minCount: 1, maxCount: 1 }]);
+  public constructor(
+    route: InteractionRoute,
+    webIdRoute: InteractionRoute,
+    stateHandler: StateHandler,
+    features?: string[],
+  ) {
+    super(NOTIFY.terms.WebhookChannel2023, route, features, [{ path: NOTIFY.sendTo, minCount: 1, maxCount: 1 }]);
     this.stateHandler = stateHandler;
     this.webId = webIdRoute.getPath();
   }

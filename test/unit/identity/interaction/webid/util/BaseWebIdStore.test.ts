@@ -1,5 +1,7 @@
-import { ACCOUNT_TYPE,
-  AccountLoginStorage } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
+import type {
+  AccountLoginStorage,
+} from '../../../../../../src/identity/interaction/account/util/LoginStorage';
+import { ACCOUNT_TYPE } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import { BaseWebIdStore } from '../../../../../../src/identity/interaction/webid/util/BaseWebIdStore';
 import { BadRequestHttpError } from '../../../../../../src/util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';

@@ -7,7 +7,7 @@
       "@type": "AuxiliaryLinkMetadataWriter",
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
       "specificStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
-      "relationType" : "describedby"
+      "relationType": "describedby"
     }
   ]
 }

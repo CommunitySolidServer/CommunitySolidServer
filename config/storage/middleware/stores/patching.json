@@ -36,7 +36,7 @@
       "@id": "urn:solid-server:default:PatchHandler_RDFStore",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:PatchHandler_ImmutableMetadata"},
+        { "@id": "urn:solid-server:default:PatchHandler_ImmutableMetadata" },
         { "@id": "urn:solid-server:default:PatchHandler_RDF" }
       ]
     },

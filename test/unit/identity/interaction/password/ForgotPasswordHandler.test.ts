@@ -1,9 +1,9 @@
 import { ForgotPasswordHandler } from '../../../../../src/identity/interaction/password/ForgotPasswordHandler';
-import { EmailSender } from '../../../../../src/identity/interaction/password/util/EmailSender';
-import { ForgotPasswordStore } from '../../../../../src/identity/interaction/password/util/ForgotPasswordStore';
-import { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
+import type { EmailSender } from '../../../../../src/identity/interaction/password/util/EmailSender';
+import type { ForgotPasswordStore } from '../../../../../src/identity/interaction/password/util/ForgotPasswordStore';
+import type { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
 import type { InteractionRoute } from '../../../../../src/identity/interaction/routing/InteractionRoute';
-import { TemplateEngine } from '../../../../../src/util/templates/TemplateEngine';
+import type { TemplateEngine } from '../../../../../src/util/templates/TemplateEngine';
 
 describe('A ForgotPasswordHandler', (): void => {
   const id = 'id';

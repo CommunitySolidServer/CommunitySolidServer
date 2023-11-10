@@ -30,13 +30,13 @@ describe('A LinkRelMetadataWriter', (): void => {
     const metadata = new RepresentationMetadata(identifier);
 
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ });
+    expect(response.getHeaders()).toEqual({});
   });
 
   it('does not add link headers for blank node identifiers.', async(): Promise<void> => {
     const response = createResponse() as HttpResponse;
     const metadata = new RepresentationMetadata();
     await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
-    expect(response.getHeaders()).toEqual({ });
+    expect(response.getHeaders()).toEqual({});
   });
 });

@@ -10,6 +10,6 @@ describe('A WorkerManager', (): void => {
     const wm = new WorkerManager(cm);
     Object.assign(cm, { spawnWorkers: jest.fn() });
     await wm.handle();
-    expect(cm.spawnWorkers).toHaveBeenCalled();
+    expect(cm.spawnWorkers).toHaveBeenCalledWith();
   });
 });

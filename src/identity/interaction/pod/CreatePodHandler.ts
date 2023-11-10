@@ -40,8 +40,13 @@ export class CreatePodHandler extends JsonInteractionHandler<OutType> implements
 
   private readonly inSchema: typeof inSchema;
 
-  public constructor(podStore: PodStore, podCreator: PodCreator, webIdLinkRoute: WebIdLinkRoute, podIdRoute: PodIdRoute,
-    allowRoot = false) {
+  public constructor(
+    podStore: PodStore,
+    podCreator: PodCreator,
+    webIdLinkRoute: WebIdLinkRoute,
+    podIdRoute: PodIdRoute,
+    allowRoot = false,
+  ) {
     super();
     this.podStore = podStore;
     this.podCreator = podCreator;
@@ -71,7 +76,10 @@ export class CreatePodHandler extends JsonInteractionHandler<OutType> implements
     assertAccountId(accountId);
 
     const result = await this.podCreator.handleSafe({
-      accountId, webId: settings?.webId, name, settings,
+      accountId,
+      webId: settings?.webId,
+      name,
+      settings,
     });
 
     const webIdResource = result.webIdLink && this.webIdLinkRoute.getPath({ accountId, webIdLink: result.webIdLink });

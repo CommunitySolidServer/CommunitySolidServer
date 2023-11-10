@@ -55,7 +55,9 @@ describe('A LinkParser', (): void => {
 
   it('ignores link headers that are not allowed.', async(): Promise<void> => {
     const linkRelObject = new LinkRelObject(
-      'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', false, [ 'http://example.org/allowed' ],
+      'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+      false,
+      [ 'http://example.org/allowed' ],
     );
     const linkRelParser = new LinkRelParser({ type: linkRelObject });
     request.headers.link = '<http://example.org/notAllowed>;rel="type"';
@@ -66,7 +68,9 @@ describe('A LinkParser', (): void => {
   it('stores link headers with rel matching the given value as metadata and ignores not allowed.', async():
   Promise<void> => {
     const linkRelObject = new LinkRelObject(
-      'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', false, [ 'http://example.org/allowed' ],
+      'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+      false,
+      [ 'http://example.org/allowed' ],
     );
     const linkRelParser = new LinkRelParser({ type: linkRelObject });
     request.headers.link = [ '<http://example.org/notAllowed>;rel="type"', '<http://example.org/allowed>;rel="type"' ];

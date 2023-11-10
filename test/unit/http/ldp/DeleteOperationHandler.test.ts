@@ -9,11 +9,14 @@ describe('A DeleteOperationHandler', (): void => {
   let operation: Operation;
   const conditions: Conditions = { matchesMetadata: jest.fn() };
   const body = new BasicRepresentation();
-  const store = {} as unknown as ResourceStore;
-  const handler = new DeleteOperationHandler(store);
+  let store: jest.Mocked<ResourceStore>;
+  let handler: DeleteOperationHandler;
   beforeEach(async(): Promise<void> => {
     operation = { method: 'DELETE', target: { path: 'http://test.com/foo' }, preferences: {}, conditions, body };
-    store.deleteResource = jest.fn(async(): Promise<any> => undefined);
+    store = {
+      deleteResource: jest.fn(async(): Promise<any> => undefined),
+    } as any satisfies ResourceStore;
+    handler = new DeleteOperationHandler(store);
   });
 
   it('only supports DELETE operations.', async(): Promise<void> => {

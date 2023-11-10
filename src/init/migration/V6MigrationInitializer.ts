@@ -1,4 +1,4 @@
-import { createInterface } from 'readline';
+import { createInterface } from 'node:readline';
 import { ACCOUNT_STORAGE_DESCRIPTION } from '../../identity/interaction/account/util/BaseAccountStore';
 import type { AccountLoginStorage } from '../../identity/interaction/account/util/LoginStorage';
 import { ACCOUNT_TYPE } from '../../identity/interaction/account/util/LoginStorage';
@@ -113,7 +113,7 @@ export class V6MigrationInitializer extends Initializer {
     this.accountStorage = args.accountStorage;
     this.clientCredentialsStorage = args.clientCredentialsStorage;
     this.cleanupStorages = args.cleanupStorages;
-    this.newAccountStorage = args.newAccountStorage;
+    this.newAccountStorage = args.newAccountStorage as AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
     this.newSetupStorage = args.newSetupStorage;
   }
 
@@ -220,14 +220,18 @@ export class V6MigrationInitializer extends Initializer {
 
     const { id: accountId } = await this.newAccountStorage.create(ACCOUNT_TYPE, {});
     // The `toLowerCase` call is important here to have the expected value
-    await this.newAccountStorage.create(PASSWORD_STORAGE_TYPE,
-      { email: email.toLowerCase(), password, verified, accountId });
+    await this.newAccountStorage.create(
+      PASSWORD_STORAGE_TYPE,
+      { email: email.toLowerCase(), password, verified, accountId },
+    );
     if (settings.useIdp) {
       await this.newAccountStorage.create(WEBID_STORAGE_TYPE, { webId, accountId });
     }
     if (settings.podBaseUrl) {
-      const { id: podId } = await this.newAccountStorage.create(POD_STORAGE_TYPE,
-        { baseUrl: settings.podBaseUrl, accountId });
+      const { id: podId } = await this.newAccountStorage.create(
+        POD_STORAGE_TYPE,
+        { baseUrl: settings.podBaseUrl, accountId },
+      );
       await this.newAccountStorage.create(OWNER_STORAGE_TYPE, { webId, podId, visible: false });
     }
 

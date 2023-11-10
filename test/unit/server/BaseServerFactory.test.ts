@@ -1,4 +1,4 @@
-import type { RequestListener, Server } from 'http';
+import type { RequestListener, Server } from 'node:http';
 import request from 'supertest';
 import type { BaseServerFactoryOptions } from '../../../src/server/BaseServerFactory';
 import { BaseServerFactory } from '../../../src/server/BaseServerFactory';

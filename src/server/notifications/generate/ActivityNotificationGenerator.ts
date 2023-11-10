@@ -33,6 +33,7 @@ export class ActivityNotificationGenerator extends NotificationGenerator {
     const state = this.eTagHandler.getETag(representation.metadata);
 
     return {
+      // eslint-disable-next-line ts/naming-convention
       '@context': [
         CONTEXT_ACTIVITYSTREAMS,
         CONTEXT_NOTIFICATION,

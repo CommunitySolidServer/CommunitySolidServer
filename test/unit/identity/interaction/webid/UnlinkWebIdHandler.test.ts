@@ -1,5 +1,5 @@
 import { UnlinkWebIdHandler } from '../../../../../src/identity/interaction/webid/UnlinkWebIdHandler';
-import { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
+import type { WebIdStore } from '../../../../../src/identity/interaction/webid/util/WebIdStore';
 import type { WebIdLinkRoute } from '../../../../../src/identity/interaction/webid/WebIdLinkRoute';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 

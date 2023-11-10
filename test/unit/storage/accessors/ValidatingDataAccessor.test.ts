@@ -19,10 +19,10 @@ describe('ValidatingDataAccessor', (): void => {
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
     childAccessor = {
+      getChildren: jest.fn(),
       writeDocument: jest.fn(),
       writeContainer: jest.fn(),
     } as any;
-    childAccessor.getChildren = jest.fn();
     validator = {
       handleSafe: jest.fn(async(input: ValidatorInput): Promise<Representation> => input.representation),
     } as any;

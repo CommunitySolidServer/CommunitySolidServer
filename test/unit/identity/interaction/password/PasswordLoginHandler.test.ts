@@ -1,5 +1,5 @@
 import { PasswordLoginHandler } from '../../../../../src/identity/interaction/password/PasswordLoginHandler';
-import { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
+import type { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
 
 describe('A PasswordLoginHandler', (): void => {
   let json: unknown;

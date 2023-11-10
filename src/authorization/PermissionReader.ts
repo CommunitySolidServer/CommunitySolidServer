@@ -16,7 +16,7 @@ export interface PermissionReaderInput {
 
 /**
  * Discovers the permissions of the given credentials on the given identifier.
- * In case the reader finds no permission for the requested identifiers and credentials
+ * If the reader finds no permission for the requested identifiers and credentials,
  * it can return an empty or incomplete map.
  */
 export abstract class PermissionReader extends AsyncHandler<PermissionReaderInput, PermissionMap> {}

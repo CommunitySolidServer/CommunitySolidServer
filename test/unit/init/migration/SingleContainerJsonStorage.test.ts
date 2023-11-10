@@ -2,7 +2,7 @@ import { BasicRepresentation } from '../../../../src/http/representation/BasicRe
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { SingleContainerJsonStorage } from '../../../../src/init/migration/SingleContainerJsonStorage';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { isContainerIdentifier } from '../../../../src/util/PathUtil';
 import { LDP } from '../../../../src/util/Vocabularies';
@@ -44,18 +44,26 @@ describe('A SingleContainerJsonStorage', (): void => {
       [ 'baz', { id: 'http://example.com/.internal/accounts/baz' }],
     ]);
     expect(store.getRepresentation).toHaveBeenCalledTimes(4);
-    expect(store.getRepresentation).toHaveBeenNthCalledWith(1,
+    expect(store.getRepresentation).toHaveBeenNthCalledWith(
+      1,
       { path: 'http://example.com/.internal/accounts/' },
-      {});
-    expect(store.getRepresentation).toHaveBeenNthCalledWith(2,
+      {},
+    );
+    expect(store.getRepresentation).toHaveBeenNthCalledWith(
+      2,
       { path: 'http://example.com/.internal/accounts/foo' },
-      { type: { 'application/json': 1 }});
-    expect(store.getRepresentation).toHaveBeenNthCalledWith(3,
+      { type: { 'application/json': 1 }},
+    );
+    expect(store.getRepresentation).toHaveBeenNthCalledWith(
+      3,
       { path: 'http://example.com/.internal/accounts/baz' },
-      { type: { 'application/json': 1 }});
-    expect(store.getRepresentation).toHaveBeenNthCalledWith(4,
+      { type: { 'application/json': 1 }},
+    );
+    expect(store.getRepresentation).toHaveBeenNthCalledWith(
+      4,
       { path: 'http://example.com/.internal/accounts/unknown' },
-      { type: { 'application/json': 1 }});
+      { type: { 'application/json': 1 }},
+    );
   });
 
   it('does nothing if the container does not exist.', async(): Promise<void> => {

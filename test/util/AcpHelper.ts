@@ -70,26 +70,30 @@ export class AcpHelper {
       accessControlResource: {
         iri: joinUrl(baseUrl, v4()),
         accessControl: policies ?
-          [{
-            iri: joinUrl(baseUrl, v4()),
-            policy: [ ...policies ],
-          }] :
-          [],
+            [{
+              iri: joinUrl(baseUrl, v4()),
+              policy: [ ...policies ],
+            }] :
+            [],
         memberAccessControl: memberPolicies ?
-          [{
-            iri: joinUrl(baseUrl, v4()),
-            policy: [ ...memberPolicies ],
-          }] :
-          [],
+            [{
+              iri: joinUrl(baseUrl, v4()),
+              policy: [ ...memberPolicies ],
+            }] :
+            [],
       },
     };
   }
 
-  public async setAcp(id: string | ResourceIdentifier,
-    resources: IAccessControlledResource[] | IAccessControlledResource): Promise<void> {
+  public async setAcp(
+    id: string | ResourceIdentifier,
+    resources: IAccessControlledResource[] | IAccessControlledResource,
+  ): Promise<void> {
     const turtle = this.toTurtle(resources);
-    await this.store.setRepresentation({ path: `${(id as ResourceIdentifier).path ?? id}.acr` },
-      new BasicRepresentation(turtle, 'text/turtle'));
+    await this.store.setRepresentation(
+      { path: `${(id as ResourceIdentifier).path ?? id}.acr` },
+      new BasicRepresentation(turtle, 'text/turtle'),
+    );
   }
 
   public toTurtle(resources: IAccessControlledResource[] | IAccessControlledResource): string {

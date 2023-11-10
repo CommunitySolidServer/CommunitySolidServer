@@ -1,6 +1,8 @@
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
-import type { JsonInteractionHandlerInput,
-  JsonInteractionHandler } from '../../../../src/identity/interaction/JsonInteractionHandler';
+import type {
+  JsonInteractionHandler,
+  JsonInteractionHandlerInput,
+} from '../../../../src/identity/interaction/JsonInteractionHandler';
 import type { JsonView } from '../../../../src/identity/interaction/JsonView';
 import { ViewInteractionHandler } from '../../../../src/identity/interaction/ViewInteractionHandler';
 import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';

@@ -5,7 +5,7 @@ export const ACCOUNT_SETTINGS_REMEMBER_LOGIN = 'rememberLogin';
 
 export type AccountSettings = { [ACCOUNT_SETTINGS_REMEMBER_LOGIN]?: boolean };
 
-/* eslint-disable @typescript-eslint/method-signature-style */
+/* eslint-disable ts/method-signature-style */
 /**
  * Used to store account data.
  */

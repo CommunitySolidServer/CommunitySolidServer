@@ -50,12 +50,16 @@ describe('A PathBasedReader', (): void => {
     await expect(reader.handle(input)).resolves.toEqual(result);
     expect(readers[0].handleSafe).toHaveBeenCalledTimes(1);
     expect(readers[0].handleSafe.mock.calls[0][0].credentials).toEqual({});
-    compareMaps(readers[0].handleSafe.mock.calls[0][0].requestedModes,
-      new IdentifierSetMultiMap([[{ path: joinUrl(baseUrl, 'first') }, AccessMode.read ]]));
+    compareMaps(
+      readers[0].handleSafe.mock.calls[0][0].requestedModes,
+      new IdentifierSetMultiMap([[{ path: joinUrl(baseUrl, 'first') }, AccessMode.read ]]),
+    );
 
     expect(readers[1].handleSafe).toHaveBeenCalledTimes(1);
     expect(readers[1].handleSafe.mock.calls[0][0].credentials).toEqual({});
-    compareMaps(readers[1].handleSafe.mock.calls[0][0].requestedModes,
-      new IdentifierSetMultiMap([[{ path: joinUrl(baseUrl, 'second') }, AccessMode.read ]]));
+    compareMaps(
+      readers[1].handleSafe.mock.calls[0][0].requestedModes,
+      new IdentifierSetMultiMap([[{ path: joinUrl(baseUrl, 'second') }, AccessMode.read ]]),
+    );
   });
 });

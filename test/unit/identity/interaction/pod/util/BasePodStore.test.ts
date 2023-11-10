@@ -1,6 +1,8 @@
+import type {
+  AccountLoginStorage,
+} from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import {
   ACCOUNT_TYPE,
-  AccountLoginStorage,
 } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import { BasePodStore } from '../../../../../../src/identity/interaction/pod/util/BasePodStore';
 import type { PodManager } from '../../../../../../src/pods/PodManager';
@@ -156,8 +158,10 @@ describe('A BasePodStore', (): void => {
   });
 
   it('can remove an owner.', async(): Promise<void> => {
-    storage.find.mockResolvedValueOnce([{ id: 'id1', webId, visible: false },
-      { id: 'id2', webId: 'otherWebId', visible: false }]);
+    storage.find.mockResolvedValueOnce([
+      { id: 'id1', webId, visible: false },
+      { id: 'id2', webId: 'otherWebId', visible: false },
+    ]);
     await expect(store.removeOwner(id, webId)).resolves.toBeUndefined();
     expect(storage.find).toHaveBeenCalledTimes(1);
     expect(storage.find).toHaveBeenLastCalledWith(OWNER_TYPE, { podId: id });

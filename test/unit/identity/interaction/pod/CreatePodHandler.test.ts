@@ -1,7 +1,7 @@
 import { CreatePodHandler } from '../../../../../src/identity/interaction/pod/CreatePodHandler';
 import type { PodIdRoute } from '../../../../../src/identity/interaction/pod/PodIdRoute';
-import { PodCreator } from '../../../../../src/identity/interaction/pod/util/PodCreator';
-import { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
+import type { PodCreator } from '../../../../../src/identity/interaction/pod/util/PodCreator';
+import type { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
 import type { WebIdLinkRoute } from '../../../../../src/identity/interaction/webid/WebIdLinkRoute';
 
 describe('A CreatePodHandler', (): void => {
@@ -69,9 +69,9 @@ describe('A CreatePodHandler', (): void => {
   });
 
   it('generates a pod and WebID.', async(): Promise<void> => {
-    await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({ json: {
-      pod: podUrl, webId, podResource, webIdResource,
-    }});
+    await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({
+      json: { pod: podUrl, webId, podResource, webIdResource },
+    });
     expect(podCreator.handleSafe).toHaveBeenCalledTimes(1);
     expect(podCreator.handleSafe).toHaveBeenLastCalledWith({ accountId, name, settings: {}});
   });
@@ -79,9 +79,9 @@ describe('A CreatePodHandler', (): void => {
   it('generates a pod with a WebID if there is one.', async(): Promise<void> => {
     const settings = { webId };
     json = { name, settings };
-    await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({ json: {
-      pod: podUrl, webId, podResource, webIdResource,
-    }});
+    await expect(handler.handle({ json, accountId } as any)).resolves.toEqual({
+      json: { pod: podUrl, webId, podResource, webIdResource },
+    });
     expect(podCreator.handleSafe).toHaveBeenCalledTimes(1);
     expect(podCreator.handleSafe).toHaveBeenLastCalledWith({ accountId, name, webId, settings });
   });

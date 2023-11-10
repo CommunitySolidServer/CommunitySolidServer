@@ -91,7 +91,9 @@ describe('An IndexRepresentationStore', (): void => {
     await expect(readableToString(result.data)).resolves.toBe('container data');
     expect(source.getRepresentation).toHaveBeenCalledTimes(2);
     expect(source.getRepresentation).toHaveBeenCalledWith(
-      { path: `${emptyContainer.path}index.html` }, preferences, undefined,
+      { path: `${emptyContainer.path}index.html` },
+      preferences,
+      undefined,
     );
     expect(source.getRepresentation).toHaveBeenLastCalledWith(emptyContainer, preferences, undefined);
   });

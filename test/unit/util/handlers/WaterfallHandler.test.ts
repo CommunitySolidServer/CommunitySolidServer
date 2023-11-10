@@ -47,6 +47,7 @@ describe('A WaterfallHandler', (): void => {
 
     it('throws unknown errors if no Error objects are thrown.', async(): Promise<void> => {
       handlerFalse.canHandle = async(): Promise<void> => {
+        // eslint-disable-next-line ts/no-throw-literal
         throw 'apple';
       };
       const handler = new WaterfallHandler([ handlerFalse, handlerFalse ]);

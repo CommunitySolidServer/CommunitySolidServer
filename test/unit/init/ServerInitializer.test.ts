@@ -1,12 +1,12 @@
-import type { Server } from 'http';
-import { Server as HttpsServer } from 'https';
+import type { Server } from 'node:http';
+import { Server as HttpsServer } from 'node:https';
 import { ServerInitializer } from '../../../src/init/ServerInitializer';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
 import type { HttpServerFactory } from '../../../src/server/HttpServerFactory';
 
 // Mock so we don't create an actual HTTPS server in the test below
-jest.mock('https');
+jest.mock('node:https');
 jest.mock('../../../src/logging/LogUtil');
 
 describe('ServerInitializer', (): void => {

@@ -1,5 +1,5 @@
-import cluster from 'cluster';
-import process from 'process';
+import cluster from 'node:cluster';
+import process from 'node:process';
 import type { LogLevel } from './LogLevel';
 
 export interface LogMetadata {

@@ -1,6 +1,12 @@
-import process from 'process';
+import process from 'node:process';
 import { BaseLogger, WrappingLogger } from '../../../src/logging/Logger';
-import type { SimpleLogger, LogMetadata } from '../../../src/logging/Logger';
+import type { LogMetadata, SimpleLogger } from '../../../src/logging/Logger';
+
+class DummyLogger extends BaseLogger {
+  public log(): this {
+    return this;
+  }
+}
 
 describe('Logger', (): void => {
   describe('a BaseLogger', (): void => {
@@ -11,8 +17,8 @@ describe('Logger', (): void => {
     };
 
     beforeEach(async(): Promise<void> => {
-      logger = new (BaseLogger as any)();
-      logger.log = jest.fn();
+      logger = new DummyLogger();
+      jest.spyOn(logger, 'log').mockImplementation();
     });
 
     it('delegates error to log.', async(): Promise<void> => {

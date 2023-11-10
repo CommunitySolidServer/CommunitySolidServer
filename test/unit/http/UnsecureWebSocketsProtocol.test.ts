@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import type { WebSocket } from 'ws';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import { UnsecureWebSocketsProtocol } from '../../../src/http/UnsecureWebSocketsProtocol';
@@ -8,7 +8,6 @@ import type { Guarded } from '../../../src/util/GuardedStream';
 import { AS } from '../../../src/util/Vocabularies';
 
 jest.mock('ws', (): any => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   WebSocketServer: jest.fn().mockImplementation((): any => ({
     handleUpgrade(upgradeRequest: any, socket: any, head: any, callback: any): void {
       callback(socket, upgradeRequest);

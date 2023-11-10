@@ -4,7 +4,6 @@ import { ClientInfoHandler } from '../../../../../src/identity/interaction/oidc/
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import type Provider from '../../../../../templates/types/oidc-provider';
 
-/* eslint-disable @typescript-eslint/naming-convention */
 describe('A ClientInfoHandler', (): void => {
   let oidcInteraction: Interaction;
   const clientMetadata = {

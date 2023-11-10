@@ -21,16 +21,21 @@ export class WebSocket2023Storer extends WebSocket2023Handler {
   private readonly storage: NotificationChannelStorage;
   private readonly socketMap: SetMultiMap<string, WebSocket>;
 
-  public constructor(storage: NotificationChannelStorage, socketMap: SetMultiMap<string, WebSocket>,
-    cleanupTimer = 60) {
+  public constructor(
+    storage: NotificationChannelStorage,
+    socketMap: SetMultiMap<string, WebSocket>,
+    cleanupTimer = 60,
+  ) {
     super();
     this.socketMap = socketMap;
     this.storage = storage;
 
-    const timer = setSafeInterval(this.logger,
+    const timer = setSafeInterval(
+      this.logger,
       'Failed to remove closed WebSockets',
       this.closeExpiredSockets.bind(this),
-      cleanupTimer * 60 * 1000);
+      cleanupTimer * 60 * 1000,
+    );
     timer.unref();
   }
 

@@ -54,7 +54,7 @@ Promise<AsyncHandler<TIn, TOut>[]> {
   }
 
   // Generate error in case no matches were found
-  const errors = results.map((result): Error => (result as PromiseRejectedResult).reason);
+  const errors = results.map((result): Error => (result as PromiseRejectedResult).reason as Error);
 
   throw createAggregateError(errors);
 }

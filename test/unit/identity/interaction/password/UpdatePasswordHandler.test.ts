@@ -1,6 +1,6 @@
 import { UpdatePasswordHandler } from '../../../../../src/identity/interaction/password/UpdatePasswordHandler';
 import type { PasswordIdRoute } from '../../../../../src/identity/interaction/password/util/PasswordIdRoute';
-import { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
+import type { PasswordStore } from '../../../../../src/identity/interaction/password/util/PasswordStore';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 
 describe('An UpdatePasswordHandler', (): void => {

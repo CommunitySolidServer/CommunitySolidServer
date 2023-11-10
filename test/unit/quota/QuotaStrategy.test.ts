@@ -6,7 +6,7 @@ import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReport
 import { guardedStreamFrom, pipeSafely } from '../../../src/util/StreamUtil';
 import { mockFileSystem } from '../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 class QuotaStrategyWrapper extends QuotaStrategy {
   public constructor(reporter: SizeReporter<any>, limit: Size) {
@@ -59,7 +59,7 @@ describe('A QuotaStrategy', (): void => {
 
   describe('createQuotaGuard()', (): void => {
     it('should return a passthrough that destroys the stream when quota is exceeded.', async(): Promise<void> => {
-      strategy.getAvailableSpace = jest.fn().mockReturnValue({ amount: 50, unit: mockSize.unit });
+      jest.spyOn(strategy, 'getAvailableSpace').mockResolvedValue({ amount: 50, unit: mockSize.unit });
       const fiftyChars = 'A'.repeat(50);
       const stream = guardedStreamFrom(fiftyChars);
       const track = await strategy.createQuotaGuard({ path: `${base}nested/file2.txt` });

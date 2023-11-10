@@ -70,7 +70,7 @@ export class CachedHandler<TIn extends Record<string, any>, TOut = void> extends
       return [ input ];
     }
 
-    return this.fields.map((field): object => input[field]) as [object, ...object[]];
+    return this.fields.map((field): object => input[field] as object) as [object, ...object[]];
   }
 
   /**

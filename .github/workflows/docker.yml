@@ -11,17 +11,17 @@ on:
 jobs:
 
   docker-meta:
-  # Generates the metadata (labels and tags) for the docker containers
-  #   - push to main results in the edge tag
-  #   - version tag results in edge, latest and semver, major, major.minor tags
-  #   - push to versions/ results in the next tag
+    # Generates the metadata (labels and tags) for the docker containers
+    #   - push to main results in the edge tag
+    #   - version tag results in edge, latest and semver, major, major.minor tags
+    #   - push to versions/ results in the next tag
     runs-on: ubuntu-latest
     outputs:
       labels: ${{ steps.meta-main.outputs.labels || steps.meta-version.outputs.labels }}
       tags: ${{ steps.meta-main.outputs.tags || steps.meta-version.outputs.tags }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
       - if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
         name: Docker meta edge and version tag
         id: meta-main
@@ -29,7 +29,7 @@ jobs:
         with:
           images: |
             solidproject/community-server
-          # edge will always be executed (without latest tag), semver only on tag push events (with latest tag)
+          # Edge will always be executed (without latest tag), semver only on tag push events (with latest tag)
           tags: |
             type=edge
             type=semver,pattern={{version}}
@@ -49,13 +49,13 @@ jobs:
           github-token: ${{ secrets.github_token }}
 
   docker:
-  # Builds, tests and pushes docker containers
-  # Containers are built for both linux/amd64 and linux/arm/v7 platforms
+    # Builds, tests and pushes docker containers
+    # Containers are built for both linux/amd64 and linux/arm/v7 platforms
     needs: docker-meta
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -73,7 +73,7 @@ jobs:
           tags: ${{ needs.docker-meta.outputs.tags }}
           labels: ${{ needs.docker-meta.outputs.labels }}
 
-      - name: "Test all docker-built image tags"
+      - name: Test all docker-built image tags
         shell: bash
         # Loop over all generated image:tag names and docker run them.
         # If they aren't built previously, the command will error.

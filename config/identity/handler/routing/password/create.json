@@ -32,8 +32,8 @@
       "@id": "urn:solid-server:default:PasswordControlHandler",
       "@type": "ControlHandler",
       "controls": [{
-          "ControlHandler:_controls_key": "create",
-          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountPasswordRoute" }
+        "ControlHandler:_controls_key": "create",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountPasswordRoute" }
       }]
     },
 
@@ -41,10 +41,10 @@
       "@id": "urn:solid-server:default:HtmlViewHandler",
       "@type": "HtmlViewHandler",
       "templates": [{
-          "@id": "urn:solid-server:default:CreatePasswordHtml",
-          "@type": "HtmlViewEntry",
-          "filePath": "@css:templates/identity/password/create.html.ejs",
-          "route": { "@id": "urn:solid-server:default:AccountPasswordRoute" }
+        "@id": "urn:solid-server:default:CreatePasswordHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/password/create.html.ejs",
+        "route": { "@id": "urn:solid-server:default:AccountPasswordRoute" }
       }]
     },
     {

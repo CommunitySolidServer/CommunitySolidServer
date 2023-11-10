@@ -4,7 +4,7 @@ import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError'
 import type { Conditions } from './conditions/Conditions';
 import { PassthroughStore } from './PassthroughStore';
 import type { PatchHandler } from './patch/PatchHandler';
-import type { ResourceStore, ChangeMap } from './ResourceStore';
+import type { ChangeMap, ResourceStore } from './ResourceStore';
 
 /**
  * {@link ResourceStore} using decorator pattern for the `modifyResource` function.
@@ -19,8 +19,11 @@ export class PatchingStore<T extends ResourceStore = ResourceStore> extends Pass
     this.patchHandler = patchHandler;
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ChangeMap> {
+  public async modifyResource(
+    identifier: ResourceIdentifier,
+    patch: Patch,
+    conditions?: Conditions,
+  ): Promise<ChangeMap> {
     try {
       return await this.source.modifyResource(identifier, patch, conditions);
     } catch (error: unknown) {

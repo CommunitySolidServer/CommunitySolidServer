@@ -36,9 +36,9 @@ export class LockingInteractionHandler extends InteractionHandler {
 
     const identifier = { path: this.accountRoute.getPath({ accountId }) };
     if (READ_METHODS.has(operation.method)) {
-      return this.locker.withReadLock(identifier, (): Promise<Representation> => this.source.handle(input));
+      return this.locker.withReadLock(identifier, async(): Promise<Representation> => this.source.handle(input));
     }
 
-    return this.locker.withWriteLock(identifier, (): Promise<Representation> => this.source.handle(input));
+    return this.locker.withWriteLock(identifier, async(): Promise<Representation> => this.source.handle(input));
   }
 }

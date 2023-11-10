@@ -38,4 +38,4 @@ export interface JsonInteractionHandlerInput {
  * designed to be used for IDP/OIDC interactions.
  */
 export abstract class JsonInteractionHandler<TOut extends Dict<Json> = Dict<Json>>
-  extends AsyncHandler<JsonInteractionHandlerInput, JsonRepresentation<TOut>> { }
+  extends AsyncHandler<JsonInteractionHandlerInput, JsonRepresentation<TOut>> {}

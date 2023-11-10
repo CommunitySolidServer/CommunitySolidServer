@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'n3';
@@ -25,7 +25,7 @@ function simplifyQuery(query: string | string[]): string {
   if (Array.isArray(query)) {
     query = query.join(' ');
   }
-  return query.replace(/\n/gu, ' ').trim();
+  return query.replaceAll('\n', ' ').trim();
 }
 
 describe('A SparqlDataAccessor', (): void => {
@@ -148,8 +148,10 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('overwrites the metadata when writing a container and updates parent.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata({ path: 'http://test.com/container/' },
-      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
+    metadata = new RepresentationMetadata(
+      { path: 'http://test.com/container/' },
+      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]},
+    );
     await expect(accessor.writeContainer({ path: 'http://test.com/container/' }, metadata)).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);
@@ -167,8 +169,10 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('does not write containment triples when writing to a root container.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata({ path: 'http://test.com/' },
-      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
+    metadata = new RepresentationMetadata(
+      { path: 'http://test.com/' },
+      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]},
+    );
     await expect(accessor.writeContainer({ path: 'http://test.com/' }, metadata)).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);
@@ -185,8 +189,10 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('overwrites the data and metadata when writing a resource and updates parent.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata({ path: 'http://test.com/container/resource' },
-      { [RDF.type]: [ LDP.terms.Resource ]});
+    metadata = new RepresentationMetadata(
+      { path: 'http://test.com/container/resource' },
+      { [RDF.type]: [ LDP.terms.Resource ]},
+    );
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata))
       .resolves.toBeUndefined();
 
@@ -204,8 +210,10 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('overwrites the data and metadata when writing an empty resource.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata({ path: 'http://test.com/container/resource' },
-      { [RDF.type]: [ LDP.terms.Resource ]});
+    metadata = new RepresentationMetadata(
+      { path: 'http://test.com/container/resource' },
+      { [RDF.type]: [ LDP.terms.Resource ]},
+    );
     const empty = guardedStreamFrom([]);
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, empty, metadata))
       .resolves.toBeUndefined();
@@ -223,8 +231,10 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('removes all references when deleting a resource.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata({ path: 'http://test.com/container/' },
-      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
+    metadata = new RepresentationMetadata(
+      { path: 'http://test.com/container/' },
+      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]},
+    );
     await expect(accessor.deleteResource({ path: 'http://test.com/container/' })).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);
@@ -237,8 +247,10 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('does not try to remove containment triples when deleting a root container.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata({ path: 'http://test.com/' },
-      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
+    metadata = new RepresentationMetadata(
+      { path: 'http://test.com/' },
+      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]},
+    );
     await expect(accessor.deleteResource({ path: 'http://test.com/' })).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);

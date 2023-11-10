@@ -24,7 +24,7 @@ export type Guarded<T extends NodeJS.EventEmitter = NodeJS.EventEmitter> = T & G
  * Determines whether the stream is guarded against emitting errors.
  */
 export function isGuarded<T extends NodeJS.EventEmitter>(stream: T): stream is Guarded<T> {
-  return typeof (stream as any)[guardedErrors] === 'object';
+  return typeof (stream as unknown as Guarded)[guardedErrors] === 'object';
 }
 
 /**
@@ -38,7 +38,7 @@ export function isGuarded<T extends NodeJS.EventEmitter>(stream: T): stream is G
 function guardingErrorListener(this: Guarded, error: Error): void {
   // Only fall back to this if no new listeners are attached since guarding started.
   const errorListeners = this.listeners('error');
-  if (errorListeners[errorListeners.length - 1] === guardingErrorListener) {
+  if (errorListeners.at(-1) === guardingErrorListener) {
     this[guardedErrors].push(error);
     if (!this[guardedTimeout]) {
       this[guardedTimeout] = setTimeout((): void => {
@@ -88,14 +88,14 @@ function emitStoredErrors(this: Guarded, event: string, func: (error: Error) => 
  */
 export function guardStream<T extends NodeJS.EventEmitter>(stream: T): Guarded<T> {
   const guarded = stream as Guarded<T>;
-  if (!isGuarded(stream)) {
-    guarded[guardedErrors] = [];
-    guarded.on('error', guardingErrorListener);
-    guarded.on('newListener', emitStoredErrors);
-  } else {
+  if (isGuarded(stream)) {
     // This makes sure the guarding error listener is the last one in the list again
     guarded.removeListener('error', guardingErrorListener);
     guarded.on('error', guardingErrorListener);
+  } else {
+    guarded[guardedErrors] = [];
+    guarded.on('error', guardingErrorListener);
+    guarded.on('newListener', emitStoredErrors);
   }
   return guarded;
 }

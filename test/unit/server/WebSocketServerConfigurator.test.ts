@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import type { Server } from 'http';
+import { EventEmitter } from 'node:events';
+import type { Server } from 'node:http';
 import type { WebSocket } from 'ws';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
@@ -9,7 +9,6 @@ import { WebSocketServerConfigurator } from '../../../src/server/WebSocketServer
 import { flushPromises } from '../../util/Util';
 
 jest.mock('ws', (): any => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   WebSocketServer: jest.fn().mockImplementation((): any => ({
     handleUpgrade(upgradeRequest: any, socket: any, head: any, callback: any): void {
       callback(socket, upgradeRequest);
@@ -35,9 +34,10 @@ describe('A WebSocketServerConfigurator', (): void => {
     // Clearing the logger mock
     jest.clearAllMocks();
     server = new EventEmitter() as any;
-    webSocket = new EventEmitter() as any;
-    webSocket.send = jest.fn();
-    webSocket.close = jest.fn();
+    webSocket = {
+      send: jest.fn(),
+      close: jest.fn(),
+    } as any;
 
     upgradeRequest = new EventEmitter() as any;
 

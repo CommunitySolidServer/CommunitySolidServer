@@ -1,5 +1,5 @@
-import type { Readable, TransformCallback, TransformOptions } from 'stream';
-import { Transform } from 'stream';
+import type { Readable, TransformCallback, TransformOptions } from 'node:stream';
+import { Transform } from 'node:stream';
 import { RangeNotSatisfiedHttpError } from './errors/RangeNotSatisfiedHttpError';
 import { pipeSafely } from './StreamUtil';
 
@@ -31,11 +31,11 @@ export class SliceStream extends Transform {
     let start = options.start;
     const end = options.end ?? Number.POSITIVE_INFINITY;
     if (options.start < 0) {
-      if (typeof options.size !== 'number') {
-        throw new RangeNotSatisfiedHttpError('Slicing data at the end of a stream requires a known size.');
-      } else {
+      if (typeof options.size === 'number') {
         // `start` is a negative number here so need to add
         start = options.size + start;
+      } else {
+        throw new RangeNotSatisfiedHttpError('Slicing data at the end of a stream requires a known size.');
       }
     }
 
@@ -56,15 +56,15 @@ export class SliceStream extends Transform {
     pipeSafely(source, this);
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line ts/naming-convention
   public _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback): void {
     this.source.pause();
     if (this.writableObjectMode) {
       this.objectSlice(chunk);
     } else {
-      this.binarySlice(chunk);
+      this.binarySlice(chunk as Buffer);
     }
-    // eslint-disable-next-line callback-return
+
     callback();
     this.source.resume();
   }

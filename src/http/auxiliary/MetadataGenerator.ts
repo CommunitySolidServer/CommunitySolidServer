@@ -4,4 +4,4 @@ import type { RepresentationMetadata } from '../representation/RepresentationMet
 /**
  * Generic interface for classes that add metadata to a RepresentationMetadata.
  */
-export abstract class MetadataGenerator extends AsyncHandler<RepresentationMetadata> { }
+export abstract class MetadataGenerator extends AsyncHandler<RepresentationMetadata> {}

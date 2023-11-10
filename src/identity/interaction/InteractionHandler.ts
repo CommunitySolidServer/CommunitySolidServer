@@ -25,4 +25,4 @@ export interface InteractionHandlerInput {
 /**
  * Handler used for IDP interactions.
  */
-export abstract class InteractionHandler extends AsyncHandler<InteractionHandlerInput, Representation> { }
+export abstract class InteractionHandler extends AsyncHandler<InteractionHandlerInput, Representation> {}

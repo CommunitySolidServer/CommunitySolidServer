@@ -34,7 +34,7 @@ export class SingleContainerJsonStorage<T> extends JsonResourceStorage<T> {
         continue;
       }
 
-      const json = JSON.parse(await readableToString(document.data));
+      const json = JSON.parse(await readableToString(document.data)) as T;
       const key = this.identifierToKey(documentId);
       yield [ key, json ];
     }

@@ -1,7 +1,7 @@
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { BinarySliceResourceStore } from '../../../src/storage/BinarySliceResourceStore';
-import { ResourceStore } from '../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { RangeNotSatisfiedHttpError } from '../../../src/util/errors/RangeNotSatisfiedHttpError';
 import { readableToString } from '../../../src/util/StreamUtil';
@@ -74,13 +74,14 @@ describe('A BinarySliceResourceStore', (): void => {
   });
 
   it('does not support multipart ranges.', async(): Promise<void> => {
-    await expect(store.getRepresentation(identifier,
-      { range: { unit: 'bytes', parts: [{ start: 5, end: 6 }, { start: 7, end: 8 }]}}))
-      .rejects.toThrow(RangeNotSatisfiedHttpError);
+    await expect(store.getRepresentation(
+      identifier,
+      { range: { unit: 'bytes', parts: [{ start: 5, end: 6 }, { start: 7, end: 8 }]}},
+    )).rejects.toThrow(RangeNotSatisfiedHttpError);
   });
 
   it('closes the source stream if there was an error creating the SliceStream.', async(): Promise<void> => {
-    representation.data.destroy = jest.fn();
+    jest.spyOn(representation.data, 'destroy').mockImplementation();
     await expect(store.getRepresentation(identifier, { range: { unit: 'bytes', parts: [{ start: -5 }]}}))
       .rejects.toThrow(RangeNotSatisfiedHttpError);
     expect(representation.data.destroy).toHaveBeenCalledTimes(1);

@@ -18,7 +18,7 @@ export interface AuthorizerInput {
 }
 
 /**
- * Verifies if the credentials provide access with the given permissions on the resource.
- * An {@link Error} with the necessary explanation will be thrown when permissions are not granted.
+ * Verifies whether the credentials provide access with the given permissions on the resource.
+ * An {@link Error} with the necessary explanation will be thrown if permissions are not granted.
  */
 export abstract class Authorizer extends AsyncHandler<AuthorizerInput> {}

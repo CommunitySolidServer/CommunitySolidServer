@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import type { WebSocket } from 'ws';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type {
@@ -12,6 +12,7 @@ import type { SetMultiMap } from '../../../../../src/util/map/SetMultiMap';
 import { WrappedSetMultiMap } from '../../../../../src/util/map/WrappedSetMultiMap';
 import { flushPromises } from '../../../../util/Util';
 
+/* eslint-disable jest/prefer-spy-on */
 describe('A WebSocket2023Storer', (): void => {
   const channel: NotificationChannel = {
     id: 'id',

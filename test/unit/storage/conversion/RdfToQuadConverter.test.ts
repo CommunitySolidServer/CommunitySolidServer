@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import fetch, { Headers } from 'cross-fetch';
 import { DataFactory } from 'n3';
@@ -13,6 +13,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+
 const { namedNode, triple, literal, quad } = DataFactory;
 
 // All of this is necessary to not break the cross-fetch imports that happen in `rdf-parse`
@@ -21,7 +22,6 @@ jest.mock('cross-fetch', (): any => {
   // Require the original module to not be mocked...
   const originalFetch = jest.requireActual('cross-fetch');
   return {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     __esModule: true,
     ...originalFetch,
     fetch: mock,
@@ -43,7 +43,7 @@ describe('A RdfToQuadConverter', (): void => {
   });
 
   it('may not handle application/json to quad conversion.', async(): Promise<void> => {
-    await expect(converter.getOutputTypes('application/json')).resolves.toEqual({ });
+    await expect(converter.getOutputTypes('application/json')).resolves.toEqual({});
   });
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {
@@ -63,7 +63,8 @@ describe('A RdfToQuadConverter', (): void => {
   it('converts turtle to quads.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata('text/turtle');
     const representation = new BasicRepresentation(
-      '<http://test.com/s> <http://test.com/p> <http://test.com/o>.', metadata,
+      '<http://test.com/s> <http://test.com/p> <http://test.com/o>.',
+      metadata,
     );
     const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
@@ -83,12 +84,12 @@ describe('A RdfToQuadConverter', (): void => {
   it('emits on prefixes when converting turtle to quads.', async(): Promise<void> => {
     const id: ResourceIdentifier = { path: 'http://example.com/resource' };
     const metadata = new RepresentationMetadata('text/turtle');
-    const representation = new BasicRepresentation(`
-      @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    const representation = new BasicRepresentation(
+      `@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
-      <http://test.com/s> a foaf:Person.
-    `
-    , metadata);
+      <http://test.com/s> a foaf:Person.`,
+      metadata,
+    );
     const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier: id, representation, preferences });
     expect(result).toEqual({
@@ -107,7 +108,8 @@ describe('A RdfToQuadConverter', (): void => {
   it('converts JSON-LD to quads.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata('application/ld+json');
     const representation = new BasicRepresentation(
-      '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}', metadata,
+      '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}',
+      metadata,
     );
     const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
@@ -127,7 +129,8 @@ describe('A RdfToQuadConverter', (): void => {
   it('throws an BadRequestHttpError on invalid triple data.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata('text/turtle');
     const representation = new BasicRepresentation(
-      '<http://test.com/s> <http://test.com/p> <http://test.co', metadata,
+      '<http://test.com/s> <http://test.com/p> <http://test.co',
+      metadata,
     );
     const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });

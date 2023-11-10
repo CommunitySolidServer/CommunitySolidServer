@@ -1,4 +1,4 @@
-name: 'Stale issues and PRs'
+name: Stale issues and PRs
 on:
   schedule:
     - cron: '30 1 * * *'
@@ -24,6 +24,6 @@ jobs:
           days-before-close: 30
           days-before-pr-stale: -1
           operations-per-run: 700
-          exempt-issue-labels: "🐛 bug,☀️ enhancement,📚 documentation,➕ feature,🐌 performance,
-            ➕ test,📝 task,:ant: worker threads,👩🏾‍💻 developer experience"
+          exempt-issue-labels: '🐛 bug,☀️ enhancement,📚 documentation,➕ feature,🐌 performance,
+            ➕ test,📝 task,:ant: worker threads,👩🏾‍💻 developer experience'
           exempt-all-assignees: true

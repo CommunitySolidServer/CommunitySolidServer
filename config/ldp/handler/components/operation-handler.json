@@ -12,12 +12,12 @@
         },
         {
           "@type": "PostOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore"  }
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "PutOperationHandler",
           "store": { "@id": "urn:solid-server:default:ResourceStore" },
-          "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+          "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
         },
         {
           "@type": "DeleteOperationHandler",

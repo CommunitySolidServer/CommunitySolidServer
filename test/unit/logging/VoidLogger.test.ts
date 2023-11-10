@@ -7,6 +7,6 @@ describe('VoidLogger', (): void => {
   });
 
   it('does nothing when log is invoked.', async(): Promise<void> => {
-    expect(logger.log('debug', 'my message', { abc: true })).toBe(logger);
+    expect(logger.log()).toBe(logger);
   });
 });

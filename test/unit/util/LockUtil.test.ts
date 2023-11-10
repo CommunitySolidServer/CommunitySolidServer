@@ -16,7 +16,7 @@ describe('LockUtil', (): void => {
     });
 
     it('works with jitter.', async(): Promise<void> => {
-      jest.spyOn(global.Math, 'random').mockReturnValue(1);
+      jest.spyOn(globalThis.Math, 'random').mockReturnValue(1);
       let elapsed = Date.now();
       const promise = setJitterTimeout(1000, 100).then((): void => {
         elapsed = Date.now() - elapsed;
@@ -25,7 +25,7 @@ describe('LockUtil', (): void => {
       await expect(promise).resolves.toBeUndefined();
       expect(elapsed).toBe(1100);
       // Clean up
-      jest.spyOn(global.Math, 'random').mockRestore();
+      jest.spyOn(globalThis.Math, 'random').mockRestore();
     });
   });
 });

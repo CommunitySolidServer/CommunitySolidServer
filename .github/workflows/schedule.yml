@@ -11,8 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         branch:
-          - 'main'
-          - 'versions/next-major'
+          - main
+          - versions/next-major
     uses: ./.github/workflows/cth-test.yml
     with:
       branch: ${{ matrix.branch }}

@@ -28,8 +28,12 @@ export class ConvertingPatcher extends RepresentationPatcher<Representation> {
    * @param intermediateType - Content-type of the intermediate Representation if conversion is needed.
    * @param defaultType - Content-type in case a new resource gets created and needs to be converted.
    */
-  public constructor(patcher: RepresentationPatcher<Representation>, converter: RepresentationConverter,
-    intermediateType?: string, defaultType?: string) {
+  public constructor(
+    patcher: RepresentationPatcher<Representation>,
+    converter: RepresentationConverter,
+    intermediateType?: string,
+    defaultType?: string,
+  ) {
     super();
     this.patcher = patcher;
     this.converter = converter;

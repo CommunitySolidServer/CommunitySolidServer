@@ -1,5 +1,5 @@
 import { AuxiliaryReader } from '../../../src/authorization/AuxiliaryReader';
-import type { PermissionReaderInput, PermissionReader } from '../../../src/authorization/PermissionReader';
+import type { PermissionReader, PermissionReaderInput } from '../../../src/authorization/PermissionReader';
 import type { AccessMap, PermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';

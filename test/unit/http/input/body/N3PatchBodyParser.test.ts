@@ -8,6 +8,7 @@ import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { guardedStreamFrom } from '../../../../../src/util/StreamUtil';
+
 const { defaultGraph, literal, namedNode, quad, variable } = DataFactory;
 
 describe('An N3PatchBodyParser', (): void => {

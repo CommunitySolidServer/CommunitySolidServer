@@ -83,8 +83,10 @@ export class ParsingHttpHandler extends HttpHandler {
    */
   protected async handleError(error: unknown, request: HttpRequest): Promise<ResponseDescription> {
     if (!HttpError.isInstance(error)) {
-      error = new InternalServerError(`Received unexpected non-HttpError: ${createErrorMessage(error)}`,
-        { cause: error });
+      error = new InternalServerError(
+        `Received unexpected non-HttpError: ${createErrorMessage(error)}`,
+        { cause: error },
+      );
     }
 
     return this.errorHandler.handleSafe({ error: error as HttpError, request });

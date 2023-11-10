@@ -1,7 +1,7 @@
 import type { HttpErrorOptions } from './HttpError';
 import { generateHttpErrorClass } from './HttpError';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line ts/naming-convention
 const BaseHttpError = generateHttpErrorClass(404, 'NotFoundHttpError');
 
 /**
@@ -12,4 +12,3 @@ export class NotFoundHttpError extends BaseHttpError {
     super(message, options);
   }
 }
-

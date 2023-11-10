@@ -1,4 +1,4 @@
-import type { IncomingHttpHeaders } from 'http';
+import type { IncomingHttpHeaders } from 'node:http';
 import escapeStringRegexp from 'escape-string-regexp';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpResponse } from '../server/HttpResponse';
@@ -11,8 +11,9 @@ import type {
   AcceptHeader,
   AcceptLanguage,
   LinkEntry,
+  LinkEntryParameters,
 } from './Header';
-import { ContentType, SIMPLE_MEDIA_RANGE, QUOTED_STRING, QVALUE, TOKEN } from './Header';
+import { ContentType, QUOTED_STRING, QVALUE, SIMPLE_MEDIA_RANGE, TOKEN } from './Header';
 
 const logger = getLoggerFor('HeaderUtil');
 
@@ -38,7 +39,7 @@ const logger = getLoggerFor('HeaderUtil');
 export function transformQuotedStrings(input: string): { result: string; replacements: Record<string, string> } {
   let idx = 0;
   const replacements: Record<string, string> = {};
-  const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
+  const result = input.replaceAll(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
     // Not all characters allowed in quoted strings, see BNF above
     if (!QUOTED_STRING.test(match)) {
       logger.warn(`Invalid quoted string in header: ${match}`);
@@ -110,7 +111,8 @@ function handleInvalidValue(message: string, strict: boolean): void | never {
  */
 export function parseParameters(parameters: string[], replacements: Record<string, string>, strict = false):
 { name: string; value: string }[] {
-  return parameters.reduce<{ name: string; value: string }[]>((acc, param): { name: string; value: string }[] => {
+  const parsed: { name: string; value: string }[] = [];
+  for (const param of parameters) {
     const [ name, rawValue ] = param.split('=').map((str): string => str.trim());
 
     // Test replaced string for easier check
@@ -119,7 +121,7 @@ export function parseParameters(parameters: string[], replacements: Record<strin
     if (!(TOKEN.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || TOKEN.test(rawValue)))) {
       handleInvalidValue(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
         `does not match (token ( "=" ( token / quoted-string ))?). `, strict);
-      return acc;
+      continue;
     }
 
     let value = rawValue;
@@ -127,11 +129,12 @@ export function parseParameters(parameters: string[], replacements: Record<strin
       value = replacements[rawValue];
     }
 
-    acc.push({ name, value });
-    return acc;
-  }, []);
+    parsed.push({ name, value });
+  }
+  return parsed;
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Parses a single media range with corresponding parameters from an Accept header.
  * For every parameter value that is a double quoted string,
@@ -152,7 +155,8 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
   // No reason to test differently for * since we don't check if the type exists
   if (!SIMPLE_MEDIA_RANGE.test(range)) {
     handleInvalidValue(
-      `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`, strict,
+      `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`,
+      strict,
     );
     return;
   }
@@ -162,7 +166,7 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
   const extensionParams: Record<string, string> = {};
   let map = mediaTypeParams;
   const parsedParams = parseParameters(parameters, replacements);
-  parsedParams.forEach(({ name, value }): void => {
+  for (const { name, value } of parsedParams) {
     if (name === 'q') {
       // Extension parameters appear after the q value
       map = extensionParams;
@@ -175,11 +179,11 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
       if (!value && map !== extensionParams) {
         handleInvalidValue(`Invalid Accept parameter ${name}: ` +
           `Accept parameter values are not optional when preceding the q value`, strict);
-        return;
+        continue;
       }
       map[name] = value || '';
     }
-  });
+  }
 
   return {
     range,
@@ -236,17 +240,15 @@ export function parseAccept(input: string, strict = false): Accept[] {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
 
-  return splitAndClean(result)
-    .reduce<Accept[]>((acc, part): Accept[] => {
+  const accepts: Accept[] = [];
+  for (const part of splitAndClean(result)) {
     const partOrUndef = parseAcceptPart(part, replacements, strict);
 
     if (partOrUndef !== undefined) {
-      acc.push(partOrUndef);
+      accepts.push(partOrUndef);
     }
-
-    return acc;
-  }, [])
-    .sort((left, right): number => right.weight - left.weight);
+  }
+  return accepts.sort((left, right): number => right.weight - left.weight);
 }
 
 /**
@@ -263,7 +265,8 @@ export function parseAcceptCharset(input: string, strict = false): AcceptCharset
   return results.filter((result): boolean => {
     if (!TOKEN.test(result.range)) {
       handleInvalidValue(
-        `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`, strict,
+        `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`,
+        strict,
       );
       return false;
     }
@@ -306,7 +309,8 @@ export function parseAcceptLanguage(input: string, strict = false): AcceptLangua
     // (1*8ALPHA *("-" 1*8alphanum)) / "*"
     if (result.range !== '*' && !/^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$/u.test(result.range)) {
       handleInvalidValue(
-        `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`, strict,
+        `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`,
+        strict,
       );
       return false;
     }
@@ -379,14 +383,11 @@ export function parseContentType(input: string): ContentType {
     throw new BadRequestHttpError(`Invalid content-type: ${value} does not match ( token "/" token )`);
   }
 
-  return parseParameters(params, replacements)
-    .reduce<ContentType>(
-    (prev, cur): ContentType => {
-      prev.parameters[cur.name] = cur.value;
-      return prev;
-    },
-    new ContentType(value),
-  );
+  const contentType = new ContentType(value);
+  for (const param of parseParameters(params, replacements)) {
+    contentType.parameters[param.name] = param.value;
+  }
+  return contentType;
 }
 
 /**
@@ -455,7 +456,7 @@ export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
       //     present but MUST NOT appear more than once in a given link-value;
       //     occurrences after the first MUST be ignored by parsers.
       //
-      const params: any = {};
+      const params: Record<string, string> = {};
       for (const { name, value } of parseParameters(parameters, replacements)) {
         if (name === 'rel' && 'rel' in params) {
           continue;
@@ -468,7 +469,7 @@ export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
         continue;
       }
 
-      links.push({ target: target.slice(1, -1), parameters: params });
+      links.push({ target: target.slice(1, -1), parameters: params as LinkEntryParameters });
     }
   }
   return links;

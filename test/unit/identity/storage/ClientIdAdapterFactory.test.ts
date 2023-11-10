@@ -6,7 +6,6 @@ import type { Adapter } from '../../../../templates/types/oidc-provider';
 
 jest.mock('cross-fetch');
 
-/* eslint-disable @typescript-eslint/naming-convention */
 describe('A ClientIdAdapterFactory', (): void => {
   const fetchMock: jest.Mock = fetch as any;
   const id = 'https://app.example.com/card#me';
@@ -119,10 +118,12 @@ describe('A ClientIdAdapterFactory', (): void => {
       'http://randomField': { '@value': 'this will not be there since RDF parsing only takes preset fields' },
     };
     fetchMock.mockResolvedValueOnce(
-      { url: id,
+      {
+        url: id,
         status: 200,
         text: (): string => JSON.stringify(json),
-        headers: { get: (): any => 'application/ld+json' }},
+        headers: { get: (): any => 'application/ld+json' },
+      },
     );
     await expect(adapter.find(id)).resolves.toEqual({
       client_id: id,

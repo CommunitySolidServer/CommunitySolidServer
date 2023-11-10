@@ -19,7 +19,7 @@ export class BaseUrlExtractor extends ShorthandExtractor {
       return ensureTrailingSlash(args.baseUrl);
     }
     if (typeof args.socket === 'string') {
-      throw new Error('BaseUrl argument should be provided when using Unix Domain Sockets.');
+      throw new TypeError('BaseUrl argument should be provided when using Unix Domain Sockets.');
     }
     const port = (args.port as string) ?? this.defaultPort;
     const url = new URL('http://localhost/');

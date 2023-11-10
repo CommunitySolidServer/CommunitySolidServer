@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'node:fs';
 import type { ResourceIdentifier } from '../../../http/representation/ResourceIdentifier';
 import type { FileIdentifierMapper } from '../../../storage/mapping/FileIdentifierMapper';
 import { ConflictHttpError } from '../../../util/errors/ConflictHttpError';

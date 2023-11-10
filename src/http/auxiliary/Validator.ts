@@ -10,4 +10,4 @@ export type ValidatorInput = {
 /**
  * Generic interface for classes that validate Representations in some way.
  */
-export abstract class Validator extends AsyncHandler<ValidatorInput, Representation> { }
+export abstract class Validator extends AsyncHandler<ValidatorInput, Representation> {}

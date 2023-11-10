@@ -45,7 +45,7 @@ To persist your pod's contents between restarts, use:
 npx @solid/community-server -c @css:config/file.json -f data/
 ```
 
-Find more ways to run the server in the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/6.x/usage/starting-server/).
+Find more ways to run the server in the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/latest/usage/starting-server/).
 
 ## 🔧 Configure your server
 

@@ -1,5 +1,5 @@
-import type { IncomingMessage, Server } from 'http';
-import type { Socket } from 'net';
+import type { IncomingMessage, Server } from 'node:http';
+import type { Socket } from 'node:net';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -27,6 +27,7 @@ export class WebSocketServerConfigurator extends ServerConfigurator {
     // Create WebSocket server
     const webSocketServer = new WebSocketServer({ noServer: true });
     server.on('upgrade', (upgradeRequest: IncomingMessage, socket: Socket, head: Buffer): void => {
+      // eslint-disable-next-line ts/no-misused-promises
       webSocketServer.handleUpgrade(upgradeRequest, socket, head, async(webSocket: WebSocket): Promise<void> => {
         try {
           await this.handler.handleSafe({ upgradeRequest: guardStream(upgradeRequest), webSocket });

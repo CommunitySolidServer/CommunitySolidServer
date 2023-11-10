@@ -9,6 +9,7 @@ import type { RepresentationPatcherInput } from '../../../../src/storage/patch/R
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+
 const { namedNode, quad, variable } = DataFactory;
 
 describe('An N3Patcher', (): void => {

@@ -1,4 +1,4 @@
-import { URL } from 'url';
+import { URL } from 'node:url';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { errorTermsToMetadata } from '../errors/HttpErrorUtil';
 import { InternalServerError } from '../errors/InternalServerError';
@@ -18,8 +18,10 @@ export abstract class BaseIdentifierStrategy implements IdentifierStrategy {
 
   public getParentContainer(identifier: ResourceIdentifier): ResourceIdentifier {
     if (!this.supportsIdentifier(identifier)) {
-      throw new InternalServerError(`The identifier ${identifier.path} is outside the configured identifier space.`,
-        { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: identifier.path }) });
+      throw new InternalServerError(
+        `The identifier ${identifier.path} is outside the configured identifier space.`,
+        { errorCode: 'E0001', metadata: errorTermsToMetadata({ path: identifier.path }) },
+      );
     }
     if (this.isRootContainer(identifier)) {
       throw new InternalServerError(`Cannot obtain the parent of ${identifier.path} because it is a root container.`);

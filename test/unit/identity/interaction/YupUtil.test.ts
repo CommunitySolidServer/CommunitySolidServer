@@ -33,16 +33,20 @@ describe('YupUtil', (): void => {
         reqStr: { type: 'string', required: true },
         numb: { type: 'number', required: false },
         bool: { type: 'boolean', required: false },
-        obj: { type: 'object',
+        obj: {
+          type: 'object',
           required: true,
           fields: {
             key: { type: 'string', required: true },
-            obj2: { type: 'object',
+            obj2: {
+              type: 'object',
               required: false,
               fields: {
                 nested: { type: 'number', required: false },
-              }},
-          }},
+              },
+            },
+          },
+        },
       }});
     });
   });

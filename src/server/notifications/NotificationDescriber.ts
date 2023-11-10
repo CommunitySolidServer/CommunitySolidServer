@@ -8,6 +8,7 @@ import { APPLICATION_LD_JSON, INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NOTIFY } from '../../util/Vocabularies';
 import { StorageDescriber } from '../description/StorageDescriber';
 import type { NotificationChannelType } from './NotificationChannelType';
+
 const { namedNode, quad } = DataFactory;
 
 /**

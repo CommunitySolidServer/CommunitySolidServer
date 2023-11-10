@@ -16,7 +16,8 @@ import {
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
-  instantiateFromConfig, removeFolder,
+  instantiateFromConfig,
+  removeFolder,
 } from './Config';
 
 const DEFAULT_BODY = `@prefix solid: <http://www.w3.org/ns/solid/terms#>.
@@ -44,7 +45,7 @@ const allModes = [ AM.read, AM.append, AM.create, AM.write, AM.delete ];
 // Columns: method, target, C/ permissions, C/R permissions, body, content-type, target exists, target does not exist
 // `undefined` implies C/R inherits the permissions of C/
 // For PUT/PATCH/DELETE we return 205 instead of 200/204
-/* eslint-disable no-multi-spaces */
+/* eslint-disable style/no-multi-spaces */
 const table: [string, string, AM[], AM[] | undefined, string, string, number, number][] = [
   // No authorization headers are sent in an OPTIONS request making it impossible to grant permission.
   // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1246#issuecomment-1087325235
@@ -118,14 +119,18 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   [ 'DELETE',  'C/',  [ AM.write ],           undefined,              '',     '',  401, 401 ],
   [ 'DELETE',  'C/',  [ AM.read, AM.write ],  undefined,              '',     '',  205, 404 ],
 ];
-/* eslint-enable no-multi-spaces */
+/* eslint-enable style/no-multi-spaces */
 
 function toPermission(modes: AM[]): AclPermissionSet {
   return Object.fromEntries(modes.map((mode): [AM, boolean] => [ mode, true ]));
 }
 
-async function setWebAclPermissions(store: ResourceStore, target: string, permissions: AclPermissionSet,
-  childPermissions: AclPermissionSet): Promise<void> {
+async function setWebAclPermissions(
+  store: ResourceStore,
+  target: string,
+  permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet,
+): Promise<void> {
   const aclHelper = new AclHelper(store);
   await aclHelper.setSimpleAcl(target, [
     { permissions, agentClass: 'agent', accessTo: true },
@@ -133,8 +138,12 @@ async function setWebAclPermissions(store: ResourceStore, target: string, permis
   ]);
 }
 
-async function setAcpPermissions(store: ResourceStore, target: string, permissions: AclPermissionSet,
-  childPermissions: AclPermissionSet): Promise<void> {
+async function setAcpPermissions(
+  store: ResourceStore,
+  target: string,
+  permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet,
+): Promise<void> {
   const acpHelper = new AcpHelper(store);
   const publicMatcher = acpHelper.createMatcher({ publicAgent: true });
   const policies = [ acpHelper.createPolicy({
@@ -162,34 +171,49 @@ type AuthFunctionType = (store: ResourceStore, target: string,
 const rootFilePath = getTestFolder('permissionTable');
 const stores: [string, string, { configs: string[]; authFunction: AuthFunctionType; teardown: () => Promise<void> }][] =
   [
-    [ 'WebACL',
-      'in-memory storage', {
+    [
+      'WebACL',
+      'in-memory storage',
+      {
         configs: [ 'ldp/authorization/webacl.json', 'util/auxiliary/acl.json', 'storage/backend/memory.json' ],
         authFunction: setWebAclPermissions,
         teardown: jest.fn(),
-      }],
-    [ 'WebACL',
-      'on-disk storage', {
+      },
+    ],
+    [
+      'WebACL',
+      'on-disk storage',
+      {
         configs: [ 'ldp/authorization/webacl.json', 'util/auxiliary/acl.json', 'storage/backend/file.json' ],
         authFunction: setWebAclPermissions,
         teardown: async(): Promise<void> => removeFolder(rootFilePath),
-      }],
-    [ 'ACP',
-      'in-memory storage', {
+      },
+    ],
+    [
+      'ACP',
+      'in-memory storage',
+      {
         configs: [ 'ldp/authorization/acp.json', 'util/auxiliary/acr.json', 'storage/backend/memory.json' ],
         authFunction: setAcpPermissions,
         teardown: jest.fn(),
-      }],
-    [ 'ACP',
-      'on-disk storage', {
+      },
+    ],
+    [
+      'ACP',
+      'on-disk storage',
+      {
         configs: [ 'ldp/authorization/acp.json', 'util/auxiliary/acr.json', 'storage/backend/file.json' ],
         authFunction: setAcpPermissions,
         teardown: async(): Promise<void> => removeFolder(rootFilePath),
-      }],
+      },
+    ],
   ];
 
-describe.each(stores)('A request on a server with %s authorization and %s', (auth, name,
-  { configs, authFunction, teardown }): void => {
+describe.each(stores)('A request on a server with %s authorization and %s', (
+  auth,
+  name,
+  { configs, authFunction, teardown },
+): void => {
   let app: App;
   let store: ResourceStore;
 
@@ -218,7 +242,7 @@ describe.each(stores)('A request on a server with %s authorization and %s', (aut
     await app.stop();
   });
 
-  describe.each(table)('%s %s with permissions C/: %s and C/R: %s.', (...entry): void => {
+  describe.each(table)('%s %s with permissions C/: %s and C/R: %s', (...entry): void => {
     const [ method, target, cPerm, crPermTemp, body, contentType, existsCode, notExistsCode ] = entry;
     const crPerm = crPermTemp ?? cPerm;
     const id = v4();
@@ -242,10 +266,12 @@ describe.each(stores)('A request on a server with %s authorization and %s', (aut
         }
       }
 
-      await authFunction(store,
+      await authFunction(
+        store,
         parent,
         toPermission(parent === root ? allModes : cPerm),
-        toPermission(parent === root ? cPerm : crPerm));
+        toPermission(parent === root ? cPerm : crPerm),
+      );
 
       // Set up fetch parameters
       init = { method };

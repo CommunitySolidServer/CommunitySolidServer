@@ -7,15 +7,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.0
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - run: npm ci --ignore-scripts
       - run: npm run lint
 
   test-unit:
-  # Run unit tests on windows and linux
+    # Run unit tests on windows and linux
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
@@ -24,19 +24,19 @@ jobs:
           - windows-latest
         node-version:
           - '18.0'
-          - '18.x'
+          - 18.x
           - '20.0'
-          - '20.x'
+          - 20.x
     timeout-minutes: 15
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Type-check tests
@@ -51,13 +51,13 @@ jobs:
           parallel: true
 
   test-integration:
-  # Run integration tests on linux (full suite, with external dependencies)
+    # Run integration tests on linux (full suite, with external dependencies)
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version:
-          - '18.x'
-          - '20.x'
+          - 18.x
+          - 20.x
     env:
       TEST_DOCKER: true
     services:
@@ -74,41 +74,41 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Check out repository
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run integration tests
         run: npm run test:integration
 
   test-integration-windows:
-  # Run integration tests on windows (no external dependencies)
+    # Run integration tests on windows (no external dependencies)
     runs-on: windows-latest
     strategy:
       matrix:
         node-version:
-          - '18.x'
-          - '20.x'
+          - 18.x
+          - 20.x
     timeout-minutes: 20
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run integration tests
         run: npm run test:integration
 
   test-configs:
-  # Test startup of CSS with all configs inside the config/ folder
+    # Test startup of CSS with all configs inside the config/ folder
     runs-on: ubuntu-latest
     services:
       sparql-endpoint:
@@ -119,18 +119,18 @@ jobs:
           - 4000:8890
     steps:
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - name: Check out repository
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run deploy tests
         run: npm run test:deploy
 
   coveralls:
-  # Consolidate test coverage reports from all unit tests
+    # Consolidate test coverage reports from all unit tests
     needs: test-unit
     runs-on: ubuntu-latest
     steps:

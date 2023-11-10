@@ -102,9 +102,11 @@ describe('A server migrating from v6', (): void => {
     let res = await state.fetchIdp(url);
     expect(res.status).toBe(200);
     const { controls } = await res.json();
-    res = await state.fetchIdp(controls.password.login,
+    res = await state.fetchIdp(
+      controls.password.login,
       'POST',
-      JSON.stringify({ email: 'test@example.com', password: 'password' }));
+      JSON.stringify({ email: 'test@example.com', password: 'password' }),
+    );
     await state.handleLocationRedirect(res);
 
     res = await state.fetchIdp(controls.oidc.webId);

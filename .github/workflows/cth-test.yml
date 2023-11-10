@@ -38,11 +38,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16.x
       - name: Check out the project
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
         with:
           ref: ${{ inputs.branch || github.ref }}
       - name: Install dependencies and run build scripts
@@ -52,7 +52,7 @@ jobs:
       - name: Create the necessary folders
         run: mkdir -p reports/css
       - name: Pull the conformance harness docker
-        run: "docker pull solidproject/conformance-test-harness:${{ inputs.version }}"
+        run: 'docker pull solidproject/conformance-test-harness:${{ inputs.version }}'
       - name: Wait until the server has started
         run: >
           curl --output /dev/null --silent --head --fail --retry 30

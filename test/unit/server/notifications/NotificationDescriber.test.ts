@@ -12,6 +12,7 @@ import type {
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { NOTIFY } from '../../../../src/util/Vocabularies';
+
 const { namedNode, quad } = DataFactory;
 
 describe('A NotificationDescriber', (): void => {

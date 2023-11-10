@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import { RootFilePathHandler } from '../../../../../src/pods/generate/variables/RootFilePathHandler';
 import { TEMPLATE_VARIABLE } from '../../../../../src/pods/generate/variables/Variables';
 import type { PodSettings } from '../../../../../src/pods/settings/PodSettings';
@@ -6,7 +6,7 @@ import type { ResourceLink } from '../../../../../src/storage/mapping/FileIdenti
 import { ConflictHttpError } from '../../../../../src/util/errors/ConflictHttpError';
 import { joinFilePath } from '../../../../../src/util/PathUtil';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 describe('A RootFilePathHandler', (): void => {
   const rootFilePath = 'files/';

@@ -1,5 +1,5 @@
-import type { Dirent, Stats } from 'fs';
-import { PassThrough, Readable } from 'stream';
+import type { Dirent, Stats } from 'node:fs';
+import { PassThrough, Readable } from 'node:stream';
 import type { SystemError } from '../../src/util/errors/SystemError';
 import Describe = jest.Describe;
 
@@ -38,12 +38,10 @@ const portNames = [
   'BaseServerFactory',
 ] as const;
 
-/* eslint-disable @typescript-eslint/naming-convention */
 // These are ports that are not allowed to change for various reasons
 const fixedPorts = {
   V6Migration: 6999,
 } as const;
-/* eslint-enable @typescript-eslint/naming-convention */
 
 const socketNames = [
   // Unit
@@ -108,7 +106,7 @@ export function compareMaps<TKey, TVal>(map1: Map<TKey, TVal>, map2: Map<TKey, T
 
 /**
  * Mocks (some) functions of the fs system library.
- * It is important that you call `jest.mock('fs');` in your test file before calling this!!!
+ * It is important that you call `jest.mock('node:fs');` in your test file before calling this!!!
  *
  * This function will return an object of which the `data` field corresponds to the contents of the root folder.
  * The file system can be "reset" by assigning an empty object (`{}`) to the data field.
@@ -145,10 +143,10 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       return { folder: cache, name: 'data' };
     }
 
-    const name = parts.slice(-1)[0];
+    const name = parts.at(-1) as string;
     parts = parts.slice(0, -1);
     let folder = cache.data;
-    parts.forEach((part): any => {
+    for (const part of parts) {
       if (typeof folder === 'string') {
         throwSystemError('ENOTDIR');
       }
@@ -156,7 +154,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       if (!folder) {
         throwSystemError('ENOENT');
       }
-    });
+    }
 
     return { folder, name };
   }
@@ -356,7 +354,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
     },
   };
 
-  const fs = jest.requireMock('fs');
+  const fs = jest.requireMock('node:fs');
   Object.assign(fs, mockFs);
 
   const fsExtra = jest.requireMock('fs-extra');

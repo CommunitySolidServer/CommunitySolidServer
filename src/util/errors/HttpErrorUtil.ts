@@ -34,12 +34,14 @@ export function errorTermsToMetadata(terms: Dict<string>, metadata?: Representat
  * @param metadata - Metadata to extract the terms from.
  */
 export function extractErrorTerms(metadata: RepresentationMetadata): Dict<string> {
-  return metadata.quads()
-    .filter((quad): boolean => quad.predicate.value.startsWith(SOLID_ERROR_TERM.namespace))
-    .reduce<NodeJS.Dict<string>>((acc, quad): Dict<string> => {
-    acc[quad.predicate.value.slice(SOLID_ERROR_TERM.namespace.length)] = quad.object.value;
-    return acc;
-  }, {});
+  const errorQuads = metadata.quads()
+    .filter((quad): boolean => quad.predicate.value.startsWith(SOLID_ERROR_TERM.namespace));
+
+  const errorTerms: Dict<string> = {};
+  for (const quad of errorQuads) {
+    errorTerms[quad.predicate.value.slice(SOLID_ERROR_TERM.namespace.length)] = quad.object.value;
+  }
+  return errorTerms;
 }
 
 /**

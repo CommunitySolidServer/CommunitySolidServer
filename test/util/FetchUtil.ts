@@ -9,9 +9,11 @@ import { LDP } from '../../src/util/Vocabularies';
 /**
  * This is specifically for GET requests which are expected to succeed.
  */
-export async function getResource(url: string,
+export async function getResource(
+  url: string,
   options?: { accept?: string },
-  expected?: { contentType?: string }): Promise<Response> {
+  expected?: { contentType?: string },
+): Promise<Response> {
   const isContainer = isContainerPath(url);
   const response = await fetch(url, { headers: options });
   expect(response.status).toBe(200);

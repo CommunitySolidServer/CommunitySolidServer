@@ -1,9 +1,9 @@
-const os = require('os');
-const v8 = require('v8');
+const os = require('node:os');
+const v8 = require('node:v8');
 
 // Several parts inspired by https://github.com/renovatebot/renovate/blob/main/package.json
 
-const ci = !!process.env.CI;
+const ci = Boolean(process.env.CI);
 
 const cpus = os.cpus();
 const mem = os.totalmem();
@@ -46,15 +46,15 @@ const esModules = [
 module.exports = {
   transform: {
     '^.+\\.ts$': [ 'ts-jest', {
-        tsconfig: '<rootDir>/test/tsconfig.json',
-        diagnostics: false,
-        isolatedModules: true,
+      tsconfig: '<rootDir>/test/tsconfig.json',
+      diagnostics: false,
+      isolatedModules: true,
     }],
     // This transformer converts ESM packages to CJS
     '^.+node_modules.+\\.js$': 'jest-esm-transformer-2',
   },
   // By default, node_modules are not transformed, but we want to transform the ESM packages
-  transformIgnorePatterns: [`/node_modules/(?!(${esModules.join('|')})/)`],
+  transformIgnorePatterns: [ `/node_modules/(?!(${esModules.join('|')})/)` ],
   testRegex: '/test/(unit|integration)/.*\\.test\\.ts$',
   moduleFileExtensions: [
     'ts',
@@ -72,6 +72,6 @@ module.exports = {
   // Slower machines had problems calling the WebSocket integration callbacks on time
   testTimeout: 60000,
 
-  reporters: ci ? ['default', 'github-actions'] : ['default'],
-  ...(ci && jestGithubRunnerSpecs()),
+  reporters: ci ? [ 'default', 'github-actions' ] : [ 'default' ],
+  ...ci && jestGithubRunnerSpecs(),
 };

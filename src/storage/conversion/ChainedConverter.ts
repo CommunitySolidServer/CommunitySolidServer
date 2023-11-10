@@ -188,13 +188,13 @@ export class ChainedConverter extends RepresentationConverter {
    * Will return undefined if there are no matches.
    */
   private findBest(paths: ConversionPath[]): ConversionPath | undefined {
-    // Need to use null instead of undefined so `reduce` doesn't take the first element of the array as `best`
-    return paths.reduce((best: ConversionPath | null, path): ConversionPath | null => {
+    let best: ConversionPath | undefined;
+    for (const path of paths) {
       if (path.weight > 0 && !(best && best.weight >= path.weight)) {
-        return path;
+        best = path;
       }
-      return best;
-    }, null) ?? undefined;
+    }
+    return best;
   }
 
   /**
@@ -254,8 +254,11 @@ export class ChainedConverter extends RepresentationConverter {
    * Finds all converters in the given list that support taking any of the given types as input.
    * Filters out converters that would produce an already seen type.
    */
-  private async supportedConverters(types: ValuePreferences, metadata: RepresentationMetadata,
-    converters: TypedRepresentationConverter[]): Promise<ConverterPreference[]> {
+  private async supportedConverters(
+    types: ValuePreferences,
+    metadata: RepresentationMetadata,
+    converters: TypedRepresentationConverter[],
+  ): Promise<ConverterPreference[]> {
     const typeEntries = Object.entries(types);
     const results: ConverterPreference[] = [];
     for (const converter of converters) {
@@ -275,12 +278,17 @@ export class ChainedConverter extends RepresentationConverter {
    * Returns a ConverterPreference if the given converter supports the given type.
    * All types that have already been used will be removed from the output types.
    */
-  private async findConverterPreference(inType: string, weight: number, metadata: RepresentationMetadata,
-    converter: TypedRepresentationConverter): Promise<ConverterPreference | undefined> {
+  private async findConverterPreference(
+    inType: string,
+    weight: number,
+    metadata: RepresentationMetadata,
+    converter: TypedRepresentationConverter,
+  ): Promise<ConverterPreference | undefined> {
     const representation = new BasicRepresentation([], metadata);
     try {
       const identifier = { path: representation.metadata.identifier.value };
       // Internal types get ignored when trying to match everything, so they need to be specified to also match.
+      // eslint-disable-next-line ts/naming-convention
       await converter.canHandle({ representation, identifier, preferences: { type: { '*/*': 1, 'internal/*': 1 }}});
     } catch {
       // Skip converters that fail the canHandle test

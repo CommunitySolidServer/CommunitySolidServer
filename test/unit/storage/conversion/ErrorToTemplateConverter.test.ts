@@ -20,10 +20,12 @@ describe('An ErrorToTemplateConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     templateEngine = {
-      handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+      handleSafe: jest.fn().mockResolvedValue('<html>'),
     } as any;
-    converter = new ErrorToTemplateConverter(templateEngine,
-      { mainTemplatePath, codeTemplatesPath, extension, contentType });
+    converter = new ErrorToTemplateConverter(
+      templateEngine,
+      { mainTemplatePath, codeTemplatesPath, extension, contentType },
+    );
   });
 
   it('supports going from errors to the given content type.', async(): Promise<void> => {

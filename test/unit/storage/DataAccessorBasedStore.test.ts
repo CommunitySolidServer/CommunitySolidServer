@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory, Store } from 'n3';
 import type { Conditions } from '../../../src';
@@ -24,7 +24,7 @@ import { ContentType } from '../../../src/util/Header';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC, SOLID_AS, AS } from '../../../src/util/Vocabularies';
+import { AS, CONTENT_TYPE, DC, LDP, PIM, RDF, SOLID_AS, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../util/SimpleSuffixStrategy';
 
 const { namedNode, quad, literal } = DataFactory;
@@ -107,7 +107,7 @@ describe('A DataAccessorBasedStore', (): void => {
   const metadataStrategy = new SimpleSuffixStrategy('.meta');
 
   beforeEach(async(): Promise<void> => {
-    mockDate = jest.spyOn(global, 'Date').mockReturnValue(now as any);
+    mockDate = jest.spyOn(globalThis, 'Date').mockReturnValue(now as any);
 
     accessor = new SimpleDataAccessor();
 
@@ -147,7 +147,7 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: true });
-      expect(await arrayifyStream(result.data)).toEqual([ resourceData ]);
+      await expect(arrayifyStream(result.data)).resolves.toEqual([ resourceData ]);
       expect(result.metadata.contentType).toBe('text/plain');
       expect(result.metadata.get(namedNode('AUXILIARY'))?.value)
         .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
@@ -163,7 +163,7 @@ describe('A DataAccessorBasedStore', (): void => {
       await auxiliaryStrategy.addMetadata(metaMirror);
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: false });
-      expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaMirror.quads());
+      await expect(arrayifyStream(result.data)).resolves.toBeRdfIsomorphic(metaMirror.quads());
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
       expect(result.metadata.get(namedNode('AUXILIARY'))?.value)
         .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
@@ -451,7 +451,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create an auxiliary resource with invalid data.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource.dummy` };
-      auxiliaryStrategy.validate = jest.fn().mockRejectedValue(new Error('bad data!'));
+      jest.spyOn(auxiliaryStrategy, 'validate').mockRejectedValue(new Error('bad data!'));
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow('bad data!');
     });
 
@@ -628,26 +628,28 @@ describe('A DataAccessorBasedStore', (): void => {
       const representationWithMetadata: Representation = {
         binary: true,
         data: guardedStreamFrom([ resourceData ]),
-        metadata: new RepresentationMetadata(
-          { [CONTENT_TYPE]: 'text/plain',
-            [RDF.type]: namedNode(LDP.Resource),
-            [RDF.type]: namedNode('http://example.org/Type') },
-        ),
+        metadata: new RepresentationMetadata({
+          [CONTENT_TYPE]: 'text/plain',
+          [RDF.type]: namedNode(LDP.Resource),
+          [RDF.type]: namedNode('http://example.org/Type'),
+        }),
         isEmpty: false,
       };
       await store.setRepresentation(resourceID, representationWithMetadata);
 
       const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
       representation.metadata.add(
-        SOLID_META.terms.preserve, namedNode(metaResourceID.path), SOLID_META.terms.ResponseMetadata,
+        SOLID_META.terms.preserve,
+        namedNode(metaResourceID.path),
+        SOLID_META.terms.ResponseMetadata,
       );
 
       await store.setRepresentation(resourceID, representation);
       expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toHaveLength(2);
-      expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic(
-        [ quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
-          quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')) ],
-      );
+      expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic([
+        quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
+        quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')),
+      ]);
     });
 
     it('preserves the old metadata of a resource even when the content-types have changed.', async(): Promise<void> => {
@@ -655,11 +657,11 @@ describe('A DataAccessorBasedStore', (): void => {
       const representationWithMetadata: Representation = {
         binary: true,
         data: guardedStreamFrom([ '<a> <b> <c>' ]),
-        metadata: new RepresentationMetadata(
-          { [CONTENT_TYPE]: 'text/turtle',
-            [RDF.type]: namedNode(LDP.Resource),
-            [RDF.type]: namedNode('http://example.org/Type') },
-        ),
+        metadata: new RepresentationMetadata({
+          [CONTENT_TYPE]: 'text/turtle',
+          [RDF.type]: namedNode(LDP.Resource),
+          [RDF.type]: namedNode('http://example.org/Type'),
+        }),
         isEmpty: false,
       };
       await store.setRepresentation(resourceID, representationWithMetadata);
@@ -667,16 +669,18 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
       representation.metadata.add(
-        SOLID_META.terms.preserve, namedNode(metaResourceID.path), SOLID_META.terms.ResponseMetadata,
+        SOLID_META.terms.preserve,
+        namedNode(metaResourceID.path),
+        SOLID_META.terms.ResponseMetadata,
       );
       representation.metadata.contentTypeObject = new ContentType('text/plain', { charset: 'UTF-8' });
       await store.setRepresentation(resourceID, representation);
       const { metadata } = accessor.data[resourceID.path];
       expect(metadata.quads(null, RDF.terms.type)).toHaveLength(2);
-      expect(metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic(
-        [ quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
-          quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')) ],
-      );
+      expect(metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic([
+        quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
+        quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')),
+      ]);
       expect(metadata.contentType).toBe('text/plain');
       expect(metadata.contentTypeObject?.parameters).toEqual({ charset: 'UTF-8' });
     });
@@ -703,7 +707,7 @@ describe('A DataAccessorBasedStore', (): void => {
     });
 
     it('re-throws the error if something goes wrong accessing the metadata.', async(): Promise<void> => {
-      accessor.getMetadata = jest.fn(async(): Promise<any> => {
+      jest.spyOn(accessor, 'getMetadata').mockImplementation(async(): Promise<any> => {
         throw new Error('error');
       });
 
@@ -738,7 +742,7 @@ describe('A DataAccessorBasedStore', (): void => {
       storageMetadata.add(RDF.terms.type, PIM.terms.Storage);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
-      auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
+      jest.spyOn(auxiliaryStrategy, 'isRequiredInRoot').mockReturnValue(true);
       const result = store.deleteResource({ path: `${root}container/.dummy` });
       await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
       await expect(result).rejects.toThrow(
@@ -787,7 +791,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const storageMetadata = new RepresentationMetadata(representation.metadata);
       accessor.data[resourceID.path] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[auxResourceID.path] = representation;
-      auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
+      jest.spyOn(auxiliaryStrategy, 'isRequiredInRoot').mockReturnValue(true);
       const result = await store.deleteResource(auxResourceID);
       expect(result.size).toBe(2);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Remove);
@@ -816,14 +820,15 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
       accessor.data[auxResourceID.path] = representation;
       const deleteFn = accessor.deleteResource;
-      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
-        if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
-          throw new Error('auxiliary error!');
-        }
-        await deleteFn.call(accessor, identifier);
-      });
+      jest.spyOn(accessor, 'deleteResource')
+        .mockImplementation(async(identifier: ResourceIdentifier): Promise<void> => {
+          if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
+            throw new Error('auxiliary error!');
+          }
+          await deleteFn.call(accessor, identifier);
+        });
       const { logger } = store as any;
-      logger.error = jest.fn();
+      jest.spyOn(logger, 'error').mockImplementation();
       const result = await store.deleteResource(resourceID);
       expect(result.size).toBe(2);
       expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Remove);
@@ -858,7 +863,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('should rethrow any unexpected errors from validateIdentifier.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       const originalMetaData = accessor.getMetadata;
-      accessor.getMetadata = jest.fn(async(): Promise<any> => {
+      jest.spyOn(accessor, 'getMetadata').mockImplementation(async(): Promise<any> => {
         throw new Error('error');
       });
       await expect(store.hasResource(resourceID)).rejects.toThrow('error');
@@ -879,4 +884,3 @@ describe('A DataAccessorBasedStore', (): void => {
     });
   });
 });
-

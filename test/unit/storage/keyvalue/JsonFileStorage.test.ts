@@ -3,7 +3,7 @@ import { JsonFileStorage } from '../../../../src/storage/keyvalue/JsonFileStorag
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import { mockFileSystem } from '../../../util/Util';
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('fs-extra');
 
 describe('A JsonFileStorage', (): void => {

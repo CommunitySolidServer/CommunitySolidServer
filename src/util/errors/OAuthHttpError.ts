@@ -10,7 +10,7 @@ import { HttpError } from './HttpError';
  */
 export interface OAuthErrorFields {
   error: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line ts/naming-convention
   error_description?: string | undefined;
   scope?: string | undefined;
   state?: string | undefined;
@@ -24,8 +24,13 @@ export interface OAuthErrorFields {
 export class OAuthHttpError extends HttpError {
   public readonly mandatoryFields: OAuthErrorFields;
 
-  public constructor(mandatoryFields: OAuthErrorFields, name?: string, statusCode?: number, message?: string,
-    options?: HttpErrorOptions) {
+  public constructor(
+    mandatoryFields: OAuthErrorFields,
+    name?: string,
+    statusCode?: number,
+    message?: string,
+    options?: HttpErrorOptions,
+  ) {
     super(statusCode ?? 500, name ?? 'OAuthHttpError', message, options);
     this.mandatoryFields = mandatoryFields;
   }

@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { joinFilePath } from '../../src/';
 import type { App } from '../../src/';
 import { putResource } from '../util/FetchUtil';
@@ -8,6 +8,7 @@ import { getDefaultVariables, getPresetConfigPath, getTestConfigPath, instantiat
 const port = getPort('SparqlStorage');
 const baseUrl = `http://localhost:${port}/`;
 
+/* eslint-disable jest/require-top-level-describe, jest/consistent-test-it */
 describeIf('docker')('A server with a SPARQL endpoint as storage', (): void => {
   let app: App;
 

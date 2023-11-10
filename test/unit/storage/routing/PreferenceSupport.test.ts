@@ -26,7 +26,7 @@ describe('A PreferenceSupport', (): void => {
   });
 
   it('returns false if the converter does not support the input.', async(): Promise<void> => {
-    converter.canHandle = jest.fn((): any => {
+    jest.spyOn(converter, 'canHandle').mockImplementation((): any => {
       throw new BadRequestHttpError();
     });
     await expect(support.supports({ identifier, representation })).resolves.toBe(false);

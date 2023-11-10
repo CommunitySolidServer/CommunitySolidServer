@@ -1,8 +1,9 @@
 import {
-  assertAccountId, parsePath, verifyAccountId,
+  assertAccountId,
+  parsePath,
+  verifyAccountId,
 } from '../../../../../../src/identity/interaction/account/util/AccountUtil';
-
-import { InteractionRoute } from '../../../../../../src/identity/interaction/routing/InteractionRoute';
+import type { InteractionRoute } from '../../../../../../src/identity/interaction/routing/InteractionRoute';
 import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../../../../src/util/errors/NotFoundHttpError';
 

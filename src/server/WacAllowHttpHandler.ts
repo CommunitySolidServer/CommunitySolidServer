@@ -76,17 +76,17 @@ export class WacAllowHttpHandler extends OperationHttpHandler {
     if (permissionSet) {
       const user: AclPermissionSet = permissionSet;
       let everyone: AclPermissionSet;
-      if (!credentials.agent?.webId) {
-        // User is not authenticated so public permissions are the same as agent permissions
-        this.logger.debug('User is not authenticated so has public permissions');
-        everyone = user;
-      } else {
+      if (credentials.agent?.webId) {
         // Need to determine public permissions
         this.logger.debug('Determining public permissions');
         // Note that this call can potentially create a new lock on a resource that is already locked,
         // so a locker that allows multiple read locks on the same resource is required.
         const permissionMap = await this.permissionReader.handleSafe({ credentials: {}, requestedModes });
         everyone = permissionMap.get(operation.target) ?? {};
+      } else {
+        // User is not authenticated so public permissions are the same as agent permissions
+        this.logger.debug('User is not authenticated so has public permissions');
+        everyone = user;
       }
 
       this.logger.debug('Adding WAC-Allow metadata');

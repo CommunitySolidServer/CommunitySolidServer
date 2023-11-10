@@ -158,7 +158,7 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
    *
    * @returns The content type of the document.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   protected async getContentTypeFromPath(filePath: string): Promise<string> {
     return APPLICATION_OCTET_STREAM;
   }

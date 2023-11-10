@@ -37,8 +37,10 @@ describe('A StorageDescriptionAdvertiser', (): void => {
   it('adds a storage description link header.', async(): Promise<void> => {
     await expect(advertiser.handle(input)).resolves.toBeUndefined();
     expect(response.setHeader).toHaveBeenCalledTimes(1);
-    expect(response.setHeader).toHaveBeenLastCalledWith('Link',
-      '<http://example.com/foo/.well-known/solid>; rel="http://www.w3.org/ns/solid/terms#storageDescription"');
+    expect(response.setHeader).toHaveBeenLastCalledWith(
+      'Link',
+      '<http://example.com/foo/.well-known/solid>; rel="http://www.w3.org/ns/solid/terms#storageDescription"',
+    );
   });
 
   it('only handles results with resource metadata.', async(): Promise<void> => {

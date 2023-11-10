@@ -9,8 +9,8 @@ import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdf
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { DC, PREFERRED_PREFIX_TERM, SOLID_META } from '../../../../src/util/Vocabularies';
-import quad = DataFactory.quad;
-const { namedNode, triple } = DataFactory;
+
+const { namedNode, triple, quad } = DataFactory;
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
@@ -45,12 +45,14 @@ describe('A QuadToRdfConverter', (): void => {
   });
 
   it('converts quads to Turtle.', async(): Promise<void> => {
-    const representation = new BasicRepresentation([ triple(
-      namedNode('http://test.com/s'),
-      namedNode('http://test.com/p'),
-      namedNode('http://test.com/o'),
-    ) ],
-    metadata);
+    const representation = new BasicRepresentation(
+      [ triple(
+        namedNode('http://test.com/s'),
+        namedNode('http://test.com/p'),
+        namedNode('http://test.com/o'),
+      ) ],
+      metadata,
+    );
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({
@@ -71,8 +73,7 @@ describe('A QuadToRdfConverter', (): void => {
       namedNode('http://test.com/s'),
       DC.terms.modified,
       namedNode('http://test.com/o'),
-    ) ],
-    metadata);
+    ) ], metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result.metadata.contentType).toBe('text/turtle');
@@ -90,8 +91,7 @@ test:s dc:modified test:o.
       namedNode('http://example.org/foo/bar/'),
       namedNode('http://example.org/foo/bar/#abc'),
       namedNode('http://example.org/foo/bar/def/ghi'),
-    ) ],
-    metadata);
+    ) ], metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result.metadata.contentType).toBe('text/turtle');
@@ -107,8 +107,7 @@ test:s dc:modified test:o.
       namedNode('http://test.com/s'),
       namedNode('http://test.com/p'),
       namedNode('http://test.com/o'),
-    ) ],
-    metadata);
+    ) ], metadata);
     const preferences: RepresentationPreferences = { type: { 'application/ld+json': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({
@@ -137,8 +136,7 @@ test:s dc:modified test:o.
       namedNode('http://test.com/p'),
       namedNode('http://test.com/o'),
       SOLID_META.terms.ResponseMetadata,
-    ) ],
-    metadata);
+    ) ], metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({

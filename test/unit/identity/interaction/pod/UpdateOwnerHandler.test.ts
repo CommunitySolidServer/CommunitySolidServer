@@ -1,6 +1,6 @@
 import type { PodIdRoute } from '../../../../../src/identity/interaction/pod/PodIdRoute';
 import { UpdateOwnerHandler } from '../../../../../src/identity/interaction/pod/UpdateOwnerHandler';
-import { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
+import type { PodStore } from '../../../../../src/identity/interaction/pod/util/PodStore';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 
 describe('An UpdateOwnerHandler', (): void => {

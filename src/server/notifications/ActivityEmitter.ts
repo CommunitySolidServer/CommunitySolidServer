@@ -9,14 +9,18 @@ import type { AS, VocabularyTerm, VocabularyValue } from '../../util/Vocabularie
  * Both generic `change` events and ActivityStream-specific events are emitted.
  */
 export type ActivityEmitter =
-  GenericEventEmitter<'changed',
-  (target: ResourceIdentifier, activity: VocabularyTerm<typeof AS>, metadata: RepresentationMetadata) => void>
+  GenericEventEmitter<
+    'changed',
+    (target: ResourceIdentifier, activity: VocabularyTerm<typeof AS>, metadata: RepresentationMetadata) => void
+  >
   &
-  GenericEventEmitter<VocabularyValue<typeof AS>,
-  (target: ResourceIdentifier, metadata: RepresentationMetadata) => void>;
+  GenericEventEmitter<
+    VocabularyValue<typeof AS>,
+    (target: ResourceIdentifier, metadata: RepresentationMetadata) => void
+  >;
 
 /**
  * A class implementation of {@link ActivityEmitter}.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line ts/naming-convention
 export const BaseActivityEmitter = createGenericEventEmitterClass<ActivityEmitter>();

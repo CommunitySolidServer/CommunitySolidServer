@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { DataFactory } from 'n3';
 import type { Quad } from 'n3';
 import rdfDereferencer from 'rdf-dereference';
@@ -8,6 +8,7 @@ import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringS
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { SOLID } from '../../../../src/util/Vocabularies';
+
 const { literal, namedNode, quad } = DataFactory;
 
 jest.mock('uuid');

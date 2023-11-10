@@ -51,7 +51,7 @@
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
       "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
-      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
     },
     {
       "@id": "urn:solid-server:default:MemoryResourceStore",
@@ -59,13 +59,13 @@
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
       "accessor": { "@id": "urn:solid-server:default:MemoryDataAccessor" },
-      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
     },
     {
       "comment": "SparqlDataAccessor only accepts quad objects so data to that route needs to be converted",
       "@id": "urn:solid-server:default:SparqlResourceStore",
       "@type": "RepresentationConvertingStore",
-      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
       "options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
       "options_inPreferences_type": {
         "RepresentationConvertingStore:_options_inPreferences_type_key": "internal/quads",
@@ -76,7 +76,7 @@
         "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
         "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
         "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
-        "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+        "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
       }
     }
   ]

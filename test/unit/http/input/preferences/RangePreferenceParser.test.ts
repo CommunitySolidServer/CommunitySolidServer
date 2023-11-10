@@ -15,8 +15,10 @@ describe('A RangePreferenceParser', (): void => {
       .resolves.toEqual({ range: { unit: 'bytes', parts: [{ start: -5 }]}});
 
     await expect(parser.handle({ request: { headers: { range: 'bytes=5-10, 11-20, 21-99' }}} as any))
-      .resolves.toEqual({ range: { unit: 'bytes',
-        parts: [{ start: 5, end: 10 }, { start: 11, end: 20 }, { start: 21, end: 99 }]}});
+      .resolves.toEqual({ range: {
+        unit: 'bytes',
+        parts: [{ start: 5, end: 10 }, { start: 11, end: 20 }, { start: 21, end: 99 }],
+      }});
   });
 
   it('returns an empty object if there is no header.', async(): Promise<void> => {

@@ -61,8 +61,8 @@ describe('A RoutingAuxiliaryStrategy', (): void => {
   });
 
   it('#addMetadata adds the metadata of all sources for the base identifier.', async(): Promise<void> => {
-    sources[0].addMetadata = jest.fn();
-    sources[1].addMetadata = jest.fn();
+    jest.spyOn(sources[0], 'addMetadata').mockImplementation();
+    jest.spyOn(sources[1], 'addMetadata').mockImplementation();
     const metadata = new RepresentationMetadata(baseId);
     await expect(strategy.addMetadata(metadata)).resolves.toBeUndefined();
     expect(sources[0].addMetadata).toHaveBeenCalledTimes(1);
@@ -72,8 +72,8 @@ describe('A RoutingAuxiliaryStrategy', (): void => {
   });
 
   it('#addMetadata adds the metadata of the correct source for auxiliary identifiers.', async(): Promise<void> => {
-    sources[0].addMetadata = jest.fn();
-    sources[1].addMetadata = jest.fn();
+    jest.spyOn(sources[0], 'addMetadata').mockImplementation();
+    jest.spyOn(sources[1], 'addMetadata').mockImplementation();
     const metadata = new RepresentationMetadata(dummy2Id);
     await expect(strategy.addMetadata(metadata)).resolves.toBeUndefined();
     expect(sources[0].addMetadata).toHaveBeenCalledTimes(0);
@@ -82,8 +82,8 @@ describe('A RoutingAuxiliaryStrategy', (): void => {
   });
 
   it('#usesOwnAuthorization returns the result of the correct source.', async(): Promise<void> => {
-    sources[0].usesOwnAuthorization = jest.fn();
-    sources[1].usesOwnAuthorization = jest.fn();
+    jest.spyOn(sources[0], 'usesOwnAuthorization').mockImplementation();
+    jest.spyOn(sources[1], 'usesOwnAuthorization').mockImplementation();
     strategy.usesOwnAuthorization(dummy2Id);
     expect(sources[0].usesOwnAuthorization).toHaveBeenCalledTimes(0);
     expect(sources[1].usesOwnAuthorization).toHaveBeenCalledTimes(1);
@@ -91,8 +91,8 @@ describe('A RoutingAuxiliaryStrategy', (): void => {
   });
 
   it('#isRequiredInRoot returns the result of the correct source.', async(): Promise<void> => {
-    sources[0].isRequiredInRoot = jest.fn();
-    sources[1].isRequiredInRoot = jest.fn();
+    jest.spyOn(sources[0], 'isRequiredInRoot').mockImplementation();
+    jest.spyOn(sources[1], 'isRequiredInRoot').mockImplementation();
     strategy.isRequiredInRoot(dummy2Id);
     expect(sources[0].isRequiredInRoot).toHaveBeenCalledTimes(0);
     expect(sources[1].isRequiredInRoot).toHaveBeenCalledTimes(1);
@@ -100,8 +100,8 @@ describe('A RoutingAuxiliaryStrategy', (): void => {
   });
 
   it('#validates using the correct validator.', async(): Promise<void> => {
-    sources[0].validate = jest.fn();
-    sources[1].validate = jest.fn();
+    jest.spyOn(sources[0], 'validate').mockImplementation();
+    jest.spyOn(sources[1], 'validate').mockImplementation();
 
     let metadata = new RepresentationMetadata(dummy1Id);
     await expect(strategy.validate({ metadata } as any)).resolves.toBeUndefined();

@@ -6,7 +6,7 @@ import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { PermissionMap, PermissionSet, AccessMap } from './permissions/Permissions';
+import type { AccessMap, PermissionMap, PermissionSet } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 /**

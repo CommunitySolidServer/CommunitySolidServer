@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import type { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'n3';
@@ -84,7 +84,7 @@ export class SparqlDataAccessor implements DataAccessor {
     const name = namedNode(identifier.path);
     const query = this.sparqlConstruct(this.getMetadataNode(name));
     const stream = await this.sendSparqlConstruct(query);
-    const quads = await arrayifyStream(stream);
+    const quads: Quad[] = await arrayifyStream(stream);
 
     if (quads.length === 0) {
       throw new NotFoundHttpError();

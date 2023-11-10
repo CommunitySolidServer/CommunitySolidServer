@@ -1,4 +1,3 @@
-/* eslint-disable tsdoc/syntax */
 import type { Arguments, Argv, Options } from 'yargs';
 import yargs from 'yargs';
 import { CliExtractor } from './CliExtractor';
@@ -77,6 +76,7 @@ export class YargsCliExtractor extends CliExtractor {
     yArgv.check((args): boolean => {
       for (const [ name, options ] of Object.entries(this.yargsArgOptions)) {
         if (options.type !== 'array' && Array.isArray(args[name])) {
+          // eslint-disable-next-line ts/restrict-template-expressions
           throw new Error(`Multiple values for --${name} (-${options.alias}) were provided where only one is allowed`);
         }
       }

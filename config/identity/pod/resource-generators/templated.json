@@ -25,7 +25,7 @@
           "@id": "urn:solid-server:default:TemplateEngine"
         },
         "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
-        "store": { "@id": "urn:solid-server:default:ResourceStore"}
+        "store": { "@id": "urn:solid-server:default:ResourceStore" }
       }
     }
   ]

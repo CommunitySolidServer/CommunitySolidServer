@@ -1,4 +1,4 @@
-import cluster from 'cluster';
+import cluster from 'node:cluster';
 import { WrappingLogger } from './Logger';
 import type { Logger } from './Logger';
 import type { LoggerFactory } from './LoggerFactory';
@@ -75,7 +75,7 @@ export class LazyLoggerFactory implements LoggerFactory {
 
   public get loggerFactory(): LoggerFactory {
     if (this.factory instanceof TemporaryLoggerFactory) {
-      throw new Error('Logger factory not yet set.');
+      throw new TypeError('Logger factory not yet set.');
     }
     return this.factory;
   }

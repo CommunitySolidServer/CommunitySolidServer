@@ -20,7 +20,7 @@
       "comment": "The ListeningActivityHandler is added to the list of Initializers so Components.js finds and instantiates it.",
       "@id": "urn:solid-server:default:PrimaryParallelInitializer",
       "@type": "ParallelHandler",
-      "handlers": [ { "@id": "urn:solid-server:default:ListeningActivityHandler" } ]
+      "handlers": [{ "@id": "urn:solid-server:default:ListeningActivityHandler" }]
     }
   ]
 }

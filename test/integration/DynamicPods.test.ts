@@ -1,4 +1,4 @@
-import { mkdirSync } from 'fs';
+import { mkdirSync } from 'node:fs';
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
 import { joinFilePath } from '../../src/util/PathUtil';

@@ -45,8 +45,13 @@ export class WebAclReader extends PermissionReader {
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly accessChecker: AccessChecker;
 
-  public constructor(aclStrategy: AuxiliaryIdentifierStrategy, resourceSet: ResourceSet, aclStore: ResourceStore,
-    identifierStrategy: IdentifierStrategy, accessChecker: AccessChecker) {
+  public constructor(
+    aclStrategy: AuxiliaryIdentifierStrategy,
+    resourceSet: ResourceSet,
+    aclStore: ResourceStore,
+    identifierStrategy: IdentifierStrategy,
+    accessChecker: AccessChecker,
+  ) {
     super();
     this.aclStrategy = aclStrategy;
     this.resourceSet = resourceSet;
@@ -58,7 +63,6 @@ export class WebAclReader extends PermissionReader {
   /**
    * Checks if an agent is allowed to execute the requested actions.
    * Will throw an error if this is not the case.
-   * @param input - Relevant data needed to check if access can be granted.
    */
   public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
     // Determine the required access modes
