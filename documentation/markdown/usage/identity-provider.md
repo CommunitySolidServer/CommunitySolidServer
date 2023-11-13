@@ -106,7 +106,7 @@ In case you want users to be able to reset their password when they forget it,
 you will need to tell the server which email server to use to send reset mails.
 `example.json` contains an example of what this looks like.
 When using this import, you can override the values with those of your own mail client
-by adding the following to your Components.js configuration with updated values:
+by adding the following to your `Components.js` configuration with updated values:
 
 ```json
 {
@@ -129,7 +129,7 @@ by adding the following to your Components.js configuration with updated values:
 ### handler
 
 Here you determine which features of account management are available.
-`default.json` allows everything, `disabled.json` completely disabled account management,
+`default.json` allows everything, `disabled.json` completely disables account management,
 and the other options disable account and/or pod creation.
 
 ### pod
