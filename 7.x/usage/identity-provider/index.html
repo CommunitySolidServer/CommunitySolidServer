@@ -701,13 +701,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#interaction" class="md-nav__link">
-    interaction
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#pod" class="md-nav__link">
     pod
   </a>
@@ -1634,13 +1627,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#interaction" class="md-nav__link">
-    interaction
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#pod" class="md-nav__link">
     pod
   </a>
@@ -1684,7 +1670,7 @@
 <h1 id="identity-provider">Identity Provider<a class="headerlink" href="#identity-provider" title="Permanent link">&para;</a></h1>
 <p>Besides implementing the <a href="https://solidproject.org/TR/protocol">Solid protocol</a>,
 the community server can also be an Identity Provider (IDP), officially known as an OpenID Provider (OP),
-following the <a href="https://solid.github.io/solid-oidc/">Solid OIDC spec</a> as much as possible.</p>
+following the <a href="https://solid.github.io/solid-oidc/">Solid-OIDC specification</a> as much as possible.</p>
 <p>It is recommended to use the latest version
 of the <a href="https://github.com/inrupt/solid-client-authn-js">Solid authentication client</a>
 to interact with the server.</p>
@@ -1750,26 +1736,39 @@ Below we go a bit deeper into the available options</p>
 <p>The <code>access</code> option allows you to set authorization restrictions on the IDP API when enabled,
 similar to how authorization works on the LDP requests on the server.
 For example, if the server uses WebACL as authorization scheme,
-you can put a <code>.acl</code> resource in the <code>/idp/register/</code> container to restrict
-who is allowed to access the registration API.
-Note that for everything to work there needs to be a <code>.acl</code> resource in <code>/idp/</code> when using WebACL
+you can put a <code>.acl</code> resource in the <code>/.account/account/</code> container to restrict
+who is allowed to access the account creation API.
+Note that for everything to work there needs to be a <code>.acl</code> resource in <code>/.account/</code> when using WebACL
 so resources can be accessed as usual when the server starts up.
-Make sure you change the permissions on <code>/idp/.acl</code> so not everyone can modify those.</p>
+Make sure you change the permissions on <code>/.account/.acl</code> so not everyone can modify those.</p>
 <p>All of the above is only relevant if you use the <code>restricted.json</code> setting for this import.
 When you use <code>public.json</code> the API will simply always be accessible by everyone.</p>
 <h3 id="email">email<a class="headerlink" href="#email" title="Permanent link">&para;</a></h3>
 <p>In case you want users to be able to reset their password when they forget it,
 you will need to tell the server which email server to use to send reset mails.
-<code>example.json</code> contains an example of what this looks like,
-which you will need to copy over to your base configuration and then remove the <code>config/identity/email</code> import.</p>
+<code>example.json</code> contains an example of what this looks like.
+When using this import, you can override the values with those of your own mail client
+by adding the following to your <code>Components.js</code> configuration with updated values:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The settings of your email server.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Override&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;overrideInstance&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:EmailSender&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;overrideParameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BaseEmailSender&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;senderName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Community Solid Server &lt;solid@example.email&gt;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;emailConfig_host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;smtp.example.email&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;emailConfig_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">587</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;emailConfig_auth_user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;solid@example.email&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;emailConfig_auth_pass&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NYEaCsqV7aVStRCbmC&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <h3 id="handler">handler<a class="headerlink" href="#handler" title="Permanent link">&para;</a></h3>
-<p>There is only one option here. This import contains all the core components necessary to make the IDP work.
-In case you need to make some changes to core IDP settings, this is where you would have to look.</p>
-<h3 id="interaction">interaction<a class="headerlink" href="#interaction" title="Permanent link">&para;</a></h3>
 <p>Here you determine which features of account management are available.
-<code>default.json</code> allows everything, while <code>no-accounts.json</code> and <code>no-pods.json</code>
-disable account and pod creation respectively.
-Taking one of those latter options will disable the relevant JSON APIs and HTML pages.</p>
+<code>default.json</code> allows everything, <code>disabled.json</code> completely disables account management,
+and the other options disable account and/or pod creation.</p>
 <h3 id="pod">pod<a class="headerlink" href="#pod" title="Permanent link">&para;</a></h3>
 <p>The <code>pod</code> options determines how pods are created. <code>static.json</code> is the expected pod behaviour as described above.
 <code>dynamic.json</code> is an experimental feature that allows users
