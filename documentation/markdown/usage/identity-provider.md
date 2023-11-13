@@ -2,7 +2,7 @@
 
 Besides implementing the [Solid protocol](https://solidproject.org/TR/protocol),
 the community server can also be an Identity Provider (IDP), officially known as an OpenID Provider (OP),
-following the [Solid OIDC spec](https://solid.github.io/solid-oidc/) as much as possible.
+following the [Solid-OIDC specification](https://solid.github.io/solid-oidc/) as much as possible.
 
 It is recommended to use the latest version
 of the [Solid authentication client](https://github.com/inrupt/solid-client-authn-js)
@@ -91,11 +91,11 @@ Below we go a bit deeper into the available options
 The `access` option allows you to set authorization restrictions on the IDP API when enabled,
 similar to how authorization works on the LDP requests on the server.
 For example, if the server uses WebACL as authorization scheme,
-you can put a `.acl` resource in the `/idp/register/` container to restrict
-who is allowed to access the registration API.
-Note that for everything to work there needs to be a `.acl` resource in `/idp/` when using WebACL
+you can put a `.acl` resource in the `/.account/account/` container to restrict
+who is allowed to access the account creation API.
+Note that for everything to work there needs to be a `.acl` resource in `/.account/` when using WebACL
 so resources can be accessed as usual when the server starts up.
-Make sure you change the permissions on `/idp/.acl` so not everyone can modify those.
+Make sure you change the permissions on `/.account/.acl` so not everyone can modify those.
 
 All of the above is only relevant if you use the `restricted.json` setting for this import.
 When you use `public.json` the API will simply always be accessible by everyone.
@@ -104,20 +104,33 @@ When you use `public.json` the API will simply always be accessible by everyone.
 
 In case you want users to be able to reset their password when they forget it,
 you will need to tell the server which email server to use to send reset mails.
-`example.json` contains an example of what this looks like,
-which you will need to copy over to your base configuration and then remove the `config/identity/email` import.
+`example.json` contains an example of what this looks like.
+When using this import, you can override the values with those of your own mail client
+by adding the following to your `Components.js` configuration with updated values:
+
+```json
+{
+  "comment": "The settings of your email server.",
+  "@type": "Override",
+  "overrideInstance": {
+    "@id": "urn:solid-server:default:EmailSender"
+  },
+  "overrideParameters": {
+    "@type": "BaseEmailSender",
+    "senderName": "Community Solid Server <solid@example.email>",
+    "emailConfig_host": "smtp.example.email",
+    "emailConfig_port": 587,
+    "emailConfig_auth_user": "solid@example.email",
+    "emailConfig_auth_pass": "NYEaCsqV7aVStRCbmC"
+  }
+}
+```
 
 ### handler
 
-There is only one option here. This import contains all the core components necessary to make the IDP work.
-In case you need to make some changes to core IDP settings, this is where you would have to look.
-
-### interaction
-
 Here you determine which features of account management are available.
-`default.json` allows everything, while `no-accounts.json` and `no-pods.json`
-disable account and pod creation respectively.
-Taking one of those latter options will disable the relevant JSON APIs and HTML pages.
+`default.json` allows everything, `disabled.json` completely disables account management,
+and the other options disable account and/or pod creation.
 
 ### pod
 
