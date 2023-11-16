@@ -22,6 +22,17 @@ Used by certain classes for internal storage.
 * *memory*: Store everything in memory.
 * *resource-store*: Store everything in a specific container in the resource store.
 
+## Location
+
+Tells the server where it can find the storage root(s).
+Solid does not allow storage roots to be nested,
+so usually you either have 1 storage root at the server with no pods,
+or multiple storage roots at pod level with an inaccessible server root.
+
+* *pod*: Indicates that the root storages are at pod level.
+         In case subdomains are used for pods, this will also include the actual server root.
+* *root*: There is only 1 storage root, and it is the same as the server root.
+
 ## Middleware
 
 The chain of utility ResourceStores that needs to be passed through before reaching the backend stores.

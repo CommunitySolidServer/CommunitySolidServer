@@ -36,7 +36,8 @@ export class StorageDescriptionAdvertiser extends MetadataWriter {
       storageRoot = await this.storageStrategy.getStorageIdentifier(identifier);
       this.logger.debug(`Found storage root ${storageRoot.path}`);
     } catch (error: unknown) {
-      this.logger.error(`Unable to find storage root: ${createErrorMessage(error)}`);
+      this.logger.error(`Unable to find storage root: ${createErrorMessage(error)
+      }. The storage/location import in the server configuration is probably wrong.`);
       return;
     }
     const storageDescription = joinUrl(storageRoot.path, this.relativePath);
