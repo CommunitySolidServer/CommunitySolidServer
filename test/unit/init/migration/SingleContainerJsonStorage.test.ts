@@ -19,6 +19,7 @@ describe('A SingleContainerJsonStorage', (): void => {
         if (isContainerIdentifier(id)) {
           const metadata = new RepresentationMetadata(id);
           metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/foo');
+          metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/bad');
           metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/bar/');
           metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/baz');
           metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/unknown');
@@ -27,14 +28,17 @@ describe('A SingleContainerJsonStorage', (): void => {
         if (id.path.endsWith('unknown')) {
           throw new NotFoundHttpError();
         }
-        return new BasicRepresentation(`{ "id": "${id.path}" }`, 'text/plain');
+        if (id.path.endsWith('bad')) {
+          return new BasicRepresentation(`invalid JSON`, 'application/json');
+        }
+        return new BasicRepresentation(`{ "id": "${id.path}" }`, 'application/json');
       }),
     } satisfies Partial<ResourceStore> as any;
 
     storage = new SingleContainerJsonStorage(store, baseUrl, container);
   });
 
-  it('only iterates over the documents in the base container.', async(): Promise<void> => {
+  it('only iterates over the valid documents in the base container.', async(): Promise<void> => {
     const entries = [];
     for await (const entry of storage.entries()) {
       entries.push(entry);
@@ -43,7 +47,7 @@ describe('A SingleContainerJsonStorage', (): void => {
       [ 'foo', { id: 'http://example.com/.internal/accounts/foo' }],
       [ 'baz', { id: 'http://example.com/.internal/accounts/baz' }],
     ]);
-    expect(store.getRepresentation).toHaveBeenCalledTimes(4);
+    expect(store.getRepresentation).toHaveBeenCalledTimes(5);
     expect(store.getRepresentation).toHaveBeenNthCalledWith(
       1,
       { path: 'http://example.com/.internal/accounts/' },
@@ -56,11 +60,16 @@ describe('A SingleContainerJsonStorage', (): void => {
     );
     expect(store.getRepresentation).toHaveBeenNthCalledWith(
       3,
-      { path: 'http://example.com/.internal/accounts/baz' },
+      { path: 'http://example.com/.internal/accounts/bad' },
       { type: { 'application/json': 1 }},
     );
     expect(store.getRepresentation).toHaveBeenNthCalledWith(
       4,
+      { path: 'http://example.com/.internal/accounts/baz' },
+      { type: { 'application/json': 1 }},
+    );
+    expect(store.getRepresentation).toHaveBeenNthCalledWith(
+      5,
       { path: 'http://example.com/.internal/accounts/unknown' },
       { type: { 'application/json': 1 }},
     );

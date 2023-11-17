@@ -63,6 +63,8 @@ describe('A server migrating from v6', (): void => {
     // Setup resources should have been migrated
     const setupDir = await readdir(joinFilePath(rootFilePath, '.internal/setup/'));
     expect(setupDir).toEqual([
+      // Invalid JSON file was not deleted, only error was logged. Just in case its data needs to be saved.
+      'aW52YWxpZFJlc291cmNl$.json',
       'current-base-url$.json',
       'current-server-version$.json',
       'setupCompleted-2.0$.json',
