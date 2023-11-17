@@ -1,5 +1,6 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { JsonResourceStorage } from '../../storage/keyvalue/JsonResourceStorage';
+import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { isContainerIdentifier } from '../../util/PathUtil';
 import { readableToString } from '../../util/StreamUtil';
 import { LDP } from '../../util/Vocabularies';
@@ -34,9 +35,14 @@ export class SingleContainerJsonStorage<T> extends JsonResourceStorage<T> {
         continue;
       }
 
-      const json = JSON.parse(await readableToString(document.data)) as T;
       const key = this.identifierToKey(documentId);
-      yield [ key, json ];
+      try {
+        const json = JSON.parse(await readableToString(document.data)) as T;
+        yield [ key, json ];
+      } catch (error: unknown) {
+        this.logger.error(`Unable to parse ${path}. You should probably delete this resource manually. Error: ${
+          createErrorMessage(error)}`);
+      }
     }
   }
 }
