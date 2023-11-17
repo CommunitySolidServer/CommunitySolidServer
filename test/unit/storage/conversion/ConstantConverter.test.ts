@@ -1,11 +1,13 @@
 import fs from 'node:fs';
+import fsExtra from 'fs-extra';
 import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ConstantConverterOptions } from '../../../../src/storage/conversion/ConstantConverter';
 import { ConstantConverter } from '../../../../src/storage/conversion/ConstantConverter';
-import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE, POSIX } from '../../../../src/util/Vocabularies';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream').mockReturnValue('file contents' as any);
+const stat = jest.spyOn(fsExtra, 'stat').mockReturnValue({ size: 100 } as any);
 
 describe('A ConstantConverter', (): void => {
   const identifier = { path: 'identifier' };
@@ -13,6 +15,7 @@ describe('A ConstantConverter', (): void => {
   let converter: ConstantConverter;
 
   beforeEach(async(): Promise<void> => {
+    jest.clearAllMocks();
     options = { container: true, document: true, minQuality: 1, enabledMediaRanges: [ '*/*' ], disabledMediaRanges: []};
     converter = new ConstantConverter('abc/def/index.html', 'text/html', options);
   });
@@ -99,7 +102,7 @@ describe('A ConstantConverter', (): void => {
     await expect(converter.canHandle(args)).resolves.toBeUndefined();
   });
 
-  it('replaces the representation of a supported request.', async(): Promise<void> => {
+  it('replaces the representation of a supported request and replaces the size.', async(): Promise<void> => {
     const preferences = { type: { 'text/html': 1 }};
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
     const representation = { metadata, data: { destroy: jest.fn() }} as any;
@@ -114,7 +117,26 @@ describe('A ConstantConverter', (): void => {
     expect(createReadStream).toHaveBeenCalledWith('abc/def/index.html', 'utf8');
 
     expect(converted.metadata.contentType).toBe('text/html');
+    expect(converted.metadata.get(POSIX.terms.size)?.value).toBe('100');
     await expect(arrayifyStream(converted.data)).resolves.toEqual([ 'file contents' ]);
+  });
+
+  it('throws an internal error if the file cannot be accessed.', async(): Promise<void> => {
+    const preferences = { type: { 'text/html': 1 }};
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
+    const representation = { metadata, data: { destroy: jest.fn() }} as any;
+    const args = { identifier, representation, preferences };
+
+    await expect(converter.canHandle(args)).resolves.toBeUndefined();
+
+    // eslint-disable-next-line ts/no-misused-promises
+    stat.mockImplementation(async(): Promise<never> => {
+      throw new Error('file not found');
+    });
+
+    await expect(converter.handle(args)).rejects.toThrow('Unable to access file used for constant conversion.');
+    expect(representation.data.destroy).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledTimes(0);
   });
 
   it('defaults to the most permissive options.', async(): Promise<void> => {
