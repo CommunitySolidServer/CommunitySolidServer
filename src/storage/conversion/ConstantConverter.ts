@@ -1,8 +1,15 @@
+import type { Stats } from 'node:fs';
 import { createReadStream } from 'node:fs';
+import { stat } from 'fs-extra';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
+import { getLoggerFor } from '../../logging/LogUtil';
+import { createErrorMessage } from '../../util/errors/ErrorUtil';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { isContainerIdentifier } from '../../util/PathUtil';
+import { toLiteral } from '../../util/TermUtil';
+import { POSIX, XSD } from '../../util/Vocabularies';
 import { cleanPreferences, getTypeWeight, matchesMediaType } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -46,6 +53,8 @@ export interface ConstantConverterOptions {
  * Options default to the most permissive values when not defined.
  */
 export class ConstantConverter extends RepresentationConverter {
+  private readonly logger = getLoggerFor(this);
+
   private readonly filePath: string;
   private readonly contentType: string;
   private readonly options: Required<ConstantConverterOptions>;
@@ -113,8 +122,19 @@ export class ConstantConverter extends RepresentationConverter {
     // Ignore the original representation
     representation.data.destroy();
 
+    // Get the stats to have the correct size metadata
+    let stats: Stats;
+    try {
+      stats = await stat(this.filePath);
+    } catch (error: unknown) {
+      this.logger.error(`Unable to access ${this.filePath}: ${createErrorMessage(error)}`);
+      // Not giving out details in error as it contains internal server information
+      throw new InternalServerError(`Unable to access file used for constant conversion.`);
+    }
+
     // Create a new representation from the constant file
     const data = createReadStream(this.filePath, 'utf8');
+    representation.metadata.set(POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
     return new BasicRepresentation(data, representation.metadata, this.contentType);
   }
 }
