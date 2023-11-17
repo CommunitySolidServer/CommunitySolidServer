@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { JsonResourceStorage } from '../../../../src/storage/keyvalue/JsonResourceStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
-import { isContainerIdentifier } from '../../../../src/util/PathUtil';
+import { isContainerIdentifier, joinUrl } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { LDP } from '../../../../src/util/Vocabularies';
 
@@ -111,6 +111,9 @@ describe('A JsonResourceStorage', (): void => {
     // Need to manually insert the containers as they don't get created by the dummy store above
     data.set(containerIdentifier, '');
     data.set(subContainerIdentifier, '');
+
+    // Manually setting invalid data which will be ignored
+    data.set(joinUrl(containerIdentifier, 'badData'), 'invalid JSON');
 
     const entries = [];
     for await (const entry of storage.entries()) {
