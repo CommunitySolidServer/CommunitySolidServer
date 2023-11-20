@@ -16,28 +16,28 @@ you can use the [configuration generator](https://communitysolidserver.github.io
 Clients are identified based on the contents of DPoP tokens,
 as described in the [Solid-OIDC specification](https://solidproject.org/TR/oidc).
 
-Alternatively, for debugging purposes the server can be configured to always identify the client as a fixed WebID,
+For debugging purposes the server can be configured to always identify the client as a fixed WebID,
 or to allow the WebID to be set directly in the `Authorization` header.
 These can be configured by changing the `ldp/authentication` import in your configuration.
 
 ## Authorization
 
-Two different authorization are supported for determining who has access to resources:
+Two authorization mechanisms are implemented for determining who has access to resources:
 
 * [Web Access Control](https://solidproject.org/TR/wac)
 * [Access Control Policy](https://solidproject.org/TR/acp)
 
-Or the server can be configured to not have any kind of authorization and allow full access to all resources.
+Alternatively, the server can be configured to not have any kind of authorization and allow full access to all resources.
 
 ## Solid Protocol
 
 The [Solid Protocol](https://solidproject.org/TR/protocol) is supported, although it can be disabled if requested.
 
-Requests to the server support content negotiation for most of the commonly used RDF formats.
+Requests to the server support content negotiation for common RDF formats.
 
 Binary [range headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range) are supported.
 
-[ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) and Last-Modified headers are supported.
+[`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) and `Last-Modified` headers are supported.
 These can be used for [conditional requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Conditional_requests).
 
 `PATCH` requests targeting RDF resources can be made with N3 Patch or SPARQL Update bodies.
@@ -51,13 +51,13 @@ Multiple worker threads can be used when starting the server.
 ## Account management
 
 Accounts can be created on the server with which users can perform the following actions,
-either through an API or HTML pages:
+through either a JSON or an HTML API:
 
 * Add email/password combinations which can be used to log in.
 * Create pods, which are containers on the server over which the user has full control.
 * Link WebIDs to the account. When using [Solid-OIDC](https://solidproject.org/TR/oidc),
-  the user can use any of these to identify as.
-  For external WebIDs the server requires the user to add a triple as identification,
+  the user can identify as any of these.
+  For external WebIDs, the server requires the user to add a triple as identification,
   but this can be disabled if needed.
 * Create client credentials, which can be used to authenticate without using the browser.
   More information on these can be found [here](../usage/client-credentials.md).
@@ -71,9 +71,9 @@ to support [Solid-OIDC](https://solidproject.org/TR/oidc) authentication.
 
 The server keeps track of the pod owners,
 which is a list of WebIDs which have full control access over all resources contained within.
-Owners can be added and removed from a pod
+Owners can be added to and removed from a pod.
 
-Pod URLs can be minted in two different formats:
+Pod URLs can be minted as either
 subdomain, `http://pod.example.com/`, or suffix, `http://example.com/pod/`.
 
 When starting the server, a configuration file can be provided
