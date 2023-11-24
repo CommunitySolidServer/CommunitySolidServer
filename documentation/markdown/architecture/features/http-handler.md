@@ -76,7 +76,7 @@ The `urn:solid-server:default:AuthResourceHttpHandler` is identical
 to the `urn:solid-server:default:LdpHandler` which will be discussed below,
 but only handles resources relevant for authorization.
 
-In practice this means that is your server is configured
+In practice this means that if your server is configured
 to use [Web Access Control](https://solidproject.org/TR/wac) for authorization,
 this handler will catch all requests targeting `.acl` resources.
 
