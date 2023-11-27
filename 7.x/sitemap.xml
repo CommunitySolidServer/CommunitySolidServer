@@ -6,6 +6,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/features/</loc>
+         <lastmod>2023-11-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/core/</loc>
          <lastmod>2023-11-27</lastmod>
          <changefreq>daily</changefreq>
