@@ -26,6 +26,13 @@ Below is an example of how to call the API to generate such a token.
 The code below generates a token linked to your account and WebID.
 This only needs to be done once, afterwards this token can be used for all future requests.
 
+Before doing the step below,
+you already need to have an [authorization value](account/json-api.md#authorization)
+that you get after logging in to your account.
+In the example below the cookie value is used.
+In the default server configurations,
+you can log in through the [email/password API](account/json-api.md#controlspasswordlogin).
+
 ```ts
 // This assumes your server is started under http://localhost:3000/.
 // It also assumes you have already logged in and `cookie` contains a valid cookie header
