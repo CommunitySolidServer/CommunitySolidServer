@@ -2,152 +2,152 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/features/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/core/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/dependency-injection/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/overview/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/cli/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/http-handler/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/initialization/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/notifications/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/accounts/controls/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/accounts/overview/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/accounts/routes/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/protocol/authorization/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/protocol/overview/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/protocol/parsing/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/protocol/patching/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/protocol/resource-store/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/contributing/making-changes/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/contributing/release/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/client-credentials/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/dev-configuration/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/example-requests/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/identity-provider/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/metadata/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/notifications/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/seeding-pods/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/starting-server/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/account/json-api/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/account/login-method/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/account/migration/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-11-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
