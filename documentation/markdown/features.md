@@ -62,9 +62,9 @@ through either a **JSON** or an **HTML** API:
   For external WebIDs, the server requires the user to add a triple as identification,
   but this can be disabled if needed.
 * Create **client credentials**, which can be used to authenticate without using the browser.
-  More information on these can be found [here](../usage/client-credentials.md).
+  More information on these can be found [here](usage/client-credentials.md).
 * It is possible to use Solid-OIDC to limit access to certain parts of the account API.
-  More information on this can be found [here](../usage/identity-provider.md#access).
+  More information on this can be found [here](usage/identity-provider.md#access).
 
 Using these accounts, the server can generate tokens
 to support **[Solid-OIDC](https://solidproject.org/TR/oidc)** authentication.
@@ -80,7 +80,7 @@ Pod URLs can be minted as either
 
 When starting the server, a configuration file can be provided
 to immediately create one or more accounts on the server with their own pods.
-See the [documentation](../usage/seeding-pods.md) for more information.
+See the [documentation](usage/seeding-pods.md) for more information.
 
 ## Notifications
 
@@ -89,4 +89,4 @@ Specifically it supports the Notification Types
 [WebSocketChannel2023](https://solid.github.io/notifications/websocket-channel-2023)
 and [WebhookChannel2023](https://solid.github.io/notifications/webhook-channel-2023).
 
-More documentation on notifications can be found [here](../usage/notifications.md).
+More documentation on notifications can be found [here](usage/notifications.md).
