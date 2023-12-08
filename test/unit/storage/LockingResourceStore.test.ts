@@ -33,7 +33,7 @@ describe('A LockingResourceStore', (): void => {
     }
 
     const readable = guardedStreamFrom([ 1, 2, 3 ]);
-    const { destroy } = readable;
+    const destroy = readable.destroy.bind(readable);
     jest.spyOn(readable, 'destroy').mockImplementation((error): any => destroy.call(readable, error));
     source = {
       getRepresentation: jest.fn((): any => addOrder('getRepresentation', { data: readable } as Representation)),

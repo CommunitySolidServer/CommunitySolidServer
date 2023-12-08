@@ -61,6 +61,8 @@ module.exports = {
     'style/block-spacing': 'off',
     'style/brace-style': [ 'error', '1tbs', { allowSingleLine: false }],
     'style/generator-star-spacing': [ 'error', { before: false, after: true }],
+    // Seems to be inconsistent in when it adds indentation and when it does not
+    'style/indent-binary-ops': 'off',
     'style/member-delimiter-style': [ 'error', {
       multiline: { delimiter: 'semi', requireLast: true },
       singleline: { delimiter: 'semi', requireLast: false },

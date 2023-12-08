@@ -310,6 +310,7 @@ describe('An IdentityProviderFactory', (): void => {
     expect(use).toHaveBeenCalledTimes(1);
     const middleware = use.mock.calls[0][0];
 
+    // eslint-disable-next-line jest/unbound-method
     const oldAccept = ctx.accepts;
     const next = jest.fn();
     await expect(middleware(ctx, next)).resolves.toBeUndefined();
@@ -325,6 +326,7 @@ describe('An IdentityProviderFactory', (): void => {
     expect(use).toHaveBeenCalledTimes(1);
     const middleware = use.mock.calls[0][0];
 
+    // eslint-disable-next-line jest/unbound-method
     const oldAccept = ctx.accepts;
     const next = jest.fn();
     await expect(middleware(ctx, next)).resolves.toBeUndefined();
