@@ -819,7 +819,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const auxResourceID = { path: `${root}resource.dummy` };
       accessor.data[resourceID.path] = representation;
       accessor.data[auxResourceID.path] = representation;
-      const deleteFn = accessor.deleteResource;
+      const deleteFn = accessor.deleteResource.bind(accessor);
       jest.spyOn(accessor, 'deleteResource')
         .mockImplementation(async(identifier: ResourceIdentifier): Promise<void> => {
           if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
@@ -862,6 +862,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('should rethrow any unexpected errors from validateIdentifier.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
+      // eslint-disable-next-line jest/unbound-method
       const originalMetaData = accessor.getMetadata;
       jest.spyOn(accessor, 'getMetadata').mockImplementation(async(): Promise<any> => {
         throw new Error('error');

@@ -22,8 +22,8 @@ describe('A ClusterManager', (): void => {
   beforeAll((): void => {
     Object.assign(mockCluster, {
       fork: jest.fn().mockImplementation((): any => mockWorker),
-      on: jest.fn().mockImplementation(emitter.on),
-      emit: jest.fn().mockImplementation(emitter.emit),
+      on: jest.fn().mockImplementation(emitter.on.bind(emitter)),
+      emit: jest.fn().mockImplementation(emitter.emit.bind(emitter)),
       isMaster: true,
       isWorker: false,
     });

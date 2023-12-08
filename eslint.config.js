@@ -1,10 +1,18 @@
-const antfu = require('@antfu/eslint-config').default;
+const antfu = require('@antfu/eslint-config');
 const generalConfig = require('./eslint/general');
 const testConfig = require('./eslint/test');
 const typedConfig = require('./eslint/typed');
 const unicornConfig = require('./eslint/unicorn');
 
-const configs = antfu(
+// The default ignore list contains all `output` folders, which conflicts with our src/http/output folder
+// See https://github.com/antfu/eslint-config/blob/7071af7024335aad319a91db41ce594ebc6a0899/src/globs.ts#L55
+const index = antfu.GLOB_EXCLUDE.indexOf('**/output');
+if (index < 0) {
+  throw new Error('Could not update GLOB_EXCLUDE. Check if antfu changed how it handles ignores.');
+}
+antfu.GLOB_EXCLUDE.splice(index, 1);
+
+module.exports = antfu.default(
   {
     // Don't want to lint test assets, or TS snippets in markdown files
     ignores: [ 'test/assets/*', '**/*.md/**/*.ts' ],
@@ -35,12 +43,3 @@ const configs = antfu(
     },
   },
 );
-
-// The default ignore list contains all `output` folders, which conflicts with our src/http/output folder
-// See https://github.com/antfu/eslint-config/blob/29f29f1e16d0187f5c870102f910d798acd9b874/src/globs.ts#L53
-if (!configs[1].ignores.includes('**/output')) {
-  throw new Error('Unexpected data in config position. Check if antfu changed how it handles ignores.');
-}
-delete configs[1].ignores;
-
-module.exports = configs;
