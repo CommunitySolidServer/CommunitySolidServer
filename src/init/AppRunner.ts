@@ -36,13 +36,17 @@ const ENV_VAR_PREFIX = 'CSS';
 export interface AppRunnerInput {
   /**
    * Properties that will be used when building the Components.js manager.
-   * Sets `typeChecking` to false by default as the server components will result in errors otherwise.
+   * Default values:
+   *  - `typeChecking`: `false`, as the server components would otherwise error.
+   *  - `mainModulePath`: `@css:`, which resolves to the directory of the CSS package.
+   *                      This is useful for packages that depend on the CSS
+   *                      but do not create any new modules themselves.
    */
-  loaderProperties: IComponentsManagerBuilderOptions<App>;
+  loaderProperties?: Partial<IComponentsManagerBuilderOptions<App>>;
   /**
-   * Path to the server config file(s).
+   * Path to the server config file(s). Defaults to `@css:config/default.json`.
    */
-  config: string | string[];
+  config?: string | string[];
   /**
    * Values to apply to the Components.js variables.
    * These are the variables CLI values will be converted to.
@@ -87,14 +91,19 @@ export class AppRunner {
    *
    * @param input - All values necessary to configure the server.
    */
-  public async create(input: AppRunnerInput): Promise<App> {
+  public async create(input: AppRunnerInput = {}): Promise<App> {
     const loaderProperties = {
       typeChecking: false,
+      mainModulePath: '@css:',
+      dumpErrorState: false,
       ...input.loaderProperties,
     };
+    // Expand mainModulePath as needed
+    loaderProperties.mainModulePath = resolveAssetPath(loaderProperties.mainModulePath);
 
-    // Potentially expand file paths as needed
-    const configs = (Array.isArray(input.config) ? input.config : [ input.config ]).map(resolveAssetPath);
+    // Potentially expand config paths as needed
+    let configs = input.config ?? [ '@css:config/default.json' ];
+    configs = (Array.isArray(configs) ? configs : [ configs ]).map(resolveAssetPath);
 
     let componentsManager: ComponentsManager<any>;
     try {
@@ -178,8 +187,8 @@ export class AppRunner {
 
     const params = await yargv.parse();
 
-    const loaderProperties: IComponentsManagerBuilderOptions<App> = {
-      mainModulePath: resolveAssetPath(params.mainModulePath),
+    const loaderProperties: AppRunnerInput['loaderProperties'] = {
+      mainModulePath: params.mainModulePath,
       logLevel: params.loggingLevel,
     };
 
