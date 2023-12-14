@@ -206,6 +206,30 @@ describe('AppRunner', (): void => {
       expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
     });
 
+    it('has several defaults.', async(): Promise<void> => {
+      const createdApp = await new AppRunner().create();
+      expect(createdApp).toBe(app);
+
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+      expect(ComponentsManager.build).toHaveBeenCalledWith({
+        mainModulePath: joinFilePath(__dirname, '../../../'),
+        typeChecking: false,
+        dumpErrorState: false,
+      });
+      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+      expect(manager.configRegistry.register)
+        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
+      expect(manager.instantiate).toHaveBeenCalledTimes(2);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(manager.instantiate)
+        .toHaveBeenNthCalledWith(2, 'urn:solid-server:default:App', { variables: {}});
+      expect(shorthandResolver.handleSafe).toHaveBeenCalledTimes(1);
+      expect(shorthandResolver.handleSafe).toHaveBeenLastCalledWith({});
+      expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(0);
+      expect(app.start).toHaveBeenCalledTimes(0);
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
+    });
+
     it('throws an error if threading issues are detected with 1 class.', async(): Promise<void> => {
       listSingleThreadedComponentsMock.mockImplementationOnce((): string[] => [ 'ViolatingClass' ]);
       const variables = {
@@ -344,6 +368,7 @@ describe('AppRunner', (): void => {
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
+        dumpErrorState: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
@@ -375,6 +400,7 @@ describe('AppRunner', (): void => {
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
+        dumpErrorState: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(2);
       expect(manager.configRegistry.register).toHaveBeenNthCalledWith(1, '/var/cwd/config1.json');
@@ -419,6 +445,7 @@ describe('AppRunner', (): void => {
         logLevel: 'debug',
         mainModulePath: '/var/cwd/module/path',
         typeChecking: false,
+        dumpErrorState: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
@@ -569,6 +596,7 @@ describe('AppRunner', (): void => {
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
+        dumpErrorState: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
@@ -600,6 +628,7 @@ describe('AppRunner', (): void => {
         logLevel: 'debug',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
+        dumpErrorState: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
@@ -760,6 +789,7 @@ describe('AppRunner', (): void => {
         logLevel: 'info',
         mainModulePath: joinFilePath(__dirname, '../../../'),
         typeChecking: false,
+        dumpErrorState: false,
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
