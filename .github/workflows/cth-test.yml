@@ -78,13 +78,13 @@ jobs:
           branch-name: ${{ inputs.branch || github.head_ref }}
       - name: Save the reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.sanitize.outputs.sanitized-branch-name }} reports
           path: reports
       - name: Save the server output
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.sanitize.outputs.sanitized-branch-name }} server output
           path: server-output.log
