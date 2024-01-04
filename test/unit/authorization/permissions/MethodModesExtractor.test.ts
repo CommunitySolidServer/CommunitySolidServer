@@ -58,11 +58,11 @@ describe('A MethodModesExtractor', (): void => {
     compareMaps(await extractor.handle({ ...operation, method: 'PUT' }), getMap([ AccessMode.write ]));
   });
 
-  it('requires create for PUT operations if the target does not exist.', async(): Promise<void> => {
+  it('requires append/create for PUT operations if the target does not exist.', async(): Promise<void> => {
     resourceSet.hasResource.mockResolvedValueOnce(false);
     compareMaps(
       await extractor.handle({ ...operation, method: 'PUT' }),
-      getMap([ AccessMode.write, AccessMode.create ]),
+      getMap([ AccessMode.append, AccessMode.create ]),
     );
   });
 
