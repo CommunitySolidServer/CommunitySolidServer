@@ -3,6 +3,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.1...v7.0.2) (2023-11-20)
+
+### Features
+
+* Add index signature to Credentials ([86f4592](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/86f45923ba6cc696615a98a5fbc8f13a525e4745))
+* Pass requestedModes metadata on 401 ([58daeb6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/58daeb684f6e84fa0950d0ea5d9827881ba136c2))
+
+### Fixes
+
+* Add query parameter to static resources ([5f85441](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5f85441b6e23a2bd2b3e1f3ef116a4868d5f9614))
+* Update resource size in ConstantConverter ([6c30a25](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6c30a2512bd30bf52deb4526d13416016004646f))
+* Prevent errors in JSON storage when data is invalid ([4318479](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/43184791545bbf6fe8a840de07616fca8f3b7f97))
+* Prevent errors during migration for invalid JSON ([2f928bd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2f928bd2d4c8d4385bca4554ad0ed19cc5aaa770))
+* Disable submit buttons until form data is loaded ([1597a5a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1597a5a5782ca5b574c42ab3bab3d01de89ccf02))
+* Undo util.js errors introduced when changing lint settings ([261c3d0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/261c3d05a6b446442f2ca5a4a0803363d1cb9021))
+
+### Chores
+
+* Update to TypeScript 5.2.2 ([edbf895](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/edbf895505d625d59404b82807616eebca757040))
+* Fix Dockerfile to Node v18 to prevent build issues ([9cc4a9c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9cc4a9ce4d786e76c54d126754271eb2ec1355a5))
+
+### Documentation
+
+* Explain storage/location import options ([01623e0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/01623e0b5c58d77add4ab3e2a1a9082897ad5948))
+* Fix outdated information in IDP documentation ([#1773](https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1773)) ([15a929a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/15a929a87e4ce00c0ed266e296405c8e4a22d4a7))
+* Explain the patching store in-depth ([4d05fe4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4d05fe4315e282d6e1ec19af01b185cb21cab29c))
+
+### Refactors
+
+* Replace linting configurations ([6248ed0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6248ed093813e95255f031eb8fcc37e4d869235c))
+
 ## [7.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.0...v7.0.1) (2023-10-20)
 
 ### Fixes

@@ -77,6 +77,8 @@ extra:
 nav:
   - Welcome:
       - README.md
+  - Features:
+      - features.md
   - Usage:
       - Example request: usage/example-requests.md
       - Metadata: usage/metadata.md

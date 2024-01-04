@@ -2,6 +2,7 @@ import { BasicRepresentation } from '../../http/representation/BasicRepresentati
 import type { Representation } from '../../http/representation/Representation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash, isContainerIdentifier, joinUrl, trimLeadingSlashes } from '../../util/PathUtil';
 import { readableToString } from '../../util/StreamUtil';
@@ -88,8 +89,14 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
           yield* this.getResourceEntries({ path });
         }
       } else {
-        const json = JSON.parse(await readableToString(representation.data)) as T;
-        yield [ this.identifierToKey(identifier), json ];
+        try {
+          const json = JSON.parse(await readableToString(representation.data)) as T;
+          yield [ this.identifierToKey(identifier), json ];
+        } catch (error: unknown) {
+          this.logger.error(`Unable to parse ${identifier.path
+          }. You should probably delete this resource manually. Error: ${
+            createErrorMessage(error)}`);
+        }
       }
     }
   }

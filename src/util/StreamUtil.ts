@@ -144,7 +144,6 @@ export function transformSafely<T = any>(
   source: NodeJS.ReadableStream,
   {
     transform = function(data): void {
-      // eslint-disable-next-line ts/no-invalid-this
       this.push(data);
     },
     flush = (): null => null,
