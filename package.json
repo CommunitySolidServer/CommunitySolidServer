@@ -146,7 +146,7 @@
     "@antfu/eslint-config": "2.3.4",
     "@commitlint/cli": "^18.2.0",
     "@commitlint/config-conventional": "^18.0.0",
-    "@inrupt/solid-client-authn-core": "^1.17.3",
+    "@inrupt/solid-client-authn-core": "^2.0.0",
     "@inrupt/solid-client-authn-node": "^1.17.3",
     "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.5.5",
