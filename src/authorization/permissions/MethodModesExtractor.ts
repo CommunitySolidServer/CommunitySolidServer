@@ -39,11 +39,13 @@ export class MethodModesExtractor extends ModesExtractor {
     if (READ_METHODS.has(method)) {
       requiredModes.add(target, AccessMode.read);
     }
-    // Setting a resource's representation requires Write permissions
     if (method === 'PUT') {
-      requiredModes.add(target, AccessMode.write);
-      // …and, if the resource does not exist yet, Create permissions are required as well
-      if (!await this.resourceSet.hasResource(target)) {
+      if (await this.resourceSet.hasResource(target)) {
+        // Replacing a resource's representation with PUT requires Write permissions
+        requiredModes.add(target, AccessMode.write);
+      } else {
+        // ... while creating a new resource with PUT requires Append and Create permissions.
+        requiredModes.add(target, AccessMode.append);
         requiredModes.add(target, AccessMode.create);
       }
     }
