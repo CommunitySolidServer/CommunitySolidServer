@@ -51,7 +51,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
    * Creates a key to use with the token storage.
    */
   private getTokenKey(webId: string): string {
-    return `ownershipToken${webId}`;
+    return encodeURIComponent(webId);
   }
 
   /**
