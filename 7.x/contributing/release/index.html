@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#releasing-a-new-major-version" class="md-skip">
+        <a href="#releasing-a-new-version" class="md-skip">
           Skip to content
         </a>
       
@@ -1517,15 +1517,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#changes-when-doing-a-minor-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      Changes when doing a minor release
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1597,15 +1588,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#changes-when-doing-a-minor-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      Changes when doing a minor release
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1621,11 +1603,14 @@
                   
 
 
-<h1 id="releasing-a-new-major-version">Releasing a new major version<a class="headerlink" href="#releasing-a-new-major-version" title="Permanent link">&para;</a></h1>
+<h1 id="releasing-a-new-version">Releasing a new version<a class="headerlink" href="#releasing-a-new-version" title="Permanent link">&para;</a></h1>
 <p>This is only relevant if you are a developer with push access responsible for doing a new release.</p>
 <p>Steps to follow:</p>
 <ul>
+<li><strong>Major</strong> releases only:<ul>
 <li>Merge <code>main</code> into <code>versions/next-major</code>.</li>
+</ul>
+</li>
 <li>Verify if there are issues when upgrading an existing installation to the new version.<ul>
 <li>Can the data still be accessed?</li>
 <li>Does authentication still work?</li>
@@ -1633,13 +1618,16 @@
 <li>None of the above has to be blocking per se, but should be noted in the release notes if relevant.</li>
 </ul>
 </li>
+<li><strong>Major</strong> and <strong>Minor</strong> releases:<ul>
 <li>Verify that the <code>RELEASE_NOTES.md</code> are correct.</li>
-<li><code>npm run release -- -r major</code><ul>
-<li>Automatically updates Components.js references to the new version.
+</ul>
+</li>
+<li><code>npm run release -- -r major/minor/patch</code><ul>
+<li>Automatically updates Components.js references to the new version in case of a major release.
   Committed with <code>chore(release): Update configs to vx.0.0</code>.</li>
 <li>Updates the <code>package.json</code>, and generates the new entries in <code>CHANGELOG.md</code>.
-  Commits with <code>chore(release): Release version vx.0.0 of the npm package</code></li>
-<li>Optionally run <code>npx commit-and-tag-version -r major --dry-run</code> to preview the commands that will be run
+  Commits with <code>chore(release): Release version vx.y.z of the npm package</code></li>
+<li>Optionally run <code>npx commit-and-tag-version -r major/minor/patch --dry-run</code> to preview the commands that will be run
   and the changes to <code>CHANGELOG.md</code>.</li>
 </ul>
 </li>
@@ -1651,13 +1639,16 @@
 <li>The <code>postrelease</code> script will amend the release commit, create an annotated tag and push changes to origin.</li>
 </ul>
 </li>
+<li><strong>Major</strong> releases only:<ul>
 <li>Merge <code>versions/next-major</code> into <code>main</code> and push.</li>
-<li>Do a GitHub release.</li>
-<li><code>npm publish</code><ul>
-<li><code>npm dist-tag add @solid/community-server@x.0.0 next</code></li>
 </ul>
 </li>
-<li>Rename the <code>versions/x.0.0</code> branch to the next version.</li>
+<li>Do a GitHub release.</li>
+<li><code>npm publish</code></li>
+<li>If there is no <strong>pre-release</strong> of a higher version:<ul>
+<li><code>npm dist-tag add @solid/community-server@x.y.z next</code></li>
+</ul>
+</li>
 <li>Potentially upgrade dependent repositories:<ul>
 <li>Recipes at <a href="https://github.com/CommunitySolidServer/recipes/">https://github.com/CommunitySolidServer/recipes/</a></li>
 <li>Tutorials at <a href="https://github.com/CommunitySolidServer/tutorials/">https://github.com/CommunitySolidServer/tutorials/</a></li>
@@ -1671,12 +1662,6 @@
 <li>Version with <code>npm run release -- -r major --prerelease alpha</code></li>
 <li>Do not merge <code>versions/next-major</code> into <code>main</code>.</li>
 <li>Publish with <code>npm publish --tag next</code>.</li>
-<li>Do not update the branch or anything related.</li>
-</ul>
-<h2 id="changes-when-doing-a-minor-release">Changes when doing a minor release<a class="headerlink" href="#changes-when-doing-a-minor-release" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Version with <code>npm run release -- -r minor</code></li>
-<li>Do not merge <code>versions/next-major</code> into <code>main</code>.</li>
 </ul>
 
 
