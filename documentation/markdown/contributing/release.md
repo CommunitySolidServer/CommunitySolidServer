@@ -11,7 +11,7 @@ Steps to follow:
     * Does authentication still work?
     * Is there an issue upgrading any of the dependent repositories (see below for links)?
     * None of the above has to be blocking per se, but should be noted in the release notes if relevant.
-* **Major** or **Minor** releases:
+* **Major** and **Minor** releases:
     * Verify that the `RELEASE_NOTES.md` are correct.
 * `npm run release -- -r major/minor/patch`
     * Automatically updates Components.js references to the new version in case of a major release.
@@ -30,7 +30,7 @@ Steps to follow:
     * Merge `versions/next-major` into `main` and push.
 * Do a GitHub release.
 * `npm publish`
-* In case there is no **pre-release** of a higher version:
+* If there is no **pre-release** of a higher version:
     * `npm dist-tag add @solid/community-server@x.y.z next`
 * Potentially upgrade dependent repositories:
     * Recipes at <https://github.com/CommunitySolidServer/recipes/>
