@@ -83,7 +83,7 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   [ 'PUT',     'C/R', [],                     [ AM.append ],          '',     TXT, 401, 401 ],
   [ 'PUT',     'C/R', [],                     [ AM.write ],           '',     TXT, 205, 401 ],
   [ 'PUT',     'C/R', [ AM.read ],            undefined,              '',     TXT, 401, 401 ],
-  [ 'PUT',     'C/R', [ AM.append ],          undefined,              '',     TXT, 401, 401 ],
+  [ 'PUT',     'C/R', [ AM.append ],          undefined,              '',     TXT, 401, 201 ],
   [ 'PUT',     'C/R', [ AM.write ],           undefined,              '',     TXT, 205, 201 ],
   [ 'PUT',     'C/R', [ AM.append ],          [ AM.write ],           '',     TXT, 205, 201 ],
 

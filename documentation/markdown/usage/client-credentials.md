@@ -100,11 +100,10 @@ Once you have an Access token, you can use it for authenticated requests until i
 
 ```ts
 import { buildAuthenticatedFetch } from '@inrupt/solid-client-authn-core';
-import fetch from 'node-fetch';
 
 // The DPoP key needs to be the same key as the one used in the previous step.
 // The Access token is the one generated in the previous step.
-const authFetch = await buildAuthenticatedFetch(fetch, accessToken, { dpopKey });
+const authFetch = await buildAuthenticatedFetch(accessToken, { dpopKey });
 // authFetch can now be used as a standard fetch function that will authenticate as your WebID.
 // This request will do a simple GET for example.
 const response = await authFetch('http://localhost:3000/private');

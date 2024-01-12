@@ -3,6 +3,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.3](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.2...v7.0.3) (2024-01-05)
+
+### Features
+
+* Support default mainModulePath when creating App ([c6ec45c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c6ec45c7c0fb91a1c1365e9a0139e4fdaf8838d6))
+
+### Fixes
+
+* Encode WebID ownership tokens ([277a0d0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/277a0d0ab724074ed96940836ecc973a8533c538))
+* Fix pod base URL in README template ([4e7929f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4e7929f6d2b72fbb0a03e8f6e64955239f41c837))
+* Only require append when creating with PUT ([a0b7ee4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a0b7ee42f3a39cdd8fe2dbf1470e53f57ea62aba))
+
+### Chores
+
+* Remove Docker arm builds ([648ce1f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/648ce1fba8737dc7a008ff987de161e5902f9d09))
+* Update linting dependency ([3a9b0d6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3a9b0d69f01d6f0490983eda4ff8000798e10dcc))
+
+### Documentation
+
+* Explain how to use AppRunner to start a server instance ([716c3c3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/716c3c308933a10382d6726a70b5b77a62cfb787))
+* Explain that users need to log in for client credentials ([dca71bc](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/dca71bc5b82a9790d861babdcb1dd231c99dd042))
+* Fix links ([1f88864](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1f888645d6619e253082f4bf0ed20e7ae4e4c38b))
+* Describe server feature set ([c64a1a2](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c64a1a241ddd975f22eb223d545c938dfc8cb63c))
+* Fix Typo `is -> if` ([355f7dd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/355f7dd1c7b9be14c3e243acb5c4634f3a800442))
+
+### Testing
+
+* Run tests on Node 21 ([8f74fc8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/8f74fc82ad8a611bf96c293748bc5c01c859cdeb))
+
 ## [7.0.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.1...v7.0.2) (2023-11-20)
 
 ### Features
