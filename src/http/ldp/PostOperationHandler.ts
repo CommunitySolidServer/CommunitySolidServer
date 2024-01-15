@@ -1,4 +1,4 @@
-import type { Term } from 'rdf-js';
+import type { Term } from '@rdfjs/types';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';

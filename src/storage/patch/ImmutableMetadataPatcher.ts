@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';

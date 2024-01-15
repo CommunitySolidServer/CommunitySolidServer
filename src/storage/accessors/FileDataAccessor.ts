@@ -1,7 +1,7 @@
 import type { Readable } from 'node:stream';
 import type { Stats } from 'fs-extra';
 import { createReadStream, createWriteStream, ensureDir, lstat, opendir, remove, stat } from 'fs-extra';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';

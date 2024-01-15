@@ -1,7 +1,7 @@
 import 'jest-rdf';
 import type { BlankNode } from 'n3';
 import { DataFactory } from 'n3';
-import type { NamedNode, Quad } from 'rdf-js';
+import type { NamedNode, Quad } from '@rdfjs/types';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { ContentType } from '../../../../src/util/Header';
 import { CONTENT_TYPE_TERM, RDFS, SOLID_META } from '../../../../src/util/Vocabularies';

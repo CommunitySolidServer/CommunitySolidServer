@@ -1,7 +1,6 @@
-import type { Quad } from '@rdfjs/types';
+import type { NamedNode, Quad, Term } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import type { NamedNode, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';

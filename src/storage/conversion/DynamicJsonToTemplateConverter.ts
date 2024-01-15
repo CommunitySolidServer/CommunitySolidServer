@@ -1,4 +1,4 @@
-import type { NamedNode, Term } from 'rdf-js';
+import type { NamedNode, Term } from '@rdfjs/types';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';

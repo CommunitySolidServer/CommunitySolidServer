@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import type { NamedNode } from 'rdf-js';
+import type { NamedNode } from '@rdfjs/types';
 import { SOLID_META } from '../../util/Vocabularies';
 import type { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import type { AuxiliaryIdentifierStrategy } from './AuxiliaryIdentifierStrategy';

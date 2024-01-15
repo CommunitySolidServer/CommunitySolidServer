@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import type { Literal, NamedNode, Term } from 'rdf-js';
+import type { Literal, NamedNode, Term } from '@rdfjs/types';
 
 const { namedNode, literal } = DataFactory;
 

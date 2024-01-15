@@ -1,4 +1,4 @@
-import type { NamedNode } from 'rdf-js';
+import type { NamedNode } from '@rdfjs/types';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { toLiteral, toNamedTerm } from '../TermUtil';
 import { HTTP, SOLID_ERROR, XSD } from '../Vocabularies';
