@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import type { NamedNode } from 'rdf-js';
+import type { NamedNode } from '@rdfjs/types';
 
 /**
  * A `Record` in which each value is a concatenation of the baseUrl and its key.

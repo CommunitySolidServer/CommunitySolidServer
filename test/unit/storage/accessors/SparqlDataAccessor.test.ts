@@ -3,7 +3,7 @@ import { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { SparqlDataAccessor } from '../../../../src/storage/accessors/SparqlDataAccessor';

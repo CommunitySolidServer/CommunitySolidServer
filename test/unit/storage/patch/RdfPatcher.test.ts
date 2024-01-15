@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import { DataFactory } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
 import type { RdfDatasetRepresentation } from '../../../../src/http/representation/RdfDatasetRepresentation';

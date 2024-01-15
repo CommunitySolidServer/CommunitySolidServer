@@ -1,9 +1,8 @@
 import type { Readable } from 'node:stream';
-import type { NamedNode } from '@rdfjs/types';
+import type { NamedNode, Quad, Term } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';
 import { StreamParser, StreamWriter } from 'n3';
-import type { Quad, Term } from 'rdf-js';
 import type { Guarded } from './GuardedStream';
 import { guardedStreamFrom, pipeSafely } from './StreamUtil';
 import { toNamedTerm } from './TermUtil';

@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import type { NamedNode } from 'rdf-js';
+import type { NamedNode } from '@rdfjs/types';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { matchesAuthorizationScheme } from '../../../util/HeaderUtil';
 import { SOLID_META } from '../../../util/Vocabularies';

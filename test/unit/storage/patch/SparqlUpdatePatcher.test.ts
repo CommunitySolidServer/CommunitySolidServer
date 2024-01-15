@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import { DataFactory, Store } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';

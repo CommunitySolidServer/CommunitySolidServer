@@ -1,5 +1,5 @@
 import { Parser } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import type { Credentials } from '../../../src/authentication/Credentials';
 import { AcpReader } from '../../../src/authorization/AcpReader';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';

@@ -7,7 +7,7 @@ import type {
   IPolicy,
 } from '@solid/access-control-policy';
 import type { Store } from 'n3';
-import type { NamedNode, Term } from 'rdf-js';
+import type { NamedNode, Term } from '@rdfjs/types';
 import { ACP } from '../util/Vocabularies';
 
 /**
