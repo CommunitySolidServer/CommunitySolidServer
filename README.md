@@ -82,4 +82,6 @@ and available under the [MIT License](https://github.com/CommunitySolidServer/C
 Don't hesitate to [start a discussion](https://github.com/CommunitySolidServer/CommunitySolidServer/discussions)
 or [report a bug](https://github.com/CommunitySolidServer/CommunitySolidServer/issues).
 
+There's also [a Matrix-based, CSS-focused chat](https://matrix.to/#/#CommunitySolidServer_community:gitter.im)
+
 Learn more about Solid at [solidproject.org](https://solidproject.org/).
