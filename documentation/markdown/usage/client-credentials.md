@@ -29,19 +29,42 @@ This only needs to be done once, afterwards this token can be used for all futur
 Before doing the step below,
 you already need to have an [authorization value](account/json-api.md#authorization)
 that you get after logging in to your account.
-In the example below the cookie value is used.
-In the default server configurations,
-you can log in through the [email/password API](account/json-api.md#controlspasswordlogin).
+
+Below is an example of how this would work with
+the [email/password API](account/json-api.md#controlspasswordlogin)
+from the default server configurations.
 
 ```ts
-// This assumes your server is started under http://localhost:3000/.
-// It also assumes you have already logged in and `cookie` contains a valid cookie header
-// as described in the API documentation.
-const indexResponse = await fetch('http://localhost:3000/.account/', { headers: { cookie }});
+// All these examples assume the server is running at `http://localhost:3000/`.
+
+// First we request the account API controls to find out where we can log in
+const indexResponse = await fetch('http://localhost:3000/.account/');
 const { controls } = await indexResponse.json();
+
+// And then we log in to the account API
+const response = await fetch(controls.password.login, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ email: 'my-email@example.com', password: 'my-password' }),
+});
+// This authorization value will be used to authenticate in the next step
+const { authorization } = await response.json();
+```
+
+The next step generates the token and assumes you have an authorization value as generated in the example above.
+
+```ts
+// First we need to request the updated controls from the server now that we are logged in.
+// These will now have more values than in the previous example.
+const indexResponse = await fetch('http://localhost:3000/.account/', { 
+  headers: { authorization: `CSS-Account-Token ${authorization}` }
+});
+const { controls } = await indexResponse.json();
+
+// Here we request the server to generate a token on our account
 const response = await fetch(controls.account.clientCredentials, {
   method: 'POST',
-  headers: { cookie, 'content-type': 'application/json' },
+  headers: { authorization: `CSS-Account-Token ${authorization}`, 'content-type': 'application/json' },
   // The name field will be used when generating the ID of your token.
   // The WebID field determines which WebID you will identify as when using the token.
   // Only WebIDs linked to your account can be used.
@@ -64,7 +87,6 @@ This Access Token is only valid for a certain amount of time, after which a new 
 
 ```ts
 import { createDpopHeader, generateDpopKeyPair } from '@inrupt/solid-client-authn-core';
-import fetch from 'node-fetch';
 
 // A key pair is needed for encryption.
 // This function from `solid-client-authn` generates such a pair for you.
