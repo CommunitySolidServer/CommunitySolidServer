@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.4">
     
     
       
@@ -1681,18 +1681,37 @@ or by calling the relevant <a href="../account/json-api/#controlsaccountclientcr
 This only needs to be done once, afterwards this token can be used for all future requests.</p>
 <p>Before doing the step below,
 you already need to have an <a href="../account/json-api/#authorization">authorization value</a>
-that you get after logging in to your account.
-In the example below the cookie value is used.
-In the default server configurations,
-you can log in through the <a href="../account/json-api/#controlspasswordlogin">email/password API</a>.</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// This assumes your server is started under http://localhost:3000/.</span>
-<span class="c1">// It also assumes you have already logged in and `cookie` contains a valid cookie header</span>
-<span class="c1">// as described in the API documentation.</span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">indexResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000/.account/&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">cookie</span><span class="w"> </span><span class="p">}});</span>
+that you get after logging in to your account.</p>
+<p>Below is an example of how this would work with
+the <a href="../account/json-api/#controlspasswordlogin">email/password API</a>
+from the default server configurations.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// All these examples assume the server is running at `http://localhost:3000/`.</span>
+
+<span class="c1">// First we request the account API controls to find out where we can log in</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">indexResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000/.account/&#39;</span><span class="p">);</span>
 <span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">controls</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">indexResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+
+<span class="c1">// And then we log in to the account API</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">controls</span><span class="p">.</span><span class="nx">password</span><span class="p">.</span><span class="nx">login</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">&#39;content-type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">JSON.stringify</span><span class="p">({</span><span class="w"> </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;my-email@example.com&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;my-password&#39;</span><span class="w"> </span><span class="p">}),</span>
+<span class="p">});</span>
+<span class="c1">// This authorization value will be used to authenticate in the next step</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">authorization</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</code></pre></div>
+<p>The next step generates the token and assumes you have an authorization value as generated in the example above.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Now that we are logged in, we need to request the updated controls from the server.</span>
+<span class="c1">// These will now have more values than in the previous example.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">indexResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000/.account/&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">authorization</span><span class="o">:</span><span class="w"> </span><span class="sb">`CSS-Account-Token </span><span class="si">${</span><span class="nx">authorization</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="p">}</span>
+<span class="p">});</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">controls</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">indexResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+
+<span class="c1">// Here we request the server to generate a token on our account</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">controls</span><span class="p">.</span><span class="nx">account</span><span class="p">.</span><span class="nx">clientCredentials</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;content-type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">authorization</span><span class="o">:</span><span class="w"> </span><span class="sb">`CSS-Account-Token </span><span class="si">${</span><span class="nx">authorization</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;content-type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="c1">// The name field will be used when generating the ID of your token.</span>
 <span class="w">  </span><span class="c1">// The WebID field determines which WebID you will identify as when using the token.</span>
 <span class="w">  </span><span class="c1">// Only WebIDs linked to your account can be used.</span>
@@ -1710,7 +1729,6 @@ and the response body will contain a description of the problem.</p>
 <p>The ID and secret combination generated above can be used to request an Access Token from the server.
 This Access Token is only valid for a certain amount of time, after which a new one needs to be requested.</p>
 <div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">createDpopHeader</span><span class="p">,</span><span class="w"> </span><span class="nx">generateDpopKeyPair</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@inrupt/solid-client-authn-core&#39;</span><span class="p">;</span>
-<span class="k">import</span><span class="w"> </span><span class="nx">fetch</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;node-fetch&#39;</span><span class="p">;</span>
 
 <span class="c1">// A key pair is needed for encryption.</span>
 <span class="c1">// This function from `solid-client-authn` generates such a pair for you.</span>
@@ -1856,10 +1874,10 @@ The details of a token can be seen by doing a GET request to the resource URL of
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.top", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.top", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.c011b7c0.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      <script src="../../assets/javascripts/bundle.7389ff0e.min.js"></script>
       
     
   </body>
