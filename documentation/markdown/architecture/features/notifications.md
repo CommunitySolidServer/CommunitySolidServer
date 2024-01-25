@@ -36,10 +36,10 @@ whose results get merged together in an `ArrayUnionHandler`.
 
 A `NotificationChannelType` contains the specific details of a specification notification channel type,
 including a JSON-LD representation of the corresponding subscription resource.
-One specific instance of a `StorageDescriber` is a `NotificationSubcriber`,
+One specific instance of a `StorageDescriber` is a `NotificationDescriber`,
 which merges those JSON-LD descriptions into a single set of RDF quads.
 When adding a new subscription type,
-a new instance of such a class should be added to the `urn:solid-server:default:StorageDescriber`.
+a new instance of such a class should be added to the `urn:solid-server:default:NotificationDescriber`.
 
 ## NotificationChannel
 
@@ -53,9 +53,9 @@ flowchart LR
   subgraph NotificationTypeHandlerArgs[" "]
     direction LR
     OperationRouterHandler("<br>OperationRouterHandler") --> NotificationSubscriber("<br>NotificationSubscriber")
-    NotificationChannelType --> NotificationChannelType("<br><i>NotificationChannelType</i>")
+NotificationSubscriber --> NotificationChannelType("<br><i>NotificationChannelType</i>")
     OperationRouterHandler2("<br>OperationRouterHandler") --> NotificationSubscriber2("<br>NotificationSubscriber")
-    NotificationChannelType2 --> NotificationChannelType2("<br><i>NotificationChannelType</i>")
+NotificationSubscriber2 --> NotificationChannelType2("<br><i>NotificationChannelType</i>")
   end
 ```
 
