@@ -3,6 +3,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.4](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.3...v7.0.4) (2024-02-07)
+
+### Chores
+
+* Replace rdf-js import with @rdfjs/types ([e09b53b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e09b53b20de0e389715d299466a1e1101579dd07))
+
+### Testing
+
+* Remove workaround for authn library ([7d57359](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7d573596139283637cf2d1e99d44cb2130268811))
+
 ## [7.0.3](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.2...v7.0.3) (2024-01-05)
 
 ### Features
