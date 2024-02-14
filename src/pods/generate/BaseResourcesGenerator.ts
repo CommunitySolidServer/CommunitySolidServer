@@ -197,6 +197,10 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
     // Add metadata from .meta file if there is one
     if (metaLink) {
       const rawMetadata = await this.generateMetadata(metaLink, options);
+      if (!rawMetadata.contentType) {
+        // Make sure this does not remove the content-type if none is explicitly defined
+        rawMetadata.contentType = metadata.contentType;
+      }
       const metaIdentifier = this.metadataStrategy.getAuxiliaryIdentifier(link.identifier);
       const descriptionMeta = new RepresentationMetadata(metaIdentifier);
       addResourceMetadata(rawMetadata, isContainerIdentifier(link.identifier));
