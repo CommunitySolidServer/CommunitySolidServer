@@ -10,6 +10,7 @@ import { asyncToArray } from '../../../../src/util/IterableUtil';
 import { ensureTrailingSlash, joinFilePath, trimTrailingSlashes } from '../../../../src/util/PathUtil';
 import { readableToQuads, readableToString } from '../../../../src/util/StreamUtil';
 import { HandlebarsTemplateEngine } from '../../../../src/util/templates/HandlebarsTemplateEngine';
+import { CONTENT_TYPE_TERM } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 import { mockFileSystem } from '../../../util/Util';
 
@@ -144,6 +145,10 @@ describe('A BaseResourcesGenerator', (): void => {
     const expDocMetadataQuads = docMetadataQuads.getQuads(docMetadata.identifier, 'pre:has', null, null);
     expect(expDocMetadataQuads).toHaveLength(1);
     expect(expDocMetadataQuads[0].object.value).toBe('metadata');
+    // Metadata will replace existing metadata so need to make sure content-type is still there
+    const contentDocMetadataQuads = docMetadataQuads.getQuads(docMetadata.identifier, CONTENT_TYPE_TERM, null, null);
+    expect(contentDocMetadataQuads).toHaveLength(1);
+    expect(contentDocMetadataQuads[0].object.value).toBe('text/turtle');
   });
 
   it('does not create container when it already exists.', async(): Promise<void> => {
