@@ -11,7 +11,8 @@
     "css:config/http/notifications/websockets/subscription.json",
     "css:config/http/notifications/webhooks/handler.json",
     "css:config/http/notifications/webhooks/routes.json",
-    "css:config/http/notifications/webhooks/subscription.json"
+    "css:config/http/notifications/webhooks/subscription.json",
+    "css:config/http/notifications/streaming-http/http.json"
   ],
   "@graph": [
     {

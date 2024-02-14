@@ -403,6 +403,13 @@ export * from './server/notifications/WebSocketChannel2023/WebSocket2023Util';
 export * from './server/notifications/WebSocketChannel2023/WebSocketMap';
 export * from './server/notifications/WebSocketChannel2023/WebSocketChannel2023Type';
 
+// Server/Notifications/StreamingHTTPChannel2023
+export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTPRequestHandler';
+export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTPMap';
+export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTPListeningActivityHandler';
+export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTP2023Emitter';
+export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTPMetadataWriter';
+
 // Server/Notifications
 export * from './server/notifications/ActivityEmitter';
 export * from './server/notifications/BaseChannelType';

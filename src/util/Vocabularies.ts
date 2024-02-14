@@ -231,6 +231,7 @@ export const NOTIFY = createVocabulary(
 
   'WebhookChannel2023',
   'WebSocketChannel2023',
+  'StreamingHTTPChannel2023',
 );
 
 export const OIDC = createVocabulary(
