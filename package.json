@@ -121,7 +121,7 @@
     "marked": "^9.1.0",
     "mime-types": "^2.1.35",
     "n3": "^1.17.1",
-    "nodemailer": "^6.9.6",
+    "nodemailer": "^6.9.9",
     "oidc-provider": "^8.4.0",
     "proper-lockfile": "^4.1.2",
     "pump": "^3.0.0",
