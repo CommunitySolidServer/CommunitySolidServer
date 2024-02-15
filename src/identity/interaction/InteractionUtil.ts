@@ -87,9 +87,9 @@ export async function forgetWebId(provider: Provider, oidcInteraction: Interacti
     await session.persist();
   }
 
-  // If a client previously successfully completed an interaction a grant will have been created.
-  // If the same session gets reused to authenticate with a different WebID,
-  // we need to first delete the previous grant as the oidc-provider will try to reuse it.
+  // If a client previously successfully completed an interaction, a grant will have been created.
+  // If such a session is reused to authenticate with a different WebID, we need to
+  // first delete the previously created grant, as the oidc-provider will try to reuse it as well.
   if (oidcInteraction.grantId) {
     const grant = await provider.Grant.find(oidcInteraction.grantId);
     await grant?.destroy();
