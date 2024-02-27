@@ -30,6 +30,11 @@ describe('A SubdomainIdentifierGenerator', (): void => {
 
   it('errors when extracting if there is no pod.', async(): Promise<void> => {
     const identifier = { path: 'http://example.com/bar/baz' };
+    expect(generator.extractPod(identifier)).toEqual({ path: 'http://example.com/' });
+  });
+
+  it('errors when extracting if the domain is wrong.', async(): Promise<void> => {
+    const identifier = { path: 'http://foo.example.org/bar/baz' };
     expect((): any => generator.extractPod(identifier)).toThrow(BadRequestHttpError);
   });
 });
