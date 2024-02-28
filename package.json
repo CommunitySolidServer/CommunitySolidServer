@@ -144,7 +144,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "2.3.4",
-    "@commitlint/cli": "^18.2.0",
+    "@commitlint/cli": "^19.0.1",
     "@commitlint/config-conventional": "^18.0.0",
     "@inrupt/solid-client-authn-core": "^2.0.0",
     "@inrupt/solid-client-authn-node": "^2.0.0",
