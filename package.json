@@ -103,7 +103,7 @@
     "arrayify-stream": "^2.0.1",
     "async-lock": "^1.4.0",
     "bcryptjs": "^2.4.3",
-    "componentsjs": "^5.4.2",
+    "componentsjs": "^6.0.1",
     "cookie": "^0.5.0",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
