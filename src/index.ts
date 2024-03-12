@@ -374,6 +374,7 @@ export * from './server/description/StorageLocationStrategy';
 export * from './server/middleware/AcpHeaderHandler';
 export * from './server/middleware/CorsHandler';
 export * from './server/middleware/HeaderHandler';
+export * from './server/middleware/JwksHandler';
 export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
