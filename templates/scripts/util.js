@@ -62,7 +62,7 @@ function addPostListener(callback, formId = 'mainForm', errorId = 'error') {
     event.preventDefault();
 
     try {
-      await callback();
+      return await callback();
     } catch (error) {
       setError(error.message, errorId);
     }

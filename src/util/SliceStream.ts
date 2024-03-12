@@ -65,8 +65,8 @@ export class SliceStream extends Transform {
       this.binarySlice(chunk as Buffer);
     }
 
-    callback();
     this.source.resume();
+    callback();
   }
 
   protected binarySlice(chunk: Buffer): void {
