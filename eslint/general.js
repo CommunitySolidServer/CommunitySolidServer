@@ -4,6 +4,7 @@ module.exports = {
 
     'arrow-body-style': [ 'error', 'as-needed', { requireReturnForObjectLiteral: false }],
     'capitalized-comments': [ 'error', 'always', { ignoreConsecutiveComments: true }],
+    'callback-return': 'error',
     'consistent-this': 'error',
     curly: [ 'error', 'all' ],
     'default-case': 'error',
