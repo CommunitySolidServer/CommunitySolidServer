@@ -14,6 +14,7 @@ module.exports = {
     'function-call-argument-newline': [ 'error', 'consistent' ],
     'function-paren-newline': [ 'error', 'consistent' ],
     'getter-return': [ 'error', { allowImplicit: true }],
+    'global-require': 'error',
     'grouped-accessor-pairs': [ 'error', 'getBeforeSet' ],
     'guard-for-in': 'error',
     'line-comment-position': [ 'error', { position: 'above' }],
