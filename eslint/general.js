@@ -67,7 +67,10 @@ module.exports = {
       multiline: { delimiter: 'semi', requireLast: true },
       singleline: { delimiter: 'semi', requireLast: false },
     }],
-    'style/no-extra-parens': [ 'error', 'functions' ],
+    'style/no-extra-parens': [ 'error', 'all', {
+      // To prevent conflicts with style/no-mixed-operators
+      nestedBinaryExpressions: false,
+    }],
     'style/object-curly-spacing': [ 'error', 'always', {
       objectsInObjects: false,
       arraysInObjects: false,

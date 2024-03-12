@@ -23,7 +23,7 @@ describe('A ClientInfoHandler', (): void => {
 
     provider = {
       Client: {
-        find: (id: string): any => (id ? { metadata: jest.fn().mockReturnValue(clientMetadata) } : undefined),
+        find: (id: string): any => id ? { metadata: jest.fn().mockReturnValue(clientMetadata) } : undefined,
       },
     } as any;
 
