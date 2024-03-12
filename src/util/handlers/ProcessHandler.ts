@@ -41,6 +41,6 @@ export class ProcessHandler<TIn, TOut> extends AsyncHandler<TIn, TOut> {
    */
   private canExecute(): boolean {
     return this.clusterManager.isSingleThreaded() ||
-     (this.executeOnPrimary ? this.clusterManager.isPrimary() : this.clusterManager.isWorker());
+      (this.executeOnPrimary ? this.clusterManager.isPrimary() : this.clusterManager.isWorker());
   }
 }

@@ -67,8 +67,10 @@ export class LinkRelObject {
     if (this.objectAllowed(object)) {
       if (this.ephemeral) {
         metadata.add(this.value, namedNode(object), SOLID_META.terms.ResponseMetadata);
-        logger.debug(`"<${metadata.identifier.value}> <${this.value.value}> <${object}>." ` +
-`will not be stored permanently in the metadata.`);
+        logger.debug(
+          `"<${metadata.identifier.value}> <${this.value.value}> <${object}>." ` +
+          `will not be stored permanently in the metadata.`,
+        );
       } else {
         metadata.add(this.value, namedNode(object));
       }

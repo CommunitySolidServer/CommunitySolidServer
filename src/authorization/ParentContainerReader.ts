@@ -102,7 +102,9 @@ export class ParentContainerReader extends PermissionReader {
     // When an operation requests to delete a resource,
     // the server MUST match Authorizations allowing the acl:Write access privilege
     // on the resource and the containing container.
-    mergedPermission.delete = resourcePermission.write && containerPermission.write &&
+    mergedPermission.delete =
+      resourcePermission.write &&
+      containerPermission.write &&
       resourcePermission.delete !== false;
 
     return mergedPermission;
