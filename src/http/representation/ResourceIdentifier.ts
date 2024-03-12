@@ -12,5 +12,5 @@ export interface ResourceIdentifier {
  * Determines whether the object is a {@link ResourceIdentifier}.
  */
 export function isResourceIdentifier(object: unknown): object is ResourceIdentifier {
-  return Boolean(object) && (typeof (object as ResourceIdentifier).path === 'string');
+  return Boolean(object) && typeof (object as ResourceIdentifier).path === 'string';
 }

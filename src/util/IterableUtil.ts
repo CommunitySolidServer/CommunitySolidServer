@@ -184,7 +184,12 @@ async function findNextSorted<T>(
 export async function* sortedAsyncMerge<T>(iterators: AsyncIterator<T>[], comparator?: (left: T, right: T) => number):
 AsyncIterable<T> {
   if (!comparator) {
-    comparator = (left, right): number => left < right ? -1 : (left > right ? 1 : 0);
+    comparator = (left, right): number => {
+      if (left < right) {
+        return -1;
+      }
+      return left > right ? 1 : 0;
+    };
   }
 
   // Initialize the array to the first result of every iterator
