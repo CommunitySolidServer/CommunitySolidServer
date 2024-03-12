@@ -1,7 +1,11 @@
+import { REQUEST_METHOD } from '@solid/access-token-verifier/dist/constant/REQUEST_METHOD';
 import { HttpHandler, type HttpHandlerInput } from '../HttpHandler';
 import type { JwkGenerator } from '../../identity/configuration/JwkGenerator';
 import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+
+const allowedMethods = new Set<string | undefined>([ 'GET', 'HEAD' ]);
+const methodsNotAllowed: string[] = [ ...REQUEST_METHOD ].filter((method): boolean => !allowedMethods.has(method));
 
 export class JwksHandler extends HttpHandler {
   public constructor(
@@ -14,9 +18,9 @@ export class JwksHandler extends HttpHandler {
   public async canHandle({ request }: HttpHandlerInput): Promise<void> {
     const { method, url } = request;
 
-    if (![ 'GET', 'HEAD' ].includes(method ?? '')) {
+    if (!allowedMethods.has(method)) {
       throw new MethodNotAllowedHttpError(
-        method ? [ method ] : undefined,
+        methodsNotAllowed,
         `Only GET or HEAD requests can target the storage description.`,
       );
     }
