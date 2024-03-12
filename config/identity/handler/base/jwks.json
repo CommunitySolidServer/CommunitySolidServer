@@ -14,6 +14,14 @@
       "@type": "ContainerPathStorage",
       "relativePath": "/idp/keys/",
       "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    },
+    {
+      "@id": "urn:solid-server:default:JwksHandler",
+      "@type": "JwksHandler",
+      "path": "/.well-known/jwks.json",
+      "generator": {
+        "@id": "urn:solid-server:default:JwkGenerator"
+      }
     }
   ]
 }
