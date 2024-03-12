@@ -12,6 +12,7 @@ const typeAwareRules = {
   'ts/no-implied-eval': 'error',
   'ts/no-misused-promises': 'error',
   'ts/no-throw-literal': 'error',
+  'ts/no-unnecessary-type-arguments': 'error',
   'ts/no-unnecessary-type-assertion': 'error',
   'ts/no-unsafe-argument': 'error',
   'ts/no-unsafe-assignment': 'error',
