@@ -50,8 +50,10 @@ module.exports = {
 
     'jsdoc/no-multi-asterisks': [ 'error', { allowWhitespace: true }],
 
-    'node/prefer-global/buffer': 'off',
-    'node/prefer-global/process': 'off',
+    'node/prefer-global/buffer': [ 'error', 'always' ],
+    'node/prefer-global/console': [ 'error', 'always' ],
+    'node/prefer-global/process': [ 'error', 'always' ],
+    'node/prefer-global/url': [ 'error', 'always' ],
 
     'style/array-bracket-spacing': [ 'error', 'always', {
       singleValue: true,

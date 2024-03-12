@@ -1,4 +1,3 @@
-import { URL } from 'node:url';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { errorTermsToMetadata } from '../errors/HttpErrorUtil';
 import { InternalServerError } from '../errors/InternalServerError';
