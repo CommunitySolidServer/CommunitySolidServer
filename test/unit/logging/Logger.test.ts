@@ -1,4 +1,3 @@
-import process from 'node:process';
 import { BaseLogger, WrappingLogger } from '../../../src/logging/Logger';
 import type { LogMetadata, SimpleLogger } from '../../../src/logging/Logger';
 

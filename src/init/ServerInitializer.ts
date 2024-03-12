@@ -1,5 +1,4 @@
 import type { Server } from 'node:http';
-import { URL } from 'node:url';
 import { promisify } from 'node:util';
 import { getLoggerFor } from '../logging/LogUtil';
 import { isHttpsServer } from '../server/HttpServerFactory';
