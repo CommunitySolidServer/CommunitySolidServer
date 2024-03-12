@@ -83,13 +83,13 @@ export abstract class QuotaStrategy {
    */
   public async createQuotaGuard(identifier: ResourceIdentifier): Promise<Guarded<PassThrough>> {
     let total = 0;
-    const strategy = this;
+    const that = this;
     const { reporter } = this;
 
     return guardStream(new PassThrough({
       async transform(this, chunk: any, enc: string, done: () => void): Promise<void> {
         total += await reporter.calculateChunkSize(chunk);
-        const availableSpace = await strategy.getAvailableSpace(identifier);
+        const availableSpace = await that.getAvailableSpace(identifier);
         if (availableSpace.amount < total) {
           this.destroy(new PayloadHttpError(
             `Quota exceeded by ${total - availableSpace.amount} ${availableSpace.unit} during write`,
