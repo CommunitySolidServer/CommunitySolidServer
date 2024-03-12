@@ -134,7 +134,7 @@ describe('A SparqlUpdatePatcher', (): void => {
 
   it('handles composite INSERT/DELETE updates.', async(): Promise<void> => {
     const query = 'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 };' +
-            'DELETE WHERE { :s1 :p1 :o1 . :startS1 :startP1 :startO1 }';
+      'DELETE WHERE { :s1 :p1 :o1 . :startS1 :startP1 :startO1 }';
     input.patch = getPatch(query);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
@@ -153,7 +153,7 @@ describe('A SparqlUpdatePatcher', (): void => {
 
   it('handles composite DELETE/INSERT updates.', async(): Promise<void> => {
     const query = 'DELETE DATA { :s1 :p1 :o1 . :startS1 :startP1 :startO1 } ;' +
-            'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 }';
+      'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 }';
     input.patch = getPatch(query);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([

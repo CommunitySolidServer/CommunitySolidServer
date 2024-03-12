@@ -79,10 +79,10 @@ export function getTypeWeight(type: string, preferred: ValuePreferences): number
   //    specific media types.  If more than one media range applies to a
   //    given type, the most specific reference has precedence.
   return preferred[type] ??
-         preferred[`${main}/${sub}`] ??
-         preferred[`${main}/*`] ??
-         preferred['*/*'] ??
-         0;
+    preferred[`${main}/${sub}`] ??
+    preferred[`${main}/*`] ??
+    preferred['*/*'] ??
+    0;
 }
 
 /**

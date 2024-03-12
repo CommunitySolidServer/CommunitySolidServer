@@ -119,8 +119,8 @@ export function parseParameters(parameters: string[], replacements: Record<strin
     // parameter  = token "=" ( token / quoted-string )
     // second part is optional for certain parameters
     if (!(TOKEN.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || TOKEN.test(rawValue)))) {
-      handleInvalidValue(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
-        `does not match (token ( "=" ( token / quoted-string ))?). `, strict);
+      handleInvalidValue(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue
+      } does not match (token ( "=" ( token / quoted-string ))?). `, strict);
       continue;
     }
 
@@ -177,8 +177,11 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
       weight = parseQValue(value);
     } else {
       if (!value && map !== extensionParams) {
-        handleInvalidValue(`Invalid Accept parameter ${name}: ` +
-          `Accept parameter values are not optional when preceding the q value`, strict);
+        handleInvalidValue(
+          `Invalid Accept parameter ${name}: ` +
+          `Accept parameter values are not optional when preceding the q value`,
+          strict,
+        );
         continue;
       }
       map[name] = value || '';
