@@ -13,7 +13,7 @@ import { isInternalContentType } from '../conversion/ConversionUtil';
 import type { DataAccessor } from './DataAccessor';
 
 interface DataEntry {
-  data: any[];
+  data: unknown[];
   metadata: RepresentationMetadata;
 }
 interface ContainerEntry {

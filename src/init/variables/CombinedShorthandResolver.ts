@@ -14,7 +14,7 @@ export class CombinedShorthandResolver extends ShorthandResolver {
   }
 
   public async handle(input: Record<string, unknown>): Promise<Record<string, unknown>> {
-    const vars: Record<string, any> = {};
+    const vars: Record<string, unknown> = {};
     for (const [ name, computer ] of Object.entries(this.resolvers)) {
       try {
         vars[name] = await computer.handleSafe(input);

@@ -14,7 +14,7 @@ type ValueVocabulary<TBase extends string, TLocal extends string> =
 /**
  * A {@link ValueVocabulary} where the URI values are {@link NamedNode}s.
  */
-type TermVocabulary<T> = T extends ValueVocabulary<any, any> ? {[K in keyof T]: NamedNode<T[K]> } : never;
+type TermVocabulary<T> = T extends ValueVocabulary<string, string> ? {[K in keyof T]: NamedNode<T[K]> } : never;
 
 /**
  * Contains a namespace and keys linking to the entries in this namespace.
@@ -35,15 +35,15 @@ export type PartialVocabulary<TBase extends string> =
 /**
  * A local name of a {@link Vocabulary}.
  */
-export type VocabularyLocal<T> = T extends Vocabulary<any, infer TKey> ? TKey : never;
+export type VocabularyLocal<T> = T extends Vocabulary<string, infer TKey> ? TKey : never;
 /**
  * A URI string entry of a {@link Vocabulary}.
  */
-export type VocabularyValue<T> = T extends Vocabulary<any, infer TKey> ? T[TKey] : never;
+export type VocabularyValue<T> = T extends Vocabulary<string, infer TKey> ? T[TKey] : never;
 /**
  * A {@link NamedNode} entry of a {@link Vocabulary}.
  */
-export type VocabularyTerm<T> = T extends Vocabulary<any, infer TKey> ? T['terms'][TKey] : never;
+export type VocabularyTerm<T> = T extends Vocabulary<string, infer TKey> ? T['terms'][TKey] : never;
 
 /**
  * Creates a {@link ValueVocabulary} with the given `baseUri` as namespace and all `localNames` as entries.

@@ -3,15 +3,11 @@ import type Provider from '../../../templates/types/oidc-provider';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import type { Json } from '../../util/Json';
 import type { Interaction } from './InteractionHandler';
 import Dict = NodeJS.Dict;
 
 const logger = getLoggerFor('AccountUtil');
-
-/**
- * A JSON object.
- */
-export type Json = string | number | boolean | Dict<Json> | Json[];
 
 /**
  * Contains a JSON object and any associated metadata.

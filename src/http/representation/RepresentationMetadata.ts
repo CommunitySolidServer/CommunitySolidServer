@@ -15,7 +15,7 @@ export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
 /**
  * Determines whether the object is a `RepresentationMetadata`.
  */
-export function isRepresentationMetadata(object: any): object is RepresentationMetadata {
+export function isRepresentationMetadata(object: unknown): object is RepresentationMetadata {
   return typeof (object as RepresentationMetadata)?.setMetadata === 'function';
 }
 
@@ -240,7 +240,7 @@ export class RepresentationMetadata {
    * @param graph - Optional graph of where to add the values to.
    */
   public add(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
-    return this.forQuads(predicate, object, (pred, obj): any => this.addQuad(this.id, pred, obj, graph));
+    return this.forQuads(predicate, object, (pred, obj): unknown => this.addQuad(this.id, pred, obj, graph));
   }
 
   /**
@@ -250,7 +250,7 @@ export class RepresentationMetadata {
    * @param graph - Optional graph of where to remove the values from.
    */
   public remove(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
-    return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj, graph));
+    return this.forQuads(predicate, object, (pred, obj): unknown => this.removeQuad(this.id, pred, obj, graph));
   }
 
   /**
@@ -290,8 +290,12 @@ export class RepresentationMetadata {
   ): boolean {
     // This works with N3.js but at the time of writing the typings have not been updated yet.
     // If you see this line of code check if the typings are already correct and update this if so.
-    // eslint-disable-next-line ts/no-unsafe-call
-    return (this.store.has as any)(this.id, predicate, object, graph) as boolean;
+    return (this.store as unknown as {
+      has: (subject: Term,
+        predicate: Term | string | null,
+        object: Term | string | null,
+        graph: Term | string | null) => boolean;
+    }).has(this.id, predicate, object, graph) as boolean;
   }
 
   /**

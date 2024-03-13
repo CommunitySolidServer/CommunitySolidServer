@@ -101,6 +101,7 @@ module.exports = {
     'ts/explicit-member-accessibility': 'error',
     'ts/method-signature-style': 'error',
     'ts/no-confusing-non-null-assertion': 'error',
+    'ts/no-explicit-any': 'error',
     'ts/no-extraneous-class': [ 'error', {
       allowConstructorOnly: false,
       allowEmpty: false,

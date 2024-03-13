@@ -105,9 +105,9 @@ export class AppRunner {
     let configs = input.config ?? [ '@css:config/default.json' ];
     configs = (Array.isArray(configs) ? configs : [ configs ]).map(resolveAssetPath);
 
-    let componentsManager: ComponentsManager<any>;
+    let componentsManager: ComponentsManager<App | CliResolver>;
     try {
-      componentsManager = await this.createComponentsManager<any>(loaderProperties, configs);
+      componentsManager = await this.createComponentsManager<App>(loaderProperties, configs);
     } catch (error: unknown) {
       this.resolveError(`Could not build the config files from ${configs.join(',')}`, error);
     }
@@ -227,7 +227,7 @@ export class AppRunner {
 
     // Finally try and read from the config.community-solid-server
     // field in the root package.json
-    const pkg = await readJSON(packageJsonPath) as { config?: Record<string, any> };
+    const pkg = await readJSON(packageJsonPath) as { config?: Record<string, unknown> };
     if (typeof pkg.config?.['community-solid-server'] === 'object') {
       return pkg.config['community-solid-server'] as Record<string, unknown>;
     }

@@ -55,5 +55,5 @@ export interface SetMultiMap<TKey, TVal> extends Map<TKey, TVal | ReadonlySet<TV
   /**
    * Loops over all key/value bindings.
    */
-  forEach: (callbackfn: (value: TVal, key: TKey, map: SetMultiMap<TKey, TVal>) => void, thisArg?: any) => void;
+  forEach: (callbackfn: (value: TVal, key: TKey, map: SetMultiMap<TKey, TVal>) => void, thisArg?: unknown) => void;
 }
