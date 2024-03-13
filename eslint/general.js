@@ -49,6 +49,7 @@ module.exports = {
     ],
 
     'import/extensions': 'error',
+    'import/no-extraneous-dependencies': 'error',
 
     'jsdoc/no-multi-asterisks': [ 'error', { allowWhitespace: true }],
 
