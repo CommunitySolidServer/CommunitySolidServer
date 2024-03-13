@@ -22,9 +22,10 @@ export class BaseAccountStore extends Initializer implements AccountStore {
   private readonly storage: AccountLoginStorage<{ [ACCOUNT_TYPE]: typeof ACCOUNT_STORAGE_DESCRIPTION }>;
   private initialized = false;
 
-  public constructor(storage: AccountLoginStorage<any>) {
+  // Wrong typings to prevent Components.js typing issues
+  public constructor(storage: AccountLoginStorage<Record<string, never>>) {
     super();
-    this.storage = storage as typeof this.storage;
+    this.storage = storage as unknown as typeof this.storage;
   }
 
   // Initialize the type definitions

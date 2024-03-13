@@ -355,7 +355,7 @@ export class FileDataAccessor implements DataAccessor {
    * @param data - The data to be put in the file.
    */
   protected async writeDataFile(path: string, data: Readable): Promise<void> {
-    return new Promise((resolve, reject): any => {
+    return new Promise((resolve, reject): void => {
       const writeStream = createWriteStream(path);
       data.pipe(writeStream);
       data.on('error', (error): void => {

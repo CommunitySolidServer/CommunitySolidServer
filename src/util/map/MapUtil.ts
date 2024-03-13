@@ -2,22 +2,22 @@ import { resolvePromiseOrValue } from '../PromiseUtil';
 import type { PromiseOrValue } from '../PromiseUtil';
 import type { SetMultiMap } from './SetMultiMap';
 
-export type ArrayElement<TArray extends readonly any[]> = TArray[number];
+export type ArrayElement<TArray extends readonly unknown[]> = TArray[number];
 export type EmptyObject = Record<string, never>;
 
-export type MapKey<T> = T extends Map<infer TKey, any> ? TKey : never;
-export type MapValue<T> = T extends Map<any, infer TValue> ? TValue : never;
-export type MapEntry<T> = T extends Map<any, any> ? [MapKey<T>, MapValue<T>] : never;
+export type MapKey<T> = T extends Map<infer TKey, unknown> ? TKey : never;
+export type MapValue<T> = T extends Map<unknown, infer TValue> ? TValue : never;
+export type MapEntry<T> = T extends Map<unknown, unknown> ? [MapKey<T>, MapValue<T>] : never;
 
 /**
  * A simplified version of {@link MapConstructor} that only allows creating an empty {@link Map}.
  */
-export type EmptyMapConstructor = new() => Map<any, any>;
+export type EmptyMapConstructor = new() => Map<unknown, unknown>;
 
 /**
  * Options describing the necessary changes when calling {@link modify}.
  */
-export type ModifyOptions<T extends SetMultiMap<any, any>> = {
+export type ModifyOptions<T extends SetMultiMap<unknown, unknown>> = {
   /**
    * Entries that need to be added to the Map.
    */
@@ -35,6 +35,7 @@ export type ModifyOptions<T extends SetMultiMap<any, any>> = {
  * @param map - Map to start from.
  * @param options - {@link ModifyOptions} describing the necessary changes.
  */
+// eslint-disable-next-line ts/no-explicit-any
 export function modify<T extends SetMultiMap<any, any>>(map: T, options: ModifyOptions<T>): T {
   for (const key of options.remove ?? []) {
     map.delete(key);

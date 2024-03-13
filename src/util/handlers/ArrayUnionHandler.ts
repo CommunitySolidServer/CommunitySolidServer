@@ -4,7 +4,7 @@ import { UnionHandler } from './UnionHandler';
 /**
  * A utility handler that concatenates the results of all its handlers into a single result.
  */
-export class ArrayUnionHandler<T extends AsyncHandler<any, any[]>> extends UnionHandler<T> {
+export class ArrayUnionHandler<T extends AsyncHandler<unknown, unknown[]>> extends UnionHandler<T> {
   public constructor(handlers: T[], requireAll?: boolean, ignoreErrors?: boolean) {
     super(handlers, requireAll, ignoreErrors);
   }

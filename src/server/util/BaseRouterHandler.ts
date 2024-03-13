@@ -5,7 +5,7 @@ import type { AsyncHandlerInput, AsyncHandlerOutput } from '../../util/handlers/
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import { trimTrailingSlashes } from '../../util/PathUtil';
 
-export interface BaseRouterHandlerArgs<T extends AsyncHandler<any, any>> {
+export interface BaseRouterHandlerArgs<T extends AsyncHandler<unknown, unknown>> {
   /**
    * The base URL of the server.
    * Not required if no value is provided for `allowedPathNames`.
@@ -36,7 +36,7 @@ export interface BaseRouterHandlerArgs<T extends AsyncHandler<any, any>> {
  *
  * `canHandleInput` expects a ResourceIdentifier to indicate it expects the target to have been validated already.
  */
-export abstract class BaseRouterHandler<T extends AsyncHandler<any, any>>
+export abstract class BaseRouterHandler<T extends AsyncHandler<unknown, unknown>>
   extends AsyncHandler<AsyncHandlerInput<T>, AsyncHandlerOutput<T>> {
   protected readonly baseUrlLength: number;
   protected readonly handler: T;

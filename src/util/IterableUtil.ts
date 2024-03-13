@@ -12,7 +12,7 @@
 export function* map<TIn, TOut>(
   iterable: Iterable<TIn>,
   callbackFn: (element: TIn, index: number) => TOut,
-  thisArg?: any,
+  thisArg?: unknown,
 ): Iterable<TOut> {
   const boundMapFn = callbackFn.bind(thisArg);
   let count = 0;
@@ -31,8 +31,11 @@ export function* map<TIn, TOut>(
  * @param callbackFn - Function that is called to test every element.
  * @param thisArg - Value to use as `this` when executing `callbackFn`.
  */
-export function* filter<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean, thisArg?: any):
-Iterable<T> {
+export function* filter<T>(
+  iterable: Iterable<T>,
+  callbackFn: (element: T, index: number) => boolean,
+  thisArg?: unknown,
+): Iterable<T> {
   const boundFilterFn = callbackFn.bind(thisArg);
   let count = 0;
   for (const value of iterable) {
@@ -63,7 +66,7 @@ export function* concat<T>(iterables: Iterable<Iterable<T>>): Iterable<T> {
  * @param callbackFn - Function that is called to test every element.
  * @param thisArg - Value to use as `this` when executing `callbackFn`.
  */
-export function find<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean, thisArg?: any):
+export function find<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean, thisArg?: unknown):
 T | undefined {
   const boundMapFn = callbackFn.bind(thisArg);
   const count = 0;

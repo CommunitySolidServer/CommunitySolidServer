@@ -8,7 +8,7 @@ import Dict = NodeJS.Dict;
 /**
  * Parent class for template engines that accept handling based on whether the template extension is supported.
  */
-export abstract class ExtensionBasedTemplateEngine<T extends Dict<any> = Dict<any>> extends TemplateEngine<T> {
+export abstract class ExtensionBasedTemplateEngine<T extends Dict<unknown> = Dict<unknown>> extends TemplateEngine<T> {
   protected readonly supportedExtensions: string[];
 
   /**

@@ -18,10 +18,10 @@ import type { SizeReporter } from '../size-reporter/SizeReporter';
  * This can be bytes, quads, file count, ...
  */
 export abstract class QuotaStrategy {
-  public readonly reporter: SizeReporter<any>;
+  public readonly reporter: SizeReporter<unknown>;
   public readonly limit: Size;
 
-  public constructor(reporter: SizeReporter<any>, limit: Size) {
+  protected constructor(reporter: SizeReporter<unknown>, limit: Size) {
     this.reporter = reporter;
     this.limit = limit;
   }
@@ -87,7 +87,7 @@ export abstract class QuotaStrategy {
     const { reporter } = this;
 
     return guardStream(new PassThrough({
-      async transform(this, chunk: any, enc: string, done: () => void): Promise<void> {
+      async transform(this, chunk: unknown, enc: string, done: () => void): Promise<void> {
         total += await reporter.calculateChunkSize(chunk);
         const availableSpace = await that.getAvailableSpace(identifier);
         if (availableSpace.amount < total) {

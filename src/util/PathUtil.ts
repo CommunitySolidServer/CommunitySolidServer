@@ -6,6 +6,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
 import { errorTermsToMetadata } from './errors/HttpErrorUtil';
+import type { Json } from './Json';
 
 /**
  * Changes a potential Windows path into a POSIX path.
@@ -305,8 +306,8 @@ export function resolveAssetPath(path = modulePathPlaceholder): string {
 /**
  * Reads the project package.json and returns it.
  */
-export async function readPackageJson(): Promise<Record<string, any>> {
-  return readJson(resolveModulePath('package.json')) as Promise<Record<string, any>>;
+export async function readPackageJson(): Promise<Record<string, Json>> {
+  return readJson(resolveModulePath('package.json')) as Promise<Record<string, Json>>;
 }
 
 /**

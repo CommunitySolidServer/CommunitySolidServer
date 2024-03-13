@@ -7,7 +7,7 @@ import Dict = NodeJS.Dict;
 /**
  * Fills in EJS templates.
  */
-export class EjsTemplateEngine<T extends Dict<any> = Dict<any>> extends ExtensionBasedTemplateEngine<T> {
+export class EjsTemplateEngine<T extends Dict<unknown> = Dict<unknown>> extends ExtensionBasedTemplateEngine<T> {
   private readonly baseUrl: string;
 
   /**

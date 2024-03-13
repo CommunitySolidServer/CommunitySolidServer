@@ -7,6 +7,7 @@ const typeAwareRules = {
   'no-throw-literal': 'off',
   'ts/await-thenable': 'error',
   'ts/dot-notation': [ 'error', { allowKeywords: true }],
+  'ts/no-explicit-any': 'error',
   'ts/no-floating-promises': 'error',
   'ts/no-for-in-array': 'error',
   'ts/no-implied-eval': 'error',

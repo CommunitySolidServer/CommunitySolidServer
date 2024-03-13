@@ -13,7 +13,7 @@ export class WinstonLogger extends BaseLogger {
     this.logger = logger;
   }
 
-  public log(level: LogLevel, message: string, meta?: any): this {
+  public log(level: LogLevel, message: string, meta?: unknown): this {
     this.logger.log(level, message, meta);
     return this;
   }

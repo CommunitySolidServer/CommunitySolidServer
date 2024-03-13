@@ -26,7 +26,7 @@ export interface SystemError extends Error {
   /**
    * If present, extra details about the error condition.
    */
-  info?: any;
+  info?: unknown;
   /**
    * If present, the file path when reporting a file system error.
    */

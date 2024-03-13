@@ -62,8 +62,8 @@ export class ConvertingErrorHandler extends ErrorHandler {
   private async extractErrorDetails({ error, request }: ErrorHandlerArgs): Promise<PreparedArguments> {
     if (!this.showStackTrace) {
       delete error.stack;
-      // eslint-disable-next-line ts/no-unsafe-member-access
-      delete (error as any).cause;
+      // Cheating here to delete a readonly field
+      delete (error as { cause: unknown }).cause;
     }
     const representation = new BasicRepresentation([ error ], error.metadata, INTERNAL_ERROR, false);
     const identifier = { path: representation.metadata.identifier.value };

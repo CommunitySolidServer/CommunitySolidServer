@@ -10,7 +10,7 @@ import type { InteractionRoute } from './InteractionRoute';
  * Rejects operations that target a different route,
  * otherwise the input parameters are passed to the source handler.
  */
-export class InteractionRouteHandler<T extends InteractionRoute<any>> extends JsonInteractionHandler {
+export class InteractionRouteHandler<T extends InteractionRoute<string>> extends JsonInteractionHandler {
   protected readonly route: T;
   protected readonly source: JsonInteractionHandler;
 

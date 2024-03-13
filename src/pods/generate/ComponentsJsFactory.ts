@@ -10,5 +10,5 @@ export interface ComponentsJsFactory {
    *
    * @returns The resulting object, corresponding to the given component IRI.
    */
-  generate: <T>(configPath: string, componentIri: string, variables: Record<string, any>) => Promise<T>;
+  generate: <T>(configPath: string, componentIri: string, variables: Record<string, unknown>) => Promise<T>;
 }

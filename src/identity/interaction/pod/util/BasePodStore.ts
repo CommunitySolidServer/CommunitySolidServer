@@ -44,9 +44,10 @@ export class BasePodStore extends Initializer implements PodStore {
 
   private initialized = false;
 
-  public constructor(storage: AccountLoginStorage<any>, manager: PodManager, visible = false) {
+  // Wrong typings to prevent Components.js typing issues
+  public constructor(storage: AccountLoginStorage<Record<string, never>>, manager: PodManager, visible = false) {
     super();
-    this.storage = storage as typeof this.storage;
+    this.storage = storage as unknown as typeof this.storage;
     this.visible = visible;
     this.manager = manager;
   }
