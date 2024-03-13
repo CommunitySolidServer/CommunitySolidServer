@@ -134,7 +134,6 @@ export function parseParameters(parameters: string[], replacements: Record<strin
   return parsed;
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Parses a single media range with corresponding parameters from an Accept header.
  * For every parameter value that is a double quoted string,
@@ -146,7 +145,7 @@ export function parseParameters(parameters: string[], replacements: Record<strin
  * @param replacements - The double quoted strings that need to be replaced.
  * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
- * @returns {@link Accept | undefined} object corresponding to the header string, or
+ * @returns An object corresponding to the header string, or
  * undefined if an invalid type or sub-type is detected.
  */
 function parseAcceptPart(part: string, replacements: Record<string, string>, strict: boolean): Accept | undefined {
