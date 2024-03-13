@@ -52,6 +52,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'error',
 
     'jsdoc/no-multi-asterisks': [ 'error', { allowWhitespace: true }],
+    'jsdoc/no-types': 'error',
 
     'node/prefer-global/buffer': [ 'error', 'always' ],
     'node/prefer-global/console': [ 'error', 'always' ],
