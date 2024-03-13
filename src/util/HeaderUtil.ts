@@ -31,7 +31,7 @@ const logger = getLoggerFor('HeaderUtil');
  * Replaces all double quoted strings in the input string with `"0"`, `"1"`, etc.
  * @param input - The Accept header string.
  *
- * @throws {@link BadRequestHttpError}
+ * @throws BadRequestHttpError
  * Thrown if invalid characters are detected in a quoted string.
  *
  * @returns The transformed string and a map with keys `"0"`, etc. and values the original string that was there.
@@ -371,7 +371,7 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
  *
  * @param input - The Content-Type header string.
  *
- * @throws {@link BadRequestHttpError}
+ * @throws BadRequestHttpError
  * Thrown on invalid header syntax.
  *
  * @returns A {@link ContentType} object containing the value and optional parameters.
