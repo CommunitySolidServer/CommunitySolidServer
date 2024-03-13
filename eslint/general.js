@@ -53,6 +53,7 @@ module.exports = {
 
     'jsdoc/no-multi-asterisks': [ 'error', { allowWhitespace: true }],
     'jsdoc/no-types': 'error',
+    'jsdoc/valid-types': 'error',
 
     'node/prefer-global/buffer': [ 'error', 'always' ],
     'node/prefer-global/console': [ 'error', 'always' ],
