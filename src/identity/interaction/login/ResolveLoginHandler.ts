@@ -1,10 +1,11 @@
 import { RepresentationMetadata } from '../../../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../../../logging/LogUtil';
+import type { Json } from '../../../util/Json';
 import { SOLID_HTTP } from '../../../util/Vocabularies';
 import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../account/util/AccountStore';
 import type { AccountStore } from '../account/util/AccountStore';
 import type { CookieStore } from '../account/util/CookieStore';
-import type { Json, JsonRepresentation } from '../InteractionUtil';
+import type { JsonRepresentation } from '../InteractionUtil';
 import { finishInteraction } from '../InteractionUtil';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';

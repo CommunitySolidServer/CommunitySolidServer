@@ -8,7 +8,7 @@ import { QuotaStrategy } from './QuotaStrategy';
 export class GlobalQuotaStrategy extends QuotaStrategy {
   private readonly base: string;
 
-  public constructor(limit: Size, reporter: SizeReporter<any>, base: string) {
+  public constructor(limit: Size, reporter: SizeReporter<unknown>, base: string) {
     super(reporter, limit);
     this.base = base;
   }

@@ -138,7 +138,7 @@ export class WrappedSetMultiMap<TKey, TVal> implements SetMultiMap<TKey, TVal> {
     return this.map.values();
   }
 
-  public forEach(callbackfn: (value: TVal, key: TKey, map: SetMultiMap<TKey, TVal>) => void, thisArg?: any): void {
+  public forEach(callbackfn: (value: TVal, key: TKey, map: SetMultiMap<TKey, TVal>) => void, thisArg?: unknown): void {
     for (const [ key, value ] of this) {
       callbackfn.bind(thisArg)(value, key, this);
     }

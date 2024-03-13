@@ -58,7 +58,7 @@ export class DynamicJsonToTemplateConverter extends RepresentationConverter {
       return representation;
     }
 
-    const contents = JSON.parse(await readableToString(representation.data)) as NodeJS.Dict<any>;
+    const contents = JSON.parse(await readableToString(representation.data)) as NodeJS.Dict<unknown>;
 
     const rendered = await this.templateEngine.handleSafe({ contents, template: { templateFile: typeMap[type] }});
     const metadata = new RepresentationMetadata(representation.metadata, { [CONTENT_TYPE]: type });

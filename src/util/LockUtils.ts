@@ -12,7 +12,7 @@ const logger = getLoggerFor('LockUtil');
 export async function setJitterTimeout(delay: number, jitter = 0): Promise<void> {
   jitter = Math.max(0, Math.floor(Math.random() * jitter));
   delay = Math.max(0, delay + jitter);
-  return new Promise<void>((resolve): any => setTimeout(resolve, delay));
+  return new Promise<void>((resolve): unknown => setTimeout(resolve, delay));
 }
 
 export interface AttemptSettings {

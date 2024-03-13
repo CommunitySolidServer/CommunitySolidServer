@@ -1,10 +1,12 @@
 import { string } from 'yup';
-import type { ObjectSchema, Schema, ValidateOptions } from 'yup';
+import type { AnyObject, Maybe, ObjectSchema, Schema, ValidateOptions } from 'yup';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
+import type { Json } from '../../util/Json';
 import { isUrl } from '../../util/StringUtil';
-import type { Json } from './InteractionUtil';
 import Dict = NodeJS.Dict;
+
+type BaseObjectSchema = ObjectSchema<Maybe<AnyObject>>;
 
 // The builtin `url` validator of `yup` does not support localhost URLs, so we create a custom one here.
 // The reason for having a URL validator on the WebID is to prevent us from generating invalid ACL,
@@ -20,16 +22,16 @@ export const URL_SCHEMA = string().trim().optional().test({
   },
 });
 
-function isObjectSchema(schema: Schema): schema is ObjectSchema<any> {
+function isObjectSchema(schema: Schema): schema is BaseObjectSchema {
   return schema.type === 'object';
 }
 
 // `T` can't extend Schema since it could also be a Reference, which is a type `yup` doesn't export
-type SchemaType<T> = T extends ObjectSchema<any> ? ObjectType<T> : { required: boolean; type: string };
+type SchemaType<T> = T extends BaseObjectSchema ? ObjectType<T> : { required: boolean; type: string };
 // The type of the fields in an object schema
-type FieldType<T extends ObjectSchema<any>> = T extends { fields: Record<infer R, any> } ? R : never;
+type FieldType<T extends BaseObjectSchema> = T extends { fields: Record<infer R, unknown> } ? R : never;
 // Simplified type we use to represent yup objects
-type ObjectType<T extends ObjectSchema<any>> =
+type ObjectType<T extends BaseObjectSchema> =
   { required: boolean; type: 'object'; fields: {[ K in FieldType<T> ]: SchemaType<T['fields'][K]> }};
 
 /**
@@ -50,7 +52,7 @@ function parseSchemaDescription<T extends Schema>(schema: T): SchemaType<T> {
 /**
  * Generates a simplified representation of a yup schema.
  */
-export function parseSchema<T extends ObjectSchema<any>>(schema: T): Pick<SchemaType<T>, 'fields'> {
+export function parseSchema<T extends BaseObjectSchema>(schema: T): Pick<SchemaType<T>, 'fields'> {
   const result = parseSchemaDescription(schema);
   return { fields: result.fields };
 }
@@ -58,13 +60,12 @@ export function parseSchema<T extends ObjectSchema<any>>(schema: T): Pick<Schema
 /**
  * Same functionality as the yup validate function, but throws a {@link BadRequestHttpError} if there is an error.
  */
-export async function validateWithError<T extends ObjectSchema<any>>(
+export async function validateWithError<T extends BaseObjectSchema>(
   schema: T,
   data: unknown,
-  options?: ValidateOptions<any>,
+  options?: ValidateOptions<AnyObject>,
 ): Promise<T['__outputType']> {
   try {
-    // eslint-disable-next-line ts/no-unsafe-return
     return await schema.validate(data, options);
   } catch (error: unknown) {
     throw new BadRequestHttpError(createErrorMessage(error));

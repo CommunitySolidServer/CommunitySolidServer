@@ -10,6 +10,7 @@ import { isHttpRequest } from '../server/HttpRequest';
 import { InternalServerError } from './errors/InternalServerError';
 import type { Guarded } from './GuardedStream';
 import { guardStream } from './GuardedStream';
+import type { Json } from './Json';
 import type { PromiseOrValue } from './PromiseUtil';
 
 export const endOfStream = promisify(eos);
@@ -45,9 +46,9 @@ export async function readableToQuads(stream: Readable): Promise<Store> {
  *
  * @returns The parsed object.
  */
-export async function readJsonStream(stream: Readable): Promise<NodeJS.Dict<any>> {
+export async function readJsonStream(stream: Readable): Promise<Json> {
   const body = await readableToString(stream);
-  return JSON.parse(body) as NodeJS.Dict<any>;
+  return JSON.parse(body) as Json;
 }
 
 /**
@@ -119,16 +120,16 @@ export function pipeSafely<T extends Writable>(
   return guardStream(destination);
 }
 
-export interface AsyncTransformOptions<T = any> extends DuplexOptions {
+export interface AsyncTransformOptions<T = unknown> extends DuplexOptions {
   /**
    * Transforms data from the source by calling the `push` method
    */
-  transform?: (this: Transform, data: T, encoding: string) => PromiseOrValue<any>;
+  transform?: (this: Transform, data: T, encoding: string) => PromiseOrValue<unknown>;
 
   /**
    * Performs any final actions after the source has ended
    */
-  flush?: (this: Transform) => PromiseOrValue<any>;
+  flush?: (this: Transform) => PromiseOrValue<unknown>;
 }
 
 /**
@@ -140,7 +141,7 @@ export interface AsyncTransformOptions<T = any> extends DuplexOptions {
  *
  * @returns The transformed stream
  */
-export function transformSafely<T = any>(
+export function transformSafely<T = unknown>(
   source: NodeJS.ReadableStream,
   {
     transform = function(data): void {
@@ -179,6 +180,6 @@ export function transformSafely<T = any>(
  * @param contents - Data to stream.
  * @param options - Options to pass to the Readable constructor. See {@link Readable.from}.
  */
-export function guardedStreamFrom(contents: string | Iterable<any>, options?: ReadableOptions): Guarded<Readable> {
+export function guardedStreamFrom(contents: string | Iterable<unknown>, options?: ReadableOptions): Guarded<Readable> {
   return guardStream(Readable.from(typeof contents === 'string' ? [ contents ] : contents, options));
 }

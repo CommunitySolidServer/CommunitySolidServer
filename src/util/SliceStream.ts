@@ -57,7 +57,7 @@ export class SliceStream extends Transform {
   }
 
   // eslint-disable-next-line ts/naming-convention
-  public _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback): void {
+  public _transform(chunk: unknown, encoding: BufferEncoding, callback: TransformCallback): void {
     this.source.pause();
     if (this.writableObjectMode) {
       this.objectSlice(chunk);
@@ -72,12 +72,12 @@ export class SliceStream extends Transform {
   protected binarySlice(chunk: Buffer): void {
     let length = chunk.length;
     if (this.remainingSkip > 0) {
-      chunk = chunk.slice(this.remainingSkip);
+      chunk = chunk.subarray(this.remainingSkip);
       this.remainingSkip -= length - chunk.length;
       length = chunk.length;
     }
     if (length > 0 && this.remainingSkip <= 0) {
-      chunk = chunk.slice(0, this.remainingRead);
+      chunk = chunk.subarray(0, this.remainingRead);
       this.push(chunk);
       this.remainingRead -= length;
       this.checkEnd();

@@ -32,6 +32,7 @@ module.exports = {
     'test/prefer-lowercase-title': 'off',
 
     'ts/naming-convention': 'off',
+    'ts/no-explicit-any': 'off',
     'ts/no-unsafe-argument': 'off',
     'ts/no-unsafe-assignment': 'off',
     'ts/no-unsafe-call': 'off',

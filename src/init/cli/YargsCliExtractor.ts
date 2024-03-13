@@ -19,7 +19,7 @@ export class YargsParameter {
    * @param name - Name of the parameter. Corresponds to the first parameter passed to the `yargs.options` function.
    * @param options - Options for a single parameter that should be parsed. @range {json}
    */
-  public constructor(name: string, options: Record<string, any>) {
+  public constructor(name: string, options: Record<string, unknown>) {
     this.name = name;
     this.options = options;
   }
