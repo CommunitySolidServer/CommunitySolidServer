@@ -35,10 +35,11 @@ describe('A RdfToQuadConverter', (): void => {
   const converter = new RdfToQuadConverter();
   const identifier: ResourceIdentifier = { path: 'http://example.com/resource' };
   it('supports serializing as quads.', async(): Promise<void> => {
-    const types = rdfParser.getContentTypes()
-      .then((inputTypes): string[] => inputTypes.filter((type): boolean => type !== 'application/json'));
-    for (const type of await types) {
-      await expect(converter.getOutputTypes(type)).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
+    const types = await rdfParser.getContentTypesPrioritized();
+    // JSON is not supported
+    delete types['application/json'];
+    for (const [ type, priority ] of Object.entries(types)) {
+      await expect(converter.getOutputTypes(type)).resolves.toEqual({ [INTERNAL_QUADS]: priority });
     }
   });
 
