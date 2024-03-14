@@ -174,6 +174,7 @@ export class SparqlDataAccessor implements DataAccessor {
 
   /**
    * Creates the name for the metadata of a resource.
+   *
    * @param name - Name of the (non-metadata) resource.
    */
   private getMetadataNode(name: NamedNode): NamedNode {
@@ -189,6 +190,7 @@ export class SparqlDataAccessor implements DataAccessor {
 
   /**
    * Creates a CONSTRUCT query that returns all quads contained within a single resource.
+   *
    * @param name - Name of the resource to query.
    */
   private sparqlConstruct(name: NamedNode): ConstructQuery {
@@ -213,6 +215,7 @@ export class SparqlDataAccessor implements DataAccessor {
   /**
    * Creates an update query that overwrites the data and metadata of a resource.
    * If there are no triples we assume it's a container (so don't overwrite the main graph with containment triples).
+   *
    * @param name - Name of the resource to update.
    * @param metadata - New metadata of the resource.
    * @param parent - Name of the parent to update the containment triples.
@@ -255,6 +258,7 @@ export class SparqlDataAccessor implements DataAccessor {
 
   /**
    * Creates an update query that overwrites metadata of a resource.
+   *
    * @param metaName - Name of the metadata resource to update.
    * @param metadata - New metadata of the resource.
    */
@@ -280,6 +284,7 @@ export class SparqlDataAccessor implements DataAccessor {
 
   /**
    * Creates a query that deletes everything related to the given name.
+   *
    * @param name - Name of resource to delete.
    * @param parent - Parent of the resource to delete so the containment triple can be removed (unless root).
    */
@@ -306,6 +311,7 @@ export class SparqlDataAccessor implements DataAccessor {
   /**
    * Helper function for creating SPARQL update queries.
    * Creates an operation for deleting all triples in a graph.
+   *
    * @param name - Name of the graph to delete.
    */
   private sparqlUpdateDeleteAll(name: NamedNode): InsertDeleteOperation {
@@ -318,6 +324,7 @@ export class SparqlDataAccessor implements DataAccessor {
   /**
    * Helper function for creating SPARQL update queries.
    * Creates a Graph selector with the given triples.
+   *
    * @param name - Name of the graph.
    * @param triples - Triples/triple patterns to select.
    */
@@ -327,6 +334,7 @@ export class SparqlDataAccessor implements DataAccessor {
 
   /**
    * Sends a SPARQL CONSTRUCT query to the endpoint and returns a stream of quads.
+   *
    * @param sparqlQuery - Query to execute.
    */
   private async sendSparqlConstruct(sparqlQuery: ConstructQuery): Promise<Guarded<Readable>> {
@@ -342,6 +350,7 @@ export class SparqlDataAccessor implements DataAccessor {
 
   /**
    * Sends a SPARQL update query to the stored endpoint.
+   *
    * @param sparqlQuery - Query to send.
    */
   private async sendSparqlUpdate(sparqlQuery: Update): Promise<void> {

@@ -37,6 +37,7 @@ export class RedirectingHttpHandler extends HttpHandler {
 
   /**
    * Creates a handler for the provided redirects.
+   *
    * @param redirects - A mapping between URL patterns.
    * @param baseUrl - Base URL of the server.
    * @param targetExtractor - To extract the target from the request.

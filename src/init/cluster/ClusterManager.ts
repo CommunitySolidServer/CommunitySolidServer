@@ -18,7 +18,9 @@ enum ClusterMode {
 
 /**
  * Convert workers amount to {@link ClusterMode}
+ *
  * @param workers - Amount of workers
+ *
  * @returns ClusterMode enum value
  */
 function toClusterMode(workers: number): ClusterMode {
@@ -92,6 +94,7 @@ export class ClusterManager {
 
   /**
    * Check whether the CSS server was booted in single threaded mode.
+   *
    * @returns True is single threaded.
    */
   public isSingleThreaded(): boolean {
@@ -100,6 +103,7 @@ export class ClusterManager {
 
   /**
    * Whether the calling process is the primary process.
+   *
    * @returns True if primary
    */
   public isPrimary(): boolean {
@@ -108,6 +112,7 @@ export class ClusterManager {
 
   /**
    * Whether the calling process is a worker process.
+   *
    * @returns True if worker
    */
   public isWorker(): boolean {

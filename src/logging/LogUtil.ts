@@ -42,6 +42,7 @@ export function getLoggerFor(loggable: string | Instance): Logger {
 /**
  * Sets the global logger factory.
  * This causes loggers created by {@link getLoggerFor} to delegate to a logger from the given factory.
+ *
  * @param loggerFactory - A logger factory.
  */
 export function setGlobalLoggerFactory(loggerFactory: LoggerFactory): void {

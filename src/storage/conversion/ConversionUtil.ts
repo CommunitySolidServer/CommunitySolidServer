@@ -164,6 +164,7 @@ export function matchesMediaPreferences(type: string, preferred?: ValuePreferenc
 /**
  * Checks if the given two media types/ranges match each other.
  * Takes wildcards into account.
+ *
  * @param mediaA - Media type to match.
  * @param mediaB - Media type to match.
  *
@@ -202,6 +203,7 @@ export function isInternalContentType(contentType?: string): boolean {
 
 /**
  * Serializes a preferences object to a string for display purposes.
+ *
  * @param preferences - Preferences to serialize
  */
 export function preferencesToString(preferences: ValuePreferences): string {

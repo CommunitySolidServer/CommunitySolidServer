@@ -28,6 +28,7 @@ export type ChangeMap = IdentifierMap<RepresentationMetadata>;
 export interface ResourceStore extends ResourceSet {
   /**
    * Retrieves a representation of a resource.
+   *
    * @param identifier - Identifier of the resource to read.
    * @param preferences - Preferences indicating desired representations.
    * @param conditions - Optional conditions under which to proceed.
@@ -43,6 +44,7 @@ export interface ResourceStore extends ResourceSet {
   /**
    * Sets or replaces the representation of a resource,
    * creating a new resource and intermediary containers as needed.
+   *
    * @param identifier - Identifier of resource to update.
    * @param representation - New representation of the resource.
    * @param conditions - Optional conditions under which to proceed.
@@ -57,6 +59,7 @@ export interface ResourceStore extends ResourceSet {
 
   /**
    * Creates a new resource in the container.
+   *
    * @param container - Container in which to create a resource.
    * @param representation - Representation of the new resource
    * @param conditions - Optional conditions under which to proceed.
@@ -71,6 +74,7 @@ export interface ResourceStore extends ResourceSet {
 
   /**
    * Deletes a resource.
+   *
    * @param identifier - Identifier of resource to delete.
    * @param conditions - Optional conditions under which to proceed.
    *
@@ -84,6 +88,7 @@ export interface ResourceStore extends ResourceSet {
   /**
    * Sets or updates the representation of a resource,
    * creating a new resource and intermediary containers as needed.
+   *
    * @param identifier - Identifier of resource to update.
    * @param patch - Description of which parts to update.
    * @param conditions - Optional conditions under which to proceed.

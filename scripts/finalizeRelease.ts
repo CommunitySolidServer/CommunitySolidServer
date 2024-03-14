@@ -27,7 +27,9 @@ async function commitAndTag(): Promise<void> {
 
 /**
  * Prompts the user for input
+ *
  * @param query - A string to prompt the user
+ *
  * @returns Promise with the input of the user
  */
 async function waitForUserInput(query: string): Promise<string> {

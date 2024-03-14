@@ -25,6 +25,7 @@ export interface ResourceLink {
 export interface FileIdentifierMapper {
   /**
    * Maps the given file path to an URL and determines the content-type
+   *
    * @param filePath - The input file path.
    * @param isContainer - If the path corresponds to a file.
    *
@@ -36,6 +37,7 @@ export interface FileIdentifierMapper {
    * Determines the content-type if no content-type was provided by finding the corresponding file.
    * If there is no corresponding file a file path will be generated.
    * For containers the content-type input gets ignored.
+   *
    * @param identifier - The input identifier.
    * @param isMetadata - If we are mapping the metadata of the resource instead of its data.
    * @param contentType - The (optional) content-type of the resource.

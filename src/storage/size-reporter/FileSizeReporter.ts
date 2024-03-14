@@ -49,6 +49,7 @@ export class FileSizeReporter implements SizeReporter<string> {
    * Get the total size of a resource and its children if present
    *
    * @param fileLocation - the resource of which you want the total size of ( on disk )
+   *
    * @returns a number specifying how many bytes are used by the resource
    */
   private async getTotalSize(fileLocation: string): Promise<number> {

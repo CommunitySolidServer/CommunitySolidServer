@@ -113,6 +113,7 @@ export function trimLeadingSlashes(path: string): string {
 /**
  * Extracts the extension (without dot) from a path.
  * Custom function since `path.extname` does not work on all cases (e.g. ".acl")
+ *
  * @param path - Input path to parse.
  */
 export function getExtension(path: string): string {
@@ -150,6 +151,7 @@ function transformPathComponents(path: string, transform: (part: string) => stri
  * the provided path.
  *
  * @param path - The path to convert to its canonical URI path form.
+ *
  * @returns The canonical URI path form of the provided path.
  */
 export function toCanonicalUriPath(path: string): string {
@@ -178,6 +180,7 @@ const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`,
  * Characters that would result in an illegal file path remain percent encoded.
  *
  * @param path - The path to decode the URI path components of.
+ *
  * @returns A decoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function decodeUriPathComponents(path: string): string {
@@ -192,6 +195,7 @@ export function decodeUriPathComponents(path: string): string {
  * lead to unnecessary double encoding, resulting in a URI that differs from the expected result.
  *
  * @param path - The path to encode the URI path components of.
+ *
  * @returns An encoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function encodeUriPathComponents(path: string): string {
@@ -200,6 +204,7 @@ export function encodeUriPathComponents(path: string): string {
 
 /**
  * Checks if the path corresponds to a container path (ending in a /).
+ *
  * @param path - Path to check.
  */
 export function isContainerPath(path: string): boolean {
@@ -210,6 +215,7 @@ export function isContainerPath(path: string): boolean {
 
 /**
  * Checks if the identifier corresponds to a container identifier.
+ *
  * @param identifier - Identifier to check.
  */
 export function isContainerIdentifier(identifier: ResourceIdentifier): boolean {
@@ -219,6 +225,7 @@ export function isContainerIdentifier(identifier: ResourceIdentifier): boolean {
 /**
  * Splits a URL (or similar) string into a part containing its scheme and one containing the rest.
  * E.g., `http://test.com/` results in `{ scheme: 'http://', rest: 'test.com/' }`.
+ *
  * @param url - String to parse.
  */
 export function extractScheme(url: string): { scheme: string; rest: string } {
@@ -229,6 +236,7 @@ export function extractScheme(url: string): { scheme: string; rest: string } {
 /**
  * Creates a relative URL by removing the base URL.
  * Will throw an error in case the resulting target is not withing the base URL scope.
+ *
  * @param baseUrl - Base URL.
  * @param request - Incoming request of which the target needs to be extracted.
  * @param targetExtractor - Will extract the target from the request.
@@ -251,11 +259,12 @@ Promise<string> {
  * In case there is a subdomain, the first match of the regular expression will be that subdomain.
  *
  * Examples with baseUrl `http://test.com/foo/`:
- *  - Will match `http://test.com/foo/`
- *  - Will match `http://test.com/foo/bar/baz`
- *  - Will match `http://alice.bob.test.com/foo/bar/baz`, first match result will be `alice.bob`
- *  - Will not match `http://test.com/`
- *  - Will not match `http://alicetest.com/foo/`
+ * - Will match `http://test.com/foo/`
+ * - Will match `http://test.com/foo/bar/baz`
+ * - Will match `http://alice.bob.test.com/foo/bar/baz`, first match result will be `alice.bob`
+ * - Will not match `http://test.com/`
+ * - Will not match `http://alicetest.com/foo/`
+ *
  * @param baseUrl - Base URL for the regular expression.
  */
 export function createSubdomainRegexp(baseUrl: string): RegExp {

@@ -88,6 +88,7 @@ export abstract class BaseReadWriteLocker extends EqualReadWriteLocker {
 
   /**
    * Update the counter that keeps track of having open read locks there currently are.
+   *
    * @param identifier - Identifier on which to update the number of read locks.
    * @param mod - `+1` or `-1`.
    */

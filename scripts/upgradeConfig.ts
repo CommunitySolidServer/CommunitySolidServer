@@ -18,6 +18,7 @@ import { joinFilePath, readPackageJson } from '../src/util/PathUtil';
 
 /**
  * Search and replace the version of a component with given name
+ *
  * @param  filePath - File to search/replace
  * @param  regex - RegExp matching the component reference
  * @param  version - Semantic version to change to
@@ -31,8 +32,10 @@ async function replaceComponentVersion(filePath: string, regex: RegExp, version:
 
 /**
  * Recursive search for files that match a given Regex
+ *
  * @param  path - Path of folder to start search in
  * @param  regex - A regular expression to which file names will be matched
+ *
  * @returns Promise with all file pathss
  */
 async function getFilePaths(path: string, regex: RegExp): Promise<string[]> {

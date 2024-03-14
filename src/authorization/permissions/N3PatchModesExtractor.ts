@@ -22,6 +22,7 @@ export class N3PatchModesExtractor extends ModesExtractor {
   /**
    * Certain permissions depend on the existence of the target resource.
    * The provided {@link ResourceSet} will be used for that.
+   *
    * @param resourceSet - {@link ResourceSet} that can verify the target resource existence.
    */
   public constructor(resourceSet: ResourceSet) {
