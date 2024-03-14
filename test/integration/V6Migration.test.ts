@@ -138,8 +138,8 @@ describe('A server migrating from v6', (): void => {
   it('still supports the existing client credentials.', async(): Promise<void> => {
     // These are the values stored in the original assets
     const id = 'token_fd13b73d-2527-4280-82af-278e5b8fe607';
-    // eslint-disable-next-line max-len
-    const secret = 'a809d7ce5daf0e9acd457c91d712ff05038e4a87192e27191c837602bd4b370c633282864c133650b0e9a35b59018b064157532642f628affb2f79e81999e898';
+    const secret = 'a809d7ce5daf0e9acd457c91d712ff05038e4a87192e27191c837602bd4b' +
+      '370c633282864c133650b0e9a35b59018b064157532642f628affb2f79e81999e898';
     const tokenUrl = joinUrl(baseUrl, '.oidc/token');
     const dpopHeader = await createDpopHeader(tokenUrl, 'POST', await generateDpopKeyPair());
     const authString = `${encodeURIComponent(id)}:${encodeURIComponent(secret)}`;

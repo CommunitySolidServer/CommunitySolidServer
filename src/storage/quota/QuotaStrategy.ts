@@ -1,6 +1,5 @@
 // These two eslint lines are needed to store 'this' in a variable so it can be used
 // in the PassThrough of createQuotaGuard
-/* eslint-disable ts/no-this-alias */
 import { PassThrough } from 'node:stream';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -87,6 +86,7 @@ export abstract class QuotaStrategy {
    */
   public async createQuotaGuard(identifier: ResourceIdentifier): Promise<Guarded<PassThrough>> {
     let total = 0;
+    // eslint-disable-next-line ts/no-this-alias
     const that = this;
     const { reporter } = this;
 

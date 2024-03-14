@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-process-exit */
 import { existsSync } from 'node:fs';
 import type { WriteStream } from 'node:tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
@@ -145,6 +144,7 @@ export class AppRunner {
   public runCliSync({ argv, stderr = process.stderr }: { argv?: CliArgv; stderr?: WriteStream }): void {
     this.runCli(argv).catch((error): never => {
       stderr.write(createErrorMessage(error));
+      // eslint-disable-next-line unicorn/no-process-exit
       process.exit(1);
     });
   }

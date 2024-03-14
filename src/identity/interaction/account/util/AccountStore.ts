@@ -5,7 +5,6 @@ export const ACCOUNT_SETTINGS_REMEMBER_LOGIN = 'rememberLogin';
 
 export type AccountSettings = { [ACCOUNT_SETTINGS_REMEMBER_LOGIN]?: boolean };
 
-/* eslint-disable ts/method-signature-style */
 /**
  * Used to store account data.
  */
@@ -24,7 +23,7 @@ export interface AccountStore {
    * @param id - The account identifier.
    * @param setting - The setting to find the value of.
    */
-  getSetting<T extends keyof AccountSettings>(id: string, setting: T): Promise<AccountSettings[T]>;
+  getSetting: <T extends keyof AccountSettings>(id: string, setting: T) => Promise<AccountSettings[T]>;
 
   /**
    * Updates the settings for the account with the given identifier to the new values.
@@ -33,5 +32,5 @@ export interface AccountStore {
    * @param setting - The setting to update.
    * @param value - The new value for the setting.
    */
-  updateSetting<T extends keyof AccountSettings>(id: string, setting: T, value: AccountSettings[T]): Promise<void>;
+  updateSetting: <T extends keyof AccountSettings>(id: string, setting: T, value: AccountSettings[T]) => Promise<void>;
 }
