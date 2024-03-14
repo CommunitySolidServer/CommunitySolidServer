@@ -15,6 +15,7 @@ export class BooleanHandler<TIn> extends AsyncHandler<TIn, boolean> {
 
   /**
    * Creates a new BooleanHandler that stores the given handlers.
+   *
    * @param handlers - Handlers over which it will run.
    */
   public constructor(handlers: AsyncHandler<TIn, boolean>[]) {

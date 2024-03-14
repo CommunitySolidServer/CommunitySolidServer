@@ -39,6 +39,7 @@ export class StaticAssetHandler extends HttpHandler {
 
   /**
    * Creates a handler for the provided static resources.
+   *
    * @param assets - A list of {@link StaticAssetEntry}.
    * @param baseUrl - The base URL of the server.
    * @param options - Specific options.

@@ -61,6 +61,7 @@ export class JsonFileStorage implements KeyValueStorage<string, unknown> {
 
   /**
    * Updates the data in the JSON file while using a write lock.
+   *
    * @param updateFn - A function that updates the JSON object.
    *
    * @returns The return value of `updateFn`.

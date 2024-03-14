@@ -79,10 +79,13 @@ export type RedisAnswer = 0 | 1 | null | 'OK' | string;
 
 /**
  * Convert a RESP2 response to a boolean.
+ *
  * @param result - The Promise-wrapped result of a RESP2 Redis function.
+ *
  * @returns * `1`, `'OK'`: return `true`
  *          * `0`: returns `false`
  *          * `-ERR`: throw error
+ *
  * @throws On `-ERR*` `null` or any other value
  */
 export async function fromResp2ToBool(result: Promise<RedisAnswer>): Promise<boolean> {
@@ -123,12 +126,14 @@ export interface RedisReadWriteLock extends Redis {
 
   /**
    * Release readLock. This means decrementing the read counter with 1.
+   *
    * @returns 1 if succeeded. '-ERR' if read count goes below 0
    */
   releaseReadLock: (resourceIdentifierPath: string, callback?: Callback<string>) => Promise<RedisAnswer>;
 
   /**
    * Release writeLock. This means deleting the write lock.
+   *
    * @returns 1 if succeeded. '-ERR' if write lock was non-existing.
    */
   releaseWriteLock: (resourceIdentifierPath: string, callback?: Callback<string>) => Promise<RedisAnswer>;
@@ -145,6 +150,7 @@ export interface RedisResourceLock extends Redis {
 
   /**
    * Release lock. This means deleting the lock.
+   *
    * @returns 1 if succeeded. '-ERR' if lock was non-existing.
    */
   releaseLock: (resourceIdentifierPath: string, callback?: Callback<string>) => Promise<RedisAnswer>;

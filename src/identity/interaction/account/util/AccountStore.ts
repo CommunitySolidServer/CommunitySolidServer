@@ -20,6 +20,7 @@ export interface AccountStore {
 
   /**
    * Finds the setting of the account with the given identifier.
+   *
    * @param id - The account identifier.
    * @param setting - The setting to find the value of.
    */
@@ -27,6 +28,7 @@ export interface AccountStore {
 
   /**
    * Updates the settings for the account with the given identifier to the new values.
+   *
    * @param id - The account identifier.
    * @param setting - The setting to update.
    * @param value - The new value for the setting.

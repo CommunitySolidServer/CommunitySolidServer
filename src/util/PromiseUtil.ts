@@ -5,6 +5,7 @@ export type PromiseOrValue<T> = T | Promise<T>;
 
 /**
  * Verifies if the given value is a Promise or not.
+ *
  * @param object - Object to check.
  */
 export function isPromise<T>(object: PromiseOrValue<T>): object is Promise<T> {

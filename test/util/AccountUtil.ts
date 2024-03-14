@@ -10,6 +10,7 @@ export type User = {
 
 /**
  * Registers an account for the given user details and creates one or more pods.
+ *
  * @param baseUrl - Base URL of the server.
  * @param user - User details to register.
  */

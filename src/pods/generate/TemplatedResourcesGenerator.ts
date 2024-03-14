@@ -11,6 +11,7 @@ export interface TemplatedResourcesGenerator {
   /**
    * Generates resources with the given options, based on the given template folder.
    * The output Iterable should be sorted so that containers always appear before their contents.
+   *
    * @param templateFolder - Folder where the templates are located.
    * @param location - Base identifier.
    * @param options - Options that can be used when generating resources.

@@ -29,6 +29,7 @@ const bob: User = {
 
 /**
  * Registers a user with the server and provides them with a pod.
+ *
  * @param user - The user settings necessary to register a user.
  */
 async function register(user: User): Promise<{ webId: string; authorization: string }> {
@@ -78,8 +79,10 @@ async function register(user: User): Promise<{ webId: string; authorization: str
 
 /**
  * Requests a client credentials API token.
+ *
  * @param webId - WebID to create credentials for.
  * @param authorization - Authorization header for the account that tries to create credentials.
+ *
  * @returns The id/secret for the client credentials request.
  */
 async function createCredentials(webId: string, authorization: string): Promise<{ id: string; secret: string }> {
@@ -104,6 +107,7 @@ async function createCredentials(webId: string, authorization: string): Promise<
  * Generates all the necessary data and outputs the necessary lines
  * that need to be added to the CTH environment file
  * so it can use client credentials.
+ *
  * @param user - User for which data needs to be generated.
  */
 async function outputCredentials(user: User): Promise<void> {

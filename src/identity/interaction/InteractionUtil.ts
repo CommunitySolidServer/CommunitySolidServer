@@ -49,6 +49,7 @@ export type AccountInteractionResults = { [ACCOUNT_PROMPT]?: string } & Interact
 
 /**
  * Updates the `oidcInteraction` object with the necessary data in case a prompt gets updated.
+ *
  * @param oidcInteraction - Interaction to update.
  * @param result - New data to add to the interaction.
  * @param mergeWithLastSubmission - If this new data needs to be merged with already existing data in the interaction.
@@ -72,6 +73,7 @@ export async function finishInteraction(
  * Removes the WebID, the `accountId`, from the OIDC session object,
  * allowing us to replace it with a new value.
  * If there is no session in the Interaction, nothing will happen.
+ *
  * @param provider - The OIDC provider.
  * @param oidcInteraction - The current interaction.
  */

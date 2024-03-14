@@ -29,12 +29,13 @@ const logger = getLoggerFor('HeaderUtil');
 // HELPER FUNCTIONS
 /**
  * Replaces all double quoted strings in the input string with `"0"`, `"1"`, etc.
+ *
  * @param input - The Accept header string.
+ *
+ * @returns The transformed string and a map with keys `"0"`, etc. and values the original string that was there.
  *
  * @throws BadRequestHttpError
  * Thrown if invalid characters are detected in a quoted string.
- *
- * @returns The transformed string and a map with keys `"0"`, etc. and values the original string that was there.
  */
 export function transformQuotedStrings(input: string): { result: string; replacements: Record<string, string> } {
   let idx = 0;
@@ -200,6 +201,7 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
 /**
  * Parses an Accept-* header where each part is only a value and a weight, so roughly /.*(q=.*)?/ separated by commas.
  * The returned weights default to 1 if no q value is found or the q value is invalid.
+ *
  * @param input - Input header string.
  * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
@@ -371,10 +373,10 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
  *
  * @param input - The Content-Type header string.
  *
+ * @returns A {@link ContentType} object containing the value and optional parameters.
+ *
  * @throws BadRequestHttpError
  * Thrown on invalid header syntax.
- *
- * @returns A {@link ContentType} object containing the value and optional parameters.
  */
 export function parseContentType(input: string): ContentType {
   // Quoted strings could prevent split from having correct results
@@ -438,6 +440,7 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
  * Parses the link header(s) and returns an array of LinkEntry objects.
  *
  * @param link - A single link header or an array of link headers
+ *
  * @returns A LinkEntry array, LinkEntry contains a link and a params Record&lt;string,string&gt;
  */
 export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
@@ -484,6 +487,7 @@ const authSchemeRegexCache: Map<string, RegExp> = new Map();
  *
  * @param scheme - Name of the authorization scheme (case insensitive).
  * @param authorization - The value of the Authorization header (may be undefined).
+ *
  * @returns True if the Authorization header uses the specified scheme, false otherwise.
  */
 export function matchesAuthorizationScheme(scheme: string, authorization?: string): boolean {
@@ -500,6 +504,7 @@ export function matchesAuthorizationScheme(scheme: string, authorization?: strin
  *
  * @param url - A string representing the URL.
  * @param schemes - Scheme value options (the function will check if at least one matches the URL scheme).
+ *
  * @returns True if the URL scheme matches at least one of the provided options, false otherwise.
  */
 export function hasScheme(url: string, ...schemes: string[]): boolean {

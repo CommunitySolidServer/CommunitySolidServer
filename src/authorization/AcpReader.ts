@@ -65,6 +65,7 @@ export class AcpReader extends PermissionReader {
 
   /**
    * Generates the allowed permissions.
+   *
    * @param target - Target to generate permissions for.
    * @param credentials - Credentials that are trying to access the resource.
    * @param resourceCache - Cache used to store ACR data.

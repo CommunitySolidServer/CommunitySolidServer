@@ -139,6 +139,7 @@ export class FileDataAccessor implements DataAccessor {
   /**
    * Gets the Stats object corresponding to the given file path,
    * resolving symbolic links.
+   *
    * @param path - File path to get info from.
    *
    * @throws NotFoundHttpError
@@ -188,6 +189,7 @@ export class FileDataAccessor implements DataAccessor {
 
   /**
    * Writes the metadata of the resource to a meta file.
+   *
    * @param link - Path related metadata of the resource.
    * @param metadata - Metadata to write.
    *
@@ -226,6 +228,7 @@ export class FileDataAccessor implements DataAccessor {
 
   /**
    * Generates metadata relevant for any resources stored by this accessor.
+   *
    * @param link - Path related metadata.
    * @param stats - Stats objects of the corresponding directory.
    * @param isContainer - If the path points to a container (directory) or not.
@@ -319,6 +322,7 @@ export class FileDataAccessor implements DataAccessor {
 
   /**
    * Helper function to add file system related metadata.
+   *
    * @param metadata - metadata object to add to
    * @param stats - Stats of the file/directory corresponding to the resource.
    */
@@ -351,6 +355,7 @@ export class FileDataAccessor implements DataAccessor {
 
   /**
    * Helper function without extra validation checking to create a data file.
+   *
    * @param path - The filepath of the file to be created.
    * @param data - The data to be put in the file.
    */

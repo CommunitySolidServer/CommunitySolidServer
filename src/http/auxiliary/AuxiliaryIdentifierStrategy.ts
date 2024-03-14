@@ -31,6 +31,7 @@ export interface AuxiliaryIdentifierStrategy {
    * Checks if the input identifier corresponds to an auxiliary resource.
    * This does not check if that auxiliary resource exists,
    * only if the identifier indicates that there could be an auxiliary resource there.
+   *
    * @param identifier - Identifier to check.
    *
    * @returns true if the input identifier points to an auxiliary resource.
@@ -40,6 +41,7 @@ export interface AuxiliaryIdentifierStrategy {
   /**
    * Returns the identifier of the resource which this auxiliary resource is referring to.
    * This does not guarantee that this resource exists.
+   *
    * @param identifier - Identifier of the auxiliary resource.
    *
    * @returns The ResourceIdentifier of the subject resource.

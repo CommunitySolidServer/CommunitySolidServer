@@ -29,6 +29,7 @@ export class HttpError<T extends number = number> extends Error implements HttpE
 
   /**
    * Creates a new HTTP error. Subclasses should call this with their fixed status code.
+   *
    * @param statusCode - HTTP status code needed for the HTTP response.
    * @param name - Error name. Useful for logging and stack tracing.
    * @param message - Error message.

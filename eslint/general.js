@@ -51,8 +51,16 @@ module.exports = {
     'import/extensions': 'error',
     'import/no-extraneous-dependencies': 'error',
 
+    'jsdoc/tag-lines': [ 'error', 'any', { startLines: 1 }],
     'jsdoc/no-multi-asterisks': [ 'error', { allowWhitespace: true }],
     'jsdoc/no-types': 'error',
+    'jsdoc/sort-tags': [ 'error', {
+      tagSequence: [
+        { tags: [ 'param' ]},
+        { tags: [ 'returns' ]},
+        { tags: [ 'throws' ]},
+      ],
+    }],
     'jsdoc/valid-types': 'error',
 
     'node/prefer-global/buffer': [ 'error', 'always' ],

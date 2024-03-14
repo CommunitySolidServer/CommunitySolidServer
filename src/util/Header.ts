@@ -55,6 +55,7 @@ export class ContentType {
 
   /**
    * Serialize this ContentType object to a ContentType header appropriate value string.
+   *
    * @returns The value string, including parameters, if present.
    */
   public toHeaderValueString(): string {

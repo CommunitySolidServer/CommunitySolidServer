@@ -16,6 +16,7 @@ import type { Guarded } from '../../util/GuardedStream';
 export interface DataAccessor {
   /**
    * Should throw a NotImplementedHttpError if the DataAccessor does not support storing the given Representation.
+   *
    * @param representation - Incoming Representation.
    *
    * @throws BadRequestHttpError
@@ -26,6 +27,7 @@ export interface DataAccessor {
   /**
    * Returns a data stream stored for the given identifier.
    * It can be assumed that the incoming identifier will always correspond to a document.
+   *
    * @param identifier - Identifier for which the data is requested.
    */
   getData: (identifier: ResourceIdentifier) => Promise<Guarded<Readable>>;
@@ -56,6 +58,7 @@ export interface DataAccessor {
   /**
    * Writes data and metadata for a document.
    * If any data and/or metadata exist for the given identifier, it should be overwritten.
+   *
    * @param identifier - Identifier of the resource.
    * @param data - Data to store.
    * @param metadata - Metadata to store.
@@ -67,6 +70,7 @@ export interface DataAccessor {
    * Writes metadata for a container.
    * If the container does not exist yet it should be created,
    * if it does its metadata should be overwritten, except for the containment triples.
+   *
    * @param identifier - Identifier of the container.
    * @param metadata - Metadata to store.
    */
@@ -75,6 +79,7 @@ export interface DataAccessor {
   /**
    * Writes metadata for a resource.
    * It can safely be assumed that the subject resource already exists.
+   *
    * @param identifier - Identifier of the subject resource.
    * @param metadata - Metadata to store.
    */

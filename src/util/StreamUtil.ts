@@ -19,6 +19,7 @@ const logger = getLoggerFor('StreamUtil');
 
 /**
  * Joins all strings of a stream.
+ *
  * @param stream - Stream of strings.
  *
  * @returns The joined string.
@@ -29,6 +30,7 @@ export async function readableToString(stream: Readable): Promise<string> {
 
 /**
  * Imports quads from a stream into a Store.
+ *
  * @param stream - Stream of quads.
  *
  * @returns A Store containing all the quads.
@@ -42,6 +44,7 @@ export async function readableToQuads(stream: Readable): Promise<Store> {
 
 /**
  * Interprets the stream as JSON and converts it to a Dict.
+ *
  * @param stream - Stream of JSON data.
  *
  * @returns The parsed object.
@@ -55,6 +58,7 @@ export async function readJsonStream(stream: Readable): Promise<Json> {
  * Converts the stream to a single object.
  * This assumes the stream is in object mode and only contains a single element,
  * otherwise an error will be thrown.
+ *
  * @param stream - Object stream with single entry.
  */
 export async function getSingleItem(stream: Readable): Promise<unknown> {
@@ -78,6 +82,7 @@ const safeErrors = new Set([
  * Pipes one stream into another and emits errors of the first stream with the second.
  * In case of an error in the first stream the second one will be destroyed with the given error.
  * This will also make the stream {@link Guarded}.
+ *
  * @param readable - Initial readable stream.
  * @param destination - The destination for writing data.
  * @param mapError - Optional function that takes the error and converts it to a new error.
@@ -134,6 +139,7 @@ export interface AsyncTransformOptions<T = unknown> extends DuplexOptions {
 
 /**
  * Transforms a stream, ensuring that all errors are forwarded.
+ *
  * @param source - The stream to be transformed.
  * @param options - The transformation options.
  * @param options.transform - The transform function to use.
@@ -177,6 +183,7 @@ export function transformSafely<T = unknown>(
 
 /**
  * Converts a string or array to a stream and applies an error guard so that it is {@link Guarded}.
+ *
  * @param contents - Data to stream.
  * @param options - Options to pass to the Readable constructor. See {@link Readable.from}.
  */
