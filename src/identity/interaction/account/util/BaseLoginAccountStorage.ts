@@ -61,7 +61,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
     return this.storage.defineType(type, description);
   }
 
-  public async createIndex<TType extends StringKey<T>>(type: TType, key: StringKey<TType>): Promise<void> {
+  public async createIndex<TType extends StringKey<T>>(type: TType, key: StringKey<T[TType]>): Promise<void> {
     return this.storage.createIndex(type, key);
   }
 

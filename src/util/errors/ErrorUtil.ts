@@ -15,6 +15,5 @@ export function isError(error: unknown): error is Error {
  * Creates a string representing the error message of this object.
  */
 export function createErrorMessage(error: unknown): string {
-  // eslint-disable-next-line ts/restrict-template-expressions
-  return isError(error) ? error.message : `Unknown error: ${error}`;
+  return isError(error) ? error.message : `Unknown error: ${error as string}`;
 }

@@ -68,7 +68,8 @@ export interface V6MigrationInitializerArgs {
   /**
    * Storages for which all entries need to be removed.
    */
-  cleanupStorages: KeyValueStorage<string, unknown>[];
+  // eslint-disable-next-line ts/no-explicit-any
+  cleanupStorages: KeyValueStorage<string, any>[];
   /**
    * The storage that will contain the account data in the new format.
    * Wrong typings to prevent Components.js typing issues.
