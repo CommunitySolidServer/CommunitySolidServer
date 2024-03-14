@@ -9,6 +9,7 @@ import { toNamedTerm } from './TermUtil';
 
 /**
  * Helper function for serializing an array of quads, with as result a Readable object.
+ *
  * @param quads - The array of quads.
  * @param contentType - The content-type to serialize to.
  *
@@ -20,6 +21,7 @@ export function serializeQuads(quads: Quad[], contentType?: string): Guarded<Rea
 
 /**
  * Helper function to convert a Readable into an array of quads.
+ *
  * @param readable - The readable object.
  * @param options - Options for the parser.
  *
@@ -31,6 +33,7 @@ export async function parseQuads(readable: Guarded<Readable>, options: ParserOpt
 
 /**
  * Filter out duplicate quads from an array.
+ *
  * @param quads - Quads to filter.
  *
  * @returns A new array containing the unique quads.

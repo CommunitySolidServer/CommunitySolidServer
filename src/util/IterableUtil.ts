@@ -48,6 +48,7 @@ export function* filter<T>(
 
 /**
  * Creates a new iterable that is a concatenation of all the iterables in the input.
+ *
  * @param iterables - An iterable of which the contents will be concatenated into a new iterable.
  */
 export function* concat<T>(iterables: Iterable<Iterable<T>>): Iterable<T> {

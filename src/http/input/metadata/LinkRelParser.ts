@@ -50,7 +50,9 @@ export class LinkRelObject {
 
   /**
    * Checks whether the object can be added to the metadata
+   *
    * @param object - The link target.
+   *
    * @returns a boolean to indicate whether it can be added to the metadata or not
    */
   private objectAllowed(object: string): boolean {
@@ -59,6 +61,7 @@ export class LinkRelObject {
 
   /**
    * Adds the object to the metadata when it is allowed
+   *
    * @param object - The link target.
    * @param metadata - Metadata of the resource.
    * @param logger - Logger

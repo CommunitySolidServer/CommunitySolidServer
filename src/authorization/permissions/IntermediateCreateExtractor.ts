@@ -19,6 +19,7 @@ export class IntermediateCreateExtractor extends ModesExtractor {
   /**
    * Certain permissions depend on the existence of the target resource.
    * The provided {@link ResourceSet} will be used for that.
+   *
    * @param resourceSet - {@link ResourceSet} that can verify the target resource existence.
    * @param strategy - {@link IdentifierStrategy} that will be used to determine parent containers.
    * @param source - The source {@link ModesExtractor}.

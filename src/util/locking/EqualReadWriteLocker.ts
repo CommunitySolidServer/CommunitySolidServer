@@ -24,6 +24,7 @@ export class EqualReadWriteLocker implements ReadWriteLocker {
   /**
    * Acquires a new lock for the requested identifier.
    * Will resolve when the input function resolves.
+   *
    * @param identifier - Identifier of resource that needs to be locked.
    * @param whileLocked - Function to resolve while the resource is locked.
    */

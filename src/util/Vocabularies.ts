@@ -88,6 +88,7 @@ string extends TLocal ? PartialVocabulary<TBase> : Vocabulary<TBase, TLocal> {
 
 /**
  * Creates a new {@link Vocabulary} that extends an existing one by adding new local names.
+ *
  * @param vocabulary - The {@link Vocabulary} to extend.
  * @param newNames - The new local names that need to be added.
  */

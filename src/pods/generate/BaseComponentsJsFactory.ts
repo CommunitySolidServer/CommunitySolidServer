@@ -29,6 +29,7 @@ export class BaseComponentsJsFactory implements ComponentsJsFactory {
 
   /**
    * Calls Components.js to instantiate a new object.
+   *
    * @param configPath - Location of the config to instantiate.
    * @param componentIri - Iri of the object in the config that will be the result.
    * @param variables - Variables to send to Components.js

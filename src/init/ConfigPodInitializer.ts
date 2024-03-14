@@ -14,6 +14,7 @@ import { Initializer } from './Initializer';
  * Part of the dynamic pod creation.
  * Reads the contents from the configuration storage, uses those values to instantiate ResourceStores,
  * and then adds them to the routing storage.
+ *
  * @see {@link ConfigPodManager}, {@link TemplatedPodGenerator}, {@link BaseUrlRouterRule}
  */
 export class ConfigPodInitializer extends Initializer {

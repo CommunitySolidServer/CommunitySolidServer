@@ -82,6 +82,7 @@ export abstract class ResolveLoginHandler extends JsonInteractionHandler {
 
   /**
    * Updates the account setting that determines if the login status needs to be remembered.
+   *
    * @param accountId - ID of the account.
    * @param remember - If the account should be remembered or not. The setting will not be updated if this is undefined.
    */
@@ -95,6 +96,7 @@ export abstract class ResolveLoginHandler extends JsonInteractionHandler {
 
   /**
    * Takes the necessary steps to log a user in.
+   *
    * @param input - Same input that was passed to the handle function.
    */
   public abstract login(input: JsonInteractionHandlerInput): Promise<JsonRepresentation<LoginOutputType>>;
