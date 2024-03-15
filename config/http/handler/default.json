@@ -14,6 +14,7 @@
           "@id": "urn:solid-server:default:BaseHttpHandler",
           "@type": "WaterfallHandler",
           "handlers": [
+            { "@id": "urn:solid-server:default:JwksHandler" },
             { "@id": "urn:solid-server:default:StaticAssetHandler" },
             { "@id": "urn:solid-server:default:OidcHandler" },
             { "@id": "urn:solid-server:default:NotificationHttpHandler" },
