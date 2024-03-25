@@ -205,9 +205,9 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
       throw new BadRequestHttpError('URL needs a / after the base');
     }
 
-    if (path.includes('/..')) {
-      this.logger.warn(`Disallowed /.. segment in URL ${identifier.path}.`);
-      throw new BadRequestHttpError('Disallowed /.. segment in URL');
+    if (path.includes('/../') || path.endsWith('/..')) {
+      this.logger.warn(`Disallowed /../ segment in URL ${identifier.path}.`);
+      throw new BadRequestHttpError('Disallowed /../ segment in URL');
     }
   }
 
