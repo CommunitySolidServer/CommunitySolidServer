@@ -22,9 +22,13 @@ describe('An BaseFileIdentifierMapper', (): void => {
     });
 
     it('throws 400 if the input path contains relative parts.', async(): Promise<void> => {
-      const result = mapper.mapUrlToFilePath({ path: `${base}test/../test2` }, false);
+      let result = mapper.mapUrlToFilePath({ path: `${base}test/../test2` }, false);
       await expect(result).rejects.toThrow(BadRequestHttpError);
-      await expect(result).rejects.toThrow('Disallowed /.. segment in URL');
+      await expect(result).rejects.toThrow('Disallowed /../ segment in URL');
+
+      result = mapper.mapUrlToFilePath({ path: `${base}test/..` }, false);
+      await expect(result).rejects.toThrow(BadRequestHttpError);
+      await expect(result).rejects.toThrow('Disallowed /../ segment in URL');
     });
 
     it('returns the corresponding file path for container identifiers.', async(): Promise<void> => {
