@@ -3,6 +3,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.5](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.4...v7.0.5) (2024-03-25)
+
+### Fixes
+
+* Allow path segments to start with 2 or more dots ([6fe6b6e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6fe6b6ec89cfa3c1005ca4cf2219fc77de3fb975))
+* Add priorities to RDF types when converting ([33e9ae4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/33e9ae41916c9de0638709b02c42936e53d49414))
+* Extract root as possible pod when using subdomains ([8fff08a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/8fff08a9b60a11c7a7f313c540d9f28a2f96ebc0))
+* Prevent error when switching accounts ([68975e6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/68975e6627416c248d82150692199db8a5fd0d31))
+* Keep content-type when using metadata templates ([137027e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/137027e421da9ffa2d2bbc23c08b2a47d4abd328))
+
 ## [7.0.4](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.3...v7.0.4) (2024-02-07)
 
 ### Chores
