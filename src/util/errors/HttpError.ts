@@ -29,6 +29,7 @@ export class HttpError<T extends number = number> extends Error implements HttpE
 
   /**
    * Creates a new HTTP error. Subclasses should call this with their fixed status code.
+   *
    * @param statusCode - HTTP status code needed for the HTTP response.
    * @param name - Error name. Useful for logging and stack tracing.
    * @param message - Error message.
@@ -44,10 +45,10 @@ export class HttpError<T extends number = number> extends Error implements HttpE
     this.generateMetadata();
   }
 
-  public static isInstance(error: any): error is HttpError {
+  public static isInstance(error: unknown): error is HttpError {
     return isError(error) &&
       typeof (error as HttpError).statusCode === 'number' &&
-      Boolean((error as HttpError).metadata);
+        Boolean((error as HttpError).metadata);
   }
 
   /**
@@ -77,7 +78,7 @@ export interface HttpErrorClass<TCode extends number = number> {
   /**
    * Checks if the given error is an instance of this class.
    */
-  readonly isInstance: (error: any) => error is HttpError<TCode>;
+  readonly isInstance: (error: unknown) => error is HttpError<TCode>;
 }
 
 /**
@@ -99,7 +100,7 @@ export function generateHttpErrorClass<TCode extends number>(statusCode: TCode, 
       super(statusCode, name, message, options);
     }
 
-    public static isInstance(error: any): error is SpecificHttpError {
+    public static isInstance(error: unknown): error is SpecificHttpError {
       return HttpError.isInstance(error) && error.statusCode === statusCode;
     }
   };

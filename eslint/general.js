@@ -4,6 +4,8 @@ module.exports = {
 
     'arrow-body-style': [ 'error', 'as-needed', { requireReturnForObjectLiteral: false }],
     'capitalized-comments': [ 'error', 'always', { ignoreConsecutiveComments: true }],
+    'callback-return': 'error',
+    'consistent-this': 'error',
     curly: [ 'error', 'all' ],
     'default-case': 'error',
     eqeqeq: [ 'error', 'always' ],
@@ -12,6 +14,7 @@ module.exports = {
     'function-call-argument-newline': [ 'error', 'consistent' ],
     'function-paren-newline': [ 'error', 'consistent' ],
     'getter-return': [ 'error', { allowImplicit: true }],
+    'global-require': 'error',
     'grouped-accessor-pairs': [ 'error', 'getBeforeSet' ],
     'guard-for-in': 'error',
     'line-comment-position': [ 'error', { position: 'above' }],
@@ -46,11 +49,24 @@ module.exports = {
     ],
 
     'import/extensions': 'error',
+    'import/no-extraneous-dependencies': 'error',
 
+    'jsdoc/tag-lines': [ 'error', 'any', { startLines: 1 }],
     'jsdoc/no-multi-asterisks': [ 'error', { allowWhitespace: true }],
+    'jsdoc/no-types': 'error',
+    'jsdoc/sort-tags': [ 'error', {
+      tagSequence: [
+        { tags: [ 'param' ]},
+        { tags: [ 'returns' ]},
+        { tags: [ 'throws' ]},
+      ],
+    }],
+    'jsdoc/valid-types': 'error',
 
-    'node/prefer-global/buffer': 'off',
-    'node/prefer-global/process': 'off',
+    'node/prefer-global/buffer': [ 'error', 'always' ],
+    'node/prefer-global/console': [ 'error', 'always' ],
+    'node/prefer-global/process': [ 'error', 'always' ],
+    'node/prefer-global/url': [ 'error', 'always' ],
 
     'style/array-bracket-spacing': [ 'error', 'always', {
       singleValue: true,
@@ -61,13 +77,15 @@ module.exports = {
     'style/block-spacing': 'off',
     'style/brace-style': [ 'error', '1tbs', { allowSingleLine: false }],
     'style/generator-star-spacing': [ 'error', { before: false, after: true }],
-    // Seems to be inconsistent in when it adds indentation and when it does not
-    'style/indent-binary-ops': 'off',
+    'style/indent-binary-ops': 'error',
     'style/member-delimiter-style': [ 'error', {
       multiline: { delimiter: 'semi', requireLast: true },
       singleline: { delimiter: 'semi', requireLast: false },
     }],
-    'style/no-extra-parens': [ 'error', 'functions' ],
+    'style/no-extra-parens': [ 'error', 'all', {
+      // To prevent conflicts with style/no-mixed-operators
+      nestedBinaryExpressions: false,
+    }],
     'style/object-curly-spacing': [ 'error', 'always', {
       objectsInObjects: false,
       arraysInObjects: false,

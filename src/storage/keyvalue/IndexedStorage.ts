@@ -86,7 +86,6 @@ export type IndexedQuery<T extends IndexTypeCollection<T>, TType extends keyof T
         (T[TType][K] extends `${typeof INDEX_ID_KEY}:${infer U}` ? IndexedQuery<T, U, Prev[TDepth]> : never)
       };
 
-/* eslint-disable ts/method-signature-style */
 /**
  * A storage solution that allows for more complex queries than a key/value storage
  * and allows setting indexes on specific keys.
@@ -101,7 +100,7 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    * @param type - The type to define.
    * @param description - A description of the values stored in objects of that type.
    */
-  defineType<TType extends StringKey<T>>(type: TType, description: T[TType]): Promise<void>;
+  defineType: <TType extends StringKey<T>>(type: TType, description: T[TType]) => Promise<void>;
 
   /**
    * Creates an index on a key of the given type, to allow for better queries involving those keys.
@@ -110,7 +109,7 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    * @param type - The type to create an index on.
    * @param key - The key of that type to create an index on.
    */
-  createIndex<TType extends StringKey<T>>(type: TType, key: StringKey<T[TType]>): Promise<void>;
+  createIndex: <TType extends StringKey<T>>(type: TType, key: StringKey<T[TType]>) => Promise<void>;
 
   /**
    * Creates an object of the given type.
@@ -121,7 +120,7 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    *
    * @returns A representation of the newly created object, including its new identifier.
    */
-  create<TType extends StringKey<T>>(type: TType, value: CreateTypeObject<T[TType]>): Promise<TypeObject<T[TType]>>;
+  create: <TType extends StringKey<T>>(type: TType, value: CreateTypeObject<T[TType]>) => Promise<TypeObject<T[TType]>>;
 
   /**
    * Returns `true` if the object of the given type with the given identifier exists.
@@ -131,7 +130,7 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    *
    * @returns Whether this object exists.
    */
-  has<TType extends StringKey<T>>(type: TType, id: string): Promise<boolean>;
+  has: <TType extends StringKey<T>>(type: TType, id: string) => Promise<boolean>;
 
   /**
    * Returns the object of the given type with the given identifier.
@@ -141,7 +140,7 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    *
    * @returns A representation of the object, or `undefined` if there is no object of that type with that identifier.
    */
-  get<TType extends StringKey<T>>(type: TType, id: string): Promise<TypeObject<T[TType]> | undefined>;
+  get: <TType extends StringKey<T>>(type: TType, id: string) => Promise<TypeObject<T[TType]> | undefined>;
 
   /**
    * Finds all objects matching a specific {@link IndexedQuery}.
@@ -151,7 +150,7 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    *
    * @returns A list of objects matching the query.
    */
-  find<TType extends StringKey<T>>(type: TType, query: IndexedQuery<T, TType>): Promise<(TypeObject<T[TType]>)[]>;
+  find: <TType extends StringKey<T>>(type: TType, query: IndexedQuery<T, TType>) => Promise<(TypeObject<T[TType]>)[]>;
 
   /**
    * Similar to {@link IndexedStorage.find}, but only returns the identifiers of the found objects.
@@ -161,7 +160,7 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    *
    * @returns A list of identifiers of the matching objects.
    */
-  findIds<TType extends StringKey<T>>(type: TType, query: IndexedQuery<T, TType>): Promise<string[]>;
+  findIds: <TType extends StringKey<T>>(type: TType, query: IndexedQuery<T, TType>) => Promise<string[]>;
 
   /**
    * Sets the value of a specific object.
@@ -170,7 +169,7 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    * @param type - The type of the object to set.
    * @param value - The new value for the object.
    */
-  set<TType extends StringKey<T>>(type: TType, value: TypeObject<T[TType]>): Promise<void>;
+  set: <TType extends StringKey<T>>(type: TType, value: TypeObject<T[TType]>) => Promise<void>;
 
   /**
    * Sets the value of one specific field in an object.
@@ -180,8 +179,8 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    * @param key - The key to update.
    * @param value - The new value for the given key.
    */
-  setField<TType extends StringKey<T>, TKey extends StringKey<T[TType]>>(
-    type: TType, id: string, key: TKey, value: ValueType<T[TType][TKey]>): Promise<void>;
+  setField: <TType extends StringKey<T>, TKey extends StringKey<T[TType]>>(
+    type: TType, id: string, key: TKey, value: ValueType<T[TType][TKey]>) => Promise<void>;
 
   /**
    * Deletes the given object.
@@ -190,12 +189,12 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    * @param type - The type of the object to delete.
    * @param id - The identifier of the object.
    */
-  delete<TType extends StringKey<T>>(type: TType, id: string): Promise<void>;
+  delete: <TType extends StringKey<T>>(type: TType, id: string) => Promise<void>;
 
   /**
    * Returns an iterator over all objects of the given type.
    *
    * @param type - The type to iterate over.
    */
-  entries<TType extends StringKey<T>>(type: TType): AsyncIterableIterator<TypeObject<T[TType]>>;
+  entries: <TType extends StringKey<T>>(type: TType) => AsyncIterableIterator<TypeObject<T[TType]>>;
 }

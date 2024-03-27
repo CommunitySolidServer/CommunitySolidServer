@@ -11,6 +11,7 @@ const BaseHttpError = generateHttpErrorClass(400, 'BadRequestHttpError');
 export class BadRequestHttpError extends BaseHttpError {
   /**
    * Default message is 'The given input is not supported by the server configuration.'.
+   *
    * @param message - Optional, more specific, message.
    * @param options - Optional error options.
    */

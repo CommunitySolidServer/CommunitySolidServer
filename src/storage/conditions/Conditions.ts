@@ -23,6 +23,7 @@ export interface Conditions {
 
   /**
    * Checks validity based on the given metadata.
+   *
    * @param metadata - Metadata of the representation. Undefined if the resource does not exist.
    * @param strict - How to compare the ETag related headers.
    *                 If true, the comparison will happen on representation level.

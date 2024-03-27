@@ -386,8 +386,9 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
     if (relation) {
       const objs = this.getContainingRecord(root, type, id);
       if (partial[relation.child.key] && objs[id][relation.child.key] !== partial[relation.child.key]) {
-        // eslint-disable-next-line ts/restrict-template-expressions
-        this.logger.error(`Trying to modify reference key ${objs[id][relation.child.key]} on "${type}" ${id}`);
+        this.logger.error(
+          `Trying to modify reference key ${objs[id][relation.child.key] as string} on "${type}" ${id}`,
+        );
         throw new NotImplementedHttpError('Changing reference keys of existing objects is not supported.');
       }
       oldObj = objs[id];
@@ -545,8 +546,7 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
     query: IndexedQuery<T, TType>,
     rootIds?: string[],
   ): Promise<VirtualObject[]> {
-    // eslint-disable-next-line ts/restrict-template-expressions
-    this.logger.debug(`Executing "${type}" query ${JSON.stringify(query)}. Already found roots ${rootIds}.`);
+    this.logger.debug(`Executing "${type}" query ${JSON.stringify(query)}. Already found roots ${rootIds?.join(',')}.`);
 
     const indexedRoots = await this.findIndexedRoots(type, query, rootIds);
 
@@ -665,8 +665,9 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
   Promise<void> {
     const indexKey = this.getIndexKey(type, key, value);
     const indexValues = await this.indexStorage.get(indexKey) ?? [];
-    // eslint-disable-next-line ts/restrict-template-expressions
-    this.logger.debug(`Updating index ${indexKey} by ${add ? 'adding' : 'removing'} ${rootId} from ${indexValues}`);
+    this.logger.debug(
+      `Updating index ${indexKey} by ${add ? 'adding' : 'removing'} ${rootId} from ${indexValues.join(',')}`,
+    );
 
     if (add) {
       if (!indexValues.includes(rootId)) {

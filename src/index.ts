@@ -615,6 +615,7 @@ export * from './util/GenericEventEmitter';
 export * from './util/GuardedStream';
 export * from './util/HeaderUtil';
 export * from './util/IterableUtil';
+export * from './util/Json';
 export * from './util/PathUtil';
 export * from './util/PromiseUtil';
 export * from './util/QuadUtil';

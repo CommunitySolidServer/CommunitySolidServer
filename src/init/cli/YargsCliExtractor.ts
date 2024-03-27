@@ -19,7 +19,7 @@ export class YargsParameter {
    * @param name - Name of the parameter. Corresponds to the first parameter passed to the `yargs.options` function.
    * @param options - Options for a single parameter that should be parsed. @range {json}
    */
-  public constructor(name: string, options: Record<string, any>) {
+  public constructor(name: string, options: Record<string, unknown>) {
     this.name = name;
     this.options = options;
   }
@@ -76,8 +76,9 @@ export class YargsCliExtractor extends CliExtractor {
     yArgv.check((args): boolean => {
       for (const [ name, options ] of Object.entries(this.yargsArgOptions)) {
         if (options.type !== 'array' && Array.isArray(args[name])) {
-          // eslint-disable-next-line ts/restrict-template-expressions
-          throw new Error(`Multiple values for --${name} (-${options.alias}) were provided where only one is allowed`);
+          throw new Error(
+            `Multiple values for --${name} (-${options.alias as string}) were provided where only one is allowed`,
+          );
         }
       }
       return true;

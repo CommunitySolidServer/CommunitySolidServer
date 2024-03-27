@@ -7,6 +7,7 @@ import type { PodSettings } from './settings/PodSettings';
 export interface PodManager {
   /**
    * Creates a pod for the given settings.
+   *
    * @param settings - Settings describing the pod.
    * @param overwrite - If the creation should proceed if there already is a resource there.
    */

@@ -96,6 +96,7 @@ export class WebAclReader extends PermissionReader {
 
   /**
    * Determines the available permissions for the given credentials.
+   *
    * @param acl - Store containing all relevant authorization triples.
    * @param credentials - Credentials to find the permissions for.
    */
@@ -223,6 +224,7 @@ export class WebAclReader extends PermissionReader {
   /**
    * Extracts all rules from the store that are relevant for the given target,
    * based on either the `acl:accessTo` or `acl:default` predicates.
+   *
    * @param store - Store to filter.
    * @param target - The identifier of which the acl rules need to be known.
    * @param directAcl - If the store contains triples from the direct acl resource of the target or not.

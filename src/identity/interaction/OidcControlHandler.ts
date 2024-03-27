@@ -1,5 +1,5 @@
+import type { Json } from '../../util/Json';
 import { ControlHandler } from './ControlHandler';
-import type { Json } from './InteractionUtil';
 import type { JsonInteractionHandlerInput } from './JsonInteractionHandler';
 
 /**

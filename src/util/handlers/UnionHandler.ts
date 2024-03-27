@@ -8,7 +8,7 @@ import { filterHandlers, findHandler } from './HandlerUtil';
  * Will run the handlers and then call the abstract `combine` function with the results,
  * which then generates the handler's output.
  */
-export abstract class UnionHandler<T extends AsyncHandler<any, any>> extends
+export abstract class UnionHandler<T extends AsyncHandler<unknown, unknown>> extends
   AsyncHandler<AsyncHandlerInput<T>, AsyncHandlerOutput<T>> {
   protected readonly handlers: T[];
   private readonly requireAll: boolean;

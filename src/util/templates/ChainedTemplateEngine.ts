@@ -10,7 +10,7 @@ import Dict = NodeJS.Dict;
  * All subsequent engines will be called with no template parameter.
  * Contents will still be passed along and another entry will be added for the body of the previous output.
  */
-export class ChainedTemplateEngine<T extends Dict<any> = Dict<any>> extends TemplateEngine<T> {
+export class ChainedTemplateEngine<T extends Dict<unknown> = Dict<unknown>> extends TemplateEngine<T> {
   private readonly firstEngine: TemplateEngine<T>;
   private readonly chainedEngines: TemplateEngine[];
   private readonly renderedName: string;

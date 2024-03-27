@@ -28,6 +28,7 @@ export class IdentityTestState {
 
   /**
    * Performs a fetch call while keeping track of the stored cookies and preventing redirects.
+   *
    * @param url - URL to call.
    * @param method - Method to use.
    * @param body - Body to send along. If this is not a string it will be JSONified.

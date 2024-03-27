@@ -29,9 +29,10 @@ export class BasePasswordStore extends Initializer implements PasswordStore {
   private readonly saltRounds: number;
   private initialized = false;
 
-  public constructor(storage: AccountLoginStorage<any>, saltRounds = 10) {
+  // Wrong typings to prevent Components.js typing issues
+  public constructor(storage: AccountLoginStorage<Record<string, never>>, saltRounds = 10) {
     super();
-    this.storage = storage as typeof this.storage;
+    this.storage = storage as unknown as typeof this.storage;
     this.saltRounds = saltRounds;
   }
 

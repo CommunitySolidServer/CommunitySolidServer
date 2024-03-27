@@ -3,10 +3,10 @@ import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import { APPLICATION_JSON } from '../../util/ContentTypes';
+import type { Json } from '../../util/Json';
 import { readJsonStream } from '../../util/StreamUtil';
 import type { InteractionHandlerInput } from './InteractionHandler';
 import { InteractionHandler } from './InteractionHandler';
-import type { Json } from './InteractionUtil';
 import type { JsonInteractionHandler, JsonInteractionHandlerInput } from './JsonInteractionHandler';
 
 /**

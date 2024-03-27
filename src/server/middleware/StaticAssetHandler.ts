@@ -39,6 +39,7 @@ export class StaticAssetHandler extends HttpHandler {
 
   /**
    * Creates a handler for the provided static resources.
+   *
    * @param assets - A list of {@link StaticAssetEntry}.
    * @param baseUrl - The base URL of the server.
    * @param options - Specific options.
@@ -160,7 +161,7 @@ export class StaticAssetHandler extends HttpHandler {
         {
           // eslint-disable-next-line ts/naming-convention
           'cache-control': `max-age=${this.expires}`,
-          expires: new Date(Date.now() + (this.expires * 1000)).toUTCString(),
+          expires: new Date(Date.now() + this.expires * 1000).toUTCString(),
         };
   }
 }

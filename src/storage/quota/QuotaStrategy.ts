@@ -1,6 +1,5 @@
 // These two eslint lines are needed to store 'this' in a variable so it can be used
 // in the PassThrough of createQuotaGuard
-/* eslint-disable ts/no-this-alias */
 import { PassThrough } from 'node:stream';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -18,10 +17,10 @@ import type { SizeReporter } from '../size-reporter/SizeReporter';
  * This can be bytes, quads, file count, ...
  */
 export abstract class QuotaStrategy {
-  public readonly reporter: SizeReporter<any>;
+  public readonly reporter: SizeReporter<unknown>;
   public readonly limit: Size;
 
-  public constructor(reporter: SizeReporter<any>, limit: Size) {
+  protected constructor(reporter: SizeReporter<unknown>, limit: Size) {
     this.reporter = reporter;
     this.limit = limit;
   }
@@ -33,6 +32,7 @@ export abstract class QuotaStrategy {
    * as available space.
    *
    * @param identifier - the identifier of the resource of which you want the available space
+   *
    * @returns the available space and the unit of the space as a Size object
    */
   public async getAvailableSpace(identifier: ResourceIdentifier): Promise<Size> {
@@ -57,6 +57,7 @@ export abstract class QuotaStrategy {
    * Get the currently used/occupied space.
    *
    * @param identifier - the identifier that should be used to calculate the total
+   *
    * @returns a Size object containing the requested value.
    * If quota is not relevant for this identifier, Size.amount should be Number.MAX_SAFE_INTEGER
    */
@@ -66,6 +67,7 @@ export abstract class QuotaStrategy {
    * Get an estimated size of the resource
    *
    * @param metadata - the metadata that might include the size
+   *
    * @returns a Size object containing the estimated size and unit of the resource
    */
   public async estimateSize(metadata: RepresentationMetadata): Promise<Size | undefined> {
@@ -79,17 +81,19 @@ export abstract class QuotaStrategy {
    * Like other Passthrough instances this will simply pass on the chunks, when the quota isn't exceeded.
    *
    * @param identifier - the identifier of the resource in question
+   *
    * @returns a Passthrough instance that errors when quota is exceeded
    */
   public async createQuotaGuard(identifier: ResourceIdentifier): Promise<Guarded<PassThrough>> {
     let total = 0;
-    const strategy = this;
+    // eslint-disable-next-line ts/no-this-alias
+    const that = this;
     const { reporter } = this;
 
     return guardStream(new PassThrough({
-      async transform(this, chunk: any, enc: string, done: () => void): Promise<void> {
+      async transform(this, chunk: unknown, enc: string, done: () => void): Promise<void> {
         total += await reporter.calculateChunkSize(chunk);
-        const availableSpace = await strategy.getAvailableSpace(identifier);
+        const availableSpace = await that.getAvailableSpace(identifier);
         if (availableSpace.amount < total) {
           this.destroy(new PayloadHttpError(
             `Quota exceeded by ${total - availableSpace.amount} ${availableSpace.unit} during write`,

@@ -29,6 +29,7 @@ export class AgentGroupAccessChecker extends AccessChecker {
 
   /**
    * Checks if the given agent is member of a given vCard group.
+   *
    * @param webId - WebID of the agent that needs access.
    * @param group - URL of the vCard group that needs to be checked.
    *

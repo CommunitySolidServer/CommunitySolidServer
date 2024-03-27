@@ -12,6 +12,7 @@ export function isTerm(input?: unknown): input is Term {
 
 /**
  * Converts a string to a named node when needed.
+ *
  * @param subject - Subject to potentially transform.
  */
 export function toNamedTerm(subject: string): NamedNode;
@@ -25,6 +26,7 @@ export const toPredicateTerm = toNamedTerm;
 
 /**
  * Converts an object term when needed.
+ *
  * @param object - Object to potentially transform.
  * @param preferLiteral - Whether strings are converted to literals or named nodes.
  */
@@ -40,6 +42,7 @@ export function toObjectTerm(object: Term | string, preferLiteral = false): Term
 
 /**
  * Creates a literal by first converting the dataType string to a named node.
+ *
  * @param object - Object value.
  * @param dataType - Object data type (as string).
  */

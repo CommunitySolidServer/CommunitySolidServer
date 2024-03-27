@@ -35,7 +35,7 @@ export class BasicRepresentation implements Representation {
    * @param binary - Whether the representation is a binary or object stream
    */
   public constructor(
-    data: Guarded<Readable> | Readable | any[] | string,
+    data: Guarded<Readable> | Readable | unknown[] | string,
     metadata: RepresentationMetadata | MetadataRecord,
     binary?: boolean,
   );
@@ -47,7 +47,7 @@ export class BasicRepresentation implements Representation {
    * @param binary - Whether the representation is a binary or object stream
    */
   public constructor(
-    data: Guarded<Readable> | Readable | any[] | string,
+    data: Guarded<Readable> | Readable | unknown[] | string,
     metadata: RepresentationMetadata | MetadataRecord,
     contentType?: string,
     binary?: boolean,
@@ -59,7 +59,7 @@ export class BasicRepresentation implements Representation {
    * @param binary - Whether the representation is a binary or object stream
    */
   public constructor(
-    data: Guarded<Readable> | Readable | any[] | string,
+    data: Guarded<Readable> | Readable | unknown[] | string,
     contentType: string,
     binary?: boolean,
   );
@@ -71,7 +71,7 @@ export class BasicRepresentation implements Representation {
    * @param binary - Whether the representation is a binary or object stream
    */
   public constructor(
-    data: Guarded<Readable> | Readable | any[] | string,
+    data: Guarded<Readable> | Readable | unknown[] | string,
     identifier: MetadataIdentifier,
     metadata?: MetadataRecord,
     binary?: boolean,
@@ -84,14 +84,14 @@ export class BasicRepresentation implements Representation {
    * @param binary - Whether the representation is a binary or object stream
    */
   public constructor(
-    data: Guarded<Readable> | Readable | any[] | string,
+    data: Guarded<Readable> | Readable | unknown[] | string,
     identifier: MetadataIdentifier,
     contentType?: string,
     binary?: boolean,
   );
 
   public constructor(
-    data?: Readable | any[] | string,
+    data?: Readable | unknown[] | string,
     metadata?: RepresentationMetadata | MetadataRecord | MetadataIdentifier | string,
     metadataRest?: MetadataRecord | string | boolean,
     binary?: boolean,
@@ -109,8 +109,7 @@ export class BasicRepresentation implements Representation {
     }
     if (!isRepresentationMetadata(metadata) || typeof metadataRest === 'string') {
       // This combination will always match with a valid overload
-      // eslint-disable-next-line ts/no-unsafe-argument
-      metadata = new RepresentationMetadata(metadata as any, metadataRest as any);
+      metadata = new RepresentationMetadata(metadata as RepresentationMetadata, metadataRest as string);
     }
     this.metadata = metadata;
 

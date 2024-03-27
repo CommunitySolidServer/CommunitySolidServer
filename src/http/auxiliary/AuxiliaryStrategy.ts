@@ -11,6 +11,7 @@ import type { AuxiliaryIdentifierStrategy } from './AuxiliaryIdentifierStrategy'
 export interface AuxiliaryStrategy extends AuxiliaryIdentifierStrategy {
   /**
    * Whether this auxiliary resources uses its own authorization instead of the subject resource authorization.
+   *
    * @param identifier - Identifier of the auxiliary resource.
    */
   usesOwnAuthorization: (identifier: ResourceIdentifier) => boolean;
@@ -18,6 +19,7 @@ export interface AuxiliaryStrategy extends AuxiliaryIdentifierStrategy {
   /**
    * Whether the root storage container requires this auxiliary resource to be present.
    * If yes, this means they can't be deleted individually from such a container.
+   *
    * @param identifier - Identifier of the auxiliary resource.
    */
   isRequiredInRoot: (identifier: ResourceIdentifier) => boolean;
@@ -42,6 +44,7 @@ export interface AuxiliaryStrategy extends AuxiliaryIdentifierStrategy {
   /**
    * Validates if the representation contains valid data for an auxiliary resource.
    * Should throw an error in case the data is invalid.
+   *
    * @param identifier - Identifier of the auxiliary resource.
    * @param representation - Representation of the auxiliary resource.
    */

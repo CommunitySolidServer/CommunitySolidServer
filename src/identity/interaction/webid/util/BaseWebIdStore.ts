@@ -23,9 +23,10 @@ export class BaseWebIdStore extends Initializer implements WebIdStore {
   private readonly storage: AccountLoginStorage<{ [WEBID_STORAGE_TYPE]: typeof WEBID_STORAGE_DESCRIPTION }>;
   private initialized = false;
 
-  public constructor(storage: AccountLoginStorage<any>) {
+  // Wrong typings to prevent Components.js typing issues
+  public constructor(storage: AccountLoginStorage<Record<string, never>>) {
     super();
-    this.storage = storage as typeof this.storage;
+    this.storage = storage as unknown as typeof this.storage;
   }
 
   // Initialize the type definitions

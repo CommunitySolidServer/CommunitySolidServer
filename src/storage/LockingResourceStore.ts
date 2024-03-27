@@ -154,7 +154,7 @@ export class LockingResourceStore implements AtomicResourceStore {
     // Spy on the source to maintain the lock upon reading.
     const data = Object.create(source, {
       read: {
-        value(size: number): any {
+        value(size: number): unknown {
           maintainLock();
           return source.read(size);
         },

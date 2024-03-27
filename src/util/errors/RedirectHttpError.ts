@@ -16,7 +16,7 @@ export class RedirectHttpError<TCode extends number = number> extends HttpError<
     this.metadata.add(SOLID_HTTP.terms.location, DataFactory.namedNode(location));
   }
 
-  public static isInstance(error: any): error is RedirectHttpError {
+  public static isInstance(error: unknown): error is RedirectHttpError {
     return HttpError.isInstance(error) && typeof (error as RedirectHttpError).location === 'string';
   }
 }
@@ -46,7 +46,7 @@ export function generateRedirectHttpErrorClass<TCode extends number>(
       super(code, name, location, message, options);
     }
 
-    public static isInstance(error: any): error is SpecificRedirectHttpError {
+    public static isInstance(error: unknown): error is SpecificRedirectHttpError {
       return RedirectHttpError.isInstance(error) && error.statusCode === code;
     }
   };

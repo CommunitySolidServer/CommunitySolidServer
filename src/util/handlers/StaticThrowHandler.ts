@@ -4,7 +4,7 @@ import { AsyncHandler } from './AsyncHandler';
 /**
  * Utility handler that can handle all input and always throws the given error.
  */
-export class StaticThrowHandler extends AsyncHandler<any, never> {
+export class StaticThrowHandler extends AsyncHandler<unknown, never> {
   private readonly error: HttpError;
 
   public constructor(error: HttpError) {
