@@ -1,4 +1,5 @@
 const antfu = require('@antfu/eslint-config');
+const fileNamesConfig = require('./eslint/file-names');
 const generalConfig = require('./eslint/general');
 const testConfig = require('./eslint/test');
 const typedConfig = require('./eslint/typed');
@@ -16,36 +17,40 @@ module.exports = antfu.default(
   {
     // Don't want to lint test assets, or TS snippets in markdown files
     ignores: [ 'test/assets/*', '**/*.md/**/*.ts' ],
+    typescript: {
+      tsconfigPath: [ './tsconfig.json', './scripts/tsconfig.json', './test/tsconfig.json' ],
+    },
   },
-  generalConfig,
-  unicornConfig,
-  typedConfig({
-    project: [ './tsconfig.json', './scripts/tsconfig.json', './test/tsconfig.json' ],
-    tsconfigRootDir: __dirname,
-  }),
-  testConfig,
-  {
-    // JSON rules
-    files: [ '**/*.json' ],
+)
+  .append(generalConfig)
+  .append(unicornConfig)
+  .append(fileNamesConfig)
+  // Using an override here so all the type settings are also applied correctly
+  .override('antfu:typescript:rules-type-aware', typedConfig)
+  .append({
+    ...testConfig,
+    files: [ 'test/**/*.ts' ],
+  })
+  .override('antfu:jsonc:rules', {
     rules: {
+      // Consistent with how we do it in code
       'jsonc/array-bracket-spacing': [ 'error', 'always', {
         singleValue: true,
         objectsInArrays: false,
         arraysInArrays: false,
       }],
     },
-  },
-  {
+  })
+  .append({
     // This is necessary to prevent filename checks caused by JSON being present in a README.
     files: [ '**/README.md/**' ],
     rules: {
       'unicorn/filename-case': 'off',
     },
-  },
-  {
-    files: [ '**/*.md' ],
+  })
+  .override('antfu:markdown:parser', {
     rules: {
+      // We want to be able to use these in Markdown text
       'no-irregular-whitespace': 'off',
     },
-  },
-);
+  });

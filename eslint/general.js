@@ -1,4 +1,5 @@
 module.exports = {
+  name: 'opinionated:general',
   rules: {
     'antfu/consistent-list-newline': 'error',
 
