@@ -1,4 +1,5 @@
 module.exports = {
+  name: 'opinionated:unicorn',
   rules: {
     'unicorn/better-regex': 'error',
     'unicorn/empty-brace-spaces': 'error',
@@ -9,18 +10,6 @@ module.exports = {
       allowWarningComments: false,
     }],
     'unicorn/explicit-length-check': 'error',
-    'unicorn/filename-case': [ 'error', {
-      cases: {
-        camelCase: false,
-        pascalCase: false,
-        kebabCase: true,
-        snakeCase: false,
-      },
-      ignore: [
-        // CODE_OF_CONDUCT.md, etc.
-        /[A-Z_]+\.md$/u,
-      ],
-    }],
     'unicorn/new-for-builtins': 'error',
     'unicorn/no-array-for-each': 'error',
     'unicorn/no-array-reduce': 'error',
