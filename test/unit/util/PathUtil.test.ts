@@ -210,7 +210,7 @@ describe('PathUtil', (): void => {
 
     beforeEach((): void => {
       targetExtractor = {
-        handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url!) })),
+        handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url) })),
       } as any;
     });
 

@@ -16,6 +16,10 @@ module.exports = {
         kebabCase: true,
         snakeCase: false,
       },
+      ignore: [
+        // CODE_OF_CONDUCT.md, etc.
+        /[A-Z_]+\.md$/u,
+      ],
     }],
     'unicorn/new-for-builtins': 'error',
     'unicorn/no-array-for-each': 'error',

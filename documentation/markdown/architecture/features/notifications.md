@@ -78,7 +78,7 @@ flowchart TB
     ResourceStore("<strong>ResourceStore</strong><br><i>ActivityEmitter</i>")
     NotificationHandler("<strong>NotificationHandler</strong><br>WaterfallHandler")
   end
-  
+
   NotificationHandler --> NotificationHandlerArgs
   subgraph NotificationHandlerArgs[" "]
     direction TB
@@ -154,9 +154,9 @@ flowchart TB
     NotificationChannelStorage("<strong>NotificationChannelStorage</strong><br>NotificationChannelStorage")
     SequenceHandler("<br>SequenceHandler")
   end
-  
+
   SequenceHandler --> SequenceHandlerArgs
-  
+
   subgraph SequenceHandlerArgs[" "]
     direction TB
     WebSocket2023Storer("<strong>WebSocket2023Storer</strong><br>WebSocket2023Storer")

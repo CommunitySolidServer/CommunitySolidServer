@@ -114,15 +114,15 @@ It takes as input 2 components: a `HttpServerFactory` and a `ServerListener`.
 flowchart TD
   ServerInitializer("<strong>ServerInitializer</strong><br>ServerInitializer")
   ServerInitializer --> ServerInitializerArgs
-  
+
   subgraph ServerInitializerArgs[" "]
     direction LR
     ServerFactory("<strong>ServerFactory</strong><br>BaseServerFactory")
     ServerListener("<strong>ServerListener</strong><br>ParallelHandler")
   end
-  
+
   ServerListener --> HandlerServerListener("<strong>HandlerServerListener</strong><br>HandlerServerListener")
-  
+
   HandlerServerListener --> HttpHandler("<strong>HttpHandler</strong><br><i>HttpHandler</i>")
 ```
 

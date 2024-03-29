@@ -143,7 +143,7 @@
     "yup": "^1.3.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "2.3.4",
+    "@antfu/eslint-config": "2.11.4",
     "@commitlint/cli": "^17.7.2",
     "@commitlint/config-conventional": "^17.7.0",
     "@inrupt/solid-client-authn-core": "^2.0.0",

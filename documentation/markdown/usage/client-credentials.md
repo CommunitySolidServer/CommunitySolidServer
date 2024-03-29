@@ -56,7 +56,7 @@ The next step generates the token and assumes you have an authorization value as
 ```ts
 // Now that we are logged in, we need to request the updated controls from the server.
 // These will now have more values than in the previous example.
-const indexResponse = await fetch('http://localhost:3000/.account/', { 
+const indexResponse = await fetch('http://localhost:3000/.account/', {
   headers: { authorization: `CSS-Account-Token ${authorization}` }
 });
 const { controls } = await indexResponse.json();
