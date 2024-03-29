@@ -27,15 +27,15 @@ flowchart LR
   RdfPatcher("<strong>RdfPatcher</strong><br>RdfPatcher")
   RdfPatcher --> RDFStore("<strong>PatchHandler_RDFStore</strong><br>WaterfallHandler")
   RDFStore --> RDFStoreArgs
-  
+
   subgraph RDFStoreArgs[" "]
     Immutable("<strong>PatchHandler_ImmutableMetadata</strong><br>ImmutableMetadataPatcher")
     RDF("<strong>PatchHandler_RDF</strong><br>WaterfallHandler")
     Immutable --> RDF
   end
-  
+
   RDF --> RDFArgs
-  
+
   subgraph RDFArgs[" "]
     direction LR
     N3("<br>N3Patcher")

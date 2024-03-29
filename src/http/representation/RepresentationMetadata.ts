@@ -300,7 +300,7 @@ export class RepresentationMetadata {
         predicate: Term | string | null,
         object: Term | string | null,
         graph: Term | string | null) => boolean;
-    }).has(this.id, predicate, object, graph) as boolean;
+    }).has(this.id, predicate, object, graph);
   }
 
   /**

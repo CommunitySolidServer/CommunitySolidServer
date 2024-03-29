@@ -14,7 +14,7 @@ describe('A RouterHandler', (): void => {
     request = { method: 'GET', url: '/test' } as any;
 
     targetExtractor = {
-      handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url!) })),
+      handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url) })),
     } as any;
 
     handler = {

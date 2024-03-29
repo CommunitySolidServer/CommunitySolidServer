@@ -10,7 +10,7 @@ flowchart LR
   Handler("<strong>IdentityProviderHandler</strong><br>RouterHandler")
   ParsingHandler("<strong>IdentityProviderParsingHandler</strong><br>AuthorizingHttpHandler")
   AuthorizingHandler("<strong>IdentityProviderAuthorizingHandler</strong><br>AuthorizingHttpHandler")
-  
+
   Handler --> ParsingHandler
   ParsingHandler --> AuthorizingHandler
   AuthorizingHandler --> HttpHandler("<strong>IdentityProviderHttpHandler</strong><br>IdentityProviderHttpHandler")
@@ -26,12 +26,12 @@ flowchart TD
   HttpHandler("<strong>IdentityProviderHttpHandler</strong><br>IdentityProviderHttpHandler")
   HttpHandler --> InteractionHandler("<strong>InteractionHandler</strong><br>WaterfallHandler")
   InteractionHandler --> InteractionHandlerArgs
-  
+
   subgraph InteractionHandlerArgs[" "]
     HtmlViewHandler("<strong>HtmlViewHandler</strong><br>HtmlViewHandler")
     LockingInteractionHandler("<strong>LockingInteractionHandler</strong><br>LockingInteractionHandler")
   end
-  
+
   LockingInteractionHandler --> JsonConversionHandler("<strong>JsonConversionHandler</strong><br>JsonConversionHandler")
   JsonConversionHandler --> VersionHandler("<strong>VersionHandler</strong><br>VersionHandler")
   VersionHandler --> CookieInteractionHandler("<strong>CookieInteractionHandler</strong><br>CookieInteractionHandler")

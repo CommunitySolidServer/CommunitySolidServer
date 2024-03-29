@@ -17,7 +17,7 @@ describe('A RedirectingHttpHandler', (): void => {
 
   beforeEach(async(): Promise<void> => {
     targetExtractor = {
-      handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url!) })),
+      handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url) })),
     } as any;
 
     responseWriter = { handleSafe: jest.fn() } as any;

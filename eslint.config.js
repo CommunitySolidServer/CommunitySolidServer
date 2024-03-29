@@ -42,4 +42,10 @@ module.exports = antfu.default(
       'unicorn/filename-case': 'off',
     },
   },
+  {
+    files: [ '**/*.md' ],
+    rules: {
+      'no-irregular-whitespace': 'off',
+    },
+  },
 );

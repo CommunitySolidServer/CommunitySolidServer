@@ -84,7 +84,7 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
     const extension = getExtension(filePath).toLowerCase();
     return mime.lookup(extension) ||
       this.customTypes[extension] ||
-        await super.getContentTypeFromPath(filePath);
+      await super.getContentTypeFromPath(filePath);
   }
 
   /**

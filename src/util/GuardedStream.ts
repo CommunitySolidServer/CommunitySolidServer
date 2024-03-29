@@ -55,7 +55,7 @@ function emitStoredErrors(this: Guarded, event: string, func: (error: Error) => 
   if (event === 'error' && func !== guardingErrorListener) {
     // Cancel an error timeout
     if (this[guardedTimeout]) {
-      clearTimeout(this[guardedTimeout]!);
+      clearTimeout(this[guardedTimeout]);
       this[guardedTimeout] = undefined;
     }
 
