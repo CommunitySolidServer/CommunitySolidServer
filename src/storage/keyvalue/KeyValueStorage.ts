@@ -12,7 +12,7 @@ export interface KeyValueStorage<TKey, TValue> {
   get: (key: TKey) => Promise<TValue | undefined>;
 
   /**
-   * Checks if there is a value stored for the given key.
+   * Checks whether there is a value stored for the given key.
    *
    * @param identifier - Identifier to check.
    */

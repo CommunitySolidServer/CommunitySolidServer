@@ -9,8 +9,8 @@ import Dict = NodeJS.Dict;
 type BaseObjectSchema = ObjectSchema<Maybe<AnyObject>>;
 
 // The builtin `url` validator of `yup` does not support localhost URLs, so we create a custom one here.
-// The reason for having a URL validator on the WebID is to prevent us from generating invalid ACL,
-// which would break the pod creation causing us to have an incomplete pod.
+// We validate the WebID URL to prevent generation of invalid ACL,
+// which would break the pod creation, causing us to have an incomplete pod.
 export const URL_SCHEMA = string().trim().optional().test({
   name: 'url',
   message: (value: { value: string }): string => `"${value.value}" is not a valid URL`,

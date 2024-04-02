@@ -203,7 +203,7 @@ export function encodeUriPathComponents(path: string): string {
 }
 
 /**
- * Checks if the path corresponds to a container path (ending in a /).
+ * Checks whether the path corresponds to a container path (ending in a /).
  *
  * @param path - Path to check.
  */
@@ -214,7 +214,7 @@ export function isContainerPath(path: string): boolean {
 }
 
 /**
- * Checks if the identifier corresponds to a container identifier.
+ * Checks whether the identifier corresponds to a container identifier.
  *
  * @param identifier - Identifier to check.
  */

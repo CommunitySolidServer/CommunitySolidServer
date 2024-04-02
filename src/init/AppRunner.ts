@@ -226,7 +226,7 @@ export class AppRunner {
       return import(cssConfigPathJs) as Promise<Record<string, unknown>>;
     }
 
-    // Finally try and read from the config.community-solid-server
+    // Finally try to read from the config.community-solid-server
     // field in the root package.json
     const pkg = await readJSON(packageJsonPath) as { config?: Record<string, unknown> };
     if (typeof pkg.config?.['community-solid-server'] === 'object') {

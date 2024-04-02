@@ -503,7 +503,7 @@ export function matchesAuthorizationScheme(scheme: string, authorization?: strin
  * Checks if the scheme part of the specified url matches at least one of the provided options.
  *
  * @param url - A string representing the URL.
- * @param schemes - Scheme value options (the function will check if at least one matches the URL scheme).
+ * @param schemes - Scheme value options (the function will check whether at least one matches the URL scheme).
  *
  * @returns True if the URL scheme matches at least one of the provided options, false otherwise.
  */

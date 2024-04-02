@@ -260,7 +260,7 @@ export class IdentityProviderFactory implements ProviderFactory {
   }
 
   /**
-   * Checks if the given token is an access token.
+   * Checks whether the given token is an access token.
    * The AccessToken interface is not exported, so we have to access it like this.
    */
   private isAccessToken(token: unknown): token is KoaContextWithOIDC['oidc']['accessToken'] {

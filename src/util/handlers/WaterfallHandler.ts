@@ -24,7 +24,7 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
   }
 
   /**
-   * Checks if any of the stored handlers can handle the given input.
+   * Checks whether any of the stored handlers can handle the given input.
    *
    * @param input - The data that would need to be handled.
    *
