@@ -162,7 +162,7 @@ export function matchesMediaPreferences(type: string, preferred?: ValuePreferenc
 }
 
 /**
- * Checks if the given two media types/ranges match each other.
+ * Checks whether the given two media types/ranges match each other.
  * Takes wildcards into account.
  *
  * @param mediaA - Media type to match.

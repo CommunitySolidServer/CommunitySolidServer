@@ -374,7 +374,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * then the other URI MUST NOT correspond to another resource."
    * https://solid.github.io/specification/protocol#uri-slash-semantics
    *
-   * First the identifier gets requested and if no result is found
+   * First the identifier gets requested. If no result is found,
    * the identifier with differing trailing slash is requested.
    *
    * @param identifier - Identifier that needs to be checked.
@@ -452,7 +452,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Write the given resource to the DataAccessor. Metadata will be updated with necessary triples.
-   * In case of containers `handleContainerData` will be used to verify the data.
+   * For containers, `handleContainerData` will be used to verify the data.
    *
    * @param identifier - Identifier of the resource.
    * @param representation - Corresponding Representation.
@@ -590,8 +590,8 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
-   * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters
-   * e.g.: cleanslug('&%26') returns '%26%26'
+   * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters,
+   * e.g., cleanslug('&%26') returns '%26%26'
    *
    * @param slug - the slug to clean
    */
@@ -636,7 +636,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
-   * Checks if the given metadata represents a (potential) container,
+   * Checks whether the given metadata represents a (potential) container,
    * based on the metadata.
    *
    * @param metadata - Metadata of the (new) resource.

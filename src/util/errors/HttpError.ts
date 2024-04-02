@@ -76,7 +76,7 @@ export interface HttpErrorClass<TCode extends number = number> {
    */
   readonly uri: NamedNode;
   /**
-   * Checks if the given error is an instance of this class.
+   * Checks whether the given error is an instance of this class.
    */
   readonly isInstance: (error: unknown) => error is HttpError<TCode>;
 }

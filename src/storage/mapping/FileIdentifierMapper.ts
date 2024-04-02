@@ -34,9 +34,9 @@ export interface FileIdentifierMapper {
   mapFilePathToUrl: (filePath: string, isContainer: boolean) => Promise<ResourceLink>;
   /**
    * Maps the given resource identifier / URL to a file path.
-   * Determines the content-type if no content-type was provided by finding the corresponding file.
-   * If there is no corresponding file a file path will be generated.
-   * For containers the content-type input gets ignored.
+   * Determines the content-type, if no content-type was provided, by finding the corresponding file.
+   * If there is no corresponding file, a file path will be generated.
+   * For containers, the content-type input gets ignored.
    *
    * @param identifier - The input identifier.
    * @param isMetadata - If we are mapping the metadata of the resource instead of its data.

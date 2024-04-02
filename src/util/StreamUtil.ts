@@ -80,7 +80,7 @@ const safeErrors = new Set([
 
 /**
  * Pipes one stream into another and emits errors of the first stream with the second.
- * In case of an error in the first stream the second one will be destroyed with the given error.
+ * If the first stream errors, the second one will be destroyed with the given error.
  * This will also make the stream {@link Guarded}.
  *
  * @param readable - Initial readable stream.

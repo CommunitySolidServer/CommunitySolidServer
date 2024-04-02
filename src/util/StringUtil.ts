@@ -32,7 +32,7 @@ export function isValidFileName(name: string): boolean {
 }
 
 /**
- * Checks if the given string is a valid URL.
+ * Checks whether the given string is a valid URL.
  *
  * @param url - String to check.
  *

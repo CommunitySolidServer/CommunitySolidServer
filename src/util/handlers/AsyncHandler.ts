@@ -7,7 +7,7 @@ export type AsyncHandlerOutput<T extends AsyncHandler<unknown, unknown>> = Await
  */
 export abstract class AsyncHandler<TIn = void, TOut = void> {
   /**
-   * Checks if the input can be handled by this class.
+   * Checks whether the input can be handled by this class.
    * If it cannot handle the input, rejects with an error explaining why.
    *
    * @param input - Input that could potentially be handled.
