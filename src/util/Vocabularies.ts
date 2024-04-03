@@ -283,6 +283,7 @@ export const SOLID_ERROR = createVocabulary(
   'errorCode',
   'errorResponse',
   'stack',
+  'target',
 );
 
 // Used to pass parameters to error templates
