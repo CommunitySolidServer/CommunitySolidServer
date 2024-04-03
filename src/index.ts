@@ -100,6 +100,7 @@ export * from './http/output/error/ConvertingErrorHandler';
 export * from './http/output/error/ErrorHandler';
 export * from './http/output/error/RedirectingErrorHandler';
 export * from './http/output/error/SafeErrorHandler';
+export * from './http/output/error/TargetExtractorErrorHandler';
 
 // HTTP/Output/Metadata
 export * from './http/output/metadata/AllowAcceptHeaderWriter';
