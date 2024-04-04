@@ -1,9 +1,10 @@
-import { Util } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
+import { LDP, RDF, SOLID_ERROR } from '../../../util/Vocabularies';
 import type { AuxiliaryStrategy } from '../../auxiliary/AuxiliaryStrategy';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../representation/ResourceIdentifier';
 import { MetadataWriter } from './MetadataWriter';
 
 /**
@@ -30,9 +31,17 @@ export class AuxiliaryLinkMetadataWriter extends MetadataWriter {
   }
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
-    const identifier = { path: input.metadata.identifier.value };
+    let identifier: ResourceIdentifier | undefined;
+    if (input.metadata.has(RDF.terms.type, LDP.terms.Resource)) {
+      identifier = { path: input.metadata.identifier.value };
+    } else {
+      const target = input.metadata.get(SOLID_ERROR.terms.target);
+      if (target) {
+        identifier = { path: target.value };
+      }
+    }
     // The metadata identifier will be a blank node in case an error was thrown.
-    if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) && !Util.isBlankNode(input.metadata.identifier)) {
+    if (identifier && !this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaryIdentifier = this.specificStrategy.getAuxiliaryIdentifier(identifier);
       addHeader(input.response, 'Link', `<${auxiliaryIdentifier.path}>; rel="${this.relationType}"`);
     }
