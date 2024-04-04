@@ -30,6 +30,14 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container, PIM.terms.Storage ]},
   );
   const error404 = new RepresentationMetadata({ [SOLID_ERROR.errorResponse]: NotFoundHttpError.uri });
+  const error404Container = new RepresentationMetadata({
+    [SOLID_ERROR.errorResponse]: NotFoundHttpError.uri,
+    [SOLID_ERROR.target]: 'http://example.com/foo/',
+  });
+  const error404Document = new RepresentationMetadata({
+    [SOLID_ERROR.errorResponse]: NotFoundHttpError.uri,
+    [SOLID_ERROR.target]: 'http://example.com/foo/bar',
+  });
   const error405 = new RepresentationMetadata(
     { [SOLID_ERROR.errorResponse]: MethodNotAllowedHttpError.uri, [SOLID_ERROR.disallowedMethod]: 'PUT' },
   );
@@ -57,33 +65,36 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     expect(headers['accept-post']).toBeUndefined();
   });
 
-  it('returns all methods except PUT for an empty container.', async(): Promise<void> => {
+  it('returns all methods except PUT/PATCH for an empty container.', async(): Promise<void> => {
     await expect(writer.handleSafe({ response, metadata: emptyContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
     expect(new Set(headers.allow!.split(', ')))
-      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH', 'DELETE' ]));
-    expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
+      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'DELETE' ]));
+    expect(headers['accept-patch']).toBeUndefined();
+    expect(headers['accept-put']).toBeUndefined();
     expect(headers['accept-post']).toBe('*/*');
   });
 
-  it('returns all methods except PUT/DELETE for a non-empty container.', async(): Promise<void> => {
+  it('returns all methods except PUT/PATCH/DELETE for a non-empty container.', async(): Promise<void> => {
     await expect(writer.handleSafe({ response, metadata: fullContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
     expect(new Set(headers.allow!.split(', ')))
-      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH' ]));
-    expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
+      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST' ]));
+    expect(headers['accept-patch']).toBeUndefined();
+    expect(headers['accept-put']).toBeUndefined();
     expect(headers['accept-post']).toBe('*/*');
   });
 
-  it('returns all methods except PUT/DELETE for a storage container.', async(): Promise<void> => {
+  it('returns all methods except PUT/PATCH/DELETE for a storage container.', async(): Promise<void> => {
     await expect(writer.handleSafe({ response, metadata: storageContainer })).resolves.toBeUndefined();
     const headers = response.getHeaders();
     expect(typeof headers.allow).toBe('string');
     expect(new Set(headers.allow!.split(', ')))
-      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST', 'PATCH' ]));
-    expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
+      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST' ]));
+    expect(headers['accept-patch']).toBeUndefined();
+    expect(headers['accept-put']).toBeUndefined();
     expect(headers['accept-post']).toBe('*/*');
   });
 
@@ -94,6 +105,28 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     expect(new Set(headers.allow!.split(', ')))
       .toEqual(new Set([ 'PUT', 'PATCH' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
+    expect(headers['accept-put']).toBe('*/*');
+    expect(headers['accept-post']).toBeUndefined();
+  });
+
+  it('returns PUT if the target does not exist and is a document.', async(): Promise<void> => {
+    await expect(writer.handleSafe({ response, metadata: error404Document })).resolves.toBeUndefined();
+    const headers = response.getHeaders();
+    expect(typeof headers.allow).toBe('string');
+    expect(new Set(headers.allow!.split(', ')))
+      .toEqual(new Set([ 'PUT', 'PATCH' ]));
+    expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
+    expect(headers['accept-put']).toBe('*/*');
+    expect(headers['accept-post']).toBeUndefined();
+  });
+
+  it('returns PUT if the target does not exist and is a container.', async(): Promise<void> => {
+    await expect(writer.handleSafe({ response, metadata: error404Container })).resolves.toBeUndefined();
+    const headers = response.getHeaders();
+    expect(typeof headers.allow).toBe('string');
+    expect(new Set(headers.allow!.split(', ')))
+      .toEqual(new Set([ 'PUT' ]));
+    expect(headers['accept-patch']).toBeUndefined();
     expect(headers['accept-put']).toBe('*/*');
     expect(headers['accept-post']).toBeUndefined();
   });
