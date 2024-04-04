@@ -19,11 +19,12 @@ export async function getResource(
   expect(response.status).toBe(200);
   expect(response.headers.get('link')).toContain(`<${LDP.Resource}>; rel="type"`);
   expect(response.headers.get('link')).toContain(`<${url}.acl>; rel="acl"`);
-  expect(response.headers.get('accept-patch')).toBe('text/n3, application/sparql-update');
 
   if (isContainer) {
     expect(response.headers.get('link')).toContain(`<${LDP.Container}>; rel="type"`);
     expect(response.headers.get('link')).toContain(`<${LDP.BasicContainer}>; rel="type"`);
+  } else {
+    expect(response.headers.get('accept-patch')).toBe('text/n3, application/sparql-update');
   }
   if (expected?.contentType) {
     expect(response.headers.get('content-type')).toBe(expected.contentType);

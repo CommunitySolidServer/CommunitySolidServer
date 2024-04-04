@@ -8,8 +8,11 @@ import { LDP, PIM, RDF, SOLID_ERROR } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataWriter } from './MetadataWriter';
 
-// Only PUT and PATCH can be used to create a new resource
-const NEW_RESOURCE_ALLOWED_METHODS = new Set([ 'PUT', 'PATCH' ]);
+enum ResourceType {
+  document,
+  container,
+  unknown,
+}
 
 /**
  * Generates Allow, Accept-Patch, Accept-Post, and Accept-Put headers.
@@ -30,8 +33,20 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
     const { response, metadata } = input;
 
+    let resourceType: ResourceType;
+    if (metadata.has(RDF.terms.type, LDP.terms.Resource)) {
+      resourceType = isContainerPath(metadata.identifier.value) ? ResourceType.container : ResourceType.document;
+    } else {
+      const target = metadata.get(SOLID_ERROR.terms.target)?.value;
+      if (target) {
+        resourceType = isContainerPath(target) ? ResourceType.container : ResourceType.document;
+      } else {
+        resourceType = ResourceType.unknown;
+      }
+    }
+
     // Filter out methods which are not allowed
-    const allowedMethods = this.filterAllowedMethods(metadata);
+    const allowedMethods = this.filterAllowedMethods(metadata, resourceType);
 
     // Generate the Allow headers (if required)
     const generateAllow = this.generateAllow(allowedMethods, response, metadata);
@@ -43,29 +58,34 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
   /**
    * Starts from the stored set of methods and removes all those that are not allowed based on the metadata.
    */
-  private filterAllowedMethods(metadata: RepresentationMetadata): Set<string> {
+  private filterAllowedMethods(metadata: RepresentationMetadata, resourceType: ResourceType): Set<string> {
     const disallowedMethods = new Set(metadata.getAll(SOLID_ERROR.terms.disallowedMethod)
       .map((term): string => term.value));
     const allowedMethods = new Set(this.supportedMethods.filter((method): boolean => !disallowedMethods.has(method)));
 
     // POST is only allowed on containers.
     // Metadata only has the resource URI in case it has resource metadata.
-    if (!this.isPostAllowed(metadata)) {
+    if (!this.isPostAllowed(resourceType)) {
       allowedMethods.delete('POST');
     }
 
-    if (!this.isPutAllowed(metadata)) {
+    if (!this.isPutAllowed(metadata, resourceType)) {
       allowedMethods.delete('PUT');
     }
 
-    if (!this.isDeleteAllowed(metadata)) {
+    if (!this.isPatchAllowed(resourceType)) {
+      allowedMethods.delete('PATCH');
+    }
+
+    if (!this.isDeleteAllowed(metadata, resourceType)) {
       allowedMethods.delete('DELETE');
     }
 
     // If we are sure the resource does not exist: only keep methods that can create a new resource.
     if (metadata.has(SOLID_ERROR.terms.errorResponse, NotFoundHttpError.uri)) {
       for (const method of allowedMethods) {
-        if (!NEW_RESOURCE_ALLOWED_METHODS.has(method)) {
+        // Containers can only be created by PUT, documents also by PATCH
+        if (method !== 'PUT' && (method !== 'PATCH' || resourceType === ResourceType.container)) {
           allowedMethods.delete(method);
         }
       }
@@ -76,18 +96,23 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
 
   /**
    * POST is only allowed on containers.
-   * The metadata URI is only valid in case there is resource metadata,
-   * otherwise it is just a blank node.
    */
-  private isPostAllowed(metadata: RepresentationMetadata): boolean {
-    return !metadata.has(RDF.terms.type, LDP.terms.Resource) || isContainerPath(metadata.identifier.value);
+  private isPostAllowed(resourceType: ResourceType): boolean {
+    return resourceType !== ResourceType.document;
   }
 
   /**
    * PUT is not allowed on existing containers.
    */
-  private isPutAllowed(metadata: RepresentationMetadata): boolean {
-    return !metadata.has(RDF.terms.type, LDP.terms.Resource) || !isContainerPath(metadata.identifier.value);
+  private isPutAllowed(metadata: RepresentationMetadata, resourceType: ResourceType): boolean {
+    return resourceType !== ResourceType.container || !metadata.has(RDF.terms.type, LDP.terms.Resource);
+  }
+
+  /**
+   * PATCH is not allowed on containers.
+   */
+  private isPatchAllowed(resourceType: ResourceType): boolean {
+    return resourceType !== ResourceType.container;
   }
 
   /**
@@ -97,14 +122,14 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
    *
    * Note that the identifier value check only works if the metadata is not about an error.
    */
-  private isDeleteAllowed(metadata: RepresentationMetadata): boolean {
-    if (!isContainerPath(metadata.identifier.value)) {
+  private isDeleteAllowed(metadata: RepresentationMetadata, resourceType: ResourceType): boolean {
+    if (resourceType !== ResourceType.container) {
       return true;
     }
 
     const isStorage = metadata.has(RDF.terms.type, PIM.terms.Storage);
-    const isEmpty = metadata.has(LDP.terms.contains);
-    return !isStorage && !isEmpty;
+    const isEmpty = !metadata.has(LDP.terms.contains);
+    return !isStorage && isEmpty;
   }
 
   /**
