@@ -84,7 +84,7 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
     // If we are sure the resource does not exist: only keep methods that can create a new resource.
     if (metadata.has(SOLID_ERROR.terms.errorResponse, NotFoundHttpError.uri)) {
       for (const method of allowedMethods) {
-        // Containers can only be created by PUT, documents also by PATCH
+        // Containers can only be created by PUT; documents by PUT or PATCH
         if (method !== 'PUT' && (method !== 'PATCH' || resourceType === ResourceType.container)) {
           allowedMethods.delete(method);
         }

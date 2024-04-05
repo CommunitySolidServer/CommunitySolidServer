@@ -6,7 +6,7 @@ import type { ErrorHandlerArgs } from './ErrorHandler';
 import { ErrorHandler } from './ErrorHandler';
 
 /**
- * Adds metadata to an error to indicate what the identifier was of the resource originally being targeted.
+ * Adds metadata to an error to indicate the identifier of the originally targeted resource.
  */
 export class TargetExtractorErrorHandler extends ErrorHandler {
   protected readonly errorHandler: ErrorHandler;
