@@ -15,7 +15,7 @@
           "@type": "WaterfallHandler",
           "handlers": [
             {
-              "comment": "Internally redirects are created by throwing a specific error, this handler converts them to the correct response.",
+              "comment": "Redirects are created internally by throwing a specific error; this handler converts them to the correct response.",
               "@type": "RedirectingErrorHandler"
             },
             {
