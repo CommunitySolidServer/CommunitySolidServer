@@ -38,7 +38,7 @@ export class StreamingHTTPRequestHandler extends OperationHttpHandler {
     const credentials = await this.credentialsExtractor.handleSafe(request);
     await this.authorize(credentials, topic);
 
-    const stream = new PassThrough()
+    const stream = guardStream(new PassThrough())
     this.streamMap.add(topic, stream);
     stream.on('error', () => this.streamMap.deleteEntry(topic, stream));
     stream.on('close', () => this.streamMap.deleteEntry(topic, stream));
@@ -46,7 +46,7 @@ export class StreamingHTTPRequestHandler extends OperationHttpHandler {
     const representation = new BasicRepresentation(topic, operation.target, 'text/turtle');
     return new OkResponseDescription(
       representation.metadata,
-      guardStream(stream)
+      stream
     );
   }
 

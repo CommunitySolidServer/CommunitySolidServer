@@ -40,7 +40,7 @@ export class StreamingHTTPListeningActivityHandler extends StaticHandler {
   ): Promise<void> {
     const channel: NotificationChannel = {
       // TODO decide what IRI should denote a pre-established channel
-      id: `urn:uuid:${randomUUID}`,
+      id: `urn:uuid:${randomUUID()}`,
       type: NOTIFY.StreamingHTTPChannel2023,
       topic: topic.path,
       accept: 'text/turtle'
