@@ -1,0 +1,52 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "import": [
+    "css:config/app/init/initialize-root.json",
+    "css:config/app/main/default.json",
+    "css:config/http/handler/default.json",
+    "css:config/http/middleware/default.json",
+    "css:config/http/notifications/streaming-http.json",
+    "css:config/http/server-factory/http.json",
+    "css:config/http/static/default.json",
+    "css:config/identity/access/public.json",
+    "css:config/identity/email/default.json",
+    "css:config/identity/handler/no-accounts.json",
+    "css:config/identity/oidc/default.json",
+    "css:config/identity/ownership/token.json",
+    "css:config/identity/pod/static.json",
+    "css:config/ldp/authentication/debug-auth-header.json",
+    "css:config/ldp/authorization/webacl.json",
+    "css:config/ldp/handler/default.json",
+    "css:config/ldp/metadata-parser/default.json",
+    "css:config/ldp/metadata-writer/default.json",
+    "css:config/ldp/modes/default.json",
+
+    "css:config/storage/key-value/resource-store.json",
+    "css:config/storage/location/root.json",
+    "css:config/storage/middleware/default.json",
+    "css:config/util/auxiliary/acl.json",
+    "css:config/util/identifiers/suffix.json",
+    "css:config/util/index/default.json",
+    "css:config/util/logging/winston.json",
+    "css:config/util/representation-conversion/default.json",
+
+    "css:config/util/variables/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Streaming HTTP notifications with debug authentication.",
+      "@id": "urn:solid-server:test:Instances",
+      "@type": "RecordObject",
+      "record": [
+        {
+          "RecordObject:_record_key": "app",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:App" }
+        },
+        {
+          "RecordObject:_record_key": "store",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ResourceStore" }
+        }
+      ]
+    }
+  ]
+}

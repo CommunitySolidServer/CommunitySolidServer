@@ -33,6 +33,7 @@ const portNames = [
   'WebhookChannel2023',
   'WebhookChannel2023-client',
   'WebSocketChannel2023',
+  'StreamingHTTPChannel2023',
 
   // Unit
   'BaseServerFactory',

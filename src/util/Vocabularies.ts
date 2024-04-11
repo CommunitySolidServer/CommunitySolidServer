@@ -153,6 +153,7 @@ export const ACP = createVocabulary(
 export const AS = createVocabulary(
   'https://www.w3.org/ns/activitystreams#',
   'object',
+  'target',
 
   'Add',
   'Create',
