@@ -1,4 +1,4 @@
-import type { PassThrough } from 'stream';
+import { PassThrough } from 'stream';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import {
@@ -19,9 +19,7 @@ describe('A StreamingHTTP2023Emitter', (): void => {
   let emitter: StreamingHTTP2023Emitter;
 
   beforeEach(async(): Promise<void> => {
-    stream = {
-      write: jest.fn(),
-    } as any;
+    stream = jest.mocked(new PassThrough())
 
     streamMap = new WrappedSetMultiMap();
 
@@ -32,38 +30,36 @@ describe('A StreamingHTTP2023Emitter', (): void => {
     streamMap.add(channel.topic, stream);
 
     const representation = new BasicRepresentation('notification', 'text/plain');
+    const spy = jest.spyOn(representation.data, 'pipe')
     await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
-    expect(stream.write).toHaveBeenCalledTimes(1);
-    expect(stream.write).toHaveBeenLastCalledWith('notification');
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenLastCalledWith(stream, { end: false});
   });
 
   it('destroys the representation if there is no matching Stream.', async(): Promise<void> => {
     const representation = new BasicRepresentation('notification', 'text/plain');
+    const spy = jest.spyOn(representation.data, 'pipe')
     await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
-    expect(stream.write).toHaveBeenCalledTimes(0);
+    expect(spy).toHaveBeenCalledTimes(0);
     expect(representation.data.destroyed).toBe(true);
   });
 
   it('can write to multiple matching Streams.', async(): Promise<void> => {
-    const stream2: jest.Mocked<PassThrough> = {
-      write: jest.fn(),
-    } as any;
+    const stream2 = jest.mocked(new PassThrough())
 
     streamMap.add(channel.topic, stream);
     streamMap.add(channel.topic, stream2);
 
     const representation = new BasicRepresentation('notification', 'text/plain');
+    const spy = jest.spyOn(representation.data, 'pipe')
     await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
-    expect(stream.write).toHaveBeenCalledTimes(1);
-    expect(stream.write).toHaveBeenLastCalledWith('notification');
-    expect(stream2.write).toHaveBeenCalledTimes(1);
-    expect(stream2.write).toHaveBeenLastCalledWith('notification');
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledWith(stream, { end: false });
+    expect(spy).toHaveBeenLastCalledWith(stream2, { end: false});
   });
 
   it('only writes to the matching topic Streams.', async(): Promise<void> => {
-    const stream2: jest.Mocked<PassThrough> = {
-      write: jest.fn(),
-    } as any;
+    const stream2 = jest.mocked(new PassThrough())
     const channel2: NotificationChannel = {
       ...channel,
       id: 'other id',
@@ -74,9 +70,9 @@ describe('A StreamingHTTP2023Emitter', (): void => {
     streamMap.add(channel2.topic, stream2);
 
     const representation = new BasicRepresentation('notification', 'text/plain');
+    const spy = jest.spyOn(representation.data, 'pipe')
     await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
-    expect(stream.write).toHaveBeenCalledTimes(1);
-    expect(stream.write).toHaveBeenLastCalledWith('notification');
-    expect(stream2.write).toHaveBeenCalledTimes(0);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenLastCalledWith(stream, { end: false});
   });
 });

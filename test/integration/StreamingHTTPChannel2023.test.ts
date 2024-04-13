@@ -13,7 +13,6 @@ import {
   instantiateFromConfig,
   removeFolder,
 } from './Config';
-import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
 
 const port = getPort('StreamingHTTPChannel2023');
@@ -77,21 +76,66 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
   });
 
   it.todo('only allows GET on receiveFrom endpoint');
-  
-  it('emits Create events.', async(): Promise<void> => {
-    await store.deleteResource({ path: topic })
-    const futureResponse = fetch(receiveFrom)
 
+  it('emits initial Update if topic exists.', async(): Promise<void> => {
+    await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
+    const streamingResponse = await fetch(receiveFrom)
+    const reader = streamingResponse.body!.getReader()
+    const decoder = new TextDecoder()
+    
+    const notification = await reader.read().then(({ value }) => decoder.decode(value))
+    expect(notification).toBeDefined()
+
+    const parser = new Parser();
+    const quads = new Store(parser.parse(notification))
+
+    expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Update]);
+    expect(quads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
+
+    reader.releaseLock()
+    await streamingResponse.body!.cancel()
+  })
+
+  it('emits initial Delete if topic does not exist.', async(): Promise<void> => {
+    try {
+      await store.deleteResource({ path: topic })
+    } catch {}
+    const streamingResponse = await fetch(receiveFrom)
+    const reader = streamingResponse.body!.getReader()
+    const decoder = new TextDecoder()
+    
+    const notification = await reader.read().then(({ value }) => decoder.decode(value))
+    expect(notification).toBeDefined()
+
+    const parser = new Parser();
+    const quads = new Store(parser.parse(notification))
+
+    expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Delete]);
+    expect(quads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
+
+    reader.releaseLock()
+    await streamingResponse.body!.cancel()
+  })
+
+  it.todo('does not emit initial notification when other receivers connect.')
+
+  it('emits Create events.', async(): Promise<void> => {
+    try {
+      await store.deleteResource({ path: topic })
+    } catch {}
+    const streamingResponse = await fetch(receiveFrom)
+    const reader = streamingResponse.body!.getReader()
+    const decoder = new TextDecoder()
+    // ignore initial notification
+    await reader.read().then(({ value }) => decoder.decode(value))
+    
+    // create resource
     const response = await fetch(topic, {
       method: 'PUT',
       headers: { 'content-type': 'text/plain' },
       body: 'abc',
     });
     expect(response.status).toBe(201);
-
-    const streamingResponse = await futureResponse
-    const reader = streamingResponse.body!.getReader()
-    const decoder = new TextDecoder()
 
     const notification = await reader.read().then(({ value }) => decoder.decode(value))
     expect(notification).toBeDefined()
@@ -108,18 +152,19 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
   it('emits Update events.', async(): Promise<void> => {
     await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
-    const futureResponse = fetch(receiveFrom)
+    const streamingResponse = await fetch(receiveFrom)
+    const reader = streamingResponse.body!.getReader()
+    const decoder = new TextDecoder()
+    // ignore initial notification
+    await reader.read().then(({ value }) => decoder.decode(value))
 
+    // update resource
     const response = await fetch(topic, {
       method: 'PUT',
       headers: { 'content-type': 'text/plain' },
       body: 'abc',
     });
     expect(response.status).toBe(205);
-
-    const streamingResponse = await futureResponse
-    const reader = streamingResponse.body!.getReader()
-    const decoder = new TextDecoder()
 
     const notification = await reader.read().then(({ value }) => decoder.decode(value))
     expect(notification).toBeDefined()
@@ -136,16 +181,17 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
   it('emits Delete events.', async(): Promise<void> => {
     await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
-    const futureResponse = fetch(receiveFrom)
+    const streamingResponse = await fetch(receiveFrom)
+    const reader = streamingResponse.body!.getReader()
+    const decoder = new TextDecoder()
+    // ignore initial notification
+    await reader.read().then(({ value }) => decoder.decode(value))
 
+    // delete resource
     const response = await fetch(topic, {
       method: 'DELETE',
     });
     expect(response.status).toBe(205);
-
-    const streamingResponse = await futureResponse
-    const reader = streamingResponse.body!.getReader()
-    const decoder = new TextDecoder()
 
     const notification = await reader.read().then(({ value }) => decoder.decode(value))
     expect(notification).toBeDefined()
@@ -160,20 +206,22 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     await streamingResponse.body!.cancel()
   });
 
-  it('prevents connecting to restricted resources.', async(): Promise<void> => {
+  it('prevents connecting to channels of restricted topics.', async(): Promise<void> => {
     const restricted = joinUrl(baseUrl, '/restricted');
     const restrictedReceiveFrom = joinUrl(baseUrl, pathPrefix, '/restricted');
     await store.setRepresentation({ path: restricted }, new BasicRepresentation('new', 'text/plain'));
 
     // Only allow our WebID to read
-    const restrictedAcl = `@prefix acl: <http://www.w3.org/ns/auth/acl#>.
-@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+    const restrictedAcl = `
+      @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+      @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 
-<#authorization>
-    a               acl:Authorization;
-    acl:agent       <${webId}>;
-    acl:mode        acl:Read, acl:Write;
-    acl:accessTo    <./restricted>.`;
+      <#authorization>
+          a               acl:Authorization;
+          acl:agent       <${webId}>;
+          acl:mode        acl:Read, acl:Write;
+          acl:accessTo    <./restricted>.`;
+
     await store.setRepresentation({ path: `${restricted}.acl` }, new BasicRepresentation(restrictedAcl, 'text/turtle'));
 
     // Unauthenticated fetch fails
@@ -181,21 +229,13 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     expect(unauthenticatedResponse.status).toBe(401);
 
     // Authenticated fetch succeeds
-    const futureResponse = fetch(restrictedReceiveFrom, {
+    const authenticatedResponse = await fetch(restrictedReceiveFrom, {
       headers: {
         authorization: `WebID ${webId}`,
       }
     });
-    await fetch(restricted, {
-      method: 'PUT',
-      headers: {
-        authorization: `WebID ${webId}`,
-        'content-type': 'text/plain'
-      },
-      body: 'trigger notification',
-    });
-    const authenticatedResponse = await futureResponse
     expect(authenticatedResponse.status).toBe(200);
+
     await authenticatedResponse.body!.cancel()
   });
 
@@ -204,19 +244,20 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     const baseReceiveFrom = joinUrl(baseUrl, pathPrefix, '/');
 
     // Connecting to the base URL, which is the parent container
-    const futureResponse = fetch(baseReceiveFrom)
+    const streamingResponse = await fetch(baseReceiveFrom)
+    const reader = streamingResponse.body!.getReader()
+    const decoder = new TextDecoder()
+    const parser = new Parser();
+    // ignore initial notification
+    await reader.read().then(({ value }) => decoder.decode(value))
 
+    // create contained resource
     const createResponse = await fetch(resource, {
       method: 'PUT',
       headers: { 'content-type': 'text/plain' },
       body: 'abc',
     });
     expect(createResponse.status).toBe(201);
-
-    const streamingResponse = await futureResponse
-    const reader = streamingResponse.body!.getReader()
-    const decoder = new TextDecoder()
-    const parser = new Parser();
 
     // Will receive the Add notification
     const addNotification = await reader.read().then(({ value }) => decoder.decode(value))
@@ -228,6 +269,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     expect(addQuads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(resource) ]);
     expect(addQuads.getObjects(null, AS.terms.target, null)).toEqual([ namedNode(baseUrl) ]);
 
+    // remove contained resource
     const removeResponse = await fetch(resource, {
       method: 'DELETE',
     });
@@ -246,5 +288,4 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     reader.releaseLock()
     await streamingResponse.body!.cancel()
   });
-
 });

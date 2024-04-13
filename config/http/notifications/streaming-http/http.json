@@ -29,10 +29,12 @@
       "allowedMethods": [ "GET" ],
       "allowedPathNames": [ "/StreamingHTTPChannel2023/" ],
       "handler": {
-        "@id": "urn:solid-server:default:StreamingHTTP2023Handler",
+        "@id": "urn:solid-server:default:StreamingHTTP2023RequestHandler",
         "@type": "StreamingHTTPRequestHandler",
         "streamMap": { "@id": "urn:solid-server:default:StreamingHTTPMap" },
         "pathPrefix": { "@id": "urn:solid-server:default:variable:streamingHTTPReceiveFromPrefix" },
+        "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
+        "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
         "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
         "authorizer": { "@id": "urn:solid-server:default:Authorizer" }

@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import type { RepresentationMetadata } from '../../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../../logging/LogUtil';
@@ -45,11 +45,11 @@ export class StreamingHTTPListeningActivityHandler extends StaticHandler {
       topic: topic.path,
       accept: 'text/turtle'
     }
-    // No need to wait on this to resolve before going to the next channel.
-    // Prevent failed notification from blocking other notifications.
-    this.source.handleSafe({ channel, activity, topic, metadata })
-      .catch((error): void => {
-        this.logger.error(`Error trying to handle notification for ${topic.path}: ${createErrorMessage(error)}`);
-      });
+    try {
+      await this.source.handleSafe({ channel, activity, topic, metadata })
+    } catch (error) {
+      // TODO: do we need to catch if only one channel per topic?
+      this.logger.error(`Error trying to handle notification for ${topic.path}: ${createErrorMessage(error)}`);
+    }
   }
 }

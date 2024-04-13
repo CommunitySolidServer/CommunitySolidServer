@@ -1,5 +1,4 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
-import { readableToString } from '../../../util/StreamUtil';
 import { StreamingHTTPMap } from './StreamingHTTPMap';
 
 import type { Representation } from '../../../http/representation/Representation';
@@ -29,9 +28,8 @@ export class StreamingHTTP2023Emitter extends AsyncHandler<StreamingHTTPEmitterI
     // Called as a NotificationEmitter: emit the notification
     const streams = this.streamMap.get(channel.topic);
     if (streams) {
-      const data = await readableToString(representation.data);
       for (const stream of streams) {
-        stream.write(data);
+        representation.data.pipe(stream, { end: false })
       }
     } else {
       representation.data.destroy();

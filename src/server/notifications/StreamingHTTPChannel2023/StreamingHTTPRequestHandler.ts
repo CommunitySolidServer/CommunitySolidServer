@@ -13,6 +13,12 @@ import { OperationHttpHandler } from '../../OperationHttpHandler';
 import { guardStream } from '../../../util/GuardedStream';
 import { IdentifierSetMultiMap } from '../../../util/map/IdentifierMap';
 import { StreamingHTTPMap } from './StreamingHTTPMap';
+import { NotificationChannel } from '../NotificationChannel';
+import { randomUUID } from 'node:crypto';
+import { NOTIFY } from '../../../util/Vocabularies';
+import { createErrorMessage } from '../../../util/errors/ErrorUtil';
+import { NotificationGenerator } from '../generate/NotificationGenerator';
+import { NotificationSerializer } from '../serialize/NotificationSerializer';
 
 /**
  * Handles request to StreamingHTTP receiveFrom endopints. 
@@ -24,6 +30,8 @@ export class StreamingHTTPRequestHandler extends OperationHttpHandler {
   constructor(
     private readonly streamMap: StreamingHTTPMap,
     private readonly pathPrefix: string,
+    private readonly generator: NotificationGenerator,
+    private readonly serializer: NotificationSerializer,
     private readonly credentialsExtractor: CredentialsExtractor,
     private readonly permissionReader: PermissionReader,
     private readonly authorizer: Authorizer
@@ -42,6 +50,23 @@ export class StreamingHTTPRequestHandler extends OperationHttpHandler {
     this.streamMap.add(topic, stream);
     stream.on('error', () => this.streamMap.deleteEntry(topic, stream));
     stream.on('close', () => this.streamMap.deleteEntry(topic, stream));
+
+    // TODO: de-duplicate with StreamingHTTPListeningActivityHandler
+    const channel: NotificationChannel = {
+      // TODO decide what IRI should denote a pre-established channel
+      id: `urn:uuid:${randomUUID()}`,
+      type: NOTIFY.StreamingHTTPChannel2023,
+      topic,
+      accept: 'text/turtle'
+    }
+    // Send initial notification
+    try {
+      const notification = await this.generator.handle({ channel, topic: { path: topic } });
+      const representation = await this.serializer.handleSafe({ channel, notification });
+      representation.data.pipe(stream, { end: false })
+    } catch (error: unknown) {
+      this.logger.error(`Problem emitting initial notification: ${createErrorMessage(error)}`);
+    }
     // Pre-established channels use Turtle
     const representation = new BasicRepresentation(topic, operation.target, 'text/turtle');
     return new OkResponseDescription(
