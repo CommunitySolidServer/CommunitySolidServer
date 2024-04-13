@@ -404,11 +404,11 @@ export * from './server/notifications/WebSocketChannel2023/WebSocketMap';
 export * from './server/notifications/WebSocketChannel2023/WebSocketChannel2023Type';
 
 // Server/Notifications/StreamingHTTPChannel2023
-export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTPRequestHandler';
-export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTPMap';
-export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTPListeningActivityHandler';
-export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTP2023Emitter';
-export * from './server/notifications/StreamingHTTPChannel2023/StreamingHTTPMetadataWriter';
+export * from './server/notifications/StreamingHttpChannel2023/StreamingHttpRequestHandler';
+export * from './server/notifications/StreamingHttpChannel2023/StreamingHttpMap';
+export * from './server/notifications/StreamingHttpChannel2023/StreamingHttpListeningActivityHandler';
+export * from './server/notifications/StreamingHttpChannel2023/StreamingHttp2023Emitter';
+export * from './server/notifications/StreamingHttpChannel2023/StreamingHttpMetadataWriter';
 
 // Server/Notifications
 export * from './server/notifications/ActivityEmitter';

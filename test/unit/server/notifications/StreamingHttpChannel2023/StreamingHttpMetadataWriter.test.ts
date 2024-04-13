@@ -1,13 +1,15 @@
 import { createResponse } from 'node-mocks-http';
-import { StreamingHTTPMetadataWriter } from '../../../../../src/server/notifications/StreamingHTTPChannel2023/StreamingHTTPMetadataWriter';
+import {
+  StreamingHttpMetadataWriter,
+} from '../../../../../src/server/notifications/StreamingHttpChannel2023/StreamingHttpMetadataWriter';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 
-describe('A StreamingHTTPMetadataWriter', (): void => {
-  const baseUrl = 'http://example.org/'
-  const pathPrefix = '.notifications/StreamingHTTPChannel2023/'
-  const writer = new StreamingHTTPMetadataWriter(baseUrl, pathPrefix);
-  const rel = 'http://www.w3.org/ns/solid/terms#updatesViaStreamingHTTP2023'
+describe('A StreamingHttpMetadataWriter', (): void => {
+  const baseUrl = 'http://example.org/';
+  const pathPrefix = '.notifications/StreamingHTTPChannel2023/';
+  const writer = new StreamingHttpMetadataWriter(baseUrl, pathPrefix);
+  const rel = 'http://www.w3.org/ns/solid/terms#updatesViaStreamingHttp2023';
 
   it('adds the correct link header.', async(): Promise<void> => {
     const response = createResponse() as HttpResponse;

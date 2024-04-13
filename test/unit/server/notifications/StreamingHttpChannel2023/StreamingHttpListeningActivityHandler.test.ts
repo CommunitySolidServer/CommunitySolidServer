@@ -7,14 +7,14 @@ import type { ActivityEmitter } from '../../../../../src/server/notifications/Ac
 import type { NotificationHandler } from '../../../../../src/server/notifications/NotificationHandler';
 import { AS } from '../../../../../src/util/Vocabularies';
 import { flushPromises } from '../../../../util/Util';
-import { StreamingHTTPListeningActivityHandler } from '../../../../../src';
+import { StreamingHttpListeningActivityHandler } from '../../../../../src';
 
 jest.mock('../../../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { error: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });
 
-describe('A StreamingHTTPListeningActivityHandler', (): void => {
+describe('A StreamingHttpListeningActivityHandler', (): void => {
   const logger: jest.Mocked<Logger> = getLoggerFor('mock') as any;
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
   const activity = AS.terms.Update;
@@ -31,7 +31,7 @@ describe('A StreamingHTTPListeningActivityHandler', (): void => {
     } as any;
 
     // eslint-disable-next-line no-new
-    new StreamingHTTPListeningActivityHandler(emitter, notificationHandler);
+    new StreamingHttpListeningActivityHandler(emitter, notificationHandler);
   });
 
   it('calls the NotificationHandler if there is an event.', async(): Promise<void> => {
@@ -40,7 +40,9 @@ describe('A StreamingHTTPListeningActivityHandler', (): void => {
     await flushPromises();
 
     expect(notificationHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(notificationHandler.handleSafe).toHaveBeenLastCalledWith(expect.objectContaining({ activity, topic, metadata }));
+    expect(notificationHandler.handleSafe).toHaveBeenLastCalledWith(
+      expect.objectContaining({ activity, topic, metadata }),
+    );
     expect(logger.error).toHaveBeenCalledTimes(0);
   });
 
@@ -56,8 +58,9 @@ describe('A StreamingHTTPListeningActivityHandler', (): void => {
   });
 
   it('logs an error if something goes wrong handling the event.', async(): Promise<void> => {
-
-    const erroringTopic = { get path() { throw new Error('bad event') }} as unknown as ResourceIdentifier
+    const erroringTopic = { get path(): string {
+      throw new Error('bad event');
+    } } as unknown as ResourceIdentifier;
 
     emitter.emit('changed', erroringTopic, activity, metadata);
 

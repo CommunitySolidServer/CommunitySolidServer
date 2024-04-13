@@ -4,10 +4,10 @@ import type { ResourceIdentifier } from '../../../http/representation/ResourceId
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import { StaticHandler } from '../../../util/handlers/StaticHandler';
-import { NOTIFY, type AS, type VocabularyTerm } from '../../../util/Vocabularies';
-import type { ActivityEmitter } from '.././ActivityEmitter';
-import type { NotificationHandler } from '.././NotificationHandler';
-import { NotificationChannel } from '../NotificationChannel';
+import { type AS, NOTIFY, type VocabularyTerm } from '../../../util/Vocabularies';
+import type { ActivityEmitter } from '../ActivityEmitter';
+import type { NotificationHandler } from '../NotificationHandler';
+import type { NotificationChannel } from '../NotificationChannel';
 
 /**
  * Listens to an {@link ActivityEmitter} and calls the stored {@link NotificationHandler}s in case of an event
@@ -17,12 +17,12 @@ import { NotificationChannel } from '../NotificationChannel';
  * No class takes this one as input, so to make sure Components.js instantiates it,
  * it needs to be added somewhere where its presence has no impact, such as the list of initializers.
  */
-export class StreamingHTTPListeningActivityHandler extends StaticHandler {
+export class StreamingHttpListeningActivityHandler extends StaticHandler {
   protected readonly logger = getLoggerFor(this);
 
   public constructor(
     emitter: ActivityEmitter,
-    private readonly source: NotificationHandler
+    private readonly source: NotificationHandler,
   ) {
     super();
 
@@ -39,16 +39,14 @@ export class StreamingHTTPListeningActivityHandler extends StaticHandler {
     metadata: RepresentationMetadata,
   ): Promise<void> {
     const channel: NotificationChannel = {
-      // TODO decide what IRI should denote a pre-established channel
       id: `urn:uuid:${randomUUID()}`,
       type: NOTIFY.StreamingHTTPChannel2023,
       topic: topic.path,
-      accept: 'text/turtle'
-    }
+      accept: 'text/turtle',
+    };
     try {
-      await this.source.handleSafe({ channel, activity, topic, metadata })
+      await this.source.handleSafe({ channel, activity, topic, metadata });
     } catch (error) {
-      // TODO: do we need to catch if only one channel per topic?
       this.logger.error(`Error trying to handle notification for ${topic.path}: ${createErrorMessage(error)}`);
     }
   }

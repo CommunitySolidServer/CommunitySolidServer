@@ -13,9 +13,10 @@ import type { Logger } from '../../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 
 import {
-  StreamingHTTPRequestHandler,
-} from '../../../../../src/server/notifications/StreamingHTTPChannel2023/StreamingHTTPRequestHandler';
-import { NotificationGenerator, NotificationSerializer, StreamingHTTPMap } from '../../../../../src';
+  StreamingHttpRequestHandler,
+} from '../../../../../src/server/notifications/StreamingHttpChannel2023/StreamingHttpRequestHandler';
+import type { NotificationGenerator, NotificationSerializer } from '../../../../../src';
+import { StreamingHttpMap } from '../../../../../src';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
 import { flushPromises } from '../../../../util/Util';
 
@@ -24,11 +25,10 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
   return { getLoggerFor: (): Logger => logger };
 });
 
-/* eslint-disable jest/prefer-spy-on */
-describe('A StreamingHTTPRequestHandler', (): void => {
+describe('A StreamingHttpRequestHandler', (): void => {
   const logger: jest.Mocked<Logger> = getLoggerFor('mock') as any;
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const pathPrefix = '.notifications/StreamingHTTPChannel2023/'
+  const pathPrefix = '.notifications/StreamingHTTPChannel2023/';
   const channel: NotificationChannel = {
     id: 'id',
     topic: topic.path,
@@ -48,14 +48,14 @@ describe('A StreamingHTTPRequestHandler', (): void => {
   const representation = new BasicRepresentation();
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
-  let streamMap: StreamingHTTPMap
+  let streamMap: StreamingHttpMap;
   let operation: Operation;
   let generator: jest.Mocked<NotificationGenerator>;
   let serializer: jest.Mocked<NotificationSerializer>;
   let credentialsExtractor: jest.Mocked<CredentialsExtractor>;
   let permissionReader: jest.Mocked<PermissionReader>;
   let authorizer: jest.Mocked<Authorizer>;
-  let handler: StreamingHTTPRequestHandler;
+  let handler: StreamingHttpRequestHandler;
 
   beforeEach(async(): Promise<void> => {
     operation = {
@@ -65,7 +65,7 @@ describe('A StreamingHTTPRequestHandler', (): void => {
       preferences: {},
     };
 
-    streamMap = new StreamingHTTPMap();
+    streamMap = new StreamingHttpMap();
 
     generator = {
       canHandle: jest.fn(),
@@ -75,7 +75,6 @@ describe('A StreamingHTTPRequestHandler', (): void => {
     serializer = {
       handleSafe: jest.fn().mockResolvedValue(representation),
     } as any;
-
 
     credentialsExtractor = {
       handleSafe: jest.fn().mockResolvedValue({ public: {}}),
@@ -89,7 +88,15 @@ describe('A StreamingHTTPRequestHandler', (): void => {
       handleSafe: jest.fn(),
     } as any;
 
-    handler = new StreamingHTTPRequestHandler(streamMap, pathPrefix, generator, serializer, credentialsExtractor, permissionReader, authorizer);
+    handler = new StreamingHttpRequestHandler(
+      streamMap,
+      pathPrefix,
+      generator,
+      serializer,
+      credentialsExtractor,
+      permissionReader,
+      authorizer,
+    );
   });
 
   it('stores streams.', async(): Promise<void> => {
@@ -100,7 +107,7 @@ describe('A StreamingHTTPRequestHandler', (): void => {
 
   it('removes closed streams.', async(): Promise<void> => {
     const description = await handler.handle({ operation, request, response });
-    expect(streamMap.has(channel.topic)).toBe(true)
+    expect(streamMap.has(channel.topic)).toBe(true);
     description.data!.emit('close');
     expect(streamMap.has(channel.topic)).toBe(false);
   });
@@ -114,16 +121,16 @@ describe('A StreamingHTTPRequestHandler', (): void => {
 
   it('sets content type to turtle.', async(): Promise<void> => {
     const description = await handler.handle({ operation, request, response });
-    expect(description.metadata?.contentType).toBe('text/turtle')
+    expect(description.metadata?.contentType).toBe('text/turtle');
   });
 
   it('responds with the stream.', async(): Promise<void> => {
     const description = await handler.handle({ operation, request, response });
-    expect(description.data).toBeDefined()
+    expect(description.data).toBeDefined();
   });
 
   it('sends initial notification.', async(): Promise<void> => {
-    const spy = jest.spyOn(representation.data, 'pipe')
+    const spy = jest.spyOn(representation.data, 'pipe');
     await handler.handle({ operation, request, response });
     expect(spy).toHaveBeenCalledTimes(1);
   });

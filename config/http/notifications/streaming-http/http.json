@@ -7,9 +7,9 @@
       "valueRaw": ".notifications/StreamingHTTPChannel2023/"
     },
     {
-      "comment": "Creates updatesViaStreamingHTTP2023 Link relations",
-      "@id": "urn:solid-server:default:StreamingHTTPMetadataWriter",
-      "@type": "StreamingHTTPMetadataWriter",
+      "comment": "Creates updatesViaStreamingHttp2023 Link relations",
+      "@id": "urn:solid-server:default:StreamingHttpMetadataWriter",
+      "@type": "StreamingHttpMetadataWriter",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "pathPrefix": { "@id": "urn:solid-server:default:variable:streamingHTTPReceiveFromPrefix" }
     },
@@ -18,20 +18,20 @@
       "@id": "urn:solid-server:default:MetadataWriter",
       "@type": "ParallelHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:StreamingHTTPMetadataWriter" }
+        { "@id": "urn:solid-server:default:StreamingHttpMetadataWriter" }
       ]
     },
     {
       "comment": "Handles the request targeting a StreamingHTTPChannel2023 receiveFrom endpoint.",
-      "@id": "urn:solid-server:default:StreamingHTTP2023Router",
+      "@id": "urn:solid-server:default:StreamingHttp2023Router",
       "@type": "OperationRouterHandler",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "allowedMethods": [ "GET" ],
       "allowedPathNames": [ "/StreamingHTTPChannel2023/" ],
       "handler": {
-        "@id": "urn:solid-server:default:StreamingHTTP2023RequestHandler",
-        "@type": "StreamingHTTPRequestHandler",
-        "streamMap": { "@id": "urn:solid-server:default:StreamingHTTPMap" },
+        "@id": "urn:solid-server:default:StreamingHttp2023RequestHandler",
+        "@type": "StreamingHttpRequestHandler",
+        "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" },
         "pathPrefix": { "@id": "urn:solid-server:default:variable:streamingHTTPReceiveFromPrefix" },
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
         "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
@@ -45,31 +45,31 @@
       "@id": "urn:solid-server:default:NotificationTypeHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:StreamingHTTP2023Router" }
+        { "@id": "urn:solid-server:default:StreamingHttp2023Router" }
       ]
     },
     {
       "comment": "Opened response streams will be stored in this Map.",
-      "@id": "urn:solid-server:default:StreamingHTTPMap",
-      "@type": "StreamingHTTPMap"
+      "@id": "urn:solid-server:default:StreamingHttpMap",
+      "@type": "StreamingHttpMap"
     },
     {
-      "comment": "Emits serialized notifications through StreamingHTTP.",
-      "@id": "urn:solid-server:default:StreamingHTTP2023Emitter",
-      "@type": "StreamingHTTP2023Emitter",
-      "streamMap": { "@id": "urn:solid-server:default:StreamingHTTPMap" }
+      "comment": "Emits serialized notifications through Streaming HTTP.",
+      "@id": "urn:solid-server:default:StreamingHttp2023Emitter",
+      "@type": "StreamingHttp2023Emitter",
+      "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" }
     },
     {
       "comment": "Listens to the activities emitted by the MonitoringStore.",
-      "@id": "urn:solid-server:default:StreamingHTTPListeningActivityHandler",
-      "@type": "StreamingHTTPListeningActivityHandler",
+      "@id": "urn:solid-server:default:StreamingHttpListeningActivityHandler",
+      "@type": "StreamingHttpListeningActivityHandler",
       "emitter": { "@id": "urn:solid-server:default:ResourceStore" },
       "source": {
         "comment": "Handles the generation and serialization of notifications for StreamingHTTPChannel2023",
         "@type": "ComposedNotificationHandler",
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
         "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
-        "emitter": { "@id": "urn:solid-server:default:StreamingHTTP2023Emitter" },
+        "emitter": { "@id": "urn:solid-server:default:StreamingHttp2023Emitter" },
         "eTagHandler": { "@id": "urn:solid-server:default:ETagHandler" }
       }
     },
@@ -78,7 +78,7 @@
       "@id": "urn:solid-server:default:PrimaryParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:StreamingHTTPListeningActivityHandler" }
+        { "@id": "urn:solid-server:default:StreamingHttpListeningActivityHandler" }
       ]
     }
   ]
