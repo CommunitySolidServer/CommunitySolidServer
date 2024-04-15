@@ -1,13 +1,12 @@
-import { randomUUID } from 'node:crypto';
 import type { RepresentationMetadata } from '../../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import { StaticHandler } from '../../../util/handlers/StaticHandler';
-import { type AS, NOTIFY, type VocabularyTerm } from '../../../util/Vocabularies';
+import type { AS, VocabularyTerm } from '../../../util/Vocabularies';
 import type { ActivityEmitter } from '../ActivityEmitter';
 import type { NotificationHandler } from '../NotificationHandler';
-import type { NotificationChannel } from '../NotificationChannel';
+import { defaultChannel } from './StreamingHttp2023Util';
 
 /**
  * Listens to an {@link ActivityEmitter} and calls the stored {@link NotificationHandler}s in case of an event
@@ -38,12 +37,7 @@ export class StreamingHttpListeningActivityHandler extends StaticHandler {
     activity: VocabularyTerm<typeof AS>,
     metadata: RepresentationMetadata,
   ): Promise<void> {
-    const channel: NotificationChannel = {
-      id: `urn:uuid:${randomUUID()}`,
-      type: NOTIFY.StreamingHTTPChannel2023,
-      topic: topic.path,
-      accept: 'text/turtle',
-    };
+    const channel = defaultChannel(topic);
     try {
       await this.source.handleSafe({ channel, activity, topic, metadata });
     } catch (error) {

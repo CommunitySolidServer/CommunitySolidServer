@@ -12,7 +12,7 @@ export interface StreamingHttpEmitterInput {
 
 /**
  * Emits notifications on StreamingHTTPChannel2023 streams.
- * Uses the StreamingHTTPs found in the provided map.
+ * Uses the response streams found in the provided map.
  * The key should be the identifier of the topic resource.
  */
 export class StreamingHttp2023Emitter extends AsyncHandler<StreamingHttpEmitterInput> {

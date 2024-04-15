@@ -1,5 +1,4 @@
 import { PassThrough } from 'node:stream';
-import { randomUUID } from 'node:crypto';
 import type { Credentials } from '../../../authentication/Credentials';
 import type { CredentialsExtractor } from '../../../authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../authorization/Authorizer';
@@ -13,12 +12,11 @@ import type { OperationHttpHandlerInput } from '../../OperationHttpHandler';
 import { OperationHttpHandler } from '../../OperationHttpHandler';
 import { guardStream } from '../../../util/GuardedStream';
 import { IdentifierSetMultiMap } from '../../../util/map/IdentifierMap';
-import type { NotificationChannel } from '../NotificationChannel';
-import { NOTIFY } from '../../../util/Vocabularies';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import type { NotificationGenerator } from '../generate/NotificationGenerator';
 import type { NotificationSerializer } from '../serialize/NotificationSerializer';
 import type { StreamingHttpMap } from './StreamingHttpMap';
+import { defaultChannel } from './StreamingHttp2023Util';
 
 /**
  * Handles request to Streaming HTTP receiveFrom endopints.
@@ -51,12 +49,7 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
     stream.on('error', (): boolean => this.streamMap.deleteEntry(topic, stream));
     stream.on('close', (): boolean => this.streamMap.deleteEntry(topic, stream));
 
-    const channel: NotificationChannel = {
-      id: `urn:uuid:${randomUUID()}`,
-      type: NOTIFY.StreamingHTTPChannel2023,
-      topic,
-      accept: 'text/turtle',
-    };
+    const channel = defaultChannel({ path: topic });
     // Send initial notification
     try {
       const notification = await this.generator.handle({ channel, topic: { path: topic }});
@@ -66,16 +59,13 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
       this.logger.error(`Problem emitting initial notification: ${createErrorMessage(error)}`);
     }
     // Pre-established channels use Turtle
-    const representation = new BasicRepresentation(topic, operation.target, 'text/turtle');
+    const representation = new BasicRepresentation(topic, operation.target, channel.accept);
     return new OkResponseDescription(
       representation.metadata,
       stream,
     );
   }
 
-  /**
-   * TODO: consider removing duplication with {@link NotificationsSubscriber}
-   */
   private async authorize(credentials: Credentials, topic: string): Promise<void> {
     const requestedModes = new IdentifierSetMultiMap<AccessMode>([[{ path: topic }, AccessMode.read ]]);
     this.logger.debug(`Retrieved required modes: ${[ ...requestedModes.entrySets() ].join(',')}`);
