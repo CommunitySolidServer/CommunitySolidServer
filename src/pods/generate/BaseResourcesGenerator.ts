@@ -185,8 +185,20 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
       data = await this.processFile(link, options);
       metadata.contentType = link.contentType;
     }
-    // Do not yield a container resource if it already exists
-    if (!isContainerIdentifier(link.identifier) || !await this.store.hasResource(link.identifier)) {
+
+    // Add metadata from .meta file if there is one
+    if (metaLink) {
+      const rawMetadata = await this.generateMetadata(metaLink, options);
+      if (rawMetadata.contentType) {
+        // Prevent having 2 content types
+        metadata.contentType = undefined;
+      }
+      metadata.setMetadata(rawMetadata);
+      this.logger.debug(`Adding metadata for ${metaLink.identifier.path}`);
+    }
+
+    const shouldYield = !isContainerIdentifier(link.identifier) || !await this.store.hasResource(link.identifier);
+    if (shouldYield) {
       this.logger.debug(`Generating resource ${link.identifier.path}`);
       yield {
         identifier: link.identifier,
@@ -194,20 +206,15 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
       };
     }
 
-    // Add metadata from .meta file if there is one
-    if (metaLink) {
-      const rawMetadata = await this.generateMetadata(metaLink, options);
-      if (!rawMetadata.contentType) {
-        // Make sure this does not remove the content-type if none is explicitly defined
-        rawMetadata.contentType = metadata.contentType;
-      }
+    // Still need to yield metadata in case the actual resource is not being yielded.
+    // We also do this for containers as existing containers can't be edited in the same way.
+    if (metaLink && (!shouldYield || isContainerIdentifier(link.identifier))) {
       const metaIdentifier = this.metadataStrategy.getAuxiliaryIdentifier(link.identifier);
-      const descriptionMeta = new RepresentationMetadata(metaIdentifier);
-      addResourceMetadata(rawMetadata, isContainerIdentifier(link.identifier));
+      addResourceMetadata(metadata, isContainerIdentifier(link.identifier));
       this.logger.debug(`Generating resource ${metaIdentifier.path}`);
       yield {
         identifier: metaIdentifier,
-        representation: new BasicRepresentation(rawMetadata.quads(), descriptionMeta, INTERNAL_QUADS),
+        representation: new BasicRepresentation(metadata.quads(), metaIdentifier, INTERNAL_QUADS),
       };
     }
   }
