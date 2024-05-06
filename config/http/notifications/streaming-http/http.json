@@ -64,6 +64,7 @@
       "@id": "urn:solid-server:default:StreamingHttpListeningActivityHandler",
       "@type": "StreamingHttpListeningActivityHandler",
       "emitter": { "@id": "urn:solid-server:default:ResourceStore" },
+      "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" },
       "source": {
         "comment": "Handles the generation and serialization of notifications for StreamingHTTPChannel2023",
         "@type": "ComposedNotificationHandler",

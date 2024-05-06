@@ -7,6 +7,7 @@ import type { AS, VocabularyTerm } from '../../../util/Vocabularies';
 import type { ActivityEmitter } from '../ActivityEmitter';
 import type { NotificationHandler } from '../NotificationHandler';
 import { defaultChannel } from './StreamingHttp2023Util';
+import type { StreamingHttpMap } from './StreamingHttpMap';
 
 /**
  * Listens to an {@link ActivityEmitter} and calls the stored {@link NotificationHandler}s in case of an event
@@ -21,14 +22,19 @@ export class StreamingHttpListeningActivityHandler extends StaticHandler {
 
   public constructor(
     emitter: ActivityEmitter,
+    private readonly streamMap: StreamingHttpMap,
     private readonly source: NotificationHandler,
   ) {
     super();
 
     emitter.on('changed', (topic, activity, metadata): void => {
-      this.emit(topic, activity, metadata).catch((error): void => {
-        this.logger.error(`Something went wrong emitting notifications: ${createErrorMessage(error)}`);
-      });
+      if (this.streamMap.has(topic.path)) {
+        this.emit(topic, activity, metadata).catch(
+          (error): void => {
+            this.logger.error(`Error trying to handle notification for ${topic.path}: ${createErrorMessage(error)}`);
+          },
+        );
+      }
     });
   }
 
@@ -38,10 +44,6 @@ export class StreamingHttpListeningActivityHandler extends StaticHandler {
     metadata: RepresentationMetadata,
   ): Promise<void> {
     const channel = defaultChannel(topic);
-    try {
-      await this.source.handleSafe({ channel, activity, topic, metadata });
-    } catch (error) {
-      this.logger.error(`Error trying to handle notification for ${topic.path}: ${createErrorMessage(error)}`);
-    }
+    return this.source.handleSafe({ channel, activity, topic, metadata });
   }
 }
