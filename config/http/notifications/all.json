@@ -6,13 +6,13 @@
     "css:config/http/notifications/base/http.json",
     "css:config/http/notifications/base/listener.json",
     "css:config/http/notifications/base/storage.json",
+    "css:config/http/notifications/streaming-http/http.json",
     "css:config/http/notifications/websockets/handler.json",
     "css:config/http/notifications/websockets/http.json",
     "css:config/http/notifications/websockets/subscription.json",
     "css:config/http/notifications/webhooks/handler.json",
     "css:config/http/notifications/webhooks/routes.json",
-    "css:config/http/notifications/webhooks/subscription.json",
-    "css:config/http/notifications/streaming-http/http.json"
+    "css:config/http/notifications/webhooks/subscription.json"
   ],
   "@graph": [
     {

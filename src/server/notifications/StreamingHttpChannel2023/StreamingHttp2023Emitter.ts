@@ -1,5 +1,4 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
-
 import type { Representation } from '../../../http/representation/Representation';
 import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import type { NotificationChannel } from '../NotificationChannel';

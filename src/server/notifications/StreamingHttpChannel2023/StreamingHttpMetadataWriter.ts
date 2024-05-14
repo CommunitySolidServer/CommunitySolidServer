@@ -5,7 +5,7 @@ import type { RepresentationMetadata } from '../../../http/representation/Repres
 import { MetadataWriter } from '../../../http/output/metadata/MetadataWriter';
 
 /**
- * A {@link MetadataWriter} that adds link to the receiveFrom endpoint
+ * A {@link MetadataWriter} that adds a link to the receiveFrom endpoint
  * of the corresponding Streaming HTTP notifications channel
  */
 export class StreamingHttpMetadataWriter extends MetadataWriter {

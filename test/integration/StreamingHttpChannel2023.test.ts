@@ -31,6 +31,14 @@ const stores: [string, any][] = [
   }],
 ];
 
+async function readChunk(reader: ReadableStreamDefaultReader): Promise<Store> {
+  const decoder = new TextDecoder();
+  const parser = new Parser();
+  const { value } = await reader.read();
+  const notification = decoder.decode(value);
+  return new Store(parser.parse(notification));
+}
+
 describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (name, { configs, teardown }): void => {
   let app: App;
   let store: ResourceStore;
@@ -74,7 +82,21 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     expect(match![1]).toEqual(receiveFrom);
   });
 
-  it.todo('only allows GET on receiveFrom endpoint.');
+  it('only allows GET on receiveFrom endpoint.', async(): Promise<void> => {
+    const methods = [ 'HEAD', 'PUT', 'POST' ];
+    for (const method of methods) {
+      const response = await fetch(receiveFrom, {
+        method,
+      });
+      expect(response.status).toBe(405);
+    }
+
+    // For some reason it differs
+    const del = await fetch(receiveFrom, {
+      method: 'DELETE',
+    });
+    expect(del.status).toBe(404);
+  });
 
   it('emits initial Update if topic exists.', async(): Promise<void> => {
     await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
@@ -82,14 +104,9 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       dispatcher: new Agent({ bodyTimeout: 1000 }),
     });
     const reader = streamingResponse.body!.getReader();
-    const decoder = new TextDecoder();
-    const parser = new Parser();
 
     try {
-      const notification = await reader.read().then(({ value }): string => decoder.decode(value));
-      expect(notification).toBeDefined();
-
-      const quads = new Store(parser.parse(notification));
+      const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Update ]);
       expect(quads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
     } finally {
@@ -106,14 +123,9 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       dispatcher: new Agent({ bodyTimeout: 1000 }),
     });
     const reader = streamingResponse.body!.getReader();
-    const decoder = new TextDecoder();
-    const parser = new Parser();
 
     try {
-      const notification = await reader.read().then(({ value }): string => decoder.decode(value));
-      expect(notification).toBeDefined();
-
-      const quads = new Store(parser.parse(notification));
+      const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Delete ]);
       expect(quads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
     } finally {
@@ -122,7 +134,46 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     }
   });
 
-  it.todo('does not emit initial notification when other receivers connect.');
+  it('does not emit initial notification when other receivers connect.', async(): Promise<void> => {
+    await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
+    const streamingResponse = await fetch(receiveFrom, {
+      dispatcher: new Agent({ bodyTimeout: 1000 }),
+    });
+    const reader = streamingResponse.body!.getReader();
+
+    const otherResponse = await fetch(receiveFrom, {
+      dispatcher: new Agent({ bodyTimeout: 1000 }),
+    });
+    const otherReader = otherResponse.body!.getReader();
+
+    try {
+      // Expected initial notification
+      const updateQuads = await readChunk(reader);
+      expect(updateQuads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Update ]);
+      expect(updateQuads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
+
+      // Expected initial notification on other receiver
+      const otherQuads = await readChunk(otherReader);
+      expect(otherQuads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Update ]);
+      expect(otherQuads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
+
+      // Delete resource
+      const response = await fetch(topic, {
+        method: 'DELETE',
+      });
+      expect(response.status).toBe(205);
+
+      // If it was caused by the other receiver connecting, it would have been Update as well
+      const deleteQuads = await readChunk(reader);
+      expect(deleteQuads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Delete ]);
+      expect(deleteQuads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
+    } finally {
+      reader.releaseLock();
+      await streamingResponse.body!.cancel();
+      otherReader.releaseLock();
+      await streamingResponse.body!.cancel();
+    }
+  });
 
   it('emits Create events.', async(): Promise<void> => {
     try {
@@ -132,12 +183,10 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       dispatcher: new Agent({ bodyTimeout: 1000 }),
     });
     const reader = streamingResponse.body!.getReader();
-    const decoder = new TextDecoder();
-    const parser = new Parser();
 
     try {
       // Ignore initial notification
-      await reader.read().then(({ value }): string => decoder.decode(value));
+      await readChunk(reader);
 
       // Create resource
       const response = await fetch(topic, {
@@ -147,11 +196,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       });
       expect(response.status).toBe(201);
 
-      const notification = await reader.read().then(({ value }): string => decoder.decode(value));
-      expect(notification).toBeDefined();
-
-      const quads = new Store(parser.parse(notification));
-
+      const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Create ]);
       expect(quads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
     } finally {
@@ -166,12 +211,10 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       dispatcher: new Agent({ bodyTimeout: 1000 }),
     });
     const reader = streamingResponse.body!.getReader();
-    const decoder = new TextDecoder();
-    const parser = new Parser();
 
     try {
       // Ignore initial notification
-      await reader.read().then(({ value }): string => decoder.decode(value));
+      await readChunk(reader);
 
       // Update resource
       const response = await fetch(topic, {
@@ -181,11 +224,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       });
       expect(response.status).toBe(205);
 
-      const notification = await reader.read().then(({ value }): string => decoder.decode(value));
-      expect(notification).toBeDefined();
-
-      const quads = new Store(parser.parse(notification));
-
+      const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Update ]);
       expect(quads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
     } finally {
@@ -200,12 +239,10 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       dispatcher: new Agent({ bodyTimeout: 1000 }),
     });
     const reader = streamingResponse.body!.getReader();
-    const decoder = new TextDecoder();
-    const parser = new Parser();
 
     try {
       // Ignore initial notification
-      await reader.read().then(({ value }): string => decoder.decode(value));
+      await readChunk(reader);
 
       // Delete resource
       const response = await fetch(topic, {
@@ -213,11 +250,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       });
       expect(response.status).toBe(205);
 
-      const notification = await reader.read().then(({ value }): string => decoder.decode(value));
-      expect(notification).toBeDefined();
-
-      const quads = new Store(parser.parse(notification));
-
+      const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Delete ]);
       expect(quads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(topic) ]);
     } finally {
@@ -274,12 +307,10 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       dispatcher: new Agent({ bodyTimeout: 1000 }),
     });
     const reader = streamingResponse.body!.getReader();
-    const decoder = new TextDecoder();
-    const parser = new Parser();
 
     try {
       // Ignore initial notification
-      await reader.read().then(({ value }): string => decoder.decode(value));
+      await readChunk(reader);
 
       // Create contained resource
       const createResponse = await fetch(resource, {
@@ -290,10 +321,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       expect(createResponse.status).toBe(201);
 
       // Will receive the Add notification
-      const addNotification = await reader.read().then(({ value }): string => decoder.decode(value));
-      expect(addNotification).toBeDefined();
-
-      const addQuads = new Store(parser.parse(addNotification));
+      const addQuads = await readChunk(reader);
 
       expect(addQuads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Add ]);
       expect(addQuads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(resource) ]);
@@ -306,11 +334,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       expect(removeResponse.status).toBe(205);
 
       // Will receive the Remove notification
-      const removeNotification = await reader.read().then(({ value }): string => decoder.decode(value));
-      expect(removeNotification).toBeDefined();
-
-      const removeQuads = new Store(parser.parse(removeNotification));
-
+      const removeQuads = await readChunk(reader);
       expect(removeQuads.getObjects(null, RDF.terms.type, null)).toEqual([ AS.terms.Remove ]);
       expect(removeQuads.getObjects(null, AS.terms.object, null)).toEqual([ namedNode(resource) ]);
       expect(removeQuads.getObjects(null, AS.terms.target, null)).toEqual([ namedNode(baseUrl) ]);

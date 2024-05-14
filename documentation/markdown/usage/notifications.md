@@ -138,6 +138,7 @@ For example, this —
 
 ```shell
 curl --head 'http://localhost:3000/foo/'
+```
 
 ```http
 HTTP/1.1 200 OK

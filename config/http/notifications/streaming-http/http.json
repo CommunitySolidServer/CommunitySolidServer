@@ -14,7 +14,7 @@
       "pathPrefix": { "@id": "urn:solid-server:default:variable:streamingHTTPReceiveFromPrefix" }
     },
     {
-      "comment": "[Override] Allows discovery of the corresponding streaming HTTP channel",
+      "comment": "Allows discovery of the corresponding streaming HTTP channel",
       "@id": "urn:solid-server:default:MetadataWriter",
       "@type": "ParallelHandler",
       "handlers": [
@@ -41,7 +41,7 @@
       }
     },
     {
-      "comment": "[Override] add the router to notification type handler",
+      "comment": "Add the router to notification type handler",
       "@id": "urn:solid-server:default:NotificationTypeHandler",
       "@type": "WaterfallHandler",
       "handlers": [
@@ -75,7 +75,7 @@
       }
     },
     {
-      "comment": "[Override] Add the activity handler to the primary initializer",
+      "comment": "Add the activity handler to the primary initializer",
       "@id": "urn:solid-server:default:PrimaryParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [

@@ -16,7 +16,7 @@ import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import type { NotificationGenerator } from '../generate/NotificationGenerator';
 import type { NotificationSerializer } from '../serialize/NotificationSerializer';
 import type { StreamingHttpMap } from './StreamingHttpMap';
-import { defaultChannel } from './StreamingHttp2023Util';
+import { generateChannel } from './StreamingHttp2023Util';
 
 /**
  * Handles request to Streaming HTTP receiveFrom endopints.
@@ -49,7 +49,7 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
     stream.on('error', (): boolean => this.streamMap.deleteEntry(topic, stream));
     stream.on('close', (): boolean => this.streamMap.deleteEntry(topic, stream));
 
-    const channel = defaultChannel({ path: topic });
+    const channel = generateChannel({ path: topic });
     // Send initial notification
     try {
       const notification = await this.generator.handle({ channel, topic: { path: topic }});

@@ -6,7 +6,7 @@ import { StaticHandler } from '../../../util/handlers/StaticHandler';
 import type { AS, VocabularyTerm } from '../../../util/Vocabularies';
 import type { ActivityEmitter } from '../ActivityEmitter';
 import type { NotificationHandler } from '../NotificationHandler';
-import { defaultChannel } from './StreamingHttp2023Util';
+import { generateChannel } from './StreamingHttp2023Util';
 import type { StreamingHttpMap } from './StreamingHttpMap';
 
 /**
@@ -43,7 +43,7 @@ export class StreamingHttpListeningActivityHandler extends StaticHandler {
     activity: VocabularyTerm<typeof AS>,
     metadata: RepresentationMetadata,
   ): Promise<void> {
-    const channel = defaultChannel(topic);
+    const channel = generateChannel(topic);
     return this.source.handleSafe({ channel, activity, topic, metadata });
   }
 }
