@@ -67,6 +67,7 @@
       "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" },
       "source": {
         "comment": "Handles the generation and serialization of notifications for StreamingHTTPChannel2023",
+        "@id": "urn:solid-server:default:StreamingHttpNotificationHandler",
         "@type": "ComposedNotificationHandler",
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
         "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
