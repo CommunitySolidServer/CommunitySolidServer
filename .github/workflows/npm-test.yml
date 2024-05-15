@@ -27,7 +27,7 @@ jobs:
           - 18.x
           - '20.0'
           - 20.x
-          - '22.0'
+          - '22.1'
           - 22.x
     timeout-minutes: 15
     steps:
