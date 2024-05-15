@@ -23,11 +23,11 @@ jobs:
           - ubuntu-latest
           - windows-latest
         node-version:
-          - 18.0
+          - '18.0'
           - 18.x
-          - 20.0
+          - '20.0'
           - 20.x
-          - 22.1
+          - '22.0'
           - 22.x
     timeout-minutes: 15
     steps:
