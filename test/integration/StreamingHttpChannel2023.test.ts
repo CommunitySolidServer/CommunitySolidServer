@@ -1,4 +1,3 @@
-import { Agent, fetch } from 'undici';
 import { DataFactory, Parser, Store } from 'n3';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
@@ -100,9 +99,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
   it('emits initial Update if topic exists.', async(): Promise<void> => {
     await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
-    const streamingResponse = await fetch(receiveFrom, {
-      dispatcher: new Agent({ bodyTimeout: 1000 }),
-    });
+    const streamingResponse = await fetch(receiveFrom);
     const reader = streamingResponse.body!.getReader();
 
     try {
@@ -119,9 +116,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     try {
       await store.deleteResource({ path: topic });
     } catch {}
-    const streamingResponse = await fetch(receiveFrom, {
-      dispatcher: new Agent({ bodyTimeout: 1000 }),
-    });
+    const streamingResponse = await fetch(receiveFrom);
     const reader = streamingResponse.body!.getReader();
 
     try {
@@ -136,14 +131,10 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
   it('does not emit initial notification when other receivers connect.', async(): Promise<void> => {
     await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
-    const streamingResponse = await fetch(receiveFrom, {
-      dispatcher: new Agent({ bodyTimeout: 1000 }),
-    });
+    const streamingResponse = await fetch(receiveFrom);
     const reader = streamingResponse.body!.getReader();
 
-    const otherResponse = await fetch(receiveFrom, {
-      dispatcher: new Agent({ bodyTimeout: 1000 }),
-    });
+    const otherResponse = await fetch(receiveFrom);
     const otherReader = otherResponse.body!.getReader();
 
     try {
@@ -171,7 +162,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       reader.releaseLock();
       await streamingResponse.body!.cancel();
       otherReader.releaseLock();
-      await streamingResponse.body!.cancel();
+      await otherResponse.body!.cancel();
     }
   });
 
@@ -179,9 +170,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     try {
       await store.deleteResource({ path: topic });
     } catch {}
-    const streamingResponse = await fetch(receiveFrom, {
-      dispatcher: new Agent({ bodyTimeout: 1000 }),
-    });
+    const streamingResponse = await fetch(receiveFrom);
     const reader = streamingResponse.body!.getReader();
 
     try {
@@ -207,9 +196,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
   it('emits Update events.', async(): Promise<void> => {
     await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
-    const streamingResponse = await fetch(receiveFrom, {
-      dispatcher: new Agent({ bodyTimeout: 1000 }),
-    });
+    const streamingResponse = await fetch(receiveFrom);
     const reader = streamingResponse.body!.getReader();
 
     try {
@@ -235,9 +222,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
   it('emits Delete events.', async(): Promise<void> => {
     await store.setRepresentation({ path: topic }, new BasicRepresentation('new', 'text/plain'));
-    const streamingResponse = await fetch(receiveFrom, {
-      dispatcher: new Agent({ bodyTimeout: 1000 }),
-    });
+    const streamingResponse = await fetch(receiveFrom);
     const reader = streamingResponse.body!.getReader();
 
     try {
@@ -303,9 +288,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     const baseReceiveFrom = joinUrl(baseUrl, pathPrefix, '/');
 
     // Connecting to the base URL, which is the parent container
-    const streamingResponse = await fetch(baseReceiveFrom, {
-      dispatcher: new Agent({ bodyTimeout: 1000 }),
-    });
+    const streamingResponse = await fetch(baseReceiveFrom);
     const reader = streamingResponse.body!.getReader();
 
     try {
