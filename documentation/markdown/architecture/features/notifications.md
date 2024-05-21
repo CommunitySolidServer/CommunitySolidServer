@@ -188,22 +188,22 @@ are quite similar to those needed for WebSocketChannel2023:
 ## StreamingHTTPChannel2023
 
 Currently, support for [StreamingHTTPChannel2023](https://solid.github.io/notifications/streaming-http-channel-2023)
-only covers default, pre-established channels made available for every resource. Those channels use `text/turtle`.
+only covers default, pre-established channels made available for every resource. Those channels output `text/turtle`.
 
 Support for custom, subscription-based channels can be added in the future.
 
 * For discovery, there is a `StreamingHttpMetadataWriter`, which adds `Link` to every `HTTP` response header
 using `rel="http://www.w3.org/ns/solid/terms#updatesViaStreamingHttp2023"`. It links directly to the `receiveFrom`
 endpoint of the default, pre-established channel for that topic resource.
-* Requests to `receiveFrom` endpoints are handled by `StreamingHttpMetadataWriter`.
+* Requests to `receiveFrom` endpoints are handled by a `StreamingHttpRequestHandler`.
     * It performs an authorization check.
     * It creates a new response stream and adds it to the `StreamingHttpMap`, indexed by the topic resource.
     * It sends an initial notification, similar to notification channels using a `state` feature.
 * `StreamingHttp2023Emitter` is the `NotificationEmitter` that writes notifications to matching response streams.
 * `StreamingHttpListeningActivityHandler` is responsible for observing the `MonitoringStore`
   and emitting notifications when needed.
-  It doesn't use `NotificationChannelStorage` since the default, pre-established channels are not
-  subscription-based. Instead, it uses `StreamingHttpMap` to check for active receivers.
+  It doesn't use a `NotificationChannelStorage` since the default, pre-established channels are not
+  subscription-based. Instead, it uses a `StreamingHttpMap` to check for active receivers.
 
 ```mermaid
 flowchart TB
