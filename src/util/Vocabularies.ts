@@ -153,6 +153,7 @@ export const ACP = createVocabulary(
 export const AS = createVocabulary(
   'https://www.w3.org/ns/activitystreams#',
   'object',
+  'target',
 
   'Add',
   'Create',
@@ -231,6 +232,7 @@ export const NOTIFY = createVocabulary(
 
   'WebhookChannel2023',
   'WebSocketChannel2023',
+  'StreamingHTTPChannel2023',
 );
 
 export const OIDC = createVocabulary(

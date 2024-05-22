@@ -29,6 +29,7 @@ const portNames = [
   'ServerFetch',
   'SetupMemory',
   'SparqlStorage',
+  'StreamingHTTPChannel2023',
   'Subdomains',
   'WebhookChannel2023',
   'WebhookChannel2023-client',
