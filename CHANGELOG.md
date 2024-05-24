@@ -3,6 +3,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.5...v7.1.0) (2024-05-24)
+
+### Features
+
+* Add support for StreamingHTTPChannel2023 notifications ([cb38613](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cb38613b4cea7f4e808b30a69f1d9aecbb9506e2))
+* Store original target in error metadata ([419312e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/419312ee5f4790881a5d101afea7ab6ca88f5e61))
+
+### Fixes
+
+* Fix .nvmrc version ([0749963](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/07499631b44154fd24d3fd8fd704df34dfca0d0a))
+* Combine metadata with data when generating resources ([e20efac](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e20efac3eaa79b2ed8b09cd72a7f8f0d85655894))
+* Make `getParentContainer` work with query parameters ([0998970](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/099897013c4ea014212495965d4972e5078ed406))
+* Do not reuse the same error in StaticThrowHandler ([f73dfb3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f73dfb31c0fe132524323acf6c4f4636bcd8bc80))
+* Make allow headers more accurate ([5e60000](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5e600006819ae1cf1f8edf804218aee700c59bae))
+* Expose auxiliary links on errors ([d7078ad](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d7078ad69261566c44e38d1bb19142fb8bd4dd0f))
+
+### Refactors
+
+* Simplify eslint configs ([cac70b1](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cac70b1f88dcbbb3ebbe0b8e0b082ead4ab27b33))
+
 ## [7.0.5](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.4...v7.0.5) (2024-03-25)
 
 ### Fixes
