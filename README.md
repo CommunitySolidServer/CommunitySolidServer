@@ -31,7 +31,9 @@ And, of course, for many others who like to experience Solid.
 
 ## ⚡ Running the Community Solid Server
 
-Use [Node.js](https://nodejs.org/en/) 18.0 or up and execute:
+Make sure you have [Node.js](https://nodejs.org/en/) 18.0 or higher.
+If this is your first time using Node.js,
+you can find instructions on how to do this [here](https://nodejs.org/en/download/package-manager).
 
 ```shell
 npx @solid/community-server
@@ -45,7 +47,9 @@ To persist your pod's contents between restarts, use:
 npx @solid/community-server -c @css:config/file.json -f data/
 ```
 
-Find more ways to run the server in the [documentation](https://communitysolidserver.github.io/CommunitySolidServer/latest/usage/starting-server/).
+In case you prefer to use Docker instead,
+you can find instructions for this and other methods in the
+[documentation](https://communitysolidserver.github.io/CommunitySolidServer/latest/usage/starting-server/).
 
 ## 🔧 Configure your server
 
