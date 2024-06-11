@@ -78,7 +78,8 @@ nav:
   - Welcome:
       - README.md
   - Features:
-      - features.md
+      - Overview: features.md
+      - Tests: features/test.md
   - Usage:
       - Example request: usage/example-requests.md
       - Metadata: usage/metadata.md
