@@ -78,7 +78,8 @@ nav:
   - Welcome:
       - README.md
   - Features:
-      - features.md
+      - Overview: features.md
+      - Tests: features/test.md
   - Usage:
       - Starting the server: usage/starting-server.md
       - Example request: usage/example-requests.md
