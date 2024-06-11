@@ -80,6 +80,7 @@ nav:
   - Features:
       - features.md
   - Usage:
+      - Starting the server: usage/starting-server.md
       - Example request: usage/example-requests.md
       - Metadata: usage/metadata.md
       - Identity provider:
