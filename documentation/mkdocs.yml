@@ -93,6 +93,7 @@ nav:
       - Seeding pods: usage/seeding-pods.md
       - Notifications: usage/notifications.md
       - Development server: usage/dev-configuration.md
+      - Authorization methods: usage/authorization-methods.md
   - Architecture:
       - Overview: architecture/overview.md
       - Dependency injection: architecture/dependency-injection.md
