@@ -97,7 +97,7 @@
     "@types/rdf-validate-shacl": "^0.4.4",
     "@types/sparqljs": "^3.1.6",
     "@types/url-join": "^4.0.1",
-    "@types/uuid": "^9.0.5",
+    "@types/uuid": "^10.0.0",
     "@types/ws": "^8.5.7",
     "@types/yargs": "^17.0.28",
     "arrayify-stream": "^2.0.1",
