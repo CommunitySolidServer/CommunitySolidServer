@@ -118,7 +118,7 @@
     "jose": "^5.1.3",
     "jsonld-context-parser": "^3.0.0",
     "lodash.orderby": "^4.6.0",
-    "marked": "^12.0.0",
+    "marked": "^13.0.0",
     "mime-types": "^2.1.35",
     "n3": "^1.17.1",
     "nodemailer": "^6.9.6",
