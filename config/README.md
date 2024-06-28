@@ -120,3 +120,10 @@ This configuration serves as an example of how a server can be configured
 to serve data from different backends depending on the URL that is used.
 In this example, all data in the `/sparql/` container will be stored in a SPARQL backend,
 and similarly for `/memory/` and `/file/`.
+
+## oidc.json
+
+A configuration that sets up the server to only function as an Identity Provider.
+It does not support creating pods or storing data on the server,
+the only available options are creating accounts and linking them to WebIDs.
+This way the server can be used to identify those WebIDs during an OIDC interaction.
