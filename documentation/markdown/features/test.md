@@ -72,4 +72,5 @@ docker run -i --rm \
           --output=/reports \
           --target=https://github.com/solid/conformance-test-harness/css
 ```
+
 When this process is finished you can find the conformance report in the `../reports/css` folder.
