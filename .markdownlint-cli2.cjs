@@ -22,7 +22,7 @@ module.exports = {
     // Allow multiple subheadings with the same content
     // across different section (#1 ##A ##B #2 ##A ##B)
     MD024: {
-      allow_different_nesting: true,
+      siblings_only: true,
     },
 
     // Set Ordered list item prefix to "ordered" (use 1. 2. 3. not 1. 1. 1.)
