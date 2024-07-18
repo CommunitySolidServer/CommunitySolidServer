@@ -1,6 +1,5 @@
 import { Readable } from 'node:stream';
 import { exportJWK, generateKeyPair } from 'jose';
-import type * as Koa from 'koa';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
@@ -305,10 +304,9 @@ describe('An IdentityProviderFactory', (): void => {
   });
 
   it('adds middleware to make the OIDC provider think the request wants HTML.', async(): Promise<void> => {
-    const provider = await factory.getProvider() as any;
-    const use = provider.use as jest.Mock<ReturnType<Koa['use']>, Parameters<Koa['use']>>;
-    expect(use).toHaveBeenCalledTimes(1);
-    const middleware = use.mock.calls[0][0];
+    const provider = await factory.getProvider();
+    expect(provider.use).toHaveBeenCalledTimes(1);
+    const middleware = jest.mocked(provider.use).mock.calls[0][0];
 
     // eslint-disable-next-line jest/unbound-method
     const oldAccept = ctx.accepts;
@@ -321,10 +319,9 @@ describe('An IdentityProviderFactory', (): void => {
   });
 
   it('does not modify the context accepts function in other cases.', async(): Promise<void> => {
-    const provider = await factory.getProvider() as any;
-    const use = provider.use as jest.Mock<ReturnType<Koa['use']>, Parameters<Koa['use']>>;
-    expect(use).toHaveBeenCalledTimes(1);
-    const middleware = use.mock.calls[0][0];
+    const provider = await factory.getProvider();
+    expect(provider.use).toHaveBeenCalledTimes(1);
+    const middleware = jest.mocked(provider.use).mock.calls[0][0];
 
     // eslint-disable-next-line jest/unbound-method
     const oldAccept = ctx.accepts;

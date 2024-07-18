@@ -43,7 +43,7 @@ describe('A TokenOwnershipValidator', (): void => {
   beforeEach(async(): Promise<void> => {
     const now = Date.now();
     jest.spyOn(Date, 'now').mockReturnValue(now);
-    (v4 as jest.Mock).mockReturnValue(token);
+    jest.mocked(v4).mockReturnValue(token);
 
     const map = new Map<string, any>();
     storage = {

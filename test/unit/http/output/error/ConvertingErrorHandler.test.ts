@@ -48,9 +48,11 @@ describe('A ConvertingErrorHandler', (): void => {
     ({ stack } = error);
     converter = {
       canHandle: jest.fn(),
-      handle: jest.fn((): Representation => new BasicRepresentation('serialization', 'text/turtle', true)),
-      handleSafe: jest.fn((): Representation => new BasicRepresentation('serialization', 'text/turtle', true)),
-    } as any;
+      handle: jest.fn(async(): Promise<Representation> =>
+        new BasicRepresentation('serialization', 'text/turtle', true)),
+      handleSafe: jest.fn(async(): Promise<Representation> =>
+        new BasicRepresentation('serialization', 'text/turtle', true)),
+    } satisfies Partial<RepresentationConverter> as any;
 
     preferenceParser = {
       canHandle: jest.fn(),
@@ -80,7 +82,7 @@ describe('A ConvertingErrorHandler', (): void => {
   it('accepts input supported by the converter.', async(): Promise<void> => {
     await expect(handler.canHandle({ error, request })).resolves.toBeUndefined();
     expect(converter.canHandle).toHaveBeenCalledTimes(1);
-    const args = (converter.canHandle as jest.Mock).mock.calls[0][0] as RepresentationConverterArgs;
+    const args = converter.canHandle.mock.calls[0][0];
     expect(args.preferences).toBe(preferences);
     expect(args.representation.metadata.contentType).toBe('internal/error');
   });
@@ -90,7 +92,7 @@ describe('A ConvertingErrorHandler', (): void => {
     await expect(prom).resolves.toMatchObject({ statusCode: 404 });
     expect((await prom).metadata?.contentType).toBe('text/turtle');
     expect(converter.handle).toHaveBeenCalledTimes(1);
-    const args = (converter.handle as jest.Mock).mock.calls[0][0] as RepresentationConverterArgs;
+    const args = converter.handle.mock.calls[0][0];
     await expectValidArgs(args, stack, cause);
   });
 
@@ -99,7 +101,7 @@ describe('A ConvertingErrorHandler', (): void => {
     await expect(prom).resolves.toMatchObject({ statusCode: 404 });
     expect((await prom).metadata?.contentType).toBe('text/turtle');
     expect(converter.handleSafe).toHaveBeenCalledTimes(1);
-    const args = (converter.handleSafe as jest.Mock).mock.calls[0][0] as RepresentationConverterArgs;
+    const args = converter.handleSafe.mock.calls[0][0];
     await expectValidArgs(args, stack, cause);
   });
 
@@ -109,7 +111,7 @@ describe('A ConvertingErrorHandler', (): void => {
     await expect(prom).resolves.toMatchObject({ statusCode: 404 });
     expect((await prom).metadata?.contentType).toBe('text/turtle');
     expect(converter.handle).toHaveBeenCalledTimes(1);
-    const args = (converter.handle as jest.Mock).mock.calls[0][0] as RepresentationConverterArgs;
+    const args = converter.handle.mock.calls[0][0];
     await expectValidArgs(args);
   });
 });

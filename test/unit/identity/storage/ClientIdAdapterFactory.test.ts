@@ -11,7 +11,7 @@ describe('A ClientIdAdapterFactory', (): void => {
   const id = 'https://app.example.com/card#me';
   let json: any;
   let rdf: string;
-  let source: Adapter;
+  let source: jest.Mocked<Adapter>;
   let sourceFactory: AdapterFactory;
   let adapter: Adapter;
   const converter = new RdfToQuadConverter();
@@ -53,7 +53,7 @@ describe('A ClientIdAdapterFactory', (): void => {
   });
 
   it('returns the source payload if there is one.', async(): Promise<void> => {
-    (source.find as jest.Mock).mockResolvedValueOnce('payload!');
+    source.find.mockResolvedValueOnce('payload!' as any);
     await expect(adapter.find(id)).resolves.toBe('payload!');
   });
 
