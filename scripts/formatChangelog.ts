@@ -20,7 +20,7 @@ import { readFile, writeFile } from 'fs-extra';
  * @returns Promise with output string
  */
 async function capitalizeListEntries(input: string): Promise<string> {
-  return input.replaceAll(/^(\W*\* [a-z])/gmu, (match): string => match.toUpperCase());
+  return input.replaceAll(/^\W*\* [a-z]/gmu, (match): string => match.toUpperCase());
 }
 
 /**

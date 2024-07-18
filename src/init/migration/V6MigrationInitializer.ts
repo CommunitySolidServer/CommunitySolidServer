@@ -149,7 +149,7 @@ export class V6MigrationInitializer extends Initializer {
         ].join(' '), resolve);
       });
       readline.close();
-      if (!/^y(?:es)?$/ui.test(answer)) {
+      if (!/^y(?:es)?$/iu.test(answer)) {
         throw new Error('Stopping server as migration was cancelled.');
       }
     }

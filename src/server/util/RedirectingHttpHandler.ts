@@ -108,6 +108,6 @@ export class RedirectingHttpHandler extends HttpHandler {
       throw new NotImplementedHttpError('Target is already correct.');
     }
 
-    return /^(?:[a-z]+:)?\/\//ui.test(redirect) ? redirect : joinUrl(this.baseUrl, redirect);
+    return /^(?:[a-z]+:)?\/\//iu.test(redirect) ? redirect : joinUrl(this.baseUrl, redirect);
   }
 }

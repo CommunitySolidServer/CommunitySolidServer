@@ -79,7 +79,7 @@ class WebSocketListener extends WebSocketListenerEmitter {
 
   private onMessage(message: string): void {
     // Parse the message
-    const match = /^(\w+)\s+(.+)$/u.exec(message);
+    const match = /^(\w+)\s+(\S.+)$/u.exec(message);
     if (!match) {
       this.sendMessage('warning', `Unrecognized message format: ${message}`);
       return;

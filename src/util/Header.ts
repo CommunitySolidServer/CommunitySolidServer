@@ -118,7 +118,7 @@ export interface LinkEntry {
 //
 
 // REUSED REGEXES
-export const TCHAR = /[a-zA-Z0-9!#$%&'*+-.^_`|~]/u;
+export const TCHAR = /[-\w!#$%&'*+.^`|~]/u;
 export const TOKEN = new RegExp(`^${TCHAR.source}+$`, 'u');
 export const SIMPLE_MEDIA_RANGE = new RegExp(`^${TCHAR.source}+/${TCHAR.source}+$`, 'u');
 export const QUOTED_STRING =

@@ -78,7 +78,7 @@ export function getSocket(name: typeof socketNames[number]): string {
 
 export function describeIf(envFlag: string): Describe {
   const flag = `TEST_${envFlag.toUpperCase()}`;
-  const enabled = !/^(|0|false)$/iu.test(process.env[flag] ?? '');
+  const enabled = !/^(?:0|false)?$/iu.test(process.env[flag] ?? '');
   return enabled ? describe : describe.skip;
 }
 
@@ -316,7 +316,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       return mockFs.createWriteStream(path);
     },
     async realpath(path: string): Promise<string> {
-      return await mockFs.promises.realpath(path);
+      return mockFs.promises.realpath(path);
     },
     async stat(path: string): Promise<Stats> {
       return mockFs.promises.lstat(await mockFs.promises.realpath(path));
@@ -334,7 +334,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       await mockFs.promises.rm(path);
     },
     async readdir(path: string): Promise<string[]> {
-      return await mockFs.promises.readdir(path);
+      return mockFs.promises.readdir(path);
     },
     async* opendir(path: string): AsyncIterableIterator<Dirent> {
       for await (const entry of mockFs.promises.opendir(path)) {
@@ -345,7 +345,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       await mockFs.promises.mkdir(path);
     },
     async readFile(path: string): Promise<string> {
-      return await mockFs.promises.readFile(path);
+      return mockFs.promises.readFile(path);
     },
     async writeFile(path: string, data: string): Promise<void> {
       await mockFs.promises.writeFile(path, data);

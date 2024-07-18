@@ -126,7 +126,7 @@ export function getExtension(path: string): string {
  * preserving but normalizing path delimiters and their escaped forms.
  */
 function transformPathComponents(path: string, transform: (part: string) => string): string {
-  const [ , base, queryString ] = /^([^?]*)(.*)$/u.exec(path)!;
+  const [ , base, queryString ] = /^([^?]*)(\?.*)?$/u.exec(path)!;
   const transformed = base
     // We split on actual URI path component delimiters (slash and backslash),
     // but also on things that could be wrongly interpreted as component delimiters,
@@ -135,7 +135,7 @@ function transformPathComponents(path: string, transform: (part: string) => stri
     // since they would become _actual_ delimiters if accidentally decoded.
     // Additionally, we need to preserve any encoded percent signs (%25)
     // that precede them, because these might change their interpretation as well.
-    .split(/(\/|\\|%(?:25)*(?:2f|5c))/ui)
+    .split(/(\/|\\|%(?:25)*(?:2f|5c))/iu)
     // Even parts map to components that need to be transformed,
     // odd parts to (possibly escaped) delimiters that need to be normalized.
     .map((part, index): string =>
@@ -172,7 +172,7 @@ const forbiddenSymbols = {
   '*': '%2A',
 } as const;
 /* eslint-enable ts/naming-convention */
-const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`, 'ug');
+const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`, 'gu');
 /**
  * This function is used when converting a URI to a file path. Decodes all components of a URI path,
  * with the exception of encoded slash characters, as this would lead to unexpected file locations

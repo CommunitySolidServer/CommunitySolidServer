@@ -302,7 +302,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const generatedID = [ ...result.keys() ].find((id): boolean => id.path !== resourceID.path)!;
       expect(generatedID).toBeDefined();
-      expect(generatedID.path).toMatch(new RegExp(`^${root}[^/]+?/$`, 'u'));
+      expect(generatedID.path).toMatch(new RegExp(`^${root}[^/]*/$`, 'u'));
 
       expect(accessor.data[generatedID.path]).toBeDefined();
       expect(accessor.data[generatedID.path].metadata.contentType).toBeUndefined();
@@ -630,8 +630,7 @@ describe('A DataAccessorBasedStore', (): void => {
         data: guardedStreamFrom([ resourceData ]),
         metadata: new RepresentationMetadata({
           [CONTENT_TYPE]: 'text/plain',
-          [RDF.type]: namedNode(LDP.Resource),
-          [RDF.type]: namedNode('http://example.org/Type'),
+          [RDF.type]: [ namedNode(LDP.Resource), namedNode('http://example.org/Type') ],
         }),
         isEmpty: false,
       };
@@ -659,8 +658,7 @@ describe('A DataAccessorBasedStore', (): void => {
         data: guardedStreamFrom([ '<a> <b> <c>' ]),
         metadata: new RepresentationMetadata({
           [CONTENT_TYPE]: 'text/turtle',
-          [RDF.type]: namedNode(LDP.Resource),
-          [RDF.type]: namedNode('http://example.org/Type'),
+          [RDF.type]: [ namedNode(LDP.Resource), namedNode('http://example.org/Type') ],
         }),
         isEmpty: false,
       };

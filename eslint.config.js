@@ -16,7 +16,7 @@ antfu.GLOB_EXCLUDE.splice(index, 1);
 module.exports = antfu.default(
   {
     // Don't want to lint test assets, or TS snippets in markdown files
-    ignores: [ 'test/assets/*', '**/*.md/**/*.ts' ],
+    ignores: [ 'test/assets/*', '**/*.md' ],
     typescript: {
       tsconfigPath: [ './tsconfig.json', './scripts/tsconfig.json', './test/tsconfig.json' ],
     },
@@ -26,12 +26,12 @@ module.exports = antfu.default(
   .append(unicornConfig)
   .append(fileNamesConfig)
   // Using an override here so all the type settings are also applied correctly
-  .override('antfu:typescript:rules-type-aware', typedConfig)
+  .override('antfu/typescript/rules-type-aware', typedConfig)
   .append({
     ...testConfig,
     files: [ 'test/**/*.ts' ],
   })
-  .override('antfu:jsonc:rules', {
+  .override('antfu/jsonc/rules', {
     rules: {
       // Consistent with how we do it in code
       'jsonc/array-bracket-spacing': [ 'error', 'always', {
@@ -48,7 +48,7 @@ module.exports = antfu.default(
       'unicorn/filename-case': 'off',
     },
   })
-  .override('antfu:markdown:parser', {
+  .override('antfu/markdown/parser', {
     rules: {
       // We want to be able to use these in Markdown text
       'no-irregular-whitespace': 'off',
