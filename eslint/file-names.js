@@ -1,6 +1,6 @@
 module.exports = [
   {
-    name: 'opinionated:file-names:all',
+    name: 'opinionated/file-names/all',
     rules: {
       'unicorn/filename-case': [ 'error', {
         cases: {
@@ -17,7 +17,7 @@ module.exports = [
     },
   },
   {
-    name: 'opinionated:file-names:ts',
+    name: 'opinionated/file-names/ts',
     files: [ '**/*.ts' ],
     rules: {
       'unicorn/filename-case': [ 'error', {

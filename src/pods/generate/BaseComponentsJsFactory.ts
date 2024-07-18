@@ -40,6 +40,6 @@ export class BaseComponentsJsFactory implements ComponentsJsFactory {
   Promise<T> {
     const manager = await this.buildManager();
     await manager.configRegistry.register(configPath);
-    return await manager.instantiate(componentIri, { variables });
+    return manager.instantiate(componentIri, { variables });
   }
 }

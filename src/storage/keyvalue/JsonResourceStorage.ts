@@ -38,7 +38,8 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
       const identifier = this.keyToIdentifier(key);
       // eslint-disable-next-line ts/naming-convention
       const representation = await this.source.getRepresentation(identifier, { type: { 'application/json': 1 }});
-      return JSON.parse(await readableToString(representation.data)) as Promise<T>;
+      // eslint-disable-next-line ts/no-unsafe-return
+      return JSON.parse(await readableToString(representation.data));
     } catch (error: unknown) {
       if (!NotFoundHttpError.isInstance(error)) {
         throw error;
@@ -48,7 +49,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
 
   public async has(key: string): Promise<boolean> {
     const identifier = this.keyToIdentifier(key);
-    return await this.source.hasResource(identifier);
+    return this.source.hasResource(identifier);
   }
 
   public async set(key: string, value: unknown): Promise<this> {

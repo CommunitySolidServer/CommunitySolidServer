@@ -2,7 +2,7 @@ const jest = require('eslint-plugin-jest');
 
 // Specifically for tests
 module.exports = {
-  name: 'opinionated:test',
+  name: 'opinionated/test',
   // See https://github.com/jest-community/eslint-plugin-jest/issues/1408
   plugins: {
     jest,

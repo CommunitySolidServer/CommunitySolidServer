@@ -493,7 +493,7 @@ const authSchemeRegexCache: Map<string, RegExp> = new Map();
 export function matchesAuthorizationScheme(scheme: string, authorization?: string): boolean {
   const lowerCaseScheme = scheme.toLowerCase();
   if (!authSchemeRegexCache.has(lowerCaseScheme)) {
-    authSchemeRegexCache.set(lowerCaseScheme, new RegExp(`^${escapeStringRegexp(lowerCaseScheme)} `, 'ui'));
+    authSchemeRegexCache.set(lowerCaseScheme, new RegExp(`^${escapeStringRegexp(lowerCaseScheme)} `, 'iu'));
   }
   // Support authorization being undefined (for the sake of usability).
   return typeof authorization !== 'undefined' && authSchemeRegexCache.get(lowerCaseScheme)!.test(authorization);

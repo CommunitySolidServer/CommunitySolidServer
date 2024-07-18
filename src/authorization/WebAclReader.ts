@@ -22,7 +22,7 @@ import type { PermissionMap } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 // Maps WebACL-specific modes to generic access modes.
-const modesMap: Record<string, Readonly<(keyof AclPermissionSet)[]>> = {
+const modesMap: Record<string, readonly (keyof AclPermissionSet)[]> = {
   [ACL.Read]: [ AccessMode.read ],
   [ACL.Write]: [ AccessMode.append, AccessMode.write ],
   [ACL.Append]: [ AccessMode.append ],
@@ -69,7 +69,7 @@ export class WebAclReader extends PermissionReader {
     this.logger.debug(`Retrieving permissions of ${credentials.agent?.webId ?? 'an unknown agent'}`);
     const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
     const storeMap = await this.findAuthorizationStatements(aclMap);
-    return await this.findPermissions(storeMap, credentials);
+    return this.findPermissions(storeMap, credentials);
   }
 
   /**

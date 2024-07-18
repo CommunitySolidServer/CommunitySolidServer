@@ -184,7 +184,7 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async getDirectoryMetadata(link: ResourceLink, stats: Stats):
   Promise<RepresentationMetadata> {
-    return await this.getBaseMetadata(link, stats, true);
+    return this.getBaseMetadata(link, stats, true);
   }
 
   /**

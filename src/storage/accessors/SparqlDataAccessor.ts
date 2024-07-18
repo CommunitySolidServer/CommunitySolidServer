@@ -73,7 +73,7 @@ export class SparqlDataAccessor implements DataAccessor {
    */
   public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
     const name = namedNode(identifier.path);
-    return await this.sendSparqlConstruct(this.sparqlConstruct(name));
+    return this.sendSparqlConstruct(this.sparqlConstruct(name));
   }
 
   /**

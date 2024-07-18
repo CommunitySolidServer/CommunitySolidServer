@@ -31,7 +31,7 @@ export async function instantiateFromConfig(
   for (const configPath of configPaths) {
     await manager.configRegistry.register(configPath);
   }
-  return await manager.instantiate(componentUrl, { variables });
+  return manager.instantiate(componentUrl, { variables });
 }
 
 export function getTestConfigPath(configFile: string): string {

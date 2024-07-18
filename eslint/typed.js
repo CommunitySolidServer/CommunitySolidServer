@@ -1,4 +1,5 @@
 module.exports = {
+  name: 'opinionated/typed',
   rules: {
     'ts/consistent-type-assertions': [ 'error', {
       assertionStyle: 'as',
@@ -45,6 +46,8 @@ module.exports = {
     'ts/prefer-readonly': 'error',
     'ts/prefer-reduce-type-parameter': 'error',
     'ts/prefer-regexp-exec': 'error',
+    // Not sure if this would make code better
+    'ts/strict-boolean-expressions': 'off',
     'ts/prefer-string-starts-ends-with': 'error',
     'ts/require-array-sort-compare': 'error',
 

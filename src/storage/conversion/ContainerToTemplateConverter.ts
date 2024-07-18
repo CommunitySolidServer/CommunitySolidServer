@@ -98,7 +98,7 @@ export class ContainerToTemplateConverter extends BaseTypedRepresentationConvert
    * Derives a short name for the given resource.
    */
   private getLocalName(iri: string): string {
-    const match = /:\/+([^/]+).*?\/([^/]*)\/?$/u.exec(iri);
+    const match = /:\/+([^/]+)(?:\/[^/]*)*?\/([^/]*)\/?$/u.exec(iri);
     return match?.[2] ? decodeURIComponent(match[2]) : match?.[1] ?? iri;
   }
 }

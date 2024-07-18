@@ -6,9 +6,9 @@ import { types } from 'node:util';
 export function isError(error: unknown): error is Error {
   return types.isNativeError(error) ||
     (Boolean(error) &&
-    typeof (error as Error).name === 'string' &&
-    typeof (error as Error).message === 'string' &&
-    (typeof (error as Error).stack === 'undefined' || typeof (error as Error).stack === 'string'));
+      typeof (error as Error).name === 'string' &&
+      typeof (error as Error).message === 'string' &&
+      (typeof (error as Error).stack === 'undefined' || typeof (error as Error).stack === 'string'));
 }
 
 /**

@@ -17,9 +17,9 @@ describe('A JsonFileStorage', (): void => {
     cache = mockFileSystem(rootFilePath);
     locker = {
       withReadLock:
-        jest.fn(async(identifier: ResourceIdentifier, whileLocked: () => any): Promise<any> => await whileLocked()),
+        jest.fn(async(identifier: ResourceIdentifier, whileLocked: () => any): Promise<any> => whileLocked()),
       withWriteLock:
-        jest.fn(async(identifier: ResourceIdentifier, whileLocked: () => any): Promise<any> => await whileLocked()),
+        jest.fn(async(identifier: ResourceIdentifier, whileLocked: () => any): Promise<any> => whileLocked()),
     };
     storage = new JsonFileStorage(`${rootFilePath}${jsonPath}`, locker);
   });

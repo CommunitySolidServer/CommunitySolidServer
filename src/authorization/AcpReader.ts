@@ -24,7 +24,7 @@ import { AclMode } from './permissions/AclPermissionSet';
 import { AccessMode } from './permissions/Permissions';
 import type { PermissionMap, PermissionSet } from './permissions/Permissions';
 
-const modesMap: Record<string, Readonly<(keyof AclPermissionSet)[]>> = {
+const modesMap: Record<string, readonly (keyof AclPermissionSet)[]> = {
   [ACL.Read]: [ AccessMode.read ],
   [ACL.Write]: [ AccessMode.append, AccessMode.write ],
   [ACL.Append]: [ AccessMode.append ],

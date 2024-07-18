@@ -258,7 +258,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     this.validateConditions(conditions, oldMetadata);
 
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
-      return await this.writeMetadata(identifier, representation);
+      return this.writeMetadata(identifier, representation);
     }
 
     // Potentially have to create containers if it didn't exist yet

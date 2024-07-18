@@ -103,7 +103,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
   }
 
   public async findIds<TType extends StringKey<T>>(type: TType, query: IndexedQuery<T, TType>): Promise<string[]> {
-    return await this.storage.findIds(type, query);
+    return this.storage.findIds(type, query);
   }
 
   public async set<TType extends StringKey<T>>(type: TType, value: TypeObject<T[TType]>): Promise<void> {

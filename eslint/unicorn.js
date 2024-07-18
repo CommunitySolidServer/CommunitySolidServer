@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'opinionated:unicorn',
+  name: 'opinionated/unicorn',
   rules: {
     'unicorn/better-regex': 'error',
     'unicorn/empty-brace-spaces': 'error',

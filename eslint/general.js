@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'opinionated:general',
+  name: 'opinionated/general',
   rules: {
     'antfu/consistent-list-newline': 'error',
 
@@ -126,6 +126,8 @@ module.exports = {
     'ts/prefer-for-of': 'error',
     'ts/prefer-function-type': 'error',
 
+    // Only need 1 unused vars rule
+    'no-unused-vars': 'off',
     'unused-imports/no-unused-vars': [
       'error',
       { args: 'after-used', vars: 'all', ignoreRestSiblings: true },
