@@ -6,6 +6,7 @@ import type { ResourceIdentifier } from '../../../src/http/representation/Resour
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import type { ExpiringReadWriteLocker } from '../../../src/util/locking/ExpiringReadWriteLocker';
+import type { ReadWriteLocker } from '../../../src/util/locking/ReadWriteLocker';
 import type { PromiseOrValue } from '../../../src/util/PromiseUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { flushPromises } from '../../util/Util';
@@ -19,7 +20,7 @@ describe('A LockingResourceStore', (): void => {
   const subjectId = { path: 'http://test.com/foo' };
   const data = { data: 'data!' } as any;
   let store: LockingResourceStore;
-  let locker: ExpiringReadWriteLocker;
+  let locker: jest.Mocked<ExpiringReadWriteLocker>;
   let source: ResourceStore;
   let auxiliaryStrategy: AuxiliaryIdentifierStrategy;
   let order: string[];
@@ -62,7 +63,7 @@ describe('A LockingResourceStore', (): void => {
         } finally {
           order.push('unlock read');
         }
-      }),
+      }) satisfies ReadWriteLocker['withReadLock'] as any,
       withWriteLock: jest.fn(async <T>(
         identifier: ResourceIdentifier,
         whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
@@ -73,7 +74,7 @@ describe('A LockingResourceStore', (): void => {
         } finally {
           order.push('unlock write');
         }
-      }),
+      }) satisfies ReadWriteLocker['withWriteLock'] as any,
     };
 
     auxiliaryStrategy = {
@@ -93,7 +94,7 @@ describe('A LockingResourceStore', (): void => {
   it('acquires a lock on the container when adding a representation.', async(): Promise<void> => {
     await store.addResource(subjectId, data);
     expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
-    expect((locker.withWriteLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withWriteLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.addResource).toHaveBeenCalledTimes(1);
     expect(source.addResource).toHaveBeenLastCalledWith(subjectId, data, undefined);
     expect(order).toEqual([ 'lock write', 'addResource', 'unlock write' ]);
@@ -101,7 +102,7 @@ describe('A LockingResourceStore', (): void => {
     order = [];
     await expect(store.addResource(auxiliaryId, data)).resolves.toBeUndefined();
     expect(locker.withWriteLock).toHaveBeenCalledTimes(2);
-    expect((locker.withWriteLock as jest.Mock).mock.calls[1][0]).toEqual(subjectId);
+    expect(locker.withWriteLock.mock.calls[1][0]).toEqual(subjectId);
     expect(source.addResource).toHaveBeenCalledTimes(2);
     expect(source.addResource).toHaveBeenLastCalledWith(auxiliaryId, data, undefined);
     expect(order).toEqual([ 'lock write', 'addResource', 'unlock write' ]);
@@ -110,7 +111,7 @@ describe('A LockingResourceStore', (): void => {
   it('acquires a lock on the resource when setting its representation.', async(): Promise<void> => {
     await store.setRepresentation(subjectId, data);
     expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
-    expect((locker.withWriteLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withWriteLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(source.setRepresentation).toHaveBeenLastCalledWith(subjectId, data, undefined);
     expect(order).toEqual([ 'lock write', 'setRepresentation', 'unlock write' ]);
@@ -118,7 +119,7 @@ describe('A LockingResourceStore', (): void => {
     order = [];
     await expect(store.setRepresentation(auxiliaryId, data)).resolves.toBeUndefined();
     expect(locker.withWriteLock).toHaveBeenCalledTimes(2);
-    expect((locker.withWriteLock as jest.Mock).mock.calls[1][0]).toEqual(subjectId);
+    expect(locker.withWriteLock.mock.calls[1][0]).toEqual(subjectId);
     expect(source.setRepresentation).toHaveBeenCalledTimes(2);
     expect(source.setRepresentation).toHaveBeenLastCalledWith(auxiliaryId, data, undefined);
     expect(order).toEqual([ 'lock write', 'setRepresentation', 'unlock write' ]);
@@ -127,7 +128,7 @@ describe('A LockingResourceStore', (): void => {
   it('acquires a lock on the resource when deleting it.', async(): Promise<void> => {
     await store.deleteResource(subjectId);
     expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
-    expect((locker.withWriteLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withWriteLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.deleteResource).toHaveBeenCalledTimes(1);
     expect(source.deleteResource).toHaveBeenLastCalledWith(subjectId, undefined);
     expect(order).toEqual([ 'lock write', 'deleteResource', 'unlock write' ]);
@@ -135,7 +136,7 @@ describe('A LockingResourceStore', (): void => {
     order = [];
     await expect(store.deleteResource(auxiliaryId)).resolves.toBeUndefined();
     expect(locker.withWriteLock).toHaveBeenCalledTimes(2);
-    expect((locker.withWriteLock as jest.Mock).mock.calls[1][0]).toEqual(subjectId);
+    expect(locker.withWriteLock.mock.calls[1][0]).toEqual(subjectId);
     expect(source.deleteResource).toHaveBeenCalledTimes(2);
     expect(source.deleteResource).toHaveBeenLastCalledWith(auxiliaryId, undefined);
     expect(order).toEqual([ 'lock write', 'deleteResource', 'unlock write' ]);
@@ -144,7 +145,7 @@ describe('A LockingResourceStore', (): void => {
   it('acquires a lock on the resource when modifying its representation.', async(): Promise<void> => {
     await store.modifyResource(subjectId, data as Patch);
     expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
-    expect((locker.withWriteLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withWriteLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
     expect(source.modifyResource).toHaveBeenLastCalledWith(subjectId, data, undefined);
     expect(order).toEqual([ 'lock write', 'modifyResource', 'unlock write' ]);
@@ -152,7 +153,7 @@ describe('A LockingResourceStore', (): void => {
     order = [];
     await expect(store.modifyResource(auxiliaryId, data as Patch)).resolves.toBeUndefined();
     expect(locker.withWriteLock).toHaveBeenCalledTimes(2);
-    expect((locker.withWriteLock as jest.Mock).mock.calls[1][0]).toEqual(subjectId);
+    expect(locker.withWriteLock.mock.calls[1][0]).toEqual(subjectId);
     expect(source.modifyResource).toHaveBeenCalledTimes(2);
     expect(source.modifyResource).toHaveBeenLastCalledWith(auxiliaryId, data, undefined);
     expect(order).toEqual([ 'lock write', 'modifyResource', 'unlock write' ]);
@@ -165,7 +166,7 @@ describe('A LockingResourceStore', (): void => {
     };
     await expect(store.getRepresentation(subjectId, {})).rejects.toThrow('dummy');
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
     expect(order).toEqual([ 'lock read', 'bad get', 'unlock read' ]);
   });
 
@@ -180,7 +181,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(subjectId, {}, undefined);
     expect(order).toEqual([ 'lock read', 'getRepresentation', 'end', 'unlock read' ]);
@@ -197,7 +198,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(auxiliaryId, {}, undefined);
     expect(order).toEqual([ 'lock read', 'getRepresentation', 'end', 'unlock read' ]);
@@ -215,7 +216,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(representation.data.destroy).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'lock read', 'getRepresentation', 'error', 'unlock read', 'close' ]);
@@ -232,7 +233,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'lock read', 'getRepresentation', 'close', 'unlock read' ]);
   });
@@ -251,7 +252,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'lock read', 'getRepresentation', 'end', 'unlock read' ]);
   });
@@ -268,7 +269,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(representation.data.destroy).toHaveBeenCalledTimes(1);
     expect(representation.data.destroy).toHaveBeenLastCalledWith(new Error('timeout'));
@@ -288,7 +289,7 @@ describe('A LockingResourceStore', (): void => {
 
     await expect(prom).rejects.toThrow('timeout');
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual(subjectId);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'lock read', 'useless get', 'timeout', 'unlock read' ]);
   });

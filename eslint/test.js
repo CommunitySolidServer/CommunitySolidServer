@@ -25,6 +25,7 @@ module.exports = {
     'jest/max-expects': 'off',
     'jest/no-conditional-in-test': 'off',
     'jest/prefer-expect-assertions': 'off',
+    'jest/prefer-importing-jest-globals': 'off',
     'jest/prefer-lowercase-title': 'off',
     'jest/prefer-strict-equal': 'off',
     'jest/require-hook': 'off',

@@ -9,16 +9,16 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
   const identifier = { path: 'path' };
   let syncCb: () => string;
   let asyncCb: () => Promise<string>;
-  let wrappedLocker: ReadWriteLocker;
+  let wrappedLocker: jest.Mocked<ReadWriteLocker>;
   let locker: WrappedExpiringReadWriteLocker;
   const expiration = 1000;
 
   beforeEach(async(): Promise<void> => {
     wrappedLocker = {
       withReadLock: jest.fn(async<T>(id: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>):
-      Promise<T> => whileLocked()),
+      Promise<T> => whileLocked()) satisfies ReadWriteLocker['withReadLock'] as any,
       withWriteLock: jest.fn(async<T>(id: ResourceIdentifier, whileLocked: () => PromiseOrValue<T>):
-      Promise<T> => whileLocked()),
+      Promise<T> => whileLocked()) satisfies ReadWriteLocker['withWriteLock'] as any,
     };
 
     syncCb = jest.fn((): string => 'sync');
@@ -33,12 +33,12 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
     let prom = locker.withReadLock(identifier, syncCb);
     await expect(prom).resolves.toBe('sync');
     expect(wrappedLocker.withReadLock).toHaveBeenCalledTimes(1);
-    expect((wrappedLocker.withReadLock as jest.Mock).mock.calls[0][0]).toBe(identifier);
+    expect(wrappedLocker.withReadLock.mock.calls[0][0]).toBe(identifier);
 
     prom = locker.withWriteLock(identifier, syncCb);
     await expect(prom).resolves.toBe('sync');
     expect(wrappedLocker.withWriteLock).toHaveBeenCalledTimes(1);
-    expect((wrappedLocker.withWriteLock as jest.Mock).mock.calls[0][0]).toBe(identifier);
+    expect(wrappedLocker.withWriteLock.mock.calls[0][0]).toBe(identifier);
   });
 
   it('calls the functions that need to be locked through the wrapped locker.', async(): Promise<void> => {

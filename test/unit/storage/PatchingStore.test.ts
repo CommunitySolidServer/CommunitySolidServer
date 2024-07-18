@@ -6,14 +6,14 @@ import { NotImplementedHttpError } from '../../../src/util/errors/NotImplemented
 
 describe('A PatchingStore', (): void => {
   let store: PatchingStore;
-  let source: ResourceStore;
+  let source: jest.Mocked<ResourceStore>;
   let patcher: PatchHandler;
   let handleSafeFn: jest.Mock<Promise<void>, []>;
 
   beforeEach(async(): Promise<void> => {
     source = {
       modifyResource: jest.fn(async(): Promise<any> => 'modify'),
-    } as unknown as ResourceStore;
+    } satisfies Partial<ResourceStore> as any;
 
     handleSafeFn = jest.fn(async(): Promise<any> => 'patcher');
     patcher = { handleSafe: handleSafeFn } as unknown as PatchHandler;
@@ -34,7 +34,7 @@ describe('A PatchingStore', (): void => {
     await expect(store.modifyResource({ path: 'modifyPath' }, {} as Patch)).resolves.toBe('patcher');
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
     expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'modifyPath' }, {}, undefined);
-    await expect((source.modifyResource as jest.Mock).mock.results[0].value).rejects.toThrow(NotImplementedHttpError);
+    await expect(source.modifyResource.mock.results[0].value).rejects.toThrow(NotImplementedHttpError);
     expect(handleSafeFn).toHaveBeenCalledTimes(1);
     expect(handleSafeFn).toHaveBeenLastCalledWith({ source, identifier: { path: 'modifyPath' }, patch: {}});
   });
