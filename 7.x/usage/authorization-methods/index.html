@@ -8,28 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/account/login-method/">
+        <link rel="canonical" href="https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/authorization-methods/">
       
       
-        <link rel="prev" href="../json-api/">
+        <link rel="prev" href="../dev-configuration/">
       
       
-        <link rel="next" href="../migration/">
+        <link rel="next" href="../../architecture/overview/">
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.29">
     
     
       
-        <title>New login method - Community Solid Server</title>
+        <title>Authorization methods - Community Solid Server</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.76a95c52.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.76a95c52.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,7 +48,7 @@
       
     
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adding-a-new-login-method" class="md-skip">
+        <a href="#choosing-the-authorization-method-for-your-server" class="md-skip">
           Skip to content
         </a>
       
@@ -89,7 +89,7 @@
             <div class="md-banner__inner md-grid md-typeset">
               
   You're not viewing the latest version.
-  <a href="../../../.."> 
+  <a href="../../.."> 
     <strong>Click here to go to latest.</strong>
   </a>
 
@@ -104,7 +104,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="Community Solid Server" class="md-header__button md-logo" aria-label="Community Solid Server" data-md-component="logo">
+    <a href="../.." title="Community Solid Server" class="md-header__button md-logo" aria-label="Community Solid Server" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -124,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              New login method
+              Authorization methods
             
           </span>
         </div>
@@ -233,7 +233,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../.." class="md-tabs__link">
+        <a href="../.." class="md-tabs__link">
           
   
     
@@ -253,7 +253,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../features/" class="md-tabs__link">
+        <a href="../../features/" class="md-tabs__link">
           
   
     
@@ -275,7 +275,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../starting-server/" class="md-tabs__link">
+        <a href="../starting-server/" class="md-tabs__link">
           
   
     
@@ -295,7 +295,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/overview/" class="md-tabs__link">
+        <a href="../../architecture/overview/" class="md-tabs__link">
           
   
     
@@ -315,7 +315,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../contributing/making-changes/" class="md-tabs__link">
+        <a href="../../contributing/making-changes/" class="md-tabs__link">
           
   
     
@@ -333,7 +333,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../docs/" target="_blank" class="md-tabs__link">
+      <a href="../../docs/" target="_blank" class="md-tabs__link">
         
   
     
@@ -367,7 +367,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="Community Solid Server" class="md-nav__button md-logo" aria-label="Community Solid Server" data-md-component="logo">
+    <a href="../.." title="Community Solid Server" class="md-nav__button md-logo" aria-label="Community Solid Server" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -418,7 +418,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../.." class="md-nav__link ">
+            <a href="../.." class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -497,7 +497,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../features/" class="md-nav__link">
+      <a href="../../features/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -518,7 +518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../features/test/" class="md-nav__link">
+      <a href="../../features/test/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -609,7 +609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../starting-server/" class="md-nav__link">
+      <a href="../starting-server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -630,7 +630,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../example-requests/" class="md-nav__link">
+      <a href="../example-requests/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -651,7 +651,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metadata/" class="md-nav__link">
+      <a href="../metadata/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -669,10 +669,8 @@
                 
   
   
-    
   
   
-  
     
     
       
@@ -690,11 +688,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
         
           
           <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
@@ -708,7 +706,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_4">
             <span class="md-nav__icon md-icon"></span>
             Identity provider
@@ -722,7 +720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../identity-provider/" class="md-nav__link">
+      <a href="../identity-provider/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -743,7 +741,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../json-api/" class="md-nav__link">
+      <a href="../account/json-api/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -761,30 +759,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    New login method
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../account/login-method/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -793,95 +771,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#components" class="md-nav__link">
-    <span class="md-ellipsis">
-      Components
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Components">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#create-component" class="md-nav__link">
-    <span class="md-ellipsis">
-      Create component
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#login-component" class="md-nav__link">
-    <span class="md-ellipsis">
-      Login component
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#additional-components" class="md-nav__link">
-    <span class="md-ellipsis">
-      Additional components
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#html-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      HTML pages
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#updating-the-login-handler" class="md-nav__link">
-    <span class="md-ellipsis">
-      Updating the login handler
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#controls" class="md-nav__link">
-    <span class="md-ellipsis">
-      Controls
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -894,7 +783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../migration/" class="md-nav__link">
+      <a href="../account/migration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -923,7 +812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../client-credentials/" class="md-nav__link">
+      <a href="../client-credentials/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -944,7 +833,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../seeding-pods/" class="md-nav__link">
+      <a href="../seeding-pods/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -965,7 +854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../notifications/" class="md-nav__link">
+      <a href="../notifications/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -986,7 +875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev-configuration/" class="md-nav__link">
+      <a href="../dev-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1004,10 +893,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../authorization-methods/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1016,6 +914,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1083,7 +982,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/overview/" class="md-nav__link">
+      <a href="../../architecture/overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1104,7 +1003,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/dependency-injection/" class="md-nav__link">
+      <a href="../../architecture/dependency-injection/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1125,7 +1024,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/core/" class="md-nav__link">
+      <a href="../../architecture/core/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1198,7 +1097,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/cli/" class="md-nav__link">
+      <a href="../../architecture/features/cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1219,7 +1118,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/initialization/" class="md-nav__link">
+      <a href="../../architecture/features/initialization/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1240,7 +1139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/http-handler/" class="md-nav__link">
+      <a href="../../architecture/features/http-handler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1311,7 +1210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/protocol/overview/" class="md-nav__link">
+      <a href="../../architecture/features/protocol/overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1332,7 +1231,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/protocol/parsing/" class="md-nav__link">
+      <a href="../../architecture/features/protocol/parsing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1353,7 +1252,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/protocol/authorization/" class="md-nav__link">
+      <a href="../../architecture/features/protocol/authorization/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1374,7 +1273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/protocol/resource-store/" class="md-nav__link">
+      <a href="../../architecture/features/protocol/resource-store/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1395,7 +1294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/protocol/patching/" class="md-nav__link">
+      <a href="../../architecture/features/protocol/patching/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1470,7 +1369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/accounts/overview/" class="md-nav__link">
+      <a href="../../architecture/features/accounts/overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1491,7 +1390,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/accounts/controls/" class="md-nav__link">
+      <a href="../../architecture/features/accounts/controls/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1512,7 +1411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/accounts/routes/" class="md-nav__link">
+      <a href="../../architecture/features/accounts/routes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1541,7 +1440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/features/notifications/" class="md-nav__link">
+      <a href="../../architecture/features/notifications/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1621,7 +1520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../contributing/making-changes/" class="md-nav__link">
+      <a href="../../contributing/making-changes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1642,7 +1541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../contributing/release/" class="md-nav__link">
+      <a href="../../contributing/release/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1670,7 +1569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../docs/" target="_blank" class="md-nav__link">
+      <a href="../../docs/" target="_blank" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1703,83 +1602,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#components" class="md-nav__link">
-    <span class="md-ellipsis">
-      Components
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Components">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#create-component" class="md-nav__link">
-    <span class="md-ellipsis">
-      Create component
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#login-component" class="md-nav__link">
-    <span class="md-ellipsis">
-      Login component
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#additional-components" class="md-nav__link">
-    <span class="md-ellipsis">
-      Additional components
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#html-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      HTML pages
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#updating-the-login-handler" class="md-nav__link">
-    <span class="md-ellipsis">
-      Updating the login handler
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#controls" class="md-nav__link">
-    <span class="md-ellipsis">
-      Controls
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1793,99 +1615,37 @@
                   
 
 
-<h1 id="adding-a-new-login-method">Adding a new login method<a class="headerlink" href="#adding-a-new-login-method" title="Permanent link">&para;</a></h1>
-<p>By default, the server allows users to use email/password combinations to identify as the owner of their account.
-But, just like with many other parts of the server,
-this can be extended so other login methods can be used.
-Here we'll cover everything that is necessary.</p>
-<h2 id="components">Components<a class="headerlink" href="#components" title="Permanent link">&para;</a></h2>
-<p>These are the components that are needed for adding a new login method.
-Not all of these are mandatory,
-but they can make the life of the user easier when trying to find and use the new method.
-Also have a look at the general <a href="../../../architecture/features/accounts/routes/">structure</a>
-of new API components to see what is expected of such a component.</p>
-<h3 id="create-component">Create component<a class="headerlink" href="#create-component" title="Permanent link">&para;</a></h3>
-<p>There needs to be one or more components that allow a user
-to create an instance of the new login method and assign it to their account.
-The <code>CreatePasswordHandler</code> can be used as an example.
-This does not necessarily have to happen in a single request,
-potentially multiple requests can be used if the user has to perform actions on an external site for example.
-The only thing that matters is that at the end there is a new entry in the account's <code>logins</code> object.</p>
-<p>When adding logins of your method a new key will need to be chosen to group these logins together.
-The email/password method uses <code>password</code> for example.</p>
-<p>A new storage will probably need to be created to storage relevant metadata about this login method entry.
-Below is an example of how the <code>PasswordStore</code> is created:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:PasswordStore&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BasePasswordStore&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;storage&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:PasswordStorage&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EncodingPathStorage&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;relativePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/accounts/logins/password/&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:KeyValueStorage&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="login-component">Login component<a class="headerlink" href="#login-component" title="Permanent link">&para;</a></h3>
-<p>After creating a login instance, a user needs to be able to log in using the new method.
-This can again be done with multiple API calls if necessary,
-but the final one needs to be one that handles the necessary actions
-such as creating a cookie and finishing the OIDC interaction if necessary.
-The <code>ResolveLoginHandler</code> can be extended to take care of most of this,
-the <code>PasswordLoginHandler</code> provides an example of this.</p>
-<h3 id="additional-components">Additional components<a class="headerlink" href="#additional-components" title="Permanent link">&para;</a></h3>
-<p>Besides creating a login instance and logging in,
-it is always possible to offer additional functionality specific to this login method.
-The email/password method, for example, also has components for password recovery and updating a password.</p>
-<h3 id="html-pages">HTML pages<a class="headerlink" href="#html-pages" title="Permanent link">&para;</a></h3>
-<p>To make the life easier for users,
-at the very least you probably want to make an HTML page which people can use
-to create an instance of your login method.
-Besides that you could also make a page where people can combine creating an account with creating a login instance.
-The <code>templates/identity</code> folder contains all the pages the server has by default,
-which can be used as inspiration.</p>
-<p>These pages need to be linked to the <code>urn:solid-server:default:HtmlViewHandler</code>.
-Below is an example of this:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:HtmlViewHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HtmlViewHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;templates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
-<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:CreatePasswordHtml&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HtmlViewEntry&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;filePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@css:templates/identity/password/create.html.ejs&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;route&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountPasswordRoute&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}]</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="updating-the-login-handler">Updating the login handler<a class="headerlink" href="#updating-the-login-handler" title="Permanent link">&para;</a></h3>
-<p>The <code>urn:solid-server:default:LoginHandler</code> returns a list of available login methods,
-which are used to offer users a choice of which login method they want to use on the default login page.
-If you want the new method to also be offered you will have to add similar Components.js configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:LoginHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ControlHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;controls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;ControlHandler:_controls_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Email/password combination&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;ControlHandler:_controls_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:LoginPasswordRoute&quot;</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="controls">Controls<a class="headerlink" href="#controls" title="Permanent link">&para;</a></h3>
-<p>All new relevant API endpoints should be added to the controls object,
-otherwise there is no way for users to find out where to send their requests.
-Similarly, links to the HTML pages should also be in the controls, so they can be navigated to.
-Examples of how to do this can be found <a href="../../../architecture/features/accounts/routes/">here</a>.</p>
-<p>The default account overview page makes some assumptions about the controls when building the page.
-Specifically, it checks if <code>controls.html.&lt;LOGIN_METHOD&gt;.create</code> exists,
-if yes, it automatically creates a link on the page so users can create new login instances for their account.</p>
+<h1 id="choosing-the-authorization-method-for-your-server">Choosing the authorization method for your server<a class="headerlink" href="#choosing-the-authorization-method-for-your-server" title="Permanent link">&para;</a></h1>
+<p>The CSS comes with support for two different authorization solutions:
+<a href="https://solidproject.org/TR/wac">Web Access Control (WAC)</a>
+and <a href="https://solid.github.io/authorization-panel/acp-specification/">Access Control Policy (ACP)</a>.
+When configuring a server, one of these needs to be picked if you do not want everyone to have full access to your data.
+Both of these are similar in that they both make use of RDF resources to describe who can access which documents,</p>
+<p>WAC is the older specification of the two,
+it was designed together with the beginning of the Solid specification.
+Because of that, there is more tooling available that can interpret the corresponding authorization resources,
+potentially making it easier to get started with Solid development.</p>
+<p>ACP is a more recent specification,
+that was made to address certain concerns within WAC.
+ACP provides more options in how to define who gets to access your data,
+allowing you to have better security.</p>
+<p>When using WAC, you define which WebIDs have access to certain data.
+When you then authenticate with a Solid client,
+that client will identify with your WebID,
+indicating to the server that it is allowed to access that data.
+The problem is that there is no (safe) way to differentiate between clients.
+This means that if you use a client to store your favorite movies in your pod,
+and another one to store your bank details,
+the movie client would be able to access your bank details if it was malicious.
+ACP on the other hand allows you to set more specific restrictions,
+where clients also have to identify themselves.
+This way you can make sure the movie client can only access movie data.</p>
+<p>Currently, the CSS still enables WAC in most of the configurations bundled with the server,
+as we want the server to be easily accessible for newer users,
+for whom the chances are higher they are using apps only compatible with WAC.
+However, we are planning to eventually phase this out in favor of ACP,
+starting with logged warnings when WAC is enabled,
+and in the end changing the bundled configurations to use ACP instead.</p>
 
 
 
@@ -1986,10 +1746,10 @@ if yes, it automatically creates a link on the page so users can create new logi
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.tabs", "navigation.top", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.top", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>

@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.29">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.6543a935.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.76a95c52.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
@@ -457,6 +457,8 @@
       
         
       
+        
+      
     
     
       
@@ -499,7 +501,28 @@
         
   
   <span class="md-ellipsis">
-    Features
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../features/test/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tests
   </span>
   
 
@@ -524,6 +547,8 @@
   
     
     
+      
+        
       
         
       
@@ -850,6 +875,27 @@
   
   <span class="md-ellipsis">
     Development server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../usage/authorization-methods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authorization methods
   </span>
   
 
@@ -1793,29 +1839,31 @@ to add any custom initializers that need to run.</p>
 <h3 id="serverinitializer">ServerInitializer<a class="headerlink" href="#serverinitializer" title="Permanent link">&para;</a></h3>
 <p>The <code>ServerInitializer</code> is the initializer that finally starts up the server by listening to the relevant port,
 once all the initialization described above is finished.
-It takes as input 2 components: a <code>HttpServerFactory</code> and a <code>ServerListener</code>.</p>
+To do this it makes use of an <code>HttpServerFactory</code>.</p>
 <pre class="mermaid"><code>flowchart TD
   ServerInitializer("&lt;strong&gt;ServerInitializer&lt;/strong&gt;&lt;br&gt;ServerInitializer")
-  ServerInitializer --&gt; ServerInitializerArgs
+  ServerInitializer --&gt; ServerFactory("&lt;strong&gt;ServerFactory&lt;/strong&gt;&lt;br&gt;BaseServerFactory")
+  ServerFactory --&gt; ServerConfigurator("&lt;strong&gt;ServerConfigurator&lt;/strong&gt;&lt;br&gt;ParallelHandler")
+  ServerConfigurator --&gt; ServerConfiguratorArgs
 
-  subgraph ServerInitializerArgs[" "]
+  subgraph ServerConfiguratorArgs[" "]
     direction LR
-    ServerFactory("&lt;strong&gt;ServerFactory&lt;/strong&gt;&lt;br&gt;BaseServerFactory")
-    ServerListener("&lt;strong&gt;ServerListener&lt;/strong&gt;&lt;br&gt;ParallelHandler")
+    HandlerServerConfigurator("&lt;strong&gt;HandlerServerConfigurator&lt;/strong&gt;&lt;br&gt;HandlerServerConfigurator")
+    WebSocketServerConfigurator("&lt;strong&gt;WebSocketServerConfigurator&lt;/strong&gt;&lt;br&gt;WebSocketServerConfigurator")
   end
 
-  ServerListener --&gt; HandlerServerListener("&lt;strong&gt;HandlerServerListener&lt;/strong&gt;&lt;br&gt;HandlerServerListener")
-
-  HandlerServerListener --&gt; HttpHandler("&lt;strong&gt;HttpHandler&lt;/strong&gt;&lt;br&gt;&lt;i&gt;HttpHandler&lt;/i&gt;")</code></pre>
+  HandlerServerConfigurator --&gt; HttpHandler("&lt;strong&gt;HttpHandler&lt;/strong&gt;&lt;br&gt;&lt;i&gt;HttpHandler&lt;/i&gt;")
+  WebSocketServerConfigurator --&gt; WebSocketHandler("&lt;strong&gt;WebSocketHandler&lt;/strong&gt;&lt;br&gt;&lt;i&gt;WebSocketHandler&lt;/i&gt;")</code></pre>
 <p>The <code>HttpServerFactory</code> is responsible for starting a server on a given port.
 Depending on the configuration this can be an HTTP or an HTTPS server.
 The created server emits events when it receives requests.</p>
-<p>A <code>ServerListener</code> is a class that takes the created server as input and attaches a listener to interpret events.
-One listener that is always used is the <code>urn:solid-server:default:HandlerServerListener</code>,
-which calls an <code>HttpHandler</code> <a href="../http-handler/">to resolve HTTP requests</a>.</p>
-<p>Sometimes it is necessary to add additional listeners,
-these can then be added to the <code>urn:solid-server:default:ServerListener</code> as it is a <code>ParallellHandler</code>.
-An example of this is when WebSockets are used <a href="../notifications/">to handle notifications</a>.</p>
+<p>Any requests it receives, it sends to its <code>ServerConfigurator</code>,
+which handles the request as needed.
+This is a <code>ParallelHandler</code>, supporting two kinds of requests:
+HTTP requests go through a configurator that sends those
+to an <code>HttpHandler</code> <a href="../http-handler/">to resolve HTTP requests</a>.
+In case WebSockets are enabled <a href="../notifications/">to handle notifications</a>,
+these are handled by the <code>WebSocketHandler</code>.</p>
 
 
 
@@ -1919,7 +1967,7 @@ An example of this is when WebSockets are used <a href="../notifications/">to ha
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.tabs", "navigation.top", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>
