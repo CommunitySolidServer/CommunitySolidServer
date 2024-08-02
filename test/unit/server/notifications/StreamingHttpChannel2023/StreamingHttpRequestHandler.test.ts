@@ -1,3 +1,4 @@
+import { PassThrough } from 'node:stream';
 import type { CredentialsExtractor } from '../../../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../../../src/authorization/PermissionReader';
@@ -19,6 +20,8 @@ import type { NotificationGenerator, NotificationSerializer } from '../../../../
 import { StreamingHttpMap } from '../../../../../src';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
 import { flushPromises } from '../../../../util/Util';
+
+import * as GuardedStream from '../../../../../src/util/GuardedStream';
 
 jest.mock('../../../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { error: jest.fn(), debug: jest.fn() } as any;
@@ -45,9 +48,10 @@ describe('A StreamingHttpRequestHandler', (): void => {
     published: '123',
     state: '"123456-text/turtle"',
   };
-  const representation = new BasicRepresentation();
+  const chunk = 'notification';
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
+  let representation: BasicRepresentation;
   let streamMap: StreamingHttpMap;
   let operation: Operation;
   let generator: jest.Mocked<NotificationGenerator>;
@@ -64,6 +68,7 @@ describe('A StreamingHttpRequestHandler', (): void => {
       body: new BasicRepresentation(),
       preferences: {},
     };
+    representation = new BasicRepresentation(chunk, 'text/plain');
 
     streamMap = new StreamingHttpMap();
 
@@ -129,10 +134,33 @@ describe('A StreamingHttpRequestHandler', (): void => {
     expect(description.data).toBeDefined();
   });
 
-  it('sends initial notification.', async(): Promise<void> => {
-    const spy = jest.spyOn(representation.data, 'pipe');
+  it('sends initial notification in a single chunk.', async(): Promise<void> => {
+    const mockStream = {
+      write: jest.fn(),
+      on: jest.fn(),
+    } as unknown as GuardedStream.Guarded<PassThrough>;
+    jest.spyOn(GuardedStream, 'guardStream').mockReturnValueOnce(mockStream);
+    const serializationStream = new PassThrough();
+    // Use two chunks for the serialization stream
+    serializationStream.write('foo');
+    serializationStream.end('bar');
+    serializer = {
+      handleSafe: jest.fn().mockResolvedValue({
+        data: serializationStream,
+      }),
+    } as any;
+    handler = new StreamingHttpRequestHandler(
+      streamMap,
+      pathPrefix,
+      generator,
+      serializer,
+      credentialsExtractor,
+      permissionReader,
+      authorizer,
+    );
     await handler.handle({ operation, request, response });
-    expect(spy).toHaveBeenCalledTimes(1);
+    expect(mockStream.write).toHaveBeenCalledTimes(1);
+    expect(mockStream.write).toHaveBeenCalledWith('foobar');
   });
 
   it('logs an error if sending initial notification fails.', async(): Promise<void> => {

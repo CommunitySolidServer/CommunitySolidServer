@@ -15,6 +15,7 @@ import { IdentifierSetMultiMap } from '../../../util/map/IdentifierMap';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import type { NotificationGenerator } from '../generate/NotificationGenerator';
 import type { NotificationSerializer } from '../serialize/NotificationSerializer';
+import { readableToString } from '../../../util/StreamUtil';
 import type { StreamingHttpMap } from './StreamingHttpMap';
 import { generateChannel } from './StreamingHttp2023Util';
 
@@ -54,7 +55,9 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
     try {
       const notification = await this.generator.handle({ channel, topic: { path: topic }});
       const representation = await this.serializer.handleSafe({ channel, notification });
-      representation.data.pipe(stream, { end: false });
+      // Ensure that the whole notification gets sent in a single chunk
+      const chunk = await readableToString(representation.data);
+      stream.write(chunk);
     } catch (error: unknown) {
       this.logger.error(`Problem emitting initial notification: ${createErrorMessage(error)}`);
     }
