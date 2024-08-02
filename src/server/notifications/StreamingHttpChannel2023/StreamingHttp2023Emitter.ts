@@ -1,6 +1,7 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { Representation } from '../../../http/representation/Representation';
 import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
+import { readableToString } from '../../../util/StreamUtil';
 import type { NotificationChannel } from '../NotificationChannel';
 import type { StreamingHttpMap } from './StreamingHttpMap';
 
@@ -27,8 +28,10 @@ export class StreamingHttp2023Emitter extends AsyncHandler<StreamingHttpEmitterI
     // Called as a NotificationEmitter: emit the notification
     const streams = this.streamMap.get(channel.topic);
     if (streams) {
+      // Ensure that the whole notification gets sent in a single chunk
+      const chunk = await readableToString(representation.data);
       for (const stream of streams) {
-        representation.data.pipe(stream, { end: false });
+        stream.write(chunk);
       }
     } else {
       representation.data.destroy();
