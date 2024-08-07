@@ -3,6 +3,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.0...v7.1.1) (2024-08-07)
+
+### Fixes
+
+* Ensure streaming HTTP streams the whole notification in a single chunk ([3dd8602](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3dd8602acce892b36d1ecaf584c938032e754213))
+
+### Chores
+
+* Increase jest timeout ([e15c59c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e15c59c157882181340fa87a7116b5b34252a79b))
+* Use correct markdownlint-cli2 fix command ([b93aa31](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b93aa31c932935c21f1e3666fdab3d0947a645eb))
+* Depend on external eslint package ([46f5fc2](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/46f5fc239efa794f5309834fa818d17c96f83bd1))
+
+### Documentation
+
+* Update server architecture documentation ([9c44f37](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9c44f375f2537fa0277a6c6831c63c1c1cfc5373))
+* Explain oidc.json ([73619fd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/73619fda056d5a9b0b0fac271f29fbced0424169))
+* Explain WAC vs ACP ([ab41967](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ab419674df5a92054128588747c3abc06086c3ab))
+* Explain the provided configs ([ed6f2ec](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ed6f2ec8e953e84efa6701482d00f616cf6ecbc2))
+* Add test instructions to documentation ([3aa28fa](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3aa28fa03b4d1324998e7f6a5ebe5788d0e6b2c9))
+* Add more explicit installation instructions ([e45bce8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e45bce89aabc95b34ecbefcf46f899a88e60cfef))
+* Add missing index for starting the server ([d350c14](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d350c140fd184d33cbaf6880b9d4b1476d1ffb7c))
+* Add HTTP streaming notification option to docs ([556899d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/556899dbdbf3bb285de71225d156c4891dce23a9))
+
 ## [7.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.5...v7.1.0) (2024-05-24)
 
 ### Features
