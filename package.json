@@ -56,7 +56,6 @@
     "lint": "npm run lint:eslint && npm run lint:markdown",
     "lint:eslint": "eslint . --cache --max-warnings 0",
     "lint:markdown": "markdownlint-cli2",
-    "lint:markdown:fix": "markdownlint-cli2-fix",
     "prepare": "npm run build",
     "release": "commit-and-tag-version",
     "postrelease": "ts-node ./scripts/finalizeRelease.ts",
@@ -178,7 +177,7 @@
   "commit-and-tag-version": {
     "scripts": {
       "postbump": "ts-node ./scripts/upgradeConfig.ts",
-      "postchangelog": "ts-node ./scripts/formatChangelog.ts && markdownlint-cli2-fix"
+      "postchangelog": "ts-node ./scripts/formatChangelog.ts && markdownlint-cli2 --fix"
     },
     "writerOpts": {
       "commitsSort": false
