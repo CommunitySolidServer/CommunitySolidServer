@@ -19,8 +19,8 @@ export class StreamingHttpMetadataWriter extends MetadataWriter {
   }
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
-    const resourcePath = input.metadata.identifier.value.replace(this.baseUrl, '');
-    const receiveFrom = `${this.baseUrl}${this.pathPrefix}${resourcePath}`;
+    const encodedUrl = encodeURIComponent(input.metadata.identifier.value);
+    const receiveFrom = `${this.baseUrl}${this.pathPrefix}${encodedUrl}`;
     const link = `<${receiveFrom}>; rel="http://www.w3.org/ns/solid/terms#updatesViaStreamingHttp2023"`;
     this.logger.debug('Adding updatesViaStreamingHttp2023  to the Link header');
     addHeader(input.response, 'Link', link);

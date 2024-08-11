@@ -28,6 +28,7 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
 
   public constructor(
     private readonly streamMap: StreamingHttpMap,
+    private readonly baseUrl: string,
     private readonly pathPrefix: string,
     private readonly generator: NotificationGenerator,
     private readonly serializer: NotificationSerializer,
@@ -39,7 +40,7 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
   }
 
   public async handle({ operation, request }: OperationHttpHandlerInput): Promise<ResponseDescription> {
-    const topic = operation.target.path.replace(this.pathPrefix, '');
+    const topic = decodeURIComponent(operation.target.path.replace(this.baseUrl + this.pathPrefix, ''));
 
     // Verify if the client is allowed to connect
     const credentials = await this.credentialsExtractor.handleSafe(request);

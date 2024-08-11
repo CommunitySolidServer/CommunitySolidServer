@@ -32,6 +32,7 @@
         "@id": "urn:solid-server:default:StreamingHttp2023RequestHandler",
         "@type": "StreamingHttpRequestHandler",
         "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" },
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
         "pathPrefix": { "@id": "urn:solid-server:default:variable:streamingHTTPReceiveFromPrefix" },
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
         "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },

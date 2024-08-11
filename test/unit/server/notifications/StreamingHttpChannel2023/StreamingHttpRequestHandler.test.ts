@@ -31,6 +31,7 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
 describe('A StreamingHttpRequestHandler', (): void => {
   const logger: jest.Mocked<Logger> = getLoggerFor('mock') as any;
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
+  const baseUrl = 'http://example.com/';
   const pathPrefix = '.notifications/StreamingHTTPChannel2023/';
   const channel: NotificationChannel = {
     id: 'id',
@@ -64,7 +65,7 @@ describe('A StreamingHttpRequestHandler', (): void => {
   beforeEach(async(): Promise<void> => {
     operation = {
       method: 'GET',
-      target: { path: 'http://example.com/.notifications/StreamingHTTPChannel2023/foo' },
+      target: { path: `http://example.com/.notifications/StreamingHTTPChannel2023/${encodeURIComponent(topic.path)}` },
       body: new BasicRepresentation(),
       preferences: {},
     };
@@ -95,6 +96,7 @@ describe('A StreamingHttpRequestHandler', (): void => {
 
     handler = new StreamingHttpRequestHandler(
       streamMap,
+      baseUrl,
       pathPrefix,
       generator,
       serializer,
@@ -151,6 +153,7 @@ describe('A StreamingHttpRequestHandler', (): void => {
     } as any;
     handler = new StreamingHttpRequestHandler(
       streamMap,
+      baseUrl,
       pathPrefix,
       generator,
       serializer,
