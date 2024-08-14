@@ -2,16 +2,16 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Path prefix used by streaming HTTP receiveFrom endpoints",
-      "@id": "urn:solid-server:default:variable:streamingHTTPReceiveFromPrefix",
-      "valueRaw": ".notifications/StreamingHTTPChannel2023/"
+      "@id": "urn:solid-server:default:StreamingHTTP2023Route",
+      "@type": "RelativePathInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:NotificationRoute" },
+      "relativePath": "/StreamingHTTPChannel2023/"
     },
     {
       "comment": "Creates updatesViaStreamingHttp2023 Link relations",
       "@id": "urn:solid-server:default:StreamingHttpMetadataWriter",
       "@type": "StreamingHttpMetadataWriter",
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "pathPrefix": { "@id": "urn:solid-server:default:variable:streamingHTTPReceiveFromPrefix" }
+      "route": { "@id": "urn:solid-server:default:StreamingHTTP2023Route" }
     },
     {
       "comment": "Allows discovery of the corresponding streaming HTTP channel",
@@ -32,8 +32,7 @@
         "@id": "urn:solid-server:default:StreamingHttp2023RequestHandler",
         "@type": "StreamingHttpRequestHandler",
         "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" },
-        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-        "pathPrefix": { "@id": "urn:solid-server:default:variable:streamingHTTPReceiveFromPrefix" },
+        "route": { "@id": "urn:solid-server:default:StreamingHTTP2023Route" },
         "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
         "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
