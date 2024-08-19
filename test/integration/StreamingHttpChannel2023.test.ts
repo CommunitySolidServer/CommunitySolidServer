@@ -17,6 +17,7 @@ import namedNode = DataFactory.namedNode;
 
 const port = getPort('StreamingHTTPChannel2023');
 const baseUrl = `http://localhost:${port}/`;
+const pathPrefix = '.notifications/StreamingHTTPChannel2023';
 
 const rootFilePath = getTestFolder('StreamingHTTPChannel2023');
 const stores: [string, any][] = [
@@ -38,13 +39,16 @@ async function readChunk(reader: ReadableStreamDefaultReader): Promise<Store> {
   return new Store(parser.parse(notification));
 }
 
+function endpoint(topic: string): string {
+  return joinUrl(baseUrl, pathPrefix, encodeURIComponent(topic));
+}
+
 describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (name, { configs, teardown }): void => {
   let app: App;
   let store: ResourceStore;
   const webId = 'http://example.com/card/#me';
   const topic = joinUrl(baseUrl, '/foo');
-  const pathPrefix = '.notifications/StreamingHTTPChannel2023';
-  const receiveFrom = joinUrl(baseUrl, pathPrefix, '/foo');
+  const receiveFrom = endpoint(topic);
 
   beforeAll(async(): Promise<void> => {
     const variables = {
@@ -246,7 +250,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
   it('prevents connecting to channels of restricted topics.', async(): Promise<void> => {
     const restricted = joinUrl(baseUrl, '/restricted');
-    const restrictedReceiveFrom = joinUrl(baseUrl, pathPrefix, '/restricted');
+    const restrictedReceiveFrom = endpoint(restricted);
     await store.setRepresentation({ path: restricted }, new BasicRepresentation('new', 'text/plain'));
 
     // Only allow our WebID to read
@@ -285,7 +289,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
   it('emits container notifications if contents get added or removed.', async(): Promise<void> => {
     const resource = joinUrl(baseUrl, '/resource');
-    const baseReceiveFrom = joinUrl(baseUrl, pathPrefix, '/');
+    const baseReceiveFrom = endpoint(joinUrl(baseUrl, '/'));
 
     // Connecting to the base URL, which is the parent container
     const streamingResponse = await fetch(baseReceiveFrom);

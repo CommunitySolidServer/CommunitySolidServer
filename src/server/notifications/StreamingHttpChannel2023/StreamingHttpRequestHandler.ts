@@ -7,6 +7,7 @@ import { AccessMode } from '../../../authorization/permissions/Permissions';
 import { OkResponseDescription } from '../../../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../../../http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../../../http/representation/BasicRepresentation';
+import type { InteractionRoute } from '../../../identity/interaction/routing/InteractionRoute';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { OperationHttpHandlerInput } from '../../OperationHttpHandler';
 import { OperationHttpHandler } from '../../OperationHttpHandler';
@@ -28,7 +29,7 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
 
   public constructor(
     private readonly streamMap: StreamingHttpMap,
-    private readonly pathPrefix: string,
+    private readonly route: InteractionRoute,
     private readonly generator: NotificationGenerator,
     private readonly serializer: NotificationSerializer,
     private readonly credentialsExtractor: CredentialsExtractor,
@@ -39,7 +40,8 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
   }
 
   public async handle({ operation, request }: OperationHttpHandlerInput): Promise<ResponseDescription> {
-    const topic = operation.target.path.replace(this.pathPrefix, '');
+    const encodedUrl = operation.target.path.replace(this.route.getPath(), '');
+    const topic = decodeURIComponent(encodedUrl);
 
     // Verify if the client is allowed to connect
     const credentials = await this.credentialsExtractor.handleSafe(request);

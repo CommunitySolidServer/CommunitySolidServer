@@ -16,8 +16,8 @@ import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import {
   StreamingHttpRequestHandler,
 } from '../../../../../src/server/notifications/StreamingHttpChannel2023/StreamingHttpRequestHandler';
+import { AbsolutePathInteractionRoute, StreamingHttpMap } from '../../../../../src';
 import type { NotificationGenerator, NotificationSerializer } from '../../../../../src';
-import { StreamingHttpMap } from '../../../../../src';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
 import { flushPromises } from '../../../../util/Util';
 
@@ -31,7 +31,7 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
 describe('A StreamingHttpRequestHandler', (): void => {
   const logger: jest.Mocked<Logger> = getLoggerFor('mock') as any;
   const topic: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const pathPrefix = '.notifications/StreamingHTTPChannel2023/';
+  const path = 'http://example.com/.notifications/StreamingHTTPChannel2023/';
   const channel: NotificationChannel = {
     id: 'id',
     topic: topic.path,
@@ -52,6 +52,7 @@ describe('A StreamingHttpRequestHandler', (): void => {
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
   let representation: BasicRepresentation;
+  let route: AbsolutePathInteractionRoute;
   let streamMap: StreamingHttpMap;
   let operation: Operation;
   let generator: jest.Mocked<NotificationGenerator>;
@@ -64,11 +65,13 @@ describe('A StreamingHttpRequestHandler', (): void => {
   beforeEach(async(): Promise<void> => {
     operation = {
       method: 'GET',
-      target: { path: 'http://example.com/.notifications/StreamingHTTPChannel2023/foo' },
+      target: { path: `${path}${encodeURIComponent(topic.path)}` },
       body: new BasicRepresentation(),
       preferences: {},
     };
     representation = new BasicRepresentation(chunk, 'text/plain');
+
+    route = new AbsolutePathInteractionRoute(path);
 
     streamMap = new StreamingHttpMap();
 
@@ -95,7 +98,7 @@ describe('A StreamingHttpRequestHandler', (): void => {
 
     handler = new StreamingHttpRequestHandler(
       streamMap,
-      pathPrefix,
+      route,
       generator,
       serializer,
       credentialsExtractor,
@@ -151,7 +154,7 @@ describe('A StreamingHttpRequestHandler', (): void => {
     } as any;
     handler = new StreamingHttpRequestHandler(
       streamMap,
-      pathPrefix,
+      route,
       generator,
       serializer,
       credentialsExtractor,
