@@ -3,6 +3,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.1...v7.1.2) (2024-08-20)
+
+### Fixes
+
+* Use full encoded topic iri in streaming http receiveFrom url template ([3e8365b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3e8365bb2613737fb28c376b5967a351a1300432))
+
 ## [7.1.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.0...v7.1.1) (2024-08-07)
 
 ### Fixes
