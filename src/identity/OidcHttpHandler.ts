@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import type { ProviderFactory } from './configuration/ProviderFactory';

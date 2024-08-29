@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';

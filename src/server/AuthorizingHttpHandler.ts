@@ -1,4 +1,5 @@
 import { DataFactory } from 'n3';
+import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
@@ -6,7 +7,6 @@ import type { PermissionReader } from '../authorization/PermissionReader';
 import type { ModesExtractor } from '../authorization/permissions/ModesExtractor';
 import type { AccessMap } from '../authorization/permissions/Permissions';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
-import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { HttpError } from '../util/errors/HttpError';
 import { SOLID_META } from '../util/Vocabularies';

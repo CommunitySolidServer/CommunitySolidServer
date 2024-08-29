@@ -1,17 +1,18 @@
+import type { Logger } from 'global-logger-factory';
+import { getLoggerFor } from 'global-logger-factory';
 import {
   BasicRepresentation,
   ChainedConverter,
-  getLoggerFor,
   guardedStreamFrom,
   INTERNAL_QUADS,
   RdfToQuadConverter,
   readableToString,
   RepresentationMetadata,
 } from '../../src';
-import type { Logger, Representation, RepresentationConverterArgs } from '../../src';
+import type { Representation, RepresentationConverterArgs } from '../../src';
 import { BaseTypedRepresentationConverter } from '../../src/storage/conversion/BaseTypedRepresentationConverter';
 
-jest.mock('../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger =
     { error: jest.fn(), debug: jest.fn(), warn: jest.fn(), info: jest.fn(), log: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };

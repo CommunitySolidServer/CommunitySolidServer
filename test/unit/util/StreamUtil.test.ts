@@ -1,8 +1,8 @@
 import { PassThrough, Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { BlankNode, Literal, NamedNode, Quad, Store } from 'n3';
-import type { Logger } from '../../../src/logging/Logger';
-import { getLoggerFor } from '../../../src/logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import { isHttpRequest } from '../../../src/server/HttpRequest';
 import {
   getSingleItem,
@@ -15,7 +15,7 @@ import {
 } from '../../../src/util/StreamUtil';
 import { flushPromises } from '../../util/Util';
 
-jest.mock('../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger = { warn: jest.fn(), log: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });

@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { IdentifierMap, IdentifierSetMultiMap } from '../util/map/IdentifierMap';
 import type { MapEntry } from '../util/map/MapUtil';

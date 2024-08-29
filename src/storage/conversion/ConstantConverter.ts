@@ -1,9 +1,9 @@
 import type { Stats } from 'node:fs';
 import { createReadStream } from 'node:fs';
 import { stat } from 'fs-extra';
+import { getLoggerFor } from 'global-logger-factory';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';

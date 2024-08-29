@@ -5,7 +5,7 @@ import arrayifyStream from 'arrayify-stream';
 import eos from 'end-of-stream';
 import { Store } from 'n3';
 import pump from 'pump';
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { isHttpRequest } from '../server/HttpRequest';
 import { InternalServerError } from './errors/InternalServerError';
 import type { Guarded } from './GuardedStream';

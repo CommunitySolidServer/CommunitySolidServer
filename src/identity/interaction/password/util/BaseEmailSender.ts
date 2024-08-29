@@ -1,6 +1,6 @@
 import { createTransport } from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
-import { getLoggerFor } from '../../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { EmailSender } from './EmailSender';
 import type { EmailArgs } from './EmailSender';
 

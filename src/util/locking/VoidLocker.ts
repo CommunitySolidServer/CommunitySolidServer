@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { PromiseOrValue } from '../PromiseUtil';
 import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';
 

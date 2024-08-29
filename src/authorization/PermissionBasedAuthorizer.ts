@@ -1,6 +1,6 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../authentication/Credentials';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceSet } from '../storage/ResourceSet';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';

@@ -1,8 +1,8 @@
 import { EventEmitter } from 'node:events';
 import type { Server } from 'node:http';
 import type { WebSocket } from 'ws';
-import type { Logger } from '../../../src/logging/Logger';
-import { getLoggerFor } from '../../../src/logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { WebSocketHandler } from '../../../src/server/WebSocketHandler';
 import { WebSocketServerConfigurator } from '../../../src/server/WebSocketServerConfigurator';
@@ -16,7 +16,7 @@ jest.mock('ws', (): any => ({
   })),
 }));
 
-jest.mock('../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger =
     { error: jest.fn(), info: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };

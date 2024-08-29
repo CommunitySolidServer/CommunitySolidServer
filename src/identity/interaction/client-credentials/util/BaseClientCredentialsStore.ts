@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
+import { getLoggerFor } from 'global-logger-factory';
 import { Initializer } from '../../../../init/Initializer';
-import { getLoggerFor } from '../../../../logging/LogUtil';
 import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { InternalServerError } from '../../../../util/errors/InternalServerError';
 import { ACCOUNT_TYPE } from '../../account/util/LoginStorage';

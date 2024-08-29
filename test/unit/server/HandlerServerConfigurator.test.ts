@@ -1,13 +1,13 @@
 import { EventEmitter } from 'node:events';
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import { Readable } from 'node:stream';
-import type { Logger } from '../../../src/logging/Logger';
-import { getLoggerFor } from '../../../src/logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import { HandlerServerConfigurator } from '../../../src/server/HandlerServerConfigurator';
 import type { HttpHandler } from '../../../src/server/HttpHandler';
 import { flushPromises } from '../../util/Util';
 
-jest.mock('../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger =
     { error: jest.fn(), info: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };

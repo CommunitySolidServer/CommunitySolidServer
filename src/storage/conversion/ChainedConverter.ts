@@ -1,8 +1,8 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { POSIX } from '../../util/Vocabularies';

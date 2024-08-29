@@ -1,5 +1,5 @@
 import { object, string } from 'yup';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import type { TemplateEngine } from '../../../util/templates/TemplateEngine';
 import type { JsonRepresentation } from '../InteractionUtil';

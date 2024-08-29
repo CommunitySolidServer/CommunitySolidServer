@@ -1,8 +1,8 @@
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
 import type { Quad } from 'n3';
+import { getLoggerFor } from 'global-logger-factory';
 import type { Adapter, AdapterPayload } from '../../../templates/types/oidc-provider';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { responseToDataset } from '../../util/FetchUtil';

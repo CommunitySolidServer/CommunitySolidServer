@@ -1,6 +1,6 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
 import { IdentifierMap, IdentifierSetMultiMap } from '../util/map/IdentifierMap';
 import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';

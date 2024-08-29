@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { Representation } from '../../../http/representation/Representation';
 import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import { readableToString } from '../../../util/StreamUtil';

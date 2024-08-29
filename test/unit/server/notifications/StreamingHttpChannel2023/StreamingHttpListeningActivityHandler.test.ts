@@ -1,16 +1,16 @@
 import { EventEmitter } from 'node:events';
 import { PassThrough } from 'node:stream';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../../src/http/representation/ResourceIdentifier';
-import type { Logger } from '../../../../../src/logging/Logger';
-import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import type { ActivityEmitter } from '../../../../../src/server/notifications/ActivityEmitter';
 import type { NotificationHandler } from '../../../../../src/server/notifications/NotificationHandler';
 import { AS } from '../../../../../src/util/Vocabularies';
 import { flushPromises } from '../../../../util/Util';
 import { StreamingHttpListeningActivityHandler, StreamingHttpMap } from '../../../../../src';
 
-jest.mock('../../../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger = { error: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });

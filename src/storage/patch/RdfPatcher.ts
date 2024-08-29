@@ -1,10 +1,10 @@
 import type { Readable } from 'node:stream';
 import { Store } from 'n3';
+import { getLoggerFor } from 'global-logger-factory';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { readableToQuads } from '../../util/StreamUtil';

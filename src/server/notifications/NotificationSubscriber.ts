@@ -1,3 +1,4 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../../authentication/Credentials';
 import type { CredentialsExtractor } from '../../authentication/CredentialsExtractor';
 import type { Authorizer } from '../../authorization/Authorizer';
@@ -5,7 +6,6 @@ import type { PermissionReader } from '../../authorization/PermissionReader';
 import { OkResponseDescription } from '../../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../../http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import { APPLICATION_LD_JSON, INTERNAL_QUADS } from '../../util/ContentTypes';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';

@@ -1,6 +1,6 @@
 import { boolean, object, string } from 'yup';
+import { getLoggerFor } from 'global-logger-factory';
 import type { InteractionResults } from '../../../../templates/types/oidc-provider';
-import { getLoggerFor } from '../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { FoundHttpError } from '../../../util/errors/FoundHttpError';
 import type { ProviderFactory } from '../../configuration/ProviderFactory';

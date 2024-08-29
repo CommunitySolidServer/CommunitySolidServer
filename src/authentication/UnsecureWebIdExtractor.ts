@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpRequest } from '../server/HttpRequest';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { matchesAuthorizationScheme } from '../util/HeaderUtil';

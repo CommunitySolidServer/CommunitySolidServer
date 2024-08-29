@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { BasicRepresentation } from '../../representation/BasicRepresentation';
 import type { Representation } from '../../representation/Representation';

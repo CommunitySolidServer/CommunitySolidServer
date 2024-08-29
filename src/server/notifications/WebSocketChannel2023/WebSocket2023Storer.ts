@@ -1,5 +1,5 @@
 import type { WebSocket } from 'ws';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { SetMultiMap } from '../../../util/map/SetMultiMap';
 import { setSafeInterval } from '../../../util/TimerUtil';
 import type { NotificationChannelStorage } from '../NotificationChannelStorage';

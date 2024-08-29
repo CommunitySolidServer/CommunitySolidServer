@@ -1,3 +1,4 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { PermissionReader } from '../authorization/PermissionReader';
@@ -7,7 +8,6 @@ import type { ModesExtractor } from '../authorization/permissions/ModesExtractor
 import { AccessMode } from '../authorization/permissions/Permissions';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
-import { getLoggerFor } from '../logging/LogUtil';
 import { NotModifiedHttpError } from '../util/errors/NotModifiedHttpError';
 import { ACL, AUTH } from '../util/Vocabularies';
 import type { OperationHttpHandlerInput } from './OperationHttpHandler';

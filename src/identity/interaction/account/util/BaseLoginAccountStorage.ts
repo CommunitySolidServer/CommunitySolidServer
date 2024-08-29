@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type {
   CreateTypeObject,
   IndexedQuery,

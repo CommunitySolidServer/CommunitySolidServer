@@ -1,6 +1,6 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { OkResponseDescription } from '../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { OperationHttpHandlerInput } from '../server/OperationHttpHandler';
 import { OperationHttpHandler } from '../server/OperationHttpHandler';
 import { createErrorMessage } from '../util/errors/ErrorUtil';

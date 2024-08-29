@@ -1,5 +1,5 @@
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { isError } from '../util/errors/ErrorUtil';
 import { guardStream } from '../util/GuardedStream';
 import type { HttpHandler } from './HttpHandler';

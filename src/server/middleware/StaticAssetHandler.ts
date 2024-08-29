@@ -1,7 +1,7 @@
 import { createReadStream } from 'node:fs';
 import escapeStringRegexp from 'escape-string-regexp';
 import * as mime from 'mime-types';
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';

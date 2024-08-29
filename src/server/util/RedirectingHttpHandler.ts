@@ -1,7 +1,7 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { TargetExtractor } from '../../http/input/identifier/TargetExtractor';
 import { RedirectResponseDescription } from '../../http/output/response/RedirectResponseDescription';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { FoundHttpError } from '../../util/errors/FoundHttpError';
 import { MovedPermanentlyHttpError } from '../../util/errors/MovedPermanentlyHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';

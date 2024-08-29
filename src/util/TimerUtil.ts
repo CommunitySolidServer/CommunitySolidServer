@@ -1,4 +1,4 @@
-import type { Logger } from '../logging/Logger';
+import type { Logger } from 'global-logger-factory';
 import { createErrorMessage } from './errors/ErrorUtil';
 
 /**

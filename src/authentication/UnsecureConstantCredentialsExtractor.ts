@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 

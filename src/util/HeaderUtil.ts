@@ -1,6 +1,6 @@
 import type { IncomingHttpHeaders } from 'node:http';
 import escapeStringRegexp from 'escape-string-regexp';
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpResponse } from '../server/HttpResponse';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
 import type {

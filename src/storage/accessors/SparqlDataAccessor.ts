@@ -13,10 +13,10 @@ import type {
   UpdateOperation,
 } from 'sparqljs';
 import { Generator } from 'sparqljs';
+import { getLoggerFor } from 'global-logger-factory';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';

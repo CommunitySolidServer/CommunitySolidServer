@@ -1,11 +1,11 @@
 import type { Readable } from 'node:stream';
+import { getLoggerFor } from 'global-logger-factory';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteLocker';
 import { endOfStream } from '../util/StreamUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';

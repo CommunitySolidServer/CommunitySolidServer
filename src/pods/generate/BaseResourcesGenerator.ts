@@ -2,11 +2,11 @@ import { createReadStream, promises as fsPromises } from 'node:fs';
 import type { Readable } from 'node:stream';
 import { pathExists } from 'fs-extra';
 import { Parser } from 'n3';
+import { getLoggerFor } from 'global-logger-factory';
 import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type {
   FileIdentifierMapper,
   FileIdentifierMapperFactory,

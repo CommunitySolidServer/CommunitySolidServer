@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { KeyValueStorage } from './KeyValueStorage';
 import { PassthroughKeyValueStorage } from './PassthroughKeyValueStorage';

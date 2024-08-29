@@ -42,7 +42,6 @@
   "VariableBindings",
   "UnionHandler",
   "VirtualObject",
-  "WinstonLogger",
   "WrappedSetMultiMap",
   "YargsOptions"
 ]

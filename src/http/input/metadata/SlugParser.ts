@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { SOLID_HTTP } from '../../../util/Vocabularies';

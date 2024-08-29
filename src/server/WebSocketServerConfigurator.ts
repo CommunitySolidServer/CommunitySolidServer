@@ -2,7 +2,7 @@ import type { IncomingMessage, Server } from 'node:http';
 import type { Socket } from 'node:net';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { guardStream } from '../util/GuardedStream';
 import { ServerConfigurator } from './ServerConfigurator';

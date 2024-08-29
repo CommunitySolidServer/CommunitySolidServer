@@ -1,7 +1,7 @@
 import type { NamedNode } from '@rdfjs/types';
 import { DataFactory } from 'n3';
-import type { Logger } from '../../../logging/Logger';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { parseLinkHeader } from '../../../util/HeaderUtil';
 import { SOLID_META } from '../../../util/Vocabularies';

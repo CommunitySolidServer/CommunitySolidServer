@@ -1,5 +1,5 @@
 import { object, string } from 'yup';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { assertAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';

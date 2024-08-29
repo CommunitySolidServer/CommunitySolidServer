@@ -1,14 +1,15 @@
 import cluster from 'node:cluster';
 import EventEmitter from 'node:events';
 import { cpus } from 'node:os';
+import * as glf from 'global-logger-factory';
 import { ClusterManager } from '../../../../src';
-import * as LogUtil from '../../../../src/logging/LogUtil';
 
 jest.mock('node:cluster');
 jest.mock('node:os', (): any => ({
   ...jest.requireActual('node:os'),
   cpus: jest.fn().mockImplementation((): any => [{}, {}, {}, {}, {}, {}]),
 }));
+jest.mock('global-logger-factory');
 
 const mockWorker = new EventEmitter() as any;
 mockWorker.process = { pid: 666 };
@@ -17,7 +18,7 @@ describe('A ClusterManager', (): void => {
   const emitter = new EventEmitter();
   const mockCluster = jest.requireMock('node:cluster');
   const mockLogger = { info: jest.fn(), warn: jest.fn() };
-  jest.spyOn(LogUtil, 'getLoggerFor').mockImplementation((): any => mockLogger);
+  jest.spyOn(glf, 'getLoggerFor').mockImplementation((): any => mockLogger);
 
   beforeAll((): void => {
     Object.assign(mockCluster, {

@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
 import { SOLID_HTTP } from '../../util/Vocabularies';
 import type { JsonRepresentation } from './InteractionUtil';

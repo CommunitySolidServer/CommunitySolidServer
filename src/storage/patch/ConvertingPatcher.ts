@@ -1,6 +1,6 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { RepresentationConverter } from '../conversion/RepresentationConverter';
 import type { RepresentationPatcherInput } from './RepresentationPatcher';
 import { RepresentationPatcher } from './RepresentationPatcher';

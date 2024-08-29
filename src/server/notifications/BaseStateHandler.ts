@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import type { NotificationChannel } from './NotificationChannel';
 import type { NotificationChannelStorage } from './NotificationChannelStorage';

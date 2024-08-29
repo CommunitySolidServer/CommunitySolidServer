@@ -1,8 +1,8 @@
 import { DataFactory } from 'n3';
 import type { Quad } from '@rdfjs/types';
+import { getLoggerFor } from 'global-logger-factory';
 import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';

@@ -1,7 +1,7 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { Representation } from '../http/representation/Representation';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import { RangeNotSatisfiedHttpError } from '../util/errors/RangeNotSatisfiedHttpError';
 import { guardStream } from '../util/GuardedStream';

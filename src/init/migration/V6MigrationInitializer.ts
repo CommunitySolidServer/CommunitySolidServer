@@ -1,4 +1,5 @@
 import { createInterface } from 'node:readline';
+import { getLoggerFor } from 'global-logger-factory';
 import { ACCOUNT_STORAGE_DESCRIPTION } from '../../identity/interaction/account/util/BaseAccountStore';
 import type { AccountLoginStorage } from '../../identity/interaction/account/util/LoginStorage';
 import { ACCOUNT_TYPE } from '../../identity/interaction/account/util/LoginStorage';
@@ -17,7 +18,6 @@ import {
   POD_STORAGE_TYPE,
 } from '../../identity/interaction/pod/util/BasePodStore';
 import { WEBID_STORAGE_DESCRIPTION, WEBID_STORAGE_TYPE } from '../../identity/interaction/webid/util/BaseWebIdStore';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { Initializer } from '../Initializer';
 

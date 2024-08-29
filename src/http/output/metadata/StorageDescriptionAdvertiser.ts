@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { StorageLocationStrategy } from '../../../server/description/StorageLocationStrategy';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import { addHeader } from '../../../util/HeaderUtil';

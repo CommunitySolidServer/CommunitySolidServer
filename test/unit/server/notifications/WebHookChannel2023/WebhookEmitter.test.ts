@@ -1,13 +1,13 @@
 import fetch from 'cross-fetch';
 import { calculateJwkThumbprint, exportJWK, generateKeyPair, importJWK, jwtVerify } from 'jose';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../../src/http/representation/Representation';
 import type { AlgJwk, JwkGenerator } from '../../../../../src/identity/configuration/JwkGenerator';
 import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
-import type { Logger } from '../../../../../src/logging/Logger';
-import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
 import type {
   WebhookChannel2023,
@@ -20,7 +20,7 @@ import { NOTIFY } from '../../../../../src/util/Vocabularies';
 
 jest.mock('cross-fetch');
 
-jest.mock('../../../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger =
     { error: jest.fn(), debug: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };

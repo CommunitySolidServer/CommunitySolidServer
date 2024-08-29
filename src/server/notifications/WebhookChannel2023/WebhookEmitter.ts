@@ -1,9 +1,9 @@
 import fetch from 'cross-fetch';
 import { calculateJwkThumbprint, importJWK, SignJWT } from 'jose';
 import { v4 } from 'uuid';
+import { getLoggerFor } from 'global-logger-factory';
 import type { JwkGenerator } from '../../../identity/configuration/JwkGenerator';
 import type { InteractionRoute } from '../../../identity/interaction/routing/InteractionRoute';
-import { getLoggerFor } from '../../../logging/LogUtil';
 import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';
 import { trimTrailingSlashes } from '../../../util/PathUtil';
 import { readableToString } from '../../../util/StreamUtil';

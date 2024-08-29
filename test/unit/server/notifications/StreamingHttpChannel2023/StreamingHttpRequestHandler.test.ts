@@ -1,4 +1,6 @@
 import { PassThrough } from 'node:stream';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import type { CredentialsExtractor } from '../../../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../../../src/authorization/PermissionReader';
@@ -10,8 +12,6 @@ import type { NotificationChannel } from '../../../../../src/server/notification
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
-import type { Logger } from '../../../../../src/logging/Logger';
-import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 
 import {
   StreamingHttpRequestHandler,
@@ -23,7 +23,7 @@ import { flushPromises } from '../../../../util/Util';
 
 import * as GuardedStream from '../../../../../src/util/GuardedStream';
 
-jest.mock('../../../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger = { error: jest.fn(), debug: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });
