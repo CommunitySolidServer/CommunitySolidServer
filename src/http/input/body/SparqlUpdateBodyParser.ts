@@ -1,6 +1,6 @@
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { APPLICATION_SPARQL_UPDATE } from '../../../util/ContentTypes';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';

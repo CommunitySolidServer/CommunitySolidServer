@@ -1,7 +1,7 @@
 import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
 import { v4 } from 'uuid';
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { errorTermsToMetadata } from '../../util/errors/HttpErrorUtil';

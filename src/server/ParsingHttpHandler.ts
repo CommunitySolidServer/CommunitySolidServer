@@ -1,8 +1,8 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { RequestParser } from '../http/input/RequestParser';
 import type { ErrorHandler } from '../http/output/error/ErrorHandler';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import type { ResponseWriter } from '../http/output/ResponseWriter';
-import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { HttpError } from '../util/errors/HttpError';
 import { InternalServerError } from '../util/errors/InternalServerError';

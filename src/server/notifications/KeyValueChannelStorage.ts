@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';

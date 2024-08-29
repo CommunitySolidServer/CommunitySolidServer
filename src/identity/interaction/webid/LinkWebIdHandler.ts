@@ -1,5 +1,5 @@
 import { object } from 'yup';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { StorageLocationStrategy } from '../../../server/description/StorageLocationStrategy';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import type { OwnershipValidator } from '../../ownership/OwnershipValidator';

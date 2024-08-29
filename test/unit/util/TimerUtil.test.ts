@@ -1,4 +1,4 @@
-import type { Logger } from '../../../src/logging/Logger';
+import type { Logger } from 'global-logger-factory';
 import { setSafeInterval } from '../../../src/util/TimerUtil';
 import { flushPromises } from '../../util/Util';
 

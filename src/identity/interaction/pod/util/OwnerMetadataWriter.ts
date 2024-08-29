@@ -1,8 +1,8 @@
 import { Util } from 'n3';
+import { getLoggerFor } from 'global-logger-factory';
 import type { MetadataWriterInput } from '../../../../http/output/metadata/MetadataWriter';
 import { MetadataWriter } from '../../../../http/output/metadata/MetadataWriter';
 import type { ResourceIdentifier } from '../../../../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { StorageLocationStrategy } from '../../../../server/description/StorageLocationStrategy';
 import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { addHeader } from '../../../../util/HeaderUtil';

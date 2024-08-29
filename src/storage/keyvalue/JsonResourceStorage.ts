@@ -1,7 +1,7 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash, isContainerIdentifier, joinUrl, trimLeadingSlashes } from '../../util/PathUtil';

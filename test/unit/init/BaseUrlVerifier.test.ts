@@ -1,9 +1,9 @@
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import { BaseUrlVerifier } from '../../../src/init/BaseUrlVerifier';
-import type { Logger } from '../../../src/logging/Logger';
-import { getLoggerFor } from '../../../src/logging/LogUtil';
 import type { KeyValueStorage } from '../../../src/storage/keyvalue/KeyValueStorage';
 
-jest.mock('../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger = { warn: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });

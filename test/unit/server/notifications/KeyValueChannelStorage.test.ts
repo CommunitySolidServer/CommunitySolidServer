@@ -1,13 +1,13 @@
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
-import type { Logger } from '../../../../src/logging/Logger';
-import { getLoggerFor } from '../../../../src/logging/LogUtil';
 import { KeyValueChannelStorage } from '../../../../src/server/notifications/KeyValueChannelStorage';
 import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import resetAllMocks = jest.resetAllMocks;
 
-jest.mock('../../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger = { info: jest.fn(), error: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });

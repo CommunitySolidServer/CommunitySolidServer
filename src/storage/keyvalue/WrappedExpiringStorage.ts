@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { setSafeInterval } from '../../util/TimerUtil';
 import type { ExpiringStorage } from './ExpiringStorage';

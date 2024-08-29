@@ -1,7 +1,7 @@
 import type { Store } from 'n3';
+import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../../../authentication/Credentials';
 import type { InteractionRoute } from '../../../identity/interaction/routing/InteractionRoute';
-import { getLoggerFor } from '../../../logging/LogUtil';
 import { NOTIFY } from '../../../util/Vocabularies';
 import { BaseChannelType } from '../BaseChannelType';
 import type { NotificationChannel } from '../NotificationChannel';

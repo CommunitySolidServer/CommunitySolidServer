@@ -1,7 +1,7 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { PodStore } from '../identity/interaction/pod/util/PodStore';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { StorageLocationStrategy } from '../server/description/StorageLocationStrategy';
 import { filter } from '../util/IterableUtil';
 import { IdentifierMap } from '../util/map/IdentifierMap';

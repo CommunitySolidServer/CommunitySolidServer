@@ -1,5 +1,5 @@
 import type { Term } from '@rdfjs/types';
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';

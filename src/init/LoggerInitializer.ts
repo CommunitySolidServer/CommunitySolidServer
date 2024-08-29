@@ -1,5 +1,5 @@
-import type { LoggerFactory } from '../logging/LoggerFactory';
-import { setGlobalLoggerFactory } from '../logging/LogUtil';
+import type { LoggerFactory } from 'global-logger-factory';
+import { setGlobalLoggerFactory } from 'global-logger-factory';
 import { Initializer } from './Initializer';
 
 /**

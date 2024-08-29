@@ -1,6 +1,6 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { RepresentationMetadata } from '../../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../../logging/LogUtil';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import { StaticHandler } from '../../../util/handlers/StaticHandler';
 import type { AS, VocabularyTerm } from '../../../util/Vocabularies';

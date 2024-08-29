@@ -1,10 +1,10 @@
 import { readJson } from 'fs-extra';
 import { array, object, string } from 'yup';
+import { getLoggerFor } from 'global-logger-factory';
 import type { AccountStore } from '../identity/interaction/account/util/AccountStore';
 import type { PasswordStore } from '../identity/interaction/password/util/PasswordStore';
 import type { PodCreator } from '../identity/interaction/pod/util/PodCreator';
 import { URL_SCHEMA } from '../identity/interaction/YupUtil';
-import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { Initializer } from './Initializer';
 

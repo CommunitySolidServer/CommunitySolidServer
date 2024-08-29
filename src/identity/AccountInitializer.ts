@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { Initializer } from '../init/Initializer';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { AccountStore } from './interaction/account/util/AccountStore';
 import type { PasswordStore } from './interaction/password/util/PasswordStore';
 import type { PodCreator } from './interaction/pod/util/PodCreator';

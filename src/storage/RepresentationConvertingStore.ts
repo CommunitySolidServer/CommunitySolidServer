@@ -1,8 +1,8 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import type { Representation } from '../http/representation/Representation';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import type { Conditions } from './conditions/Conditions';
 import { PassthroughConverter } from './conversion/PassthroughConverter';

@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { addGeneratedResources } from './generate/GenerateUtil';

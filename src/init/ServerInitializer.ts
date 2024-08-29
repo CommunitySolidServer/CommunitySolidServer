@@ -1,6 +1,6 @@
 import type { Server } from 'node:http';
 import { promisify } from 'node:util';
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { isHttpsServer } from '../server/HttpServerFactory';
 import type { HttpServerFactory } from '../server/HttpServerFactory';
 import type { Finalizable } from './final/Finalizable';

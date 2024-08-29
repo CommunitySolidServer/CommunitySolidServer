@@ -1,4 +1,5 @@
 import { PassThrough } from 'node:stream';
+import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../../../authentication/Credentials';
 import type { CredentialsExtractor } from '../../../authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../authorization/Authorizer';
@@ -8,7 +9,6 @@ import { OkResponseDescription } from '../../../http/output/response/OkResponseD
 import type { ResponseDescription } from '../../../http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../../../http/representation/BasicRepresentation';
 import type { InteractionRoute } from '../../../identity/interaction/routing/InteractionRoute';
-import { getLoggerFor } from '../../../logging/LogUtil';
 import type { OperationHttpHandlerInput } from '../../OperationHttpHandler';
 import { OperationHttpHandler } from '../../OperationHttpHandler';
 import { guardStream } from '../../../util/GuardedStream';

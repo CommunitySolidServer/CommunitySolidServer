@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpResponse } from '../../server/HttpResponse';
 import { isInternalContentType } from '../../storage/conversion/ConversionUtil';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';

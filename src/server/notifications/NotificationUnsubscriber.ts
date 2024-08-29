@@ -1,6 +1,6 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { ResetResponseDescription } from '../../http/output/response/ResetResponseDescription';
 import type { ResponseDescription } from '../../http/output/response/ResponseDescription';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { OperationHttpHandlerInput } from '../OperationHttpHandler';
 import { OperationHttpHandler } from '../OperationHttpHandler';

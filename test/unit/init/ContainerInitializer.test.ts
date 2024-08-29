@@ -1,11 +1,11 @@
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import { ContainerInitializer } from '../../../src/init/ContainerInitializer';
-import type { Logger } from '../../../src/logging/Logger';
-import { getLoggerFor } from '../../../src/logging/LogUtil';
 import type { Resource, ResourcesGenerator } from '../../../src/pods/generate/ResourcesGenerator';
 import type { KeyValueStorage } from '../../../src/storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 
-jest.mock('../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger = { warn: jest.fn(), debug: jest.fn(), info: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });

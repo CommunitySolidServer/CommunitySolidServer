@@ -1,6 +1,6 @@
 import type { NamedNode } from 'n3';
 import { DataFactory } from 'n3';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';

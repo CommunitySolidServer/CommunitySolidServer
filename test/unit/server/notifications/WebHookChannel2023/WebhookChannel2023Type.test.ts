@@ -1,12 +1,12 @@
 import { DataFactory, Store } from 'n3';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import {
   AbsolutePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
 import {
   RelativePathInteractionRoute,
 } from '../../../../../src/identity/interaction/routing/RelativePathInteractionRoute';
-import type { Logger } from '../../../../../src/logging/Logger';
-import { getLoggerFor } from '../../../../../src/logging/LogUtil';
 import { CONTEXT_NOTIFICATION } from '../../../../../src/server/notifications/Notification';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type { StateHandler } from '../../../../../src/server/notifications/StateHandler';
@@ -22,7 +22,7 @@ import quad = DataFactory.quad;
 import blankNode = DataFactory.blankNode;
 import namedNode = DataFactory.namedNode;
 
-jest.mock('../../../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger =
     { error: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };

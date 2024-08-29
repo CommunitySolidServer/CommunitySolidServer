@@ -3,7 +3,7 @@ import type { Server } from 'node:http';
 import { createServer as createHttpServer } from 'node:http';
 import type { ServerOptions } from 'node:https';
 import { createServer as createHttpsServer } from 'node:https';
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpServerFactory } from './HttpServerFactory';
 import type { ServerConfigurator } from './ServerConfigurator';
 

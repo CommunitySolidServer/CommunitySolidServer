@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { createSubdomainRegexp, ensureTrailingSlash } from '../PathUtil';
 import { BaseIdentifierStrategy } from './BaseIdentifierStrategy';
 

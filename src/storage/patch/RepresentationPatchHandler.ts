@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { Representation } from '../../http/representation/Representation';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';

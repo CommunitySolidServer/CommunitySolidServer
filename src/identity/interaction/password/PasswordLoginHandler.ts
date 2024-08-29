@@ -1,5 +1,5 @@
 import { boolean, object, string } from 'yup';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { AccountStore } from '../account/util/AccountStore';
 import type { CookieStore } from '../account/util/CookieStore';
 import type { JsonRepresentation } from '../InteractionUtil';

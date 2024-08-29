@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { RepresentationMetadata } from '../../../http/representation/RepresentationMetadata';
-import { getLoggerFor } from '../../../logging/LogUtil';
 import type { Json } from '../../../util/Json';
 import { SOLID_HTTP } from '../../../util/Vocabularies';
 import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../account/util/AccountStore';

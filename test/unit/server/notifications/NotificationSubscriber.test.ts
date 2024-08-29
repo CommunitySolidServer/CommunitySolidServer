@@ -1,3 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import type { CredentialsExtractor } from '../../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../../src/authorization/PermissionReader';
@@ -6,8 +8,6 @@ import { AccessMode } from '../../../../src/authorization/permissions/Permission
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
-import type { Logger } from '../../../../src/logging/Logger';
-import { getLoggerFor } from '../../../../src/logging/LogUtil';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
@@ -24,7 +24,7 @@ import { IdentifierMap, IdentifierSetMultiMap } from '../../../../src/util/map/I
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { flushPromises } from '../../../util/Util';
 
-jest.mock('../../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger =
     { debug: jest.fn(), error: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };

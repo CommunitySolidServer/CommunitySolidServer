@@ -1,8 +1,8 @@
 import { EventEmitter } from 'node:events';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
-import type { Logger } from '../../../../src/logging/Logger';
-import { getLoggerFor } from '../../../../src/logging/LogUtil';
 import type { ActivityEmitter } from '../../../../src/server/notifications/ActivityEmitter';
 import { ListeningActivityHandler } from '../../../../src/server/notifications/ListeningActivityHandler';
 import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
@@ -13,7 +13,7 @@ import type { NotificationHandler } from '../../../../src/server/notifications/N
 import { AS } from '../../../../src/util/Vocabularies';
 import { flushPromises } from '../../../util/Util';
 
-jest.mock('../../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger = { error: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });

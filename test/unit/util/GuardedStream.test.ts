@@ -1,10 +1,10 @@
 import { Readable } from 'node:stream';
-import type { Logger } from '../../../src/logging/Logger';
-import { getLoggerFor } from '../../../src/logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
+import type { Logger } from 'global-logger-factory';
 import { guardStream, isGuarded } from '../../../src/util/GuardedStream';
 import { readableToString } from '../../../src/util/StreamUtil';
 
-jest.mock('../../../src/logging/LogUtil', (): any => {
+jest.mock('global-logger-factory', (): any => {
   const logger: Logger = { error: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });

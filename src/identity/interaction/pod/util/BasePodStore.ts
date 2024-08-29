@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { Initializer } from '../../../../init/Initializer';
-import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { PodManager } from '../../../../pods/PodManager';
 import type { PodSettings } from '../../../../pods/settings/PodSettings';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';

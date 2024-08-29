@@ -1,5 +1,6 @@
 /* eslint-disable ts/naming-convention */
 import { randomBytes } from 'node:crypto';
+import { getLoggerFor } from 'global-logger-factory';
 import type {
   Account,
   Adapter,
@@ -14,7 +15,6 @@ import type {
 import type Provider from '../../../templates/types/oidc-provider';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import type { HttpError } from '../../util/errors/HttpError';

@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import { Initializer } from '../../../../init/Initializer';
-import { getLoggerFor } from '../../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
 import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { InternalServerError } from '../../../../util/errors/InternalServerError';

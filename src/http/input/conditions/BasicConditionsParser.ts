@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import type { BasicConditionsOptions } from '../../../storage/conditions/BasicConditions';
 import { BasicConditions } from '../../../storage/conditions/BasicConditions';

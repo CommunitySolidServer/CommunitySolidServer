@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { ForbiddenHttpError } from '../../../util/errors/ForbiddenHttpError';
 import { UnauthorizedHttpError } from '../../../util/errors/UnauthorizedHttpError';
 import type { AccountIdRoute } from '../account/AccountIdRoute';

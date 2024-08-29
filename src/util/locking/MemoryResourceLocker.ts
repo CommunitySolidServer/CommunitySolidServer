@@ -1,7 +1,7 @@
 import AsyncLock from 'async-lock';
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { SingleThreaded } from '../../init/cluster/SingleThreaded';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../errors/InternalServerError';
 import type { ResourceLocker } from './ResourceLocker';
 

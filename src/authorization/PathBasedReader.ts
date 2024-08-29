@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { concat } from '../util/IterableUtil';
 import { IdentifierMap, IdentifierSetMultiMap } from '../util/map/IdentifierMap';
 import { getDefault } from '../util/map/MapUtil';

@@ -1,5 +1,5 @@
 import { object, string } from 'yup';
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import type { EmptyObject } from '../../../util/map/MapUtil';
 import type { JsonRepresentation } from '../InteractionUtil';

@@ -1,8 +1,8 @@
 import Redis from 'ioredis';
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Finalizable } from '../../init/final/Finalizable';
 import type { Initializable } from '../../init/Initializable';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { AttemptSettings } from '../LockUtils';
 import { retryFunction } from '../LockUtils';
 import type { PromiseOrValue } from '../PromiseUtil';

@@ -1,8 +1,8 @@
 import type { IncomingMessage } from 'node:http';
 import type { TLSSocket } from 'node:tls';
 import type { WebSocket } from 'ws';
+import { getLoggerFor } from 'global-logger-factory';
 import type { SingleThreaded } from '../init/cluster/SingleThreaded';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { ActivityEmitter } from '../server/notifications/ActivityEmitter';
 import type { WebSocketHandlerInput } from '../server/WebSocketHandler';
 import { WebSocketHandler } from '../server/WebSocketHandler';

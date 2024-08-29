@@ -1,6 +1,6 @@
 import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from '@rdfjs/types';
-import { getLoggerFor } from '../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import { ContentType, SIMPLE_MEDIA_RANGE } from '../../util/Header';
 import { isTerm, toLiteral, toNamedTerm, toObjectTerm } from '../../util/TermUtil';
 import { CONTENT_LENGTH_TERM, CONTENT_TYPE_TERM, RDFS, SOLID_META, XSD } from '../../util/Vocabularies';

@@ -1,5 +1,5 @@
+import { getLoggerFor } from 'global-logger-factory';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourcesGenerator } from '../pods/generate/ResourcesGenerator';
 import type { KeyValueStorage } from '../storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../storage/ResourceStore';

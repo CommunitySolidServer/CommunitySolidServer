@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpResponse } from '../../HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
 import { joinUrl } from '../../../util/PathUtil';

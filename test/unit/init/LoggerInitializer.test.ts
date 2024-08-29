@@ -1,8 +1,8 @@
+import type { LoggerFactory } from 'global-logger-factory';
+import { setGlobalLoggerFactory } from 'global-logger-factory';
 import { LoggerInitializer } from '../../../src/init/LoggerInitializer';
-import type { LoggerFactory } from '../../../src/logging/LoggerFactory';
-import { setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
 
-jest.mock('../../../src/logging/LogUtil');
+jest.mock('global-logger-factory');
 
 describe('LoggerInitializer', (): void => {
   const loggerFactory = {} as LoggerFactory;

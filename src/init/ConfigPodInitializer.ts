@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from 'global-logger-factory';
 import type { ComponentsJsFactory } from '../pods/generate/ComponentsJsFactory';
 import { TEMPLATE, TEMPLATE_VARIABLE } from '../pods/generate/variables/Variables';
 import type { KeyValueStorage } from '../storage/keyvalue/KeyValueStorage';
