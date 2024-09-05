@@ -1,6 +1,6 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { AS, VocabularyTerm } from '../../util/Vocabularies';
 import type { NotificationChannel } from './NotificationChannel';
 

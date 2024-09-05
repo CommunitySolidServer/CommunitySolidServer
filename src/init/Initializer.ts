@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../util/handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 
 /**
  * Initializer is used to indicate an AsyncHandler that performs initialization logic.

@@ -1,5 +1,5 @@
 import type { WebSocket } from 'ws';
-import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { NotificationChannel } from '../NotificationChannel';
 
 export interface WebSocket2023HandlerInput {

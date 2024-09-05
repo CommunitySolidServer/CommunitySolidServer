@@ -1,5 +1,5 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { HttpResponse } from '../../server/HttpResponse';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { ResponseDescription } from './response/ResponseDescription';
 
 /**

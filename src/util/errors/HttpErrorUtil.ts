@@ -2,7 +2,7 @@ import { RepresentationMetadata } from '../../http/representation/Representation
 import { toPredicateTerm } from '../TermUtil';
 import { SOLID_ERROR_TERM } from '../Vocabularies';
 import { BadRequestHttpError } from './BadRequestHttpError';
-import { createErrorMessage } from './ErrorUtil';
+import { createErrorMessage, isError } from './ErrorUtil';
 import { HttpError } from './HttpError';
 import { InternalServerError } from './InternalServerError';
 import Dict = NodeJS.Dict;
@@ -45,6 +45,24 @@ export function extractErrorTerms(metadata: RepresentationMetadata): Dict<string
 }
 
 /**
+ * Converts an error in any shape to an {@link HttpError}.
+ * For an {@link AggregateError} all the source errors will be combined
+ * into a single HttpError with a status code that makes sense based on the sources.
+ */
+export function toHttpError(error: unknown): HttpError {
+  if (HttpError.isInstance(error)) {
+    return error;
+  }
+  if (isError(error)) {
+    if (error instanceof AggregateError) {
+      return createAggregateError(error.errors as Error[]);
+    }
+    return new InternalServerError(error.message);
+  }
+  return new InternalServerError(createErrorMessage(error));
+}
+
+/**
  * Combines a list of errors into a single HttpError.
  * Status code depends on the input errors. If they all share the same status code that code will be re-used.
  * If they are all within the 4xx range, 400 will be used, otherwise 500.
@@ -52,8 +70,7 @@ export function extractErrorTerms(metadata: RepresentationMetadata): Dict<string
  * @param errors - Errors to combine.
  */
 export function createAggregateError(errors: Error[]): HttpError {
-  const httpErrors = errors.map((error): HttpError =>
-    HttpError.isInstance(error) ? error : new InternalServerError(createErrorMessage(error)));
+  const httpErrors = errors.map(toHttpError);
   const messages = httpErrors.map((error: Error): string => error.message).filter((msg): boolean => msg.length > 0);
 
   // Let message depend on the messages that were present.

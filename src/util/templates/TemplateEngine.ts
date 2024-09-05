@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 import Dict = NodeJS.Dict;
 
 export type Template = TemplateFileName | TemplateString | TemplatePath;

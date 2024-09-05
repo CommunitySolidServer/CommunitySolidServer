@@ -1,8 +1,8 @@
+import type { AsyncHandlerInput, AsyncHandlerOutput } from 'asynchronous-handlers';
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import type { AsyncHandlerInput, AsyncHandlerOutput } from '../../util/handlers/AsyncHandler';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import { trimTrailingSlashes } from '../../util/PathUtil';
 
 export interface BaseRouterHandlerArgs<T extends AsyncHandler<unknown, unknown>> {

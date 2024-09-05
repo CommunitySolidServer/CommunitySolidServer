@@ -2,6 +2,8 @@
   "AccessMap",
   "Adapter",
   "AlgJwk",
+  "AsyncHandlerInput",
+  "AsyncHandlerOutput",
   "BaseActivityEmitter",
   "BaseChannelType",
   "BaseHttpError",
@@ -40,7 +42,6 @@
   "TransformOptions",
   "ValuePreferencesArg",
   "VariableBindings",
-  "UnionHandler",
   "VirtualObject",
   "WrappedSetMultiMap",
   "YargsOptions"

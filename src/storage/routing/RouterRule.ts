@@ -1,6 +1,6 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Representation } from '../../http/representation/Representation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { ResourceStore } from '../ResourceStore';
 
 /**

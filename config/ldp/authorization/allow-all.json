@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": [
@@ -13,7 +16,9 @@
     {
       "comment": "Everything is allowed, so there are no auth-specific resources.",
       "@id": "urn:solid-server:default:AuthResourceHttpHandler",
-      "@type": "UnsupportedAsyncHandler"
+      "@type": "StaticThrowHandler",
+      "onlyHandle": false,
+      "factory": { "@id": "urn:solid-server:default:UnsupportedErrorFactory" }
     }
   ]
 }

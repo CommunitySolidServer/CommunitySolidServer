@@ -1,5 +1,5 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Credentials } from '../authentication/Credentials';
-import { AsyncHandler } from '../util/handlers/AsyncHandler';
 import type { AccessMap, PermissionMap } from './permissions/Permissions';
 
 export interface AuthorizerInput {

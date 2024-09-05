@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "Caches the requested modes based on the incoming operation.",
@@ -16,7 +19,7 @@
     {
       "comment": "Determines required modes based on HTTP methods.",
       "@id": "urn:solid-server:default:HttpModesExtractor",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [
         {
           "comment": "Extract access modes for PATCH requests based on the request body.",
@@ -35,7 +38,11 @@
         },
         {
           "@type": "StaticThrowHandler",
-          "error": { "@type": "MethodNotAllowedHttpError" }
+          "onlyHandle": true,
+          "factory": {
+            "@type": "ClassErrorFactory",
+            "error": { "@type": "MethodNotAllowedHttpError" }
+          }
         }
       ]
     },
@@ -47,7 +54,7 @@
         "@type": "MethodFilterHandler",
         "methods": [ "PATCH" ],
         "source": {
-          "@type": "WaterfallHandler",
+          "@type": "StatusWaterfallHandler",
           "handlers": [
             {
               "@type": "N3PatchModesExtractor",
@@ -59,7 +66,11 @@
             },
             {
               "@type": "StaticThrowHandler",
-              "error": { "@type": "UnsupportedMediaTypeHttpError" }
+              "onlyHandle": true,
+              "factory": {
+                "@type": "ClassErrorFactory",
+                "error": { "@type": "UnsupportedMediaTypeHttpError" }
+              }
             }
           ]
         }

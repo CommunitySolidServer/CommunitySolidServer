@@ -1,6 +1,6 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { NotImplementedHttpError } from '../errors/NotImplementedHttpError';
-import { AsyncHandler } from './AsyncHandler';
 
 /**
  * This handler will pass all requests to the wrapped handler,

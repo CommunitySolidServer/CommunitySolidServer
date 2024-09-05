@@ -1,7 +1,7 @@
+import type { AsyncHandler } from 'asynchronous-handlers';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
 import {
   MethodFilterHandler,
 } from '../../../../src/util/handlers/MethodFilterHandler';

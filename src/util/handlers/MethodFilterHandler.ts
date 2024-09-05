@@ -1,5 +1,5 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import { NotImplementedHttpError } from '../errors/NotImplementedHttpError';
-import { AsyncHandler } from './AsyncHandler';
 
 // The formats from which we can detect the method
 type InType = { method: string } | { request: { method: string }} | { operation: { method: string }};

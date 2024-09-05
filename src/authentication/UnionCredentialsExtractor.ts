@@ -1,4 +1,4 @@
-import { UnionHandler } from '../util/handlers/UnionHandler';
+import { StatusUnionHandler } from '../util/handlers/StatusUnionHandler';
 import type { Credentials } from './Credentials';
 import type { CredentialsExtractor } from './CredentialsExtractor';
 
@@ -7,7 +7,7 @@ import type { CredentialsExtractor } from './CredentialsExtractor';
  * If multiple of these extractors return a value for the same key,
  * the last result will be used.
  */
-export class UnionCredentialsExtractor extends UnionHandler<CredentialsExtractor> {
+export class UnionCredentialsExtractor extends StatusUnionHandler<CredentialsExtractor> {
   public constructor(extractors: CredentialsExtractor[]) {
     super(extractors);
   }

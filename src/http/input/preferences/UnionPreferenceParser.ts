@@ -1,5 +1,5 @@
 import { InternalServerError } from '../../../util/errors/InternalServerError';
-import { UnionHandler } from '../../../util/handlers/UnionHandler';
+import { StatusUnionHandler } from '../../../util/handlers/StatusUnionHandler';
 import type { RepresentationPreferences } from '../../representation/RepresentationPreferences';
 import type { PreferenceParser } from './PreferenceParser';
 
@@ -7,7 +7,7 @@ import type { PreferenceParser } from './PreferenceParser';
  * Combines the results of multiple {@link PreferenceParser}s.
  * Will throw an error if multiple parsers return a range as these can't logically be combined.
  */
-export class UnionPreferenceParser extends UnionHandler<PreferenceParser> {
+export class UnionPreferenceParser extends StatusUnionHandler<PreferenceParser> {
   public constructor(parsers: PreferenceParser[]) {
     super(parsers, false, false);
   }

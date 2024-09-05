@@ -1,5 +1,4 @@
 import { types } from 'node:util';
-import { createAggregateError } from './errors/HttpErrorUtil';
 
 export type PromiseOrValue<T> = T | Promise<T>;
 
@@ -49,27 +48,4 @@ export async function promiseSome(predicates: Promise<boolean>[]): Promise<boole
     Promise.all(predicates.map(async(predicate): Promise<void> => predicate.then(resolveIfTrue, noop)))
       .then((): void => resolve(false), noop);
   });
-}
-
-/**
- * Obtains the values of all fulfilled promises.
- * If there are rejections (and `ignoreErrors` is false), throws a combined error of all rejected promises.
- */
-export async function allFulfilled<T>(promises: Promise<T> [], ignoreErrors = false): Promise<T[]> {
-  // Collect values and errors
-  const values: T[] = [];
-  const errors: Error[] = [];
-  for (const result of await Promise.allSettled(promises)) {
-    if (result.status === 'fulfilled') {
-      values.push(result.value);
-    } else if (!ignoreErrors) {
-      errors.push(result.reason as Error);
-    }
-  }
-
-  // Either throw or return
-  if (errors.length > 0) {
-    throw createAggregateError(errors);
-  }
-  return values;
 }

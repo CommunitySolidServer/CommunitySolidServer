@@ -1,5 +1,5 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { HttpRequest } from '../../../server/HttpRequest';
-import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import type { Representation } from '../../representation/Representation';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 

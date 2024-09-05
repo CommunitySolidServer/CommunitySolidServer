@@ -1,4 +1,4 @@
-import { UnionHandler } from '../util/handlers/UnionHandler';
+import { StatusUnionHandler } from '../util/handlers/StatusUnionHandler';
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import { getDefault } from '../util/map/MapUtil';
 import type { PermissionReader } from './PermissionReader';
@@ -8,7 +8,7 @@ import type { PermissionMap, PermissionSet } from './permissions/Permissions';
  * Combines the results of multiple PermissionReaders.
  * Every permission in every credential type is handled according to the rule `false` \> `true` \> `undefined`.
  */
-export class UnionPermissionReader extends UnionHandler<PermissionReader> {
+export class UnionPermissionReader extends StatusUnionHandler<PermissionReader> {
   public constructor(readers: PermissionReader[]) {
     super(readers);
   }

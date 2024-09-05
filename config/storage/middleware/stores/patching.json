@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "Allows for PATCH operations on stores that don't have native support.",
@@ -9,7 +12,7 @@
         "@id": "urn:solid-server:default:PatchHandler",
         "@type": "RepresentationPatchHandler",
         "patcher": {
-          "@type": "WaterfallHandler",
+          "@type": "StatusWaterfallHandler",
           "handlers": [
             {
               "@type": "ConvertingPatcher",
@@ -20,7 +23,11 @@
             },
             {
               "@type": "StaticThrowHandler",
-              "error": { "@type": "UnsupportedMediaTypeHttpError" }
+              "onlyHandle": true,
+              "factory": {
+                "@type": "ClassErrorFactory",
+                "error": { "@type": "UnsupportedMediaTypeHttpError" }
+              }
             }
           ]
         }
@@ -34,7 +41,7 @@
     },
     {
       "@id": "urn:solid-server:default:PatchHandler_RDFStore",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:PatchHandler_ImmutableMetadata" },
         { "@id": "urn:solid-server:default:PatchHandler_RDF" }
@@ -83,7 +90,7 @@
     {
       "comment": "Dedicated handlers that apply specific types of patch documents",
       "@id": "urn:solid-server:default:PatchHandler_RDF",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [
         { "@type": "N3Patcher" },
         { "@type": "SparqlUpdatePatcher" }

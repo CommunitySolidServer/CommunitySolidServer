@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "Generates the Notification objects and caches them based on the topic.",
@@ -10,7 +13,7 @@
         "@type": "StateNotificationGenerator",
         "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
         "source": {
-          "@type": "WaterfallHandler",
+          "@type": "StatusWaterfallHandler",
           "handlers": [
             { "@type": "DeleteNotificationGenerator" },
             {

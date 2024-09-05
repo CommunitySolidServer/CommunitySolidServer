@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../../src/util/handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 
 export class StaticAsyncHandler<TOut> extends AsyncHandler<any, TOut> {
   private readonly canHandleStatic: boolean;

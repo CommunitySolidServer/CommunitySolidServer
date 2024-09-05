@@ -1,7 +1,7 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { KoaContextWithOIDC } from '../../../templates/types/oidc-provider';
 import type { Operation } from '../../http/Operation';
 import type { Representation } from '../../http/representation/Representation';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 // OIDC library does not directly export the Interaction type
 export type Interaction = NonNullable<KoaContextWithOIDC['oidc']['entities']['Interaction']>;

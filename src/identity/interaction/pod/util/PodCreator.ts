@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../../../../util/handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 
 export interface PodCreatorInput {
   /**

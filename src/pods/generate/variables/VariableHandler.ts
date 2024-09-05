@@ -1,5 +1,5 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { ResourceIdentifier } from '../../../http/representation/ResourceIdentifier';
-import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import type { PodSettings } from '../../settings/PodSettings';
 
 /**

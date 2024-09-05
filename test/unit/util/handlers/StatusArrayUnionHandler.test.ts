@@ -1,23 +1,23 @@
-import { ArrayUnionHandler } from '../../../../src/util/handlers/ArrayUnionHandler';
-import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
+import type { AsyncHandler } from 'asynchronous-handlers';
+import { StatusArrayUnionHandler } from '../../../../src/util/handlers/StatusArrayUnionHandler';
 
-describe('An ArrayUnionHandler', (): void => {
+describe('A StatusArrayUnionHandler', (): void => {
   let handlers: jest.Mocked<AsyncHandler<string, number[]>>[];
-  let handler: ArrayUnionHandler<AsyncHandler<string, number[]>>;
+  let handler: StatusArrayUnionHandler<AsyncHandler<string, number[]>>;
 
   beforeEach(async(): Promise<void> => {
     handlers = [
       {
         canHandle: jest.fn(),
         handle: jest.fn().mockResolvedValue([ 1, 2 ]),
-      } as any,
+      } satisfies Partial<AsyncHandler<string, number[]>> as any,
       {
         canHandle: jest.fn(),
         handle: jest.fn().mockResolvedValue([ 3, 4 ]),
-      } as any,
+      } satisfies Partial<AsyncHandler<string, number[]>> as any,
     ];
 
-    handler = new ArrayUnionHandler(handlers);
+    handler = new StatusArrayUnionHandler(handlers);
   });
 
   it('merges the array results.', async(): Promise<void> => {

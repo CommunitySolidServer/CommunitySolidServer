@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "@id": "urn:solid-server:default:StreamingHTTP2023Route",
@@ -43,7 +46,7 @@
     {
       "comment": "Add the router to notification type handler",
       "@id": "urn:solid-server:default:NotificationTypeHandler",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:StreamingHttp2023Router" }
       ]

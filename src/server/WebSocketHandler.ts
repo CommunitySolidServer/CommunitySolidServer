@@ -1,5 +1,5 @@
 import type { WebSocket } from 'ws';
-import { AsyncHandler } from '../util/handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { HttpRequest } from './HttpRequest';
 
 export interface WebSocketHandlerInput {

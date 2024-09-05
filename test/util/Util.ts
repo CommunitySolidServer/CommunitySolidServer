@@ -106,6 +106,19 @@ export function compareMaps<TKey, TVal>(map1: Map<TKey, TVal>, map2: Map<TKey, T
 }
 
 /**
+ * Returns the error thrown by the given function.
+ * Throws an error if the function does not throw.
+ */
+export async function getError(fn: () => any): Promise<Error> {
+  try {
+    await fn();
+  } catch (err: unknown) {
+    return err as Error;
+  }
+  throw new Error('Function did not throw');
+}
+
+/**
  * Mocks (some) functions of the fs system library.
  * It is important that you call `jest.mock('node:fs');` in your test file before calling this!!!
  *

@@ -1,6 +1,6 @@
+import type { AsyncHandler } from 'asynchronous-handlers';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
 import { ConditionalHandler } from '../../../../src/util/handlers/ConditionalHandler';
 
 describe('A ConditionalHandler', (): void => {

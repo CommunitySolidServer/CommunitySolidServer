@@ -1,6 +1,6 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Patch } from '../../http/representation/Patch';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { ChangeMap, ResourceStore } from '../ResourceStore';
 
 export type PatchHandlerInput<T extends ResourceStore = ResourceStore> = {

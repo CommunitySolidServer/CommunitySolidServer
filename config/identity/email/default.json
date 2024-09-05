@@ -1,11 +1,15 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "The default configuration does not contain credentials for an email client. In production systems, you likely want to set up your own.",
       "@id": "urn:solid-server:default:EmailSender",
-      "@type": "UnsupportedAsyncHandler",
-      "errorMessage": "No email server is configured."
+      "@type": "StaticThrowHandler",
+      "onlyHandle": false,
+      "factory": { "@id": "urn:solid-server:default:UnsupportedErrorFactory" }
     }
   ]
 }

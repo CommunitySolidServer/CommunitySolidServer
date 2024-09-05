@@ -1,5 +1,5 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Operation } from '../../http/Operation';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { AccessMap } from './Permissions';
 
 /**

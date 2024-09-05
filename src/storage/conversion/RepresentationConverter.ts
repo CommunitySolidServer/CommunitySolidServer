@@ -1,7 +1,7 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Representation } from '../../http/representation/Representation';
 import type { RepresentationPreferences } from '../../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 export interface RepresentationConverterArgs {
   /**
