@@ -1,6 +1,6 @@
 import type { Store, Term } from 'n3';
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Credentials } from '../../authentication/Credentials';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 /**
  * Performs an authorization check against the given acl resource.

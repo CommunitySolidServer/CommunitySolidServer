@@ -1,5 +1,5 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Representation } from '../../../http/representation/Representation';
-import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import type { Notification } from '../Notification';
 import type { NotificationChannel } from '../NotificationChannel';
 

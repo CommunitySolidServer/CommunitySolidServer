@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "Wraps around the main error handler as a fallback in case something goes wrong.",
@@ -12,7 +15,7 @@
         "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
         "errorHandler": {
           "@id": "urn:solid-server:default:WaterfallErrorHandler",
-          "@type": "WaterfallHandler",
+          "@type": "StatusWaterfallHandler",
           "handlers": [
             {
               "comment": "Redirects are created internally by throwing a specific error; this handler converts them to the correct response.",

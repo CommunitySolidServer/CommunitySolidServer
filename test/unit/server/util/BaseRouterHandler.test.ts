@@ -1,7 +1,7 @@
+import type { AsyncHandler } from 'asynchronous-handlers';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { BaseRouterHandlerArgs } from '../../../../src/server/util/BaseRouterHandler';
 import { BaseRouterHandler } from '../../../../src/server/util/BaseRouterHandler';
-import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
 
 class SimpleRouterHandler extends BaseRouterHandler<AsyncHandler<{ method: string; target: ResourceIdentifier }>> {
   public constructor(args: BaseRouterHandlerArgs<AsyncHandler<{ method: string; target: ResourceIdentifier }>>) {

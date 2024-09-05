@@ -1,5 +1,5 @@
 import type { Server } from 'node:http';
-import { AsyncHandler } from '../util/handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 
 /**
  * Configures a {@link Server} by attaching listeners for specific events.

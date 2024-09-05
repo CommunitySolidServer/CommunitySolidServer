@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "Handles the generation and serialization of notifications for WebSocketChannel2023.",
@@ -23,7 +26,7 @@
 
     {
       "@id": "urn:solid-server:default:NotificationHandler",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:WebSocket2023NotificationHandler" }
       ]

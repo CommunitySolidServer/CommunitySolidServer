@@ -1,6 +1,6 @@
 import type { Quad } from '@rdfjs/types';
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 /**
  * Generates Quads that need to be added to the given storage description resource.

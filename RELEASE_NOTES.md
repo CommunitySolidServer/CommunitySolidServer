@@ -1,5 +1,43 @@
 # Community Solid Server release notes
 
+## v8.0.0
+
+### New features
+
+- ...
+
+### Data migration
+
+No actions are required to migrate data.
+
+### Configuration changes
+
+You might need to make changes to your v7 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/8.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+
+- ...
+
+The following changes are relevant for v7 custom configs that replaced certain features.
+
+- Due to extracting the core handlers as an external library,
+  the CSS had to adapt some of them resulting in new class names.
+  The following renames have happened, meaning that if you used or extended a component of one of the following types,
+  you will have to update the `@type` in your configuration.
+    - `ArrayUnionHandler` -> `StatusArrayUnionHandler`
+    - `BooleanHandler` -> `StatusBooleanHandler`
+    - `UnionHandler` -> `StatusUnionHandler`
+    - `WaterfallHandler` -> `StatusWaterfallHandler`
+
+### Interface changes
+
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+
+- The handler changes discussed above also impact the code if you used one there.
+
 ## v7.0.0
 
 ### New features

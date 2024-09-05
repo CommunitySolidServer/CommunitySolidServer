@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Representation } from '../representation/Representation';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 

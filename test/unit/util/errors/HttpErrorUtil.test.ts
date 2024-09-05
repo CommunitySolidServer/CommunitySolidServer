@@ -4,7 +4,9 @@ import {
   createAggregateError,
   errorTermsToMetadata,
   extractErrorTerms,
+  toHttpError,
 } from '../../../../src/util/errors/HttpErrorUtil';
+import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { toPredicateTerm } from '../../../../src/util/TermUtil';
 
 describe('HttpErrorUtil', (): void => {
@@ -45,6 +47,23 @@ describe('HttpErrorUtil', (): void => {
         test: 'apple',
         test2: 'pear',
       });
+    });
+  });
+
+  describe('#toHttpError', (): void => {
+    it('keeps the error if it is an HttpError.', async(): Promise<void> => {
+      const error = new InternalServerError('internal');
+      expect(toHttpError(error)).toBe(error);
+    });
+
+    it('converts an error to an InternalServerError.', async(): Promise<void> => {
+      const error = new Error('error');
+      expect(toHttpError(error)).toEqual(new InternalServerError('error'));
+    });
+
+    it('converts unknown data to an InternalServerError.', async(): Promise<void> => {
+      const error = 'error';
+      expect(toHttpError(error)).toEqual(new InternalServerError('Unknown error: error'));
     });
   });
 

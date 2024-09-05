@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Operation } from '../Operation';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 

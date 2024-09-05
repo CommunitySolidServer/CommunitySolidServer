@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "Handles the password link details such as update and delete.",
@@ -12,7 +15,7 @@
       },
       "source": {
         "@id": "urn:solid-server:default:PasswordResourceHandler",
-        "@type": "WaterfallHandler",
+        "@type": "StatusWaterfallHandler",
         "handlers": [
           {
             "@type": "ViewInteractionHandler",
@@ -37,7 +40,7 @@
 
     {
       "@id": "urn:solid-server:default:InteractionRouteHandler",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [{ "@id": "urn:solid-server:default:AccountPasswordIdRouter" }]
     },
 

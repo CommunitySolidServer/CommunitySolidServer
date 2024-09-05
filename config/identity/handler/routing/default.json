@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "import": [
     "css:config/identity/handler/routing/account/main.json",
     "css:config/identity/handler/routing/client-credentials/create.json",
@@ -17,7 +20,7 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:InteractionHandler",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [
         {
           "comment": "Returns the relevant HTML pages for the interactions when needed.",
@@ -78,7 +81,7 @@
     {
       "comment": "Contains all JsonInteractionHandlers that can potentially handle the input request.",
       "@id": "urn:solid-server:default:InteractionRouteHandler",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": []
     }
   ]

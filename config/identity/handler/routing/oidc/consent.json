@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "Handles the interaction that occurs when a logged in user wants to authenticate with a new app.",
@@ -13,7 +16,7 @@
       },
       "source": {
         "@id": "urn:solid-server:default:ConsentHandler",
-        "@type": "WaterfallHandler",
+        "@type": "StatusWaterfallHandler",
         "handlers": [
           {
             "@type": "MethodFilterHandler",
@@ -37,7 +40,7 @@
 
     {
       "@id": "urn:solid-server:default:InteractionRouteHandler",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [{ "@id": "urn:solid-server:default:OidcConsentRouter" }]
     },
 

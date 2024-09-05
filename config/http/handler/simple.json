@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "import": [
     "css:config/http/handler/handlers/storage-description.json"
   ],
@@ -12,7 +15,7 @@
         { "@id": "urn:solid-server:default:Middleware" },
         {
           "@id": "urn:solid-server:default:BaseHttpHandler",
-          "@type": "WaterfallHandler",
+          "@type": "StatusWaterfallHandler",
           "handlers": [
             { "@id": "urn:solid-server:default:StaticAssetHandler" },
             { "@id": "urn:solid-server:default:StorageDescriptionHandler" },

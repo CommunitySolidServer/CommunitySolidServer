@@ -1,8 +1,8 @@
 import { getLoggerFor } from 'global-logger-factory';
+import { StaticHandler } from 'asynchronous-handlers';
 import type { RepresentationMetadata } from '../../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../http/representation/ResourceIdentifier';
 import { createErrorMessage } from '../../../util/errors/ErrorUtil';
-import { StaticHandler } from '../../../util/handlers/StaticHandler';
 import type { AS, VocabularyTerm } from '../../../util/Vocabularies';
 import type { ActivityEmitter } from '../ActivityEmitter';
 import type { NotificationHandler } from '../NotificationHandler';

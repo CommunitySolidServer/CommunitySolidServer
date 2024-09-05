@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "import": [
     "css:config/util/representation-conversion/converters/content-type-replacer.json",
     "css:config/util/representation-conversion/converters/dynamic-json-template.json",
@@ -13,7 +16,7 @@
     {
       "comment": "Handles data conversion when required.",
       "@id": "urn:solid-server:default:RepresentationConverter",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:DynamicJsonToTemplateConverter" },
         {
@@ -38,7 +41,7 @@
     {
       "comment": "Converts either to a default UI or to a representation.",
       "@id": "urn:solid-server:default:UiEnabledConverter",
-      "@type": "WaterfallHandler",
+      "@type": "StatusWaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:DefaultUiConverter" },
         { "@id": "urn:solid-server:default:RepresentationConverter" }

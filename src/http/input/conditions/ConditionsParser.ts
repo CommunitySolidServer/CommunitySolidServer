@@ -1,6 +1,6 @@
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import type { Conditions } from '../../../storage/conditions/Conditions';
-import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 
 /**
  * Creates a Conditions object based on the input HttpRequest.

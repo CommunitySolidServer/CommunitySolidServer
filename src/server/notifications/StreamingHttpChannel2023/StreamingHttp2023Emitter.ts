@@ -1,6 +1,6 @@
 import { getLoggerFor } from 'global-logger-factory';
+import { AsyncHandler } from 'asynchronous-handlers';
 import type { Representation } from '../../../http/representation/Representation';
-import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import { readableToString } from '../../../util/StreamUtil';
 import type { NotificationChannel } from '../NotificationChannel';
 import type { StreamingHttpMap } from './StreamingHttpMap';

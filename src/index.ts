@@ -554,21 +554,13 @@ export * from './util/errors/UnauthorizedHttpError';
 export * from './util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Handlers
-export * from './util/handlers/ArrayUnionHandler';
-export * from './util/handlers/AsyncHandler';
-export * from './util/handlers/BooleanHandler';
-export * from './util/handlers/CachedHandler';
 export * from './util/handlers/ConditionalHandler';
-export * from './util/handlers/HandlerUtil';
 export * from './util/handlers/MethodFilterHandler';
-export * from './util/handlers/ParallelHandler';
-export * from './util/handlers/ProcessHandler';
-export * from './util/handlers/SequenceHandler';
-export * from './util/handlers/StaticHandler';
-export * from './util/handlers/StaticThrowHandler';
-export * from './util/handlers/UnionHandler';
-export * from './util/handlers/UnsupportedAsyncHandler';
-export * from './util/handlers/WaterfallHandler';
+export * from './util/handlers/StatusArrayUnionHandler';
+export * from './util/handlers/StatusBooleanHandler';
+export * from './util/handlers/StatusHandler';
+export * from './util/handlers/StatusUnionHandler';
+export * from './util/handlers/StatusWaterfallHandler';
 
 // Util/Identifiers
 export * from './util/identifiers/BaseIdentifierStrategy';

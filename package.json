@@ -101,6 +101,7 @@
     "@types/yargs": "^17.0.28",
     "arrayify-stream": "^2.0.1",
     "async-lock": "^1.4.0",
+    "asynchronous-handlers": "^1.0.2",
     "bcryptjs": "^2.4.3",
     "componentsjs": "^6.0.1",
     "cookie": "^0.5.0",

@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "import": [
     "css:config/app/init/initializers/base-url.json",
     "css:config/app/init/initializers/logger.json",
@@ -26,7 +29,6 @@
       "@id": "urn:solid-server:default:PrimaryInitializer",
       "@type": "ProcessHandler",
       "executeOnPrimary": true,
-      "clusterManager": { "@id": "urn:solid-server:default:ClusterManager" },
       "source": {
         "comment": "These initializers will all be executed sequentially when starting the server.",
         "@id": "urn:solid-server:default:PrimarySequenceInitializer",
@@ -47,7 +49,6 @@
       "@id": "urn:solid-server:default:WorkerInitializer",
       "@type": "ProcessHandler",
       "executeOnPrimary": false,
-      "clusterManager": { "@id": "urn:solid-server:default:ClusterManager" },
       "source": {
         "comment": "These initializers will all be executed sequentially when starting the server.",
         "@id": "urn:solid-server:default:WorkerSequenceInitializer",
