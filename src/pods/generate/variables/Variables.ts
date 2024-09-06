@@ -1,4 +1,4 @@
-import { createVocabulary } from '../../../util/Vocabularies';
+import { createVocabulary } from 'rdf-vocabulary';
 
 export const TEMPLATE = createVocabulary(
   'urn:solid-server:template:',

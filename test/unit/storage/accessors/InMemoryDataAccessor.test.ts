@@ -114,7 +114,7 @@ describe('An InMemoryDataAccessor', (): void => {
       expect(metadata.identifier.value).toBe(`${base}resource`);
       const quads = metadata.quads();
       expect(quads).toHaveLength(3);
-      expect(metadata.get(RDF.terms.type)).toEqual(LDP.terms.Resource);
+      expect(metadata.get(RDF.terms.type)).toEqualRdfTerm(LDP.terms.Resource);
       expect(metadata.contentType).toBe('text/turtle');
       expect(metadata.get(POSIX.terms.size)?.value).toBe('4');
     });

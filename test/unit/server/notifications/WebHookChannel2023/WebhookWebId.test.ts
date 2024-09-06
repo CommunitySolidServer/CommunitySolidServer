@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { DataFactory, Parser } from 'n3';
 import type { Operation } from '../../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
@@ -34,7 +35,7 @@ describe('A WebhookWebId', (): void => {
     expect(turtle.data).toBeDefined();
     const quads = new Parser({ baseIRI: operation.target.path }).parse(await readableToString(turtle.data!));
     expect(quads).toHaveLength(1);
-    expect(quads).toEqual([ quad(
+    expect(quads).toEqualRdfQuadArray([ quad(
       namedNode('http://example.com/.notifications/webhooks/webid'),
       SOLID.terms.oidcIssuer,
       namedNode('http://example.com'),

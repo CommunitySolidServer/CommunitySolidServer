@@ -133,6 +133,7 @@
     "rdf-string": "^1.6.3",
     "rdf-terms": "^1.11.0",
     "rdf-validate-shacl": "^0.4.5",
+    "rdf-vocabulary": "^1.0.0",
     "sparqlalgebrajs": "^4.3.0",
     "sparqljs": "^3.7.1",
     "url-join": "^4.0.1",
