@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { fetch } from 'cross-fetch';
 import type { NamedNode } from 'n3';
 import { DataFactory, Parser, Store } from 'n3';
@@ -304,8 +305,8 @@ describe.each(stores)('A server supporting WebSocketChannel2023 using %s', (name
     const parser = new Parser({ baseIRI: subscriptionUrl });
     const quads = new Store(parser.parse(await response.text()));
 
-    expect(quads.getObjects(null, RDF.terms.type, null)).toEqual([ NOTIFY.terms.WebSocketChannel2023 ]);
-    expect(quads.getObjects(null, NOTIFY.terms.topic, null)).toEqual([ namedNode(topic) ]);
+    expect(quads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ NOTIFY.terms.WebSocketChannel2023 ]);
+    expect(quads.getObjects(null, NOTIFY.terms.topic, null)).toEqualRdfTermArray([ namedNode(topic) ]);
     expect(quads.countQuads(null, NOTIFY.terms.receiveFrom, null, null)).toBe(1);
   });
 

@@ -14,10 +14,10 @@ describe('A MonitoringStore', (): void => {
   const idNew = { path: 'http://example.org/foo/bar/new' };
   const idOld = { path: 'http://example.org/foo/bar/old' };
 
-  let changedCallback: () => void;
-  let createdCallback: () => void;
-  let updatedCallback: () => void;
-  let deletedCallback: () => void;
+  let changedCallback: jest.Mock;
+  let createdCallback: jest.Mock;
+  let updatedCallback: jest.Mock;
+  let deletedCallback: jest.Mock;
 
   const addResourceReturnMock: ChangeMap = new IdentifierMap([
     [ idNew, new RepresentationMetadata({ [SOLID_AS.activity]: AS.terms.Create }) ],
@@ -81,8 +81,14 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith(id, AS.terms.Update, addResourceReturnMock.get(id));
-    expect(changedCallback).toHaveBeenCalledWith(idNew, AS.terms.Create, addResourceReturnMock.get(idNew));
+    expect(changedCallback).toHaveBeenCalledWith(id, expect.objectContaining({
+      termType: 'NamedNode',
+      value: AS.Update,
+    }), addResourceReturnMock.get(id));
+    expect(changedCallback).toHaveBeenCalledWith(idNew, expect.objectContaining({
+      termType: 'NamedNode',
+      value: AS.Create,
+    }), addResourceReturnMock.get(idNew));
     expect(createdCallback).toHaveBeenCalledTimes(1);
     expect(createdCallback).toHaveBeenCalledWith(idNew, addResourceReturnMock.get(idNew));
     expect(updatedCallback).toHaveBeenCalledTimes(1);
@@ -102,7 +108,10 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(1);
-    expect(changedCallback).toHaveBeenCalledWith(idNew, AS.terms.Update, setRepresentationReturnMock.get(idNew));
+    expect(changedCallback).toHaveBeenCalledWith(idNew, expect.objectContaining({
+      termType: 'NamedNode',
+      value: AS.Update,
+    }), setRepresentationReturnMock.get(idNew));
     expect(createdCallback).toHaveBeenCalledTimes(0);
     expect(updatedCallback).toHaveBeenCalledTimes(1);
     expect(updatedCallback).toHaveBeenCalledWith(idNew, setRepresentationReturnMock.get(idNew));
@@ -121,8 +130,14 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(2);
-    expect(changedCallback).toHaveBeenCalledWith(id, AS.terms.Update, deleteResourceReturnMock.get(id));
-    expect(changedCallback).toHaveBeenCalledWith(idNew, AS.terms.Delete, deleteResourceReturnMock.get(idNew));
+    expect(changedCallback).toHaveBeenCalledWith(id, expect.objectContaining({
+      termType: 'NamedNode',
+      value: AS.Update,
+    }), deleteResourceReturnMock.get(id));
+    expect(changedCallback).toHaveBeenCalledWith(idNew, expect.objectContaining({
+      termType: 'NamedNode',
+      value: AS.Delete,
+    }), deleteResourceReturnMock.get(idNew));
     expect(createdCallback).toHaveBeenCalledTimes(0);
     expect(updatedCallback).toHaveBeenCalledTimes(1);
     expect(updatedCallback).toHaveBeenCalledWith(id, deleteResourceReturnMock.get(id));
@@ -142,9 +157,18 @@ describe('A MonitoringStore', (): void => {
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(3);
-    expect(changedCallback).toHaveBeenCalledWith(idNew, AS.terms.Create, modifyResourceReturnMock.get(idNew));
-    expect(changedCallback).toHaveBeenCalledWith(id, AS.terms.Update, modifyResourceReturnMock.get(id));
-    expect(changedCallback).toHaveBeenCalledWith(idOld, AS.terms.Delete, modifyResourceReturnMock.get(idOld));
+    expect(changedCallback).toHaveBeenCalledWith(id, expect.objectContaining({
+      termType: 'NamedNode',
+      value: AS.Update,
+    }), modifyResourceReturnMock.get(id));
+    expect(changedCallback).toHaveBeenCalledWith(idNew, expect.objectContaining({
+      termType: 'NamedNode',
+      value: AS.Create,
+    }), modifyResourceReturnMock.get(idNew));
+    expect(changedCallback).toHaveBeenCalledWith(idOld, expect.objectContaining({
+      termType: 'NamedNode',
+      value: AS.Delete,
+    }), modifyResourceReturnMock.get(idOld));
     expect(createdCallback).toHaveBeenCalledTimes(1);
     expect(createdCallback).toHaveBeenCalledWith(idNew, modifyResourceReturnMock.get(idNew));
     expect(updatedCallback).toHaveBeenCalledTimes(1);

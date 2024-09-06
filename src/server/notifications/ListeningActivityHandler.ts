@@ -1,9 +1,10 @@
 import { getLoggerFor } from 'global-logger-factory';
 import { StaticHandler } from 'asynchronous-handlers';
+import type { VocabularyTerm } from 'rdf-vocabulary';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
-import type { AS, VocabularyTerm } from '../../util/Vocabularies';
+import type { AS } from '../../util/Vocabularies';
 import type { ActivityEmitter } from './ActivityEmitter';
 import type { NotificationChannelStorage } from './NotificationChannelStorage';
 import type { NotificationHandler } from './NotificationHandler';

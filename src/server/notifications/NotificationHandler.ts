@@ -1,7 +1,8 @@
 import { AsyncHandler } from 'asynchronous-handlers';
+import type { VocabularyTerm } from 'rdf-vocabulary';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import type { AS, VocabularyTerm } from '../../util/Vocabularies';
+import type { AS } from '../../util/Vocabularies';
 import type { NotificationChannel } from './NotificationChannel';
 
 export interface NotificationHandlerInput {
