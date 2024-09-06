@@ -99,7 +99,7 @@
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.5.7",
     "@types/yargs": "^17.0.28",
-    "arrayify-stream": "^2.0.1",
+    "arrayify-stream": "^3.0.0",
     "async-lock": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "componentsjs": "^6.0.1",
