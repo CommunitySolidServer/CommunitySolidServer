@@ -36,7 +36,12 @@ The following changes are relevant for v7 custom configs that replaced certain f
 
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 
-- The handler changes discussed above also impact the code if you used one there.
+- Several parts of the codebase have been exported to external libraries,
+  so if you depended on these you will have to add the new dependencies.
+    - Everything related to logging: [global-logger-factory](https://www.npmjs.com/package/global-logger-factory).
+    - `AsyncHandler` and utility handlers such as `WaterfallHandler`: [asynchronous-handlers`](https://www.npmjs.com/package/asynchronous-handlers).
+    - Utilities for creating vocabularies: [rdf-vocabulary](https://www.npmjs.com/package/rdf-vocabulary).
+- The handler changes discussed above also impact the code if you depended on these.
 
 ## v7.0.0
 
