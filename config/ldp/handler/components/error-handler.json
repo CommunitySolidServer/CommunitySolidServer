@@ -7,20 +7,26 @@
       "@type": "SafeErrorHandler",
       "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
       "errorHandler": {
-        "@type": "WaterfallHandler",
-        "handlers": [
-          {
-            "comment": "Internally redirects are created by throwing a specific error, this handler converts them to the correct response.",
-            "@type": "RedirectingErrorHandler"
-          },
-          {
-            "comment": "Converts an Error object into a representation for an HTTP response.",
-            "@type": "ConvertingErrorHandler",
-            "converter": { "@id": "urn:solid-server:default:UiEnabledConverter" },
-            "preferenceParser": { "@id": "urn:solid-server:default:PreferenceParser" },
-            "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
-          }
-        ]
+        "@id": "urn:solid-server:default:TargetExtractorErrorHandler",
+        "@type": "TargetExtractorErrorHandler",
+        "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+        "errorHandler": {
+          "@id": "urn:solid-server:default:WaterfallErrorHandler",
+          "@type": "WaterfallHandler",
+          "handlers": [
+            {
+              "comment": "Redirects are created internally by throwing a specific error; this handler converts them to the correct response.",
+              "@type": "RedirectingErrorHandler"
+            },
+            {
+              "comment": "Converts an Error object into a representation for an HTTP response.",
+              "@type": "ConvertingErrorHandler",
+              "converter": { "@id": "urn:solid-server:default:UiEnabledConverter" },
+              "preferenceParser": { "@id": "urn:solid-server:default:PreferenceParser" },
+              "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
+            }
+          ]
+        }
       }
     }
   ]

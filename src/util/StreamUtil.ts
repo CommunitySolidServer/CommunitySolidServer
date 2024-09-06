@@ -10,6 +10,7 @@ import { isHttpRequest } from '../server/HttpRequest';
 import { InternalServerError } from './errors/InternalServerError';
 import type { Guarded } from './GuardedStream';
 import { guardStream } from './GuardedStream';
+import type { Json } from './Json';
 import type { PromiseOrValue } from './PromiseUtil';
 
 export const endOfStream = promisify(eos);
@@ -18,6 +19,7 @@ const logger = getLoggerFor('StreamUtil');
 
 /**
  * Joins all strings of a stream.
+ *
  * @param stream - Stream of strings.
  *
  * @returns The joined string.
@@ -28,6 +30,7 @@ export async function readableToString(stream: Readable): Promise<string> {
 
 /**
  * Imports quads from a stream into a Store.
+ *
  * @param stream - Stream of quads.
  *
  * @returns A Store containing all the quads.
@@ -41,19 +44,21 @@ export async function readableToQuads(stream: Readable): Promise<Store> {
 
 /**
  * Interprets the stream as JSON and converts it to a Dict.
+ *
  * @param stream - Stream of JSON data.
  *
  * @returns The parsed object.
  */
-export async function readJsonStream(stream: Readable): Promise<NodeJS.Dict<any>> {
+export async function readJsonStream(stream: Readable): Promise<Json> {
   const body = await readableToString(stream);
-  return JSON.parse(body) as NodeJS.Dict<any>;
+  return JSON.parse(body) as Json;
 }
 
 /**
  * Converts the stream to a single object.
  * This assumes the stream is in object mode and only contains a single element,
  * otherwise an error will be thrown.
+ *
  * @param stream - Object stream with single entry.
  */
 export async function getSingleItem(stream: Readable): Promise<unknown> {
@@ -75,8 +80,9 @@ const safeErrors = new Set([
 
 /**
  * Pipes one stream into another and emits errors of the first stream with the second.
- * In case of an error in the first stream the second one will be destroyed with the given error.
+ * If the first stream errors, the second one will be destroyed with the given error.
  * This will also make the stream {@link Guarded}.
+ *
  * @param readable - Initial readable stream.
  * @param destination - The destination for writing data.
  * @param mapError - Optional function that takes the error and converts it to a new error.
@@ -119,20 +125,21 @@ export function pipeSafely<T extends Writable>(
   return guardStream(destination);
 }
 
-export interface AsyncTransformOptions<T = any> extends DuplexOptions {
+export interface AsyncTransformOptions<T = unknown> extends DuplexOptions {
   /**
    * Transforms data from the source by calling the `push` method
    */
-  transform?: (this: Transform, data: T, encoding: string) => PromiseOrValue<any>;
+  transform?: (this: Transform, data: T, encoding: string) => PromiseOrValue<unknown>;
 
   /**
    * Performs any final actions after the source has ended
    */
-  flush?: (this: Transform) => PromiseOrValue<any>;
+  flush?: (this: Transform) => PromiseOrValue<unknown>;
 }
 
 /**
  * Transforms a stream, ensuring that all errors are forwarded.
+ *
  * @param source - The stream to be transformed.
  * @param options - The transformation options.
  * @param options.transform - The transform function to use.
@@ -140,7 +147,7 @@ export interface AsyncTransformOptions<T = any> extends DuplexOptions {
  *
  * @returns The transformed stream
  */
-export function transformSafely<T = any>(
+export function transformSafely<T = unknown>(
   source: NodeJS.ReadableStream,
   {
     transform = function(data): void {
@@ -176,9 +183,10 @@ export function transformSafely<T = any>(
 
 /**
  * Converts a string or array to a stream and applies an error guard so that it is {@link Guarded}.
+ *
  * @param contents - Data to stream.
  * @param options - Options to pass to the Readable constructor. See {@link Readable.from}.
  */
-export function guardedStreamFrom(contents: string | Iterable<any>, options?: ReadableOptions): Guarded<Readable> {
+export function guardedStreamFrom(contents: string | Iterable<unknown>, options?: ReadableOptions): Guarded<Readable> {
   return guardStream(Readable.from(typeof contents === 'string' ? [ contents ] : contents, options));
 }

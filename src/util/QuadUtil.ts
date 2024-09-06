@@ -1,15 +1,15 @@
 import type { Readable } from 'node:stream';
-import type { NamedNode } from '@rdfjs/types';
+import type { NamedNode, Quad, Term } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';
 import { StreamParser, StreamWriter } from 'n3';
-import type { Quad, Term } from 'rdf-js';
 import type { Guarded } from './GuardedStream';
 import { guardedStreamFrom, pipeSafely } from './StreamUtil';
 import { toNamedTerm } from './TermUtil';
 
 /**
  * Helper function for serializing an array of quads, with as result a Readable object.
+ *
  * @param quads - The array of quads.
  * @param contentType - The content-type to serialize to.
  *
@@ -21,6 +21,7 @@ export function serializeQuads(quads: Quad[], contentType?: string): Guarded<Rea
 
 /**
  * Helper function to convert a Readable into an array of quads.
+ *
  * @param readable - The readable object.
  * @param options - Options for the parser.
  *
@@ -32,6 +33,7 @@ export async function parseQuads(readable: Guarded<Readable>, options: ParserOpt
 
 /**
  * Filter out duplicate quads from an array.
+ *
  * @param quads - Quads to filter.
  *
  * @returns A new array containing the unique quads.

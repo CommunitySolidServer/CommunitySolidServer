@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import type { NamedNode } from 'rdf-js';
+import type { NamedNode } from '@rdfjs/types';
 
 /**
  * A `Record` in which each value is a concatenation of the baseUrl and its key.
@@ -14,7 +14,7 @@ type ValueVocabulary<TBase extends string, TLocal extends string> =
 /**
  * A {@link ValueVocabulary} where the URI values are {@link NamedNode}s.
  */
-type TermVocabulary<T> = T extends ValueVocabulary<any, any> ? {[K in keyof T]: NamedNode<T[K]> } : never;
+type TermVocabulary<T> = T extends ValueVocabulary<string, string> ? {[K in keyof T]: NamedNode<T[K]> } : never;
 
 /**
  * Contains a namespace and keys linking to the entries in this namespace.
@@ -35,15 +35,15 @@ export type PartialVocabulary<TBase extends string> =
 /**
  * A local name of a {@link Vocabulary}.
  */
-export type VocabularyLocal<T> = T extends Vocabulary<any, infer TKey> ? TKey : never;
+export type VocabularyLocal<T> = T extends Vocabulary<string, infer TKey> ? TKey : never;
 /**
  * A URI string entry of a {@link Vocabulary}.
  */
-export type VocabularyValue<T> = T extends Vocabulary<any, infer TKey> ? T[TKey] : never;
+export type VocabularyValue<T> = T extends Vocabulary<string, infer TKey> ? T[TKey] : never;
 /**
  * A {@link NamedNode} entry of a {@link Vocabulary}.
  */
-export type VocabularyTerm<T> = T extends Vocabulary<any, infer TKey> ? T['terms'][TKey] : never;
+export type VocabularyTerm<T> = T extends Vocabulary<string, infer TKey> ? T['terms'][TKey] : never;
 
 /**
  * Creates a {@link ValueVocabulary} with the given `baseUri` as namespace and all `localNames` as entries.
@@ -88,6 +88,7 @@ string extends TLocal ? PartialVocabulary<TBase> : Vocabulary<TBase, TLocal> {
 
 /**
  * Creates a new {@link Vocabulary} that extends an existing one by adding new local names.
+ *
  * @param vocabulary - The {@link Vocabulary} to extend.
  * @param newNames - The new local names that need to be added.
  */
@@ -152,6 +153,7 @@ export const ACP = createVocabulary(
 export const AS = createVocabulary(
   'https://www.w3.org/ns/activitystreams#',
   'object',
+  'target',
 
   'Add',
   'Create',
@@ -230,6 +232,7 @@ export const NOTIFY = createVocabulary(
 
   'WebhookChannel2023',
   'WebSocketChannel2023',
+  'StreamingHTTPChannel2023',
 );
 
 export const OIDC = createVocabulary(
@@ -282,6 +285,7 @@ export const SOLID_ERROR = createVocabulary(
   'errorCode',
   'errorResponse',
   'stack',
+  'target',
 );
 
 // Used to pass parameters to error templates

@@ -78,8 +78,10 @@ nav:
   - Welcome:
       - README.md
   - Features:
-      - features.md
+      - Overview: features.md
+      - Tests: features/test.md
   - Usage:
+      - Starting the server: usage/starting-server.md
       - Example request: usage/example-requests.md
       - Metadata: usage/metadata.md
       - Identity provider:
@@ -91,6 +93,7 @@ nav:
       - Seeding pods: usage/seeding-pods.md
       - Notifications: usage/notifications.md
       - Development server: usage/dev-configuration.md
+      - Authorization methods: usage/authorization-methods.md
   - Architecture:
       - Overview: architecture/overview.md
       - Dependency injection: architecture/dependency-injection.md

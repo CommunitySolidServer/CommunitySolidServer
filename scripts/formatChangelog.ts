@@ -14,11 +14,13 @@ import { readFile, writeFile } from 'fs-extra';
 
 /**
  * Capitalize all list entries
+ *
  * @param input - String to search/replace
+ *
  * @returns Promise with output string
  */
 async function capitalizeListEntries(input: string): Promise<string> {
-  return input.replaceAll(/^(\W*\* [a-z])/gmu, (match): string => match.toUpperCase());
+  return input.replaceAll(/^\W*\* [a-z]/gmu, (match): string => match.toUpperCase());
 }
 
 /**
@@ -31,7 +33,9 @@ function endProcess(error: Error): never {
 
 /**
  * Main function for changelog formatting
+ *
  * @param filePath - Path to the changelog file
+ *
  * @returns Promise
  */
 async function formatChangelog(filePath: string): Promise<void> {

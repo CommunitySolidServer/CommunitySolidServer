@@ -257,9 +257,9 @@ describe('AppRunner', (): void => {
       } catch (error: unknown) {
         caughtError = error as Error;
       }
-      expect(caughtError?.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
+      expect(caughtError?.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/u);
       expect(caughtError?.message).toMatch(
-        /\[ViolatingClass\] is not threadsafe and should not be run in multithreaded setups!/mu,
+        /\[ViolatingClass\] is not threadsafe and should not be run in multithreaded setups!/u,
       );
 
       expect(write).toHaveBeenCalledTimes(0);
@@ -295,7 +295,7 @@ describe('AppRunner', (): void => {
       }
       expect(caughtError?.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
       expect(caughtError?.message).toMatch(
-        /\[ViolatingClass1, ViolatingClass2\] are not threadsafe and should not be run in multithreaded setups!/mu,
+        /\[ViolatingClass1, ViolatingClass2\] are not threadsafe and should not be run in multithreaded setups!/u,
       );
 
       expect(write).toHaveBeenCalledTimes(0);
@@ -481,7 +481,7 @@ describe('AppRunner', (): void => {
       }
       expect(caughtError.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
       expect(caughtError?.message).toMatch(
-        /\[ViolatingClass\] is not threadsafe and should not be run in multithreaded setups!/mu,
+        /\[ViolatingClass\] is not threadsafe and should not be run in multithreaded setups!/u,
       );
 
       expect(write).toHaveBeenCalledTimes(0);
@@ -489,7 +489,8 @@ describe('AppRunner', (): void => {
     });
 
     it('throws an error if creating a ComponentsManager fails.', async(): Promise<void> => {
-      (manager.configRegistry.register as jest.Mock).mockRejectedValueOnce(new Error('Fatal'));
+      // eslint-disable-next-line jest/unbound-method
+      jest.mocked(manager.configRegistry.register).mockRejectedValueOnce(new Error('Fatal'));
 
       let caughtError: Error = new Error('should disappear');
       try {
@@ -572,7 +573,8 @@ describe('AppRunner', (): void => {
     });
 
     it('throws an error if non-error objects get thrown.', async(): Promise<void> => {
-      (manager.configRegistry.register as jest.Mock).mockRejectedValueOnce('NotAnError');
+      // eslint-disable-next-line jest/unbound-method
+      jest.mocked(manager.configRegistry.register).mockRejectedValueOnce('NotAnError');
 
       let caughtError: Error = new Error('should disappear');
       try {
@@ -818,7 +820,7 @@ describe('AppRunner', (): void => {
       await flushPromises();
 
       expect(write).toHaveBeenCalledTimes(1);
-      expect(write).toHaveBeenLastCalledWith(expect.stringMatching(/Error: Fatal/mu));
+      expect(write).toHaveBeenLastCalledWith(expect.stringMatching(/Error: Fatal/u));
 
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenLastCalledWith(1);

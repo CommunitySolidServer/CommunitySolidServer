@@ -10,6 +10,7 @@ const BaseHttpError = generateHttpErrorClass(413, 'PayloadHttpError');
 export class PayloadHttpError extends BaseHttpError {
   /**
    * Default message is 'Storage quota was exceeded.'.
+   *
    * @param message - Optional, more specific, message.
    * @param options - Optional error options.
    */

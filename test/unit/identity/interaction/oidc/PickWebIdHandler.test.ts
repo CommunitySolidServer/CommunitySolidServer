@@ -68,7 +68,8 @@ describe('A PickWebIdHandler', (): void => {
 
     expect(store.isLinked).toHaveBeenCalledTimes(1);
     expect(store.isLinked).toHaveBeenLastCalledWith(webId1, accountId);
-    expect((await (provider.Session.find as jest.Mock).mock.results[0].value).persist).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line jest/unbound-method
+    expect((await jest.mocked(provider.Session.find).mock.results[0].value).persist).toHaveBeenCalledTimes(1);
     expect(oidcInteraction.persist).toHaveBeenCalledTimes(1);
     expect(oidcInteraction.result).toEqual({
       login: {

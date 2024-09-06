@@ -17,7 +17,7 @@ export class PodQuotaStrategy extends QuotaStrategy {
 
   public constructor(
     limit: Size,
-    reporter: SizeReporter<any>,
+    reporter: SizeReporter<unknown>,
     identifierStrategy: IdentifierStrategy,
     accessor: DataAccessor,
   ) {

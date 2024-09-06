@@ -6,7 +6,7 @@ type Entry<TKey, TVal> = { key: TKey; value: TVal };
  * A {@link Map} implementation that maps the Key object to a string using the provided hash function.
  * This ensures that equal objects that are not the same instance are mapped to the same value.
  */
-export class HashMap<TKey = any, TVal = any> implements Map<TKey, TVal> {
+export class HashMap<TKey = unknown, TVal = unknown> implements Map<TKey, TVal> {
   private readonly hashMap: Map<string, Entry<TKey, TVal>>;
   private readonly hashFn: (key: TKey) => string;
 
@@ -64,7 +64,7 @@ export class HashMap<TKey = any, TVal = any> implements Map<TKey, TVal> {
     }
   }
 
-  public forEach(callbackfn: (value: TVal, key: TKey, map: Map<TKey, TVal>) => void, thisArg?: any): void {
+  public forEach(callbackfn: (value: TVal, key: TKey, map: Map<TKey, TVal>) => void, thisArg?: unknown): void {
     for (const [ key, value ] of this) {
       callbackfn.bind(thisArg)(value, key, this);
     }

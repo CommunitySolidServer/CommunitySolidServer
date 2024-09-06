@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "import": [
+    "css:config/http/notifications/base/description.json",
+    "css:config/http/notifications/base/handler.json",
+    "css:config/http/notifications/base/http.json",
+    "css:config/http/notifications/base/storage.json",
+    "css:config/http/notifications/streaming-http/http.json"
+  ],
+  "@graph": [
+    {
+      "comment": "All the relevant components are made in the specific imports seen above."
+    }
+  ]
+}

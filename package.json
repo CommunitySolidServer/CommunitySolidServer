@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "7.0.3",
+  "version": "7.1.2",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "license": "MIT",
   "homepage": "https://github.com/CommunitySolidServer/CommunitySolidServer#readme",
@@ -56,7 +56,6 @@
     "lint": "npm run lint:eslint && npm run lint:markdown",
     "lint:eslint": "eslint . --cache --max-warnings 0",
     "lint:markdown": "markdownlint-cli2",
-    "lint:markdown:fix": "markdownlint-cli2-fix",
     "prepare": "npm run build",
     "release": "commit-and-tag-version",
     "postrelease": "ts-node ./scripts/finalizeRelease.ts",
@@ -121,7 +120,7 @@
     "marked": "^14.1.0",
     "mime-types": "^2.1.35",
     "n3": "^1.17.1",
-    "nodemailer": "^6.9.6",
+    "nodemailer": "^6.9.9",
     "oidc-provider": "^8.4.0",
     "proper-lockfile": "^4.1.2",
     "pump": "^3.0.0",
@@ -143,32 +142,31 @@
     "yup": "^1.3.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "2.3.4",
-    "@commitlint/cli": "^19.0.3",
-    "@commitlint/config-conventional": "^19.0.3",
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
     "@inrupt/solid-client-authn-core": "^2.0.0",
     "@inrupt/solid-client-authn-node": "^2.0.0",
     "@tsconfig/node18": "^18.2.2",
-    "@types/jest": "^29.5.5",
+    "@types/jest": "^29.5.12",
     "@types/set-cookie-parser": "^2.4.4",
     "@types/supertest": "^6.0.2",
     "commit-and-tag-version": "^12.0.0",
     "componentsjs-generator": "^4.0.1",
-    "eslint-plugin-jest": "^27.4.3",
     "husky": "^4.3.8",
     "jest": "^29.7.0",
     "jest-esm-transformer-2": "^1.0.0",
     "jest-rdf": "^1.8.0",
-    "markdownlint-cli2": "^0.10.0",
+    "markdownlint-cli2": "^0.13.0",
     "node-mocks-http": "^1.13.0",
     "nodemon": "^3.0.1",
+    "opinionated-eslint-config": "0.1.0",
     "set-cookie-parser": "^2.6.0",
     "simple-git": "^3.20.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.1",
-    "typedoc": "^0.25.2",
-    "typescript": "^5.2.2"
+    "ts-node": "^10.9.2",
+    "typedoc": "^0.26.4",
+    "typescript": "^5.5.3"
   },
   "husky": {
     "hooks": {
@@ -179,7 +177,7 @@
   "commit-and-tag-version": {
     "scripts": {
       "postbump": "ts-node ./scripts/upgradeConfig.ts",
-      "postchangelog": "ts-node ./scripts/formatChangelog.ts && markdownlint-cli2-fix"
+      "postchangelog": "ts-node ./scripts/formatChangelog.ts && markdownlint-cli2 --fix"
     },
     "writerOpts": {
       "commitsSort": false

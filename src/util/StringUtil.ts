@@ -13,6 +13,7 @@ export function splitCommaSeparated(input: string): string[] {
  * Sanitizes part of a URL by replacing non-word content with a '-'.
  *
  * @param urlPart - The URL part to sanitize.
+ *
  * @returns The sanitized output.
  */
 export function sanitizeUrlPart(urlPart: string): string {
@@ -23,6 +24,7 @@ export function sanitizeUrlPart(urlPart: string): string {
  * Checks the validity of a file name. A valid name consists of word characters, '-' or '.'.
  *
  * @param name - The name of the file to validate.
+ *
  * @returns True if the filename is valid, false otherwise.
  */
 export function isValidFileName(name: string): boolean {
@@ -30,9 +32,10 @@ export function isValidFileName(name: string): boolean {
 }
 
 /**
- * Checks if the given string is a valid URL.
+ * Checks whether the given string is a valid URL.
  *
  * @param url - String to check.
+ *
  * @returns True if the string is a valid URL.
  */
 export function isUrl(url: string): boolean {
@@ -49,6 +52,7 @@ export function isUrl(url: string): boolean {
  * Converts milliseconds to an ISO 8601 duration string.
  * The only categories used are days, hours, minutes, and seconds,
  * because months have no fixed size in milliseconds.
+ *
  * @param ms - The duration in ms to convert.
  */
 export function msToDuration(ms: number): string {

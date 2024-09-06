@@ -11,6 +11,7 @@ import { RouterRule } from './RouterRule';
  *
  * Part of the dynamic pod creation.
  * Uses the identifiers that were added to the routing storage.
+ *
  * @see {@link TemplatedPodGenerator}, {@link ConfigPodInitializer}, {@link ConfigPodManager}
  */
 export class BaseUrlRouterRule extends RouterRule {

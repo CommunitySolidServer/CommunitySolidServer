@@ -68,11 +68,13 @@ export interface V6MigrationInitializerArgs {
   /**
    * Storages for which all entries need to be removed.
    */
+  // eslint-disable-next-line ts/no-explicit-any
   cleanupStorages: KeyValueStorage<string, any>[];
   /**
    * The storage that will contain the account data in the new format.
+   * Wrong typings to prevent Components.js typing issues.
    */
-  newAccountStorage: AccountLoginStorage<any>;
+  newAccountStorage: AccountLoginStorage<Record<string, never>>;
   /**
    * The storage that will contain the setup entries in the new format.
    */
@@ -100,7 +102,7 @@ export class V6MigrationInitializer extends Initializer {
 
   private readonly accountStorage: KeyValueStorage<string, Account | Settings>;
   private readonly clientCredentialsStorage: KeyValueStorage<string, ClientCredentials>;
-  private readonly cleanupStorages: KeyValueStorage<string, any>[];
+  private readonly cleanupStorages: KeyValueStorage<string, unknown>[];
 
   private readonly newAccountStorage: AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
   private readonly newSetupStorage: KeyValueStorage<string, string>;
@@ -113,7 +115,7 @@ export class V6MigrationInitializer extends Initializer {
     this.accountStorage = args.accountStorage;
     this.clientCredentialsStorage = args.clientCredentialsStorage;
     this.cleanupStorages = args.cleanupStorages;
-    this.newAccountStorage = args.newAccountStorage as AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
+    this.newAccountStorage = args.newAccountStorage as unknown as AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
     this.newSetupStorage = args.newSetupStorage;
   }
 
@@ -147,7 +149,7 @@ export class V6MigrationInitializer extends Initializer {
         ].join(' '), resolve);
       });
       readline.close();
-      if (!/^y(?:es)?$/ui.test(answer)) {
+      if (!/^y(?:es)?$/iu.test(answer)) {
         throw new Error('Stopping server as migration was cancelled.');
       }
     }

@@ -1,4 +1,4 @@
-import type { Term } from 'rdf-js';
+import type { Term } from '@rdfjs/types';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
 import { ACL, AUTH } from '../../../util/Vocabularies';

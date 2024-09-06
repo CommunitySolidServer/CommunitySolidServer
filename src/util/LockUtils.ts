@@ -5,14 +5,16 @@ const logger = getLoggerFor('LockUtil');
 
 /**
  * Waits a set amount of time, without consuming cpu, with a set amount of jitter.
+ *
  * @param delay - How long to wait.
  * @param jitter - A fraction of this jitter will be added to the delay.
+ *
  * @returns A promise that resolves after the specified amount of time.
  */
 export async function setJitterTimeout(delay: number, jitter = 0): Promise<void> {
   jitter = Math.max(0, Math.floor(Math.random() * jitter));
   delay = Math.max(0, delay + jitter);
-  return new Promise<void>((resolve): any => setTimeout(resolve, delay));
+  return new Promise<void>((resolve): unknown => setTimeout(resolve, delay));
 }
 
 export interface AttemptSettings {
@@ -28,8 +30,8 @@ export interface AttemptSettings {
  * Will execute the given function until one of the following cases occurs:
  * * The function resolves to a value: the value is returned.
  * * The function errors: the rejected error is thrown.
- * * The function did not resolve after the set amount of retries:
- *   the rejected error is returned.
+ * * The function did not resolve after the set amount of retries: the rejected error is returned.
+ *
  * @param fn - The function to retry. **This function must return a value!**
  * @param settings - The options on how to retry the function
  */

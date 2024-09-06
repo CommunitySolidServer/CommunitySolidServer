@@ -81,6 +81,7 @@ export class ClientIdAdapter extends PassthroughAdapter {
 
   /**
    * Parses RDF data found at a Client ID.
+   *
    * @param data - Raw data from the Client ID.
    * @param id - The actual Client ID.
    * @param response - Response object from the request.

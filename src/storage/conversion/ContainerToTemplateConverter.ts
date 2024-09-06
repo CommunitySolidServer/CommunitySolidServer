@@ -1,6 +1,6 @@
 import type { Readable } from 'node:stream';
 import orderBy from 'lodash.orderby';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -98,7 +98,7 @@ export class ContainerToTemplateConverter extends BaseTypedRepresentationConvert
    * Derives a short name for the given resource.
    */
   private getLocalName(iri: string): string {
-    const match = /:\/+([^/]+).*?\/([^/]*)\/?$/u.exec(iri);
+    const match = /:\/+([^/]+)(?:\/[^/]*)*?\/([^/]*)\/?$/u.exec(iri);
     return match?.[2] ? decodeURIComponent(match[2]) : match?.[1] ?? iri;
   }
 }

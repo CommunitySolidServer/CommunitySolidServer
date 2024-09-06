@@ -71,6 +71,7 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
 
   /**
    * Create a new FileSystemResourceLocker
+   *
    * @param args - Configures the locker using the specified FileSystemResourceLockerArgs instance.
    */
   public constructor(args: FileSystemResourceLockerArgs) {
@@ -85,7 +86,9 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
    * Wrapper function for all (un)lock operations. Any errors coming from the `fn()` will be swallowed.
    * Only `ENOTACQUIRED` errors wills be thrown (trying to release lock that didn't exist).
    * This wrapper returns undefined because {@link retryFunction} expects that when a retry needs to happen.
+   *
    * @param fn - The function reference to swallow errors from.
+   *
    * @returns Boolean or undefined.
    */
   private swallowErrors(fn: () => Promise<unknown>): () => Promise<unknown> {
@@ -138,7 +141,9 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
 
   /**
    * Map the identifier path to a unique path inside the {@link lockFolder}.
+   *
    * @param identifier - ResourceIdentifier to generate (Un)LockOptions for.
+   *
    * @returns Full path.
    */
   private toLockfilePath(identifier: ResourceIdentifier): string {
@@ -150,8 +155,10 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
   /**
    * Generate LockOptions or UnlockOptions depending on the type of defauls given.
    * A custom lockFilePath mapping strategy will be used.
+   *
    * @param identifier - ResourceIdentifier to generate (Un)LockOptions for
    * @param defaults - The default options. (lockFilePath will get overwritten)
+   *
    * @returns LockOptions or UnlockOptions
    */
   private generateOptions<T>(identifier: ResourceIdentifier, defaults: T): T {

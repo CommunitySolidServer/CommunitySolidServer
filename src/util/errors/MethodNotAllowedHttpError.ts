@@ -10,6 +10,8 @@ const BaseHttpError = generateHttpErrorClass(405, 'MethodNotAllowedHttpError');
  * Can keep track of the methods that are not allowed.
  */
 export class MethodNotAllowedHttpError extends BaseHttpError {
+  // Components.js can't parse `readonly`
+  // eslint-disable-next-line ts/array-type
   public readonly methods: Readonly<string[]>;
 
   public constructor(methods: string[] = [], message?: string, options?: HttpErrorOptions) {

@@ -506,7 +506,11 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   });
 
   it('returns 405 for unsupported methods.', async(): Promise<void> => {
-    const response = await fetch(baseUrl, { method: 'TRACE' });
+    let response = await fetch(baseUrl, { method: 'TRACE' });
+    expect(response.status).toBe(405);
+
+    // Testing two different URLs as there used to be a problem with this
+    response = await fetch(joinUrl(baseUrl, 'foo'), { method: 'TRACE' });
     expect(response.status).toBe(405);
   });
 

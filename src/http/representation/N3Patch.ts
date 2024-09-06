@@ -1,4 +1,4 @@
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import type { Patch } from './Patch';
 
 /**

@@ -143,7 +143,7 @@ describe('StreamUtil', (): void => {
     });
 
     it('does not destroy the source stream if it is an HttpRequest.', async(): Promise<void> => {
-      (isHttpRequest as unknown as jest.Mock).mockReturnValueOnce(true);
+      jest.mocked(isHttpRequest).mockReturnValueOnce(true);
       const input = new PassThrough();
       const output = new PassThrough();
       const piped = pipeSafely(input, output);
@@ -160,7 +160,7 @@ describe('StreamUtil', (): void => {
     });
 
     it('still sends errors downstream if the input is an HttpRequest.', async(): Promise<void> => {
-      (isHttpRequest as unknown as jest.Mock).mockReturnValueOnce(true);
+      jest.mocked(isHttpRequest).mockReturnValueOnce(true);
       const input = new PassThrough();
       input.read = (): any => {
         input.emit('error', new Error('error'));
@@ -172,7 +172,7 @@ describe('StreamUtil', (): void => {
     });
 
     it('can map errors if the input is an HttpRequest.', async(): Promise<void> => {
-      (isHttpRequest as unknown as jest.Mock).mockReturnValueOnce(true);
+      jest.mocked(isHttpRequest).mockReturnValueOnce(true);
       const input = Readable.from([ 'data' ]);
       input.read = (): any => {
         input.emit('error', new Error('error'));

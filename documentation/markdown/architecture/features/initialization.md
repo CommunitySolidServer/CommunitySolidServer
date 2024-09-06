@@ -108,32 +108,33 @@ to add any custom initializers that need to run.
 
 The `ServerInitializer` is the initializer that finally starts up the server by listening to the relevant port,
 once all the initialization described above is finished.
-It takes as input 2 components: a `HttpServerFactory` and a `ServerListener`.
+To do this it makes use of an `HttpServerFactory`.
 
 ```mermaid
 flowchart TD
   ServerInitializer("<strong>ServerInitializer</strong><br>ServerInitializer")
-  ServerInitializer --> ServerInitializerArgs
-  
-  subgraph ServerInitializerArgs[" "]
+  ServerInitializer --> ServerFactory("<strong>ServerFactory</strong><br>BaseServerFactory")
+  ServerFactory --> ServerConfigurator("<strong>ServerConfigurator</strong><br>ParallelHandler")
+  ServerConfigurator --> ServerConfiguratorArgs
+
+  subgraph ServerConfiguratorArgs[" "]
     direction LR
-    ServerFactory("<strong>ServerFactory</strong><br>BaseServerFactory")
-    ServerListener("<strong>ServerListener</strong><br>ParallelHandler")
+    HandlerServerConfigurator("<strong>HandlerServerConfigurator</strong><br>HandlerServerConfigurator")
+    WebSocketServerConfigurator("<strong>WebSocketServerConfigurator</strong><br>WebSocketServerConfigurator")
   end
-  
-  ServerListener --> HandlerServerListener("<strong>HandlerServerListener</strong><br>HandlerServerListener")
-  
-  HandlerServerListener --> HttpHandler("<strong>HttpHandler</strong><br><i>HttpHandler</i>")
+
+  HandlerServerConfigurator --> HttpHandler("<strong>HttpHandler</strong><br><i>HttpHandler</i>")
+  WebSocketServerConfigurator --> WebSocketHandler("<strong>WebSocketHandler</strong><br><i>WebSocketHandler</i>")
 ```
 
 The `HttpServerFactory` is responsible for starting a server on a given port.
 Depending on the configuration this can be an HTTP or an HTTPS server.
 The created server emits events when it receives requests.
 
-A `ServerListener` is a class that takes the created server as input and attaches a listener to interpret events.
-One listener that is always used is the `urn:solid-server:default:HandlerServerListener`,
-which calls an `HttpHandler` [to resolve HTTP requests](http-handler.md).
-
-Sometimes it is necessary to add additional listeners,
-these can then be added to the `urn:solid-server:default:ServerListener` as it is a `ParallellHandler`.
-An example of this is when WebSockets are used [to handle notifications](notifications.md).
+Any requests it receives, it sends to its `ServerConfigurator`,
+which handles the request as needed.
+This is a `ParallelHandler`, supporting two kinds of requests:
+HTTP requests go through a configurator that sends those
+to an `HttpHandler` [to resolve HTTP requests](http-handler.md).
+In case WebSockets are enabled [to handle notifications](notifications.md),
+these are handled by the `WebSocketHandler`.

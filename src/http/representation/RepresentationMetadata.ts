@@ -1,5 +1,5 @@
 import { DataFactory, Store } from 'n3';
-import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
+import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from '@rdfjs/types';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ContentType, SIMPLE_MEDIA_RANGE } from '../../util/Header';
 import { isTerm, toLiteral, toNamedTerm, toObjectTerm } from '../../util/TermUtil';
@@ -15,7 +15,7 @@ export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
 /**
  * Determines whether the object is a `RepresentationMetadata`.
  */
-export function isRepresentationMetadata(object: any): object is RepresentationMetadata {
+export function isRepresentationMetadata(object: unknown): object is RepresentationMetadata {
   return typeof (object as RepresentationMetadata)?.setMetadata === 'function';
 }
 
@@ -26,6 +26,7 @@ const cachedNamedNodes: Record<string, NamedNode> = {};
  * Converts the incoming name (URI or shorthand) to a named node.
  * The generated terms get cached to reduce the number of created nodes,
  * so only use this for internal constants!
+ *
  * @param name - Predicate to potentially transform.
  */
 function toCachedNamedNode(name: string): NamedNode {
@@ -167,6 +168,7 @@ export class RepresentationMetadata {
   /**
    * Helper function to import all entries from the given metadata.
    * If the new metadata has a different identifier the internal one will be updated.
+   *
    * @param metadata - Metadata to import.
    */
   public setMetadata(metadata: RepresentationMetadata): this {
@@ -235,22 +237,24 @@ export class RepresentationMetadata {
 
   /**
    * Adds a value linked to the identifier. Strings get converted to literals.
+   *
    * @param predicate - Predicate linking identifier to value.
    * @param object - Value(s) to add.
    * @param graph - Optional graph of where to add the values to.
    */
   public add(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
-    return this.forQuads(predicate, object, (pred, obj): any => this.addQuad(this.id, pred, obj, graph));
+    return this.forQuads(predicate, object, (pred, obj): unknown => this.addQuad(this.id, pred, obj, graph));
   }
 
   /**
    * Removes the given value from the metadata. Strings get converted to literals.
+   *
    * @param predicate - Predicate linking identifier to value.
    * @param object - Value(s) to remove.
    * @param graph - Optional graph of where to remove the values from.
    */
   public remove(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
-    return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj, graph));
+    return this.forQuads(predicate, object, (pred, obj): unknown => this.removeQuad(this.id, pred, obj, graph));
   }
 
   /**
@@ -271,6 +275,7 @@ export class RepresentationMetadata {
 
   /**
    * Removes all values linked through the given predicate.
+   *
    * @param predicate - Predicate to remove.
    * @param graph - Optional graph where to remove from.
    */
@@ -290,12 +295,17 @@ export class RepresentationMetadata {
   ): boolean {
     // This works with N3.js but at the time of writing the typings have not been updated yet.
     // If you see this line of code check if the typings are already correct and update this if so.
-    // eslint-disable-next-line ts/no-unsafe-call
-    return (this.store.has as any)(this.id, predicate, object, graph) as boolean;
+    return (this.store as unknown as {
+      has: (subject: Term,
+        predicate: Term | string | null,
+        object: Term | string | null,
+        graph: Term | string | null) => boolean;
+    }).has(this.id, predicate, object, graph);
   }
 
   /**
    * Finds all object values matching the given predicate and/or graph.
+   *
    * @param predicate - Optional predicate to get the values for.
    * @param graph - Optional graph where to get from.
    *
@@ -310,10 +320,10 @@ export class RepresentationMetadata {
    * @param predicate - Predicate to get the value for.
    * @param graph - Optional graph where the triple should be found.
    *
+   * @returns The corresponding value. Undefined if there is no match
+   *
    * @throws Error
    * If there are multiple matching values.
-   *
-   * @returns The corresponding value. Undefined if there is no match
    */
   public get(predicate: NamedNode, graph?: MetadataGraph): Term | undefined {
     const terms = this.getAll(predicate, graph);
@@ -333,6 +343,7 @@ export class RepresentationMetadata {
   /**
    * Sets the value for the given predicate, removing all other instances.
    * In case the object is undefined this is identical to `removeAll(predicate)`.
+   *
    * @param predicate - Predicate linking to the value.
    * @param object - Value(s) to set.
    * @param graph - Optional graph where the triple should be stored.
@@ -379,6 +390,7 @@ export class RepresentationMetadata {
 
   /**
    * Parse the internal RDF structure to retrieve the Record with ContentType Parameters.
+   *
    * @returns A {@link ContentType} object containing the value and optional parameters if there is one.
    */
   private getContentType(): ContentType | undefined {

@@ -9,6 +9,7 @@ export interface ResourceLocker {
   /**
    * Acquires a lock on the requested identifier.
    * The promise will resolve when the lock has been acquired.
+   *
    * @param identifier - Resource to acquire a lock on.
    */
   acquire: (identifier: ResourceIdentifier) => Promise<void>;
@@ -16,7 +17,8 @@ export interface ResourceLocker {
   /**
    * Releases a lock on the requested identifier.
    * The promise will resolve when the lock has been released.
-   * In case there is no lock on the resource an error should be thrown.
+   * If there is no lock on the resource, an error should be thrown.
+   *
    * @param identifier - Resource to release the lock on.
    */
   release: (identifier: ResourceIdentifier) => Promise<void>;

@@ -37,6 +37,7 @@ export class RedirectingHttpHandler extends HttpHandler {
 
   /**
    * Creates a handler for the provided redirects.
+   *
    * @param redirects - A mapping between URL patterns.
    * @param baseUrl - Base URL of the server.
    * @param targetExtractor - To extract the target from the request.
@@ -107,6 +108,6 @@ export class RedirectingHttpHandler extends HttpHandler {
       throw new NotImplementedHttpError('Target is already correct.');
     }
 
-    return /^(?:[a-z]+:)?\/\//ui.test(redirect) ? redirect : joinUrl(this.baseUrl, redirect);
+    return /^(?:[a-z]+:)?\/\//iu.test(redirect) ? redirect : joinUrl(this.baseUrl, redirect);
   }
 }

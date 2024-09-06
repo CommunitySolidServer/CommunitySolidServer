@@ -187,14 +187,20 @@ export class IdentityProviderFactory implements ProviderFactory {
     provider.use(async(ctx, next): Promise<void> => {
       const accepts = ctx.accepts.bind(ctx);
 
-      // Using `any` typings to make sure we support all different versions of `ctx.accepts`
-      ctx.accepts = (...types): any => {
+      // This is how you get the correct typing for an overloaded function
+      type AcceptFn = {
+        (): string[];
+        (...types: string[]): string | false;
+        (types: string[]): string | false;
+      };
+
+      ctx.accepts = ((...types): string[] | string | false => {
         // Make sure we only override our specific case
         if (types.length === 2 && types[0] === 'json' && types[1] === 'html') {
           return 'html';
         }
         return accepts(...types as string[]);
-      };
+      }) as AcceptFn;
 
       return next();
     });
@@ -254,10 +260,10 @@ export class IdentityProviderFactory implements ProviderFactory {
   }
 
   /**
-   * Checks if the given token is an access token.
+   * Checks whether the given token is an access token.
    * The AccessToken interface is not exported, so we have to access it like this.
    */
-  private isAccessToken(token: any): token is KoaContextWithOIDC['oidc']['accessToken'] {
+  private isAccessToken(token: unknown): token is KoaContextWithOIDC['oidc']['accessToken'] {
     return (token as KoaContextWithOIDC['oidc']['accessToken'])?.kind === 'AccessToken';
   }
 
@@ -270,7 +276,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Some fields are still missing, see https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1154#issuecomment-1040233385
     config.findAccount = async(ctx: KoaContextWithOIDC, sub: string): Promise<Account> => ({
       accountId: sub,
-      async claims(): Promise<{ sub: string; [key: string]: any }> {
+      async claims(): Promise<{ sub: string; [key: string]: unknown }> {
         return { sub, webid: sub, azp: ctx.oidc.client?.clientId };
       },
     });

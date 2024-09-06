@@ -7,10 +7,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.7
       - uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 20.x
       - run: npm ci --ignore-scripts
       - run: npm run lint
 
@@ -27,7 +27,8 @@ jobs:
           - 18.x
           - '20.0'
           - 20.x
-          - 21.x
+          - '22.1'
+          - 22.x
     timeout-minutes: 15
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
@@ -37,7 +38,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Type-check tests
@@ -59,7 +60,7 @@ jobs:
         node-version:
           - 18.x
           - 20.x
-          - 21.x
+          - 22.x
     env:
       TEST_DOCKER: true
     services:
@@ -80,7 +81,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Check out repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run integration tests
@@ -94,7 +95,7 @@ jobs:
         node-version:
           - 18.x
           - 20.x
-          - 21.x
+          - 22.x
     timeout-minutes: 20
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
@@ -104,7 +105,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run integration tests
@@ -124,9 +125,9 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 20.x
       - name: Check out repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run deploy tests

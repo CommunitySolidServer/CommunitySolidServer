@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-process-exit */
 import { existsSync } from 'node:fs';
 import type { WriteStream } from 'node:tty';
 import type { IComponentsManagerBuilderOptions } from 'componentsjs';
@@ -105,9 +104,9 @@ export class AppRunner {
     let configs = input.config ?? [ '@css:config/default.json' ];
     configs = (Array.isArray(configs) ? configs : [ configs ]).map(resolveAssetPath);
 
-    let componentsManager: ComponentsManager<any>;
+    let componentsManager: ComponentsManager<App | CliResolver>;
     try {
-      componentsManager = await this.createComponentsManager<any>(loaderProperties, configs);
+      componentsManager = await this.createComponentsManager<App>(loaderProperties, configs);
     } catch (error: unknown) {
       this.resolveError(`Could not build the config files from ${configs.join(',')}`, error);
     }
@@ -145,6 +144,7 @@ export class AppRunner {
   public runCliSync({ argv, stderr = process.stderr }: { argv?: CliArgv; stderr?: WriteStream }): void {
     this.runCli(argv).catch((error): never => {
       stderr.write(createErrorMessage(error));
+      // eslint-disable-next-line unicorn/no-process-exit
       process.exit(1);
     });
   }
@@ -203,6 +203,7 @@ export class AppRunner {
   /**
    * Retrieves settings from package.json or configuration file when
    * part of an npm project.
+   *
    * @returns The settings defined in the configuration file
    */
   public async getPackageSettings(): Promise<undefined | Record<string, unknown>> {
@@ -225,9 +226,9 @@ export class AppRunner {
       return import(cssConfigPathJs) as Promise<Record<string, unknown>>;
     }
 
-    // Finally try and read from the config.community-solid-server
+    // Finally try to read from the config.community-solid-server
     // field in the root package.json
-    const pkg = await readJSON(packageJsonPath) as { config?: Record<string, any> };
+    const pkg = await readJSON(packageJsonPath) as { config?: Record<string, unknown> };
     if (typeof pkg.config?.['community-solid-server'] === 'object') {
       return pkg.config['community-solid-server'] as Record<string, unknown>;
     }

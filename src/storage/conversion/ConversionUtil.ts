@@ -79,10 +79,10 @@ export function getTypeWeight(type: string, preferred: ValuePreferences): number
   //    specific media types.  If more than one media range applies to a
   //    given type, the most specific reference has precedence.
   return preferred[type] ??
-         preferred[`${main}/${sub}`] ??
-         preferred[`${main}/*`] ??
-         preferred['*/*'] ??
-         0;
+    preferred[`${main}/${sub}`] ??
+    preferred[`${main}/*`] ??
+    preferred['*/*'] ??
+    0;
 }
 
 /**
@@ -162,8 +162,9 @@ export function matchesMediaPreferences(type: string, preferred?: ValuePreferenc
 }
 
 /**
- * Checks if the given two media types/ranges match each other.
+ * Checks whether the given two media types/ranges match each other.
  * Takes wildcards into account.
+ *
  * @param mediaA - Media type to match.
  * @param mediaB - Media type to match.
  *
@@ -202,6 +203,7 @@ export function isInternalContentType(contentType?: string): boolean {
 
 /**
  * Serializes a preferences object to a string for display purposes.
+ *
  * @param preferences - Preferences to serialize
  */
 export function preferencesToString(preferences: ValuePreferences): string {

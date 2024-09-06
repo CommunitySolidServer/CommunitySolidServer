@@ -174,13 +174,13 @@ describe('A ChainedConverter', (): void => {
     ];
     const converter = new ChainedConverter(converters);
 
-    jest.spyOn(converters[0], 'handle');
-    jest.spyOn(converters[1], 'handle');
+    const spy0 = jest.spyOn(converters[0], 'handle');
+    const spy1 = jest.spyOn(converters[1], 'handle');
     const result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('x/x');
-    let { metadata } = await (converters[0].handle as jest.Mock).mock.results[0].value;
+    let { metadata } = await spy0.mock.results[0].value;
     expect(metadata.contentType).toBe('c/c');
-    ({ metadata } = await (converters[1].handle as jest.Mock).mock.results[0].value);
+    ({ metadata } = await spy1.mock.results[0].value);
     expect(metadata.contentType).toBe('d/d');
   });
 

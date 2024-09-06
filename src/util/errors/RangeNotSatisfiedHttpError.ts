@@ -10,6 +10,7 @@ const BaseHttpError = generateHttpErrorClass(416, 'RangeNotSatisfiedHttpError');
 export class RangeNotSatisfiedHttpError extends BaseHttpError {
   /**
    * Default message is 'The requested range is not supported.'.
+   *
    * @param message - Optional, more specific, message.
    * @param options - Optional error options.
    */

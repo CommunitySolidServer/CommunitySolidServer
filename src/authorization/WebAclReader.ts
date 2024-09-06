@@ -22,7 +22,7 @@ import type { PermissionMap } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 // Maps WebACL-specific modes to generic access modes.
-const modesMap: Record<string, Readonly<(keyof AclPermissionSet)[]>> = {
+const modesMap: Record<string, readonly (keyof AclPermissionSet)[]> = {
   [ACL.Read]: [ AccessMode.read ],
   [ACL.Write]: [ AccessMode.append, AccessMode.write ],
   [ACL.Append]: [ AccessMode.append ],
@@ -69,7 +69,7 @@ export class WebAclReader extends PermissionReader {
     this.logger.debug(`Retrieving permissions of ${credentials.agent?.webId ?? 'an unknown agent'}`);
     const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
     const storeMap = await this.findAuthorizationStatements(aclMap);
-    return await this.findPermissions(storeMap, credentials);
+    return this.findPermissions(storeMap, credentials);
   }
 
   /**
@@ -96,6 +96,7 @@ export class WebAclReader extends PermissionReader {
 
   /**
    * Determines the available permissions for the given credentials.
+   *
    * @param acl - Store containing all relevant authorization triples.
    * @param credentials - Credentials to find the permissions for.
    */
@@ -223,6 +224,7 @@ export class WebAclReader extends PermissionReader {
   /**
    * Extracts all rules from the store that are relevant for the given target,
    * based on either the `acl:accessTo` or `acl:default` predicates.
+   *
    * @param store - Store to filter.
    * @param target - The identifier of which the acl rules need to be known.
    * @param directAcl - If the store contains triples from the direct acl resource of the target or not.

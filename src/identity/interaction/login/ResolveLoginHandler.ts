@@ -1,10 +1,11 @@
 import { RepresentationMetadata } from '../../../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../../../logging/LogUtil';
+import type { Json } from '../../../util/Json';
 import { SOLID_HTTP } from '../../../util/Vocabularies';
 import { ACCOUNT_SETTINGS_REMEMBER_LOGIN } from '../account/util/AccountStore';
 import type { AccountStore } from '../account/util/AccountStore';
 import type { CookieStore } from '../account/util/CookieStore';
-import type { Json, JsonRepresentation } from '../InteractionUtil';
+import type { JsonRepresentation } from '../InteractionUtil';
 import { finishInteraction } from '../InteractionUtil';
 import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
@@ -80,7 +81,8 @@ export abstract class ResolveLoginHandler extends JsonInteractionHandler {
   }
 
   /**
-   * Updates the account setting that determines if the login status needs to be remembered.
+   * Updates the account setting that determines whether the login status needs to be remembered.
+   *
    * @param accountId - ID of the account.
    * @param remember - If the account should be remembered or not. The setting will not be updated if this is undefined.
    */
@@ -94,6 +96,7 @@ export abstract class ResolveLoginHandler extends JsonInteractionHandler {
 
   /**
    * Takes the necessary steps to log a user in.
+   *
    * @param input - Same input that was passed to the handle function.
    */
   public abstract login(input: JsonInteractionHandlerInput): Promise<JsonRepresentation<LoginOutputType>>;

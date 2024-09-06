@@ -85,14 +85,33 @@ describe('InteractionUtil', (): void => {
             persist: jest.fn(),
           }),
         },
+        Grant: {
+          find: jest.fn().mockResolvedValue({
+            destroy: jest.fn(),
+          }),
+        },
       } as any;
     });
 
     it('removes the accountId from the session.', async(): Promise<void> => {
       await expect(forgetWebId(provider, oidcInteraction)).resolves.toBeUndefined();
-      const session = await (provider.Session.find as jest.Mock).mock.results[0].value;
+      expect(provider.Session.find).toHaveBeenCalledTimes(1);
+      expect(provider.Session.find).toHaveBeenLastCalledWith('cookie');
+      // eslint-disable-next-line jest/unbound-method
+      const session = await jest.mocked(provider.Session.find).mock.results[0].value;
       expect(session.accountId).toBeUndefined();
       expect(session.persist).toHaveBeenCalledTimes(1);
+    });
+
+    it('deletes the grant if there is one associated to the session.', async(): Promise<void> => {
+      delete oidcInteraction.session;
+      oidcInteraction.grantId = 'grantId';
+      await expect(forgetWebId(provider, oidcInteraction)).resolves.toBeUndefined();
+      expect(provider.Grant.find).toHaveBeenCalledTimes(1);
+      expect(provider.Grant.find).toHaveBeenLastCalledWith('grantId');
+      // eslint-disable-next-line jest/unbound-method
+      const grant = await jest.mocked(provider.Grant.find).mock.results[0].value;
+      expect(grant.destroy).toHaveBeenCalledTimes(1);
     });
   });
 });

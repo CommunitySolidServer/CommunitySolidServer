@@ -6,6 +6,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
 import { errorTermsToMetadata } from './errors/HttpErrorUtil';
+import type { Json } from './Json';
 
 /**
  * Changes a potential Windows path into a POSIX path.
@@ -112,6 +113,7 @@ export function trimLeadingSlashes(path: string): string {
 /**
  * Extracts the extension (without dot) from a path.
  * Custom function since `path.extname` does not work on all cases (e.g. ".acl")
+ *
  * @param path - Input path to parse.
  */
 export function getExtension(path: string): string {
@@ -124,7 +126,7 @@ export function getExtension(path: string): string {
  * preserving but normalizing path delimiters and their escaped forms.
  */
 function transformPathComponents(path: string, transform: (part: string) => string): string {
-  const [ , base, queryString ] = /^([^?]*)(.*)$/u.exec(path)!;
+  const [ , base, queryString ] = /^([^?]*)(\?.*)?$/u.exec(path)!;
   const transformed = base
     // We split on actual URI path component delimiters (slash and backslash),
     // but also on things that could be wrongly interpreted as component delimiters,
@@ -133,7 +135,7 @@ function transformPathComponents(path: string, transform: (part: string) => stri
     // since they would become _actual_ delimiters if accidentally decoded.
     // Additionally, we need to preserve any encoded percent signs (%25)
     // that precede them, because these might change their interpretation as well.
-    .split(/(\/|\\|%(?:25)*(?:2f|5c))/ui)
+    .split(/(\/|\\|%(?:25)*(?:2f|5c))/iu)
     // Even parts map to components that need to be transformed,
     // odd parts to (possibly escaped) delimiters that need to be normalized.
     .map((part, index): string =>
@@ -149,6 +151,7 @@ function transformPathComponents(path: string, transform: (part: string) => stri
  * the provided path.
  *
  * @param path - The path to convert to its canonical URI path form.
+ *
  * @returns The canonical URI path form of the provided path.
  */
 export function toCanonicalUriPath(path: string): string {
@@ -169,7 +172,7 @@ const forbiddenSymbols = {
   '*': '%2A',
 } as const;
 /* eslint-enable ts/naming-convention */
-const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`, 'ug');
+const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`, 'gu');
 /**
  * This function is used when converting a URI to a file path. Decodes all components of a URI path,
  * with the exception of encoded slash characters, as this would lead to unexpected file locations
@@ -177,6 +180,7 @@ const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`,
  * Characters that would result in an illegal file path remain percent encoded.
  *
  * @param path - The path to decode the URI path components of.
+ *
  * @returns A decoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function decodeUriPathComponents(path: string): string {
@@ -191,6 +195,7 @@ export function decodeUriPathComponents(path: string): string {
  * lead to unnecessary double encoding, resulting in a URI that differs from the expected result.
  *
  * @param path - The path to encode the URI path components of.
+ *
  * @returns An encoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function encodeUriPathComponents(path: string): string {
@@ -198,7 +203,8 @@ export function encodeUriPathComponents(path: string): string {
 }
 
 /**
- * Checks if the path corresponds to a container path (ending in a /).
+ * Checks whether the path corresponds to a container path (ending in a /).
+ *
  * @param path - Path to check.
  */
 export function isContainerPath(path: string): boolean {
@@ -208,7 +214,8 @@ export function isContainerPath(path: string): boolean {
 }
 
 /**
- * Checks if the identifier corresponds to a container identifier.
+ * Checks whether the identifier corresponds to a container identifier.
+ *
  * @param identifier - Identifier to check.
  */
 export function isContainerIdentifier(identifier: ResourceIdentifier): boolean {
@@ -218,6 +225,7 @@ export function isContainerIdentifier(identifier: ResourceIdentifier): boolean {
 /**
  * Splits a URL (or similar) string into a part containing its scheme and one containing the rest.
  * E.g., `http://test.com/` results in `{ scheme: 'http://', rest: 'test.com/' }`.
+ *
  * @param url - String to parse.
  */
 export function extractScheme(url: string): { scheme: string; rest: string } {
@@ -228,6 +236,7 @@ export function extractScheme(url: string): { scheme: string; rest: string } {
 /**
  * Creates a relative URL by removing the base URL.
  * Will throw an error in case the resulting target is not withing the base URL scope.
+ *
  * @param baseUrl - Base URL.
  * @param request - Incoming request of which the target needs to be extracted.
  * @param targetExtractor - Will extract the target from the request.
@@ -250,11 +259,12 @@ Promise<string> {
  * In case there is a subdomain, the first match of the regular expression will be that subdomain.
  *
  * Examples with baseUrl `http://test.com/foo/`:
- *  - Will match `http://test.com/foo/`
- *  - Will match `http://test.com/foo/bar/baz`
- *  - Will match `http://alice.bob.test.com/foo/bar/baz`, first match result will be `alice.bob`
- *  - Will not match `http://test.com/`
- *  - Will not match `http://alicetest.com/foo/`
+ * - Will match `http://test.com/foo/`
+ * - Will match `http://test.com/foo/bar/baz`
+ * - Will match `http://alice.bob.test.com/foo/bar/baz`, first match result will be `alice.bob`
+ * - Will not match `http://test.com/`
+ * - Will not match `http://alicetest.com/foo/`
+ *
  * @param baseUrl - Base URL for the regular expression.
  */
 export function createSubdomainRegexp(baseUrl: string): RegExp {
@@ -305,8 +315,8 @@ export function resolveAssetPath(path = modulePathPlaceholder): string {
 /**
  * Reads the project package.json and returns it.
  */
-export async function readPackageJson(): Promise<Record<string, any>> {
-  return readJson(resolveModulePath('package.json')) as Promise<Record<string, any>>;
+export async function readPackageJson(): Promise<Record<string, Json>> {
+  return readJson(resolveModulePath('package.json')) as Promise<Record<string, Json>>;
 }
 
 /**

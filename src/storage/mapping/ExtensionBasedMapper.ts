@@ -48,7 +48,7 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
     // Existing file
     if (!contentType) {
       // Find a matching file
-      const [ , folder, documentName ] = /^(.*\/)(.*)$/u.exec(filePath)!;
+      const [ , folder, documentName ] = /^(.*\/)([^/]*)$/u.exec(filePath)!;
       let fileName: string | undefined;
       try {
         const files = await fsPromises.readdir(folder);

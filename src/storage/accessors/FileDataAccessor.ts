@@ -1,7 +1,7 @@
 import type { Readable } from 'node:stream';
 import type { Stats } from 'fs-extra';
 import { createReadStream, createWriteStream, ensureDir, lstat, opendir, remove, stat } from 'fs-extra';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -139,6 +139,7 @@ export class FileDataAccessor implements DataAccessor {
   /**
    * Gets the Stats object corresponding to the given file path,
    * resolving symbolic links.
+   *
    * @param path - File path to get info from.
    *
    * @throws NotFoundHttpError
@@ -183,11 +184,12 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async getDirectoryMetadata(link: ResourceLink, stats: Stats):
   Promise<RepresentationMetadata> {
-    return await this.getBaseMetadata(link, stats, true);
+    return this.getBaseMetadata(link, stats, true);
   }
 
   /**
    * Writes the metadata of the resource to a meta file.
+   *
    * @param link - Path related metadata of the resource.
    * @param metadata - Metadata to write.
    *
@@ -226,6 +228,7 @@ export class FileDataAccessor implements DataAccessor {
 
   /**
    * Generates metadata relevant for any resources stored by this accessor.
+   *
    * @param link - Path related metadata.
    * @param stats - Stats objects of the corresponding directory.
    * @param isContainer - If the path points to a container (directory) or not.
@@ -319,6 +322,7 @@ export class FileDataAccessor implements DataAccessor {
 
   /**
    * Helper function to add file system related metadata.
+   *
    * @param metadata - metadata object to add to
    * @param stats - Stats of the file/directory corresponding to the resource.
    */
@@ -351,11 +355,12 @@ export class FileDataAccessor implements DataAccessor {
 
   /**
    * Helper function without extra validation checking to create a data file.
+   *
    * @param path - The filepath of the file to be created.
    * @param data - The data to be put in the file.
    */
   protected async writeDataFile(path: string, data: Readable): Promise<void> {
-    return new Promise((resolve, reject): any => {
+    return new Promise((resolve, reject): void => {
       const writeStream = createWriteStream(path);
       data.pipe(writeStream);
       data.on('error', (error): void => {

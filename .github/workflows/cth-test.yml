@@ -42,7 +42,7 @@ jobs:
         with:
           node-version: 16.x
       - name: Check out the project
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
         with:
           ref: ${{ inputs.branch || github.ref }}
       - name: Install dependencies and run build scripts

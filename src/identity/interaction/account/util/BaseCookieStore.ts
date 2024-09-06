@@ -23,7 +23,7 @@ export class BaseCookieStore implements CookieStore {
   }
 
   public async get(cookie: string): Promise<string | undefined> {
-    return await this.storage.get(cookie);
+    return this.storage.get(cookie);
   }
 
   public async refresh(cookie: string): Promise<Date | undefined> {

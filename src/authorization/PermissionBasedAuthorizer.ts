@@ -24,6 +24,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
   /**
    * The existence of the target resource determines the output status code for certain situations.
    * The provided {@link ResourceSet} will be used for that.
+   *
    * @param resourceSet - {@link ResourceSet} that can verify the target resource existence.
    */
   public constructor(resourceSet: ResourceSet) {
@@ -77,6 +78,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * Ensures that at least one of the credentials provides permissions for the given mode.
    * Throws a {@link ForbiddenHttpError} or {@link UnauthorizedHttpError} depending on the credentials
    * if access is not allowed.
+   *
    * @param credentials - Credentials that require access.
    * @param permissionSet - PermissionSet describing the available permissions of the credentials.
    * @param mode - Which mode is requested.
@@ -98,6 +100,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
 
   /**
    * Checks whether the agent is authenticated (logged in) or not (public/anonymous).
+   *
    * @param credentials - Credentials to check.
    */
   private isAuthenticated(credentials: Credentials): boolean {

@@ -36,10 +36,10 @@ whose results get merged together in an `ArrayUnionHandler`.
 
 A `NotificationChannelType` contains the specific details of a specification notification channel type,
 including a JSON-LD representation of the corresponding subscription resource.
-One specific instance of a `StorageDescriber` is a `NotificationSubcriber`,
+One specific instance of a `StorageDescriber` is a `NotificationDescriber`,
 which merges those JSON-LD descriptions into a single set of RDF quads.
 When adding a new subscription type,
-a new instance of such a class should be added to the `urn:solid-server:default:StorageDescriber`.
+a new instance of such a class should be added to the `urn:solid-server:default:NotificationDescriber`.
 
 ## NotificationChannel
 
@@ -53,9 +53,9 @@ flowchart LR
   subgraph NotificationTypeHandlerArgs[" "]
     direction LR
     OperationRouterHandler("<br>OperationRouterHandler") --> NotificationSubscriber("<br>NotificationSubscriber")
-    NotificationChannelType --> NotificationChannelType("<br><i>NotificationChannelType</i>")
+NotificationSubscriber --> NotificationChannelType("<br><i>NotificationChannelType</i>")
     OperationRouterHandler2("<br>OperationRouterHandler") --> NotificationSubscriber2("<br>NotificationSubscriber")
-    NotificationChannelType2 --> NotificationChannelType2("<br><i>NotificationChannelType</i>")
+NotificationSubscriber2 --> NotificationChannelType2("<br><i>NotificationChannelType</i>")
   end
 ```
 
@@ -78,7 +78,7 @@ flowchart TB
     ResourceStore("<strong>ResourceStore</strong><br><i>ActivityEmitter</i>")
     NotificationHandler("<strong>NotificationHandler</strong><br>WaterfallHandler")
   end
-  
+
   NotificationHandler --> NotificationHandlerArgs
   subgraph NotificationHandlerArgs[" "]
     direction TB
@@ -154,9 +154,9 @@ flowchart TB
     NotificationChannelStorage("<strong>NotificationChannelStorage</strong><br>NotificationChannelStorage")
     SequenceHandler("<br>SequenceHandler")
   end
-  
+
   SequenceHandler --> SequenceHandlerArgs
-  
+
   subgraph SequenceHandlerArgs[" "]
     direction TB
     WebSocket2023Storer("<strong>WebSocket2023Storer</strong><br>WebSocket2023Storer")
@@ -184,3 +184,45 @@ are quite similar to those needed for WebSocketChannel2023:
 * The `WebhookChannel2023Type` class contains all the necessary typing information.
 * `WebhookEmitter` is the `NotificationEmitter` that sends the request.
 * `WebhookUnsubscriber` and `WebhookWebId` are additional utility classes to support the spec requirements.
+
+## StreamingHTTPChannel2023
+
+Currently, support for [StreamingHTTPChannel2023](https://solid.github.io/notifications/streaming-http-channel-2023)
+only covers default, pre-established channels made available for every resource. Those channels output `text/turtle`.
+
+Support for custom, subscription-based channels can be added in the future.
+
+* For discovery, there is a `StreamingHttpMetadataWriter`, which adds `Link` to every `HTTP` response header
+using `rel="http://www.w3.org/ns/solid/terms#updatesViaStreamingHttp2023"`. It links directly to the `receiveFrom`
+endpoint of the default, pre-established channel for that topic resource.
+* Requests to `receiveFrom` endpoints are handled by a `StreamingHttpRequestHandler`.
+    * It performs an authorization check.
+    * It creates a new response stream and adds it to the `StreamingHttpMap`, indexed by the topic resource.
+    * It sends an initial notification, similar to notification channels using a `state` feature.
+* `StreamingHttp2023Emitter` is the `NotificationEmitter` that writes notifications to matching response streams.
+* `StreamingHttpListeningActivityHandler` is responsible for observing the `MonitoringStore`
+  and emitting notifications when needed.
+  It doesn't use a `NotificationChannelStorage` since the default, pre-established channels are not
+  subscription-based. Instead, it uses a `StreamingHttpMap` to check for active receivers.
+
+```mermaid
+flowchart TB
+  StreamingHttpListeningActivityHandler("<strong>StreamingHttpListeningActivityHandler</strong><br>StreamingHttpListeningActivityHandler")
+  StreamingHttpListeningActivityHandler --> StreamingHttpListeningActivityHandlerArgs
+
+  subgraph StreamingHttpListeningActivityHandlerArgs[" "]
+    StreamingHttpMap("<strong>StreamingHttpMap</strong><br><i>StreamingHttpMap</i>")
+    ResourceStore("<strong>ResourceStore</strong><br><i>ActivityEmitter</i>")
+    StreamingHttpNotificationHandler("<strong>StreamingHttpNotificationHandler</strong><br><i>ComposedNotificationHandler</i>")
+  end
+
+   StreamingHttpNotificationHandler --> StreamingHttpNotificationHandlerArgs
+  subgraph StreamingHttpNotificationHandlerArgs[" "]
+    direction TB
+    Generator("<strong>BaseNotificationGenerator</strong>")
+    Serializer("<strong>BaseNotificationSerializer</strong>")
+    Emitter("<strong>StreamingHttp2023Emitter</strong><br><i>StreamingHttp2023Emitter</i>")
+    ETagHandler("<strong>ETagHandler</strong>")
+
+  end
+```

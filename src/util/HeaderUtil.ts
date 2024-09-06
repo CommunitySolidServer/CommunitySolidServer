@@ -29,12 +29,13 @@ const logger = getLoggerFor('HeaderUtil');
 // HELPER FUNCTIONS
 /**
  * Replaces all double quoted strings in the input string with `"0"`, `"1"`, etc.
+ *
  * @param input - The Accept header string.
  *
- * @throws {@link BadRequestHttpError}
- * Thrown if invalid characters are detected in a quoted string.
- *
  * @returns The transformed string and a map with keys `"0"`, etc. and values the original string that was there.
+ *
+ * @throws BadRequestHttpError
+ * Thrown if invalid characters are detected in a quoted string.
  */
 export function transformQuotedStrings(input: string): { result: string; replacements: Record<string, string> } {
   let idx = 0;
@@ -119,8 +120,8 @@ export function parseParameters(parameters: string[], replacements: Record<strin
     // parameter  = token "=" ( token / quoted-string )
     // second part is optional for certain parameters
     if (!(TOKEN.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || TOKEN.test(rawValue)))) {
-      handleInvalidValue(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
-        `does not match (token ( "=" ( token / quoted-string ))?). `, strict);
+      handleInvalidValue(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue
+      } does not match (token ( "=" ( token / quoted-string ))?). `, strict);
       continue;
     }
 
@@ -134,7 +135,6 @@ export function parseParameters(parameters: string[], replacements: Record<strin
   return parsed;
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Parses a single media range with corresponding parameters from an Accept header.
  * For every parameter value that is a double quoted string,
@@ -146,7 +146,7 @@ export function parseParameters(parameters: string[], replacements: Record<strin
  * @param replacements - The double quoted strings that need to be replaced.
  * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
- * @returns {@link Accept | undefined} object corresponding to the header string, or
+ * @returns An object corresponding to the header string, or
  * undefined if an invalid type or sub-type is detected.
  */
 function parseAcceptPart(part: string, replacements: Record<string, string>, strict: boolean): Accept | undefined {
@@ -177,8 +177,11 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
       weight = parseQValue(value);
     } else {
       if (!value && map !== extensionParams) {
-        handleInvalidValue(`Invalid Accept parameter ${name}: ` +
-          `Accept parameter values are not optional when preceding the q value`, strict);
+        handleInvalidValue(
+          `Invalid Accept parameter ${name}: ` +
+          `Accept parameter values are not optional when preceding the q value`,
+          strict,
+        );
         continue;
       }
       map[name] = value || '';
@@ -198,6 +201,7 @@ function parseAcceptPart(part: string, replacements: Record<string, string>, str
 /**
  * Parses an Accept-* header where each part is only a value and a weight, so roughly /.*(q=.*)?/ separated by commas.
  * The returned weights default to 1 if no q value is found or the q value is invalid.
+ *
  * @param input - Input header string.
  * @param strict - Determines if invalid values throw errors (`true`) or log warnings (`false`). Defaults to `false`.
  *
@@ -369,10 +373,10 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
  *
  * @param input - The Content-Type header string.
  *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid header syntax.
- *
  * @returns A {@link ContentType} object containing the value and optional parameters.
+ *
+ * @throws BadRequestHttpError
+ * Thrown on invalid header syntax.
  */
 export function parseContentType(input: string): ContentType {
   // Quoted strings could prevent split from having correct results
@@ -436,6 +440,7 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
  * Parses the link header(s) and returns an array of LinkEntry objects.
  *
  * @param link - A single link header or an array of link headers
+ *
  * @returns A LinkEntry array, LinkEntry contains a link and a params Record&lt;string,string&gt;
  */
 export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
@@ -482,12 +487,13 @@ const authSchemeRegexCache: Map<string, RegExp> = new Map();
  *
  * @param scheme - Name of the authorization scheme (case insensitive).
  * @param authorization - The value of the Authorization header (may be undefined).
+ *
  * @returns True if the Authorization header uses the specified scheme, false otherwise.
  */
 export function matchesAuthorizationScheme(scheme: string, authorization?: string): boolean {
   const lowerCaseScheme = scheme.toLowerCase();
   if (!authSchemeRegexCache.has(lowerCaseScheme)) {
-    authSchemeRegexCache.set(lowerCaseScheme, new RegExp(`^${escapeStringRegexp(lowerCaseScheme)} `, 'ui'));
+    authSchemeRegexCache.set(lowerCaseScheme, new RegExp(`^${escapeStringRegexp(lowerCaseScheme)} `, 'iu'));
   }
   // Support authorization being undefined (for the sake of usability).
   return typeof authorization !== 'undefined' && authSchemeRegexCache.get(lowerCaseScheme)!.test(authorization);
@@ -497,7 +503,8 @@ export function matchesAuthorizationScheme(scheme: string, authorization?: strin
  * Checks if the scheme part of the specified url matches at least one of the provided options.
  *
  * @param url - A string representing the URL.
- * @param schemes - Scheme value options (the function will check if at least one matches the URL scheme).
+ * @param schemes - Scheme value options (the function will check whether at least one matches the URL scheme).
+ *
  * @returns True if the URL scheme matches at least one of the provided options, false otherwise.
  */
 export function hasScheme(url: string, ...schemes: string[]): boolean {

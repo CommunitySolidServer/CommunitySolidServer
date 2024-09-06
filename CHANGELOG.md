@@ -3,6 +3,75 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.1...v7.1.2) (2024-08-20)
+
+### Fixes
+
+* Use full encoded topic iri in streaming http receiveFrom url template ([3e8365b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3e8365bb2613737fb28c376b5967a351a1300432))
+
+## [7.1.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.0...v7.1.1) (2024-08-07)
+
+### Fixes
+
+* Ensure streaming HTTP streams the whole notification in a single chunk ([3dd8602](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3dd8602acce892b36d1ecaf584c938032e754213))
+
+### Chores
+
+* Increase jest timeout ([e15c59c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e15c59c157882181340fa87a7116b5b34252a79b))
+* Use correct markdownlint-cli2 fix command ([b93aa31](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b93aa31c932935c21f1e3666fdab3d0947a645eb))
+* Depend on external eslint package ([46f5fc2](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/46f5fc239efa794f5309834fa818d17c96f83bd1))
+
+### Documentation
+
+* Update server architecture documentation ([9c44f37](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9c44f375f2537fa0277a6c6831c63c1c1cfc5373))
+* Explain oidc.json ([73619fd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/73619fda056d5a9b0b0fac271f29fbced0424169))
+* Explain WAC vs ACP ([ab41967](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ab419674df5a92054128588747c3abc06086c3ab))
+* Explain the provided configs ([ed6f2ec](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ed6f2ec8e953e84efa6701482d00f616cf6ecbc2))
+* Add test instructions to documentation ([3aa28fa](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3aa28fa03b4d1324998e7f6a5ebe5788d0e6b2c9))
+* Add more explicit installation instructions ([e45bce8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e45bce89aabc95b34ecbefcf46f899a88e60cfef))
+* Add missing index for starting the server ([d350c14](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d350c140fd184d33cbaf6880b9d4b1476d1ffb7c))
+* Add HTTP streaming notification option to docs ([556899d](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/556899dbdbf3bb285de71225d156c4891dce23a9))
+
+## [7.1.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.5...v7.1.0) (2024-05-24)
+
+### Features
+
+* Add support for StreamingHTTPChannel2023 notifications ([cb38613](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cb38613b4cea7f4e808b30a69f1d9aecbb9506e2))
+* Store original target in error metadata ([419312e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/419312ee5f4790881a5d101afea7ab6ca88f5e61))
+
+### Fixes
+
+* Fix .nvmrc version ([0749963](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/07499631b44154fd24d3fd8fd704df34dfca0d0a))
+* Combine metadata with data when generating resources ([e20efac](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e20efac3eaa79b2ed8b09cd72a7f8f0d85655894))
+* Make `getParentContainer` work with query parameters ([0998970](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/099897013c4ea014212495965d4972e5078ed406))
+* Do not reuse the same error in StaticThrowHandler ([f73dfb3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f73dfb31c0fe132524323acf6c4f4636bcd8bc80))
+* Make allow headers more accurate ([5e60000](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5e600006819ae1cf1f8edf804218aee700c59bae))
+* Expose auxiliary links on errors ([d7078ad](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d7078ad69261566c44e38d1bb19142fb8bd4dd0f))
+
+### Refactors
+
+* Simplify eslint configs ([cac70b1](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cac70b1f88dcbbb3ebbe0b8e0b082ead4ab27b33))
+
+## [7.0.5](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.4...v7.0.5) (2024-03-25)
+
+### Fixes
+
+* Allow path segments to start with 2 or more dots ([6fe6b6e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6fe6b6ec89cfa3c1005ca4cf2219fc77de3fb975))
+* Add priorities to RDF types when converting ([33e9ae4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/33e9ae41916c9de0638709b02c42936e53d49414))
+* Extract root as possible pod when using subdomains ([8fff08a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/8fff08a9b60a11c7a7f313c540d9f28a2f96ebc0))
+* Prevent error when switching accounts ([68975e6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/68975e6627416c248d82150692199db8a5fd0d31))
+* Keep content-type when using metadata templates ([137027e](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/137027e421da9ffa2d2bbc23c08b2a47d4abd328))
+
+## [7.0.4](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.3...v7.0.4) (2024-02-07)
+
+### Chores
+
+* Replace rdf-js import with @rdfjs/types ([e09b53b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e09b53b20de0e389715d299466a1e1101579dd07))
+
+### Testing
+
+* Remove workaround for authn library ([7d57359](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7d573596139283637cf2d1e99d44cb2130268811))
+
 ## [7.0.3](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.0.2...v7.0.3) (2024-01-05)
 
 ### Features

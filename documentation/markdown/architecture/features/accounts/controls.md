@@ -17,7 +17,7 @@ flowchart LR
   ControlHandler --password--> PasswordControlHandler("<strong>PasswordControlHandler</strong><br>ControlHandler")
   ControlHandler --"oidc"--> OidcControlHandler("<strong>OidcControlHandler</strong><br>OidcControlHandler")
   ControlHandler --html--> HtmlControlHandler("<strong>HtmlControlHandler</strong><br>ControlHandler")
-  
+
   HtmlControlHandler --main--> MainHtmlControlHandler("<strong>MainHtmlControlHandler</strong><br>ControlHandler")
   HtmlControlHandler --account--> AccountHtmlControlHandler("<strong>AccountHtmlControlHandler</strong><br>ControlHandler")
   HtmlControlHandler --password--> PasswordHtmlControlHandler("<strong>PasswordHtmlControlHandler</strong><br>ControlHandler")

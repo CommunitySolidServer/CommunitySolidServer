@@ -4,6 +4,7 @@ import type { ResourcesGenerator } from './ResourcesGenerator';
 
 /**
  * Generates resources with the given generator and adds them to the given store.
+ *
  * @param settings - Settings from which the pod is being created.
  * @param generator - Generator to be used.
  * @param store - Store to be updated.

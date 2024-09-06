@@ -1,3 +1,4 @@
+import { DataFactory } from 'n3';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { BaseResourcesGenerator } from '../../../../src/pods/generate/BaseResourcesGenerator';
 import type {
@@ -109,7 +110,8 @@ describe('A BaseResourcesGenerator', (): void => {
 
   it('adds metadata from .meta files.', async(): Promise<void> => {
     const meta = '<> <pre:has> "metadata".';
-    cache.data = { '.meta': meta, container: { 'template.meta': meta, template }};
+    const metaType = '<> <http://www.w3.org/ns/ma-ont#format> "text/plain".';
+    cache.data = { '.meta': meta, container: { 'template.meta': meta, template, type: 'dummy', 'type.meta': metaType }};
 
     // Not using options since our dummy template generator generates invalid turtle
     const result = await asyncToArray(generator.generate(rootFilePath, location, { webId }));
@@ -119,7 +121,7 @@ describe('A BaseResourcesGenerator', (): void => {
       { path: `${location.path}.meta` },
       { path: `${location.path}container/` },
       { path: `${location.path}container/template` },
-      { path: `${location.path}container/template.meta` },
+      { path: `${location.path}container/type` },
     ]);
 
     // Root has the 1 raw metadata triple (with <> changed to its identifier) and content-type
@@ -136,14 +138,17 @@ describe('A BaseResourcesGenerator', (): void => {
     expect(contMetadata.identifier.value).toBe(`${location.path}container/`);
     expect(contMetadata.quads()).toHaveLength(0);
 
-    // Document has the 1 raw metadata triple (with <> changed to its identifier) and content-type
+    // Document has the new metadata
     const docMetadata = result[3].representation.metadata;
     expect(docMetadata.identifier.value).toBe(`${location.path}container/template`);
+    // Metadata will replace existing metadata so need to make sure content-type is still there
     expect(docMetadata.contentType).toBe('text/turtle');
-    const docMetadataQuads = await readableToQuads(result[4].representation.data);
-    const expDocMetadataQuads = docMetadataQuads.getQuads(docMetadata.identifier, 'pre:has', null, null);
-    expect(expDocMetadataQuads).toHaveLength(1);
-    expect(expDocMetadataQuads[0].object.value).toBe('metadata');
+    expect(docMetadata.get(DataFactory.namedNode('pre:has'))?.value).toBe('metadata');
+
+    // Type document has new content type
+    const typeMetadata = result[4].representation.metadata;
+    expect(typeMetadata.identifier.value).toBe(`${location.path}container/type`);
+    expect(typeMetadata.contentType).toBe('text/plain');
   });
 
   it('does not create container when it already exists.', async(): Promise<void> => {

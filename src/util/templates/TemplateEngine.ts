@@ -31,5 +31,5 @@ export interface TemplateEngineInput<T> {
  * Generic interface for classes that implement a template engine.
  * A template engine renders content into a template.
  */
-export abstract class TemplateEngine<T extends Dict<any> = Dict<any>>
+export abstract class TemplateEngine<T extends Dict<unknown> = Dict<unknown>>
   extends AsyncHandler<TemplateEngineInput<T>, string> {}

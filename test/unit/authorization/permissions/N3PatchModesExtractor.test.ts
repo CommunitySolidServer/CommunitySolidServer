@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { Quad } from '@rdfjs/types';
 import { N3PatchModesExtractor } from '../../../../src/authorization/permissions/N3PatchModesExtractor';
 import type { AccessMap } from '../../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../../src/authorization/permissions/Permissions';

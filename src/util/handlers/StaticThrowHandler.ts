@@ -1,11 +1,11 @@
-import type { HttpError } from '../errors/HttpError';
+import type { HttpError, HttpErrorClass } from '../errors/HttpError';
 import { AsyncHandler } from './AsyncHandler';
 
 /**
- * Utility handler that can handle all input and always throws the given error.
+ * Utility handler that can handle all input and always throws an instance of the given error.
  */
-export class StaticThrowHandler extends AsyncHandler<any, never> {
-  private readonly error: HttpError;
+export class StaticThrowHandler extends AsyncHandler<unknown, never> {
+  protected readonly error: HttpError;
 
   public constructor(error: HttpError) {
     super();
@@ -13,6 +13,8 @@ export class StaticThrowHandler extends AsyncHandler<any, never> {
   }
 
   public async handle(): Promise<never> {
-    throw this.error;
+    // We are creating a new instance of the error instead of rethrowing the error,
+    // as reusing the same error can cause problem as the metadata is then also reused.
+    throw new (this.error.constructor as HttpErrorClass)();
   }
 }

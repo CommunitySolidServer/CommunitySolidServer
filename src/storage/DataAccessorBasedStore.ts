@@ -1,7 +1,6 @@
-import type { Quad } from '@rdfjs/types';
+import type { NamedNode, Quad, Term } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import type { NamedNode, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
@@ -259,7 +258,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     this.validateConditions(conditions, oldMetadata);
 
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
-      return await this.writeMetadata(identifier, representation);
+      return this.writeMetadata(identifier, representation);
     }
 
     // Potentially have to create containers if it didn't exist yet
@@ -375,8 +374,9 @@ export class DataAccessorBasedStore implements ResourceStore {
    * then the other URI MUST NOT correspond to another resource."
    * https://solid.github.io/specification/protocol#uri-slash-semantics
    *
-   * First the identifier gets requested and if no result is found
+   * First the identifier gets requested. If no result is found,
    * the identifier with differing trailing slash is requested.
+   *
    * @param identifier - Identifier that needs to be checked.
    */
   protected async getNormalizedMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
@@ -412,6 +412,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Write the given metadata resource to the DataAccessor.
+   *
    * @param identifier - Identifier of the metadata.
    * @param representation - Corresponding Representation.
    *
@@ -451,7 +452,8 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Write the given resource to the DataAccessor. Metadata will be updated with necessary triples.
-   * In case of containers `handleContainerData` will be used to verify the data.
+   * For containers, `handleContainerData` will be used to verify the data.
+   *
    * @param identifier - Identifier of the resource.
    * @param representation - Corresponding Representation.
    * @param isContainer - Is the incoming resource a container?
@@ -577,6 +579,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   /**
    * Validates if the slug and headers are valid.
    * Errors if slug exists, ends on slash, but ContainerType Link header is NOT present
+   *
    * @param isContainer - Is the slug supposed to represent a container?
    * @param slug - Is the requested slug (if any).
    */
@@ -587,8 +590,9 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
-   * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters
-   * e.g.: cleanslug('&%26') returns '%26%26'
+   * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters,
+   * e.g., cleanslug('&%26') returns '%26%26'
+   *
    * @param slug - the slug to clean
    */
   protected cleanSlug(slug: string): string {
@@ -632,8 +636,9 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
-   * Checks if the given metadata represents a (potential) container,
+   * Checks whether the given metadata represents a (potential) container,
    * based on the metadata.
+   *
    * @param metadata - Metadata of the (new) resource.
    */
   protected isContainerType(metadata: RepresentationMetadata): boolean {
@@ -688,6 +693,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   /**
    * Create containers starting from the root until the given identifier corresponds to an existing container.
    * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
+   *
    * @param container - Identifier of the container which will need to exist.
    */
   protected async createRecursiveContainers(container: ResourceIdentifier): Promise<ChangeMap> {
@@ -720,6 +726,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Generates activity metadata for a resource and adds it to the {@link ChangeMap}
+   *
    * @param map - ChangeMap to update.
    * @param id - Identifier of the resource being changed.
    * @param activity - Which activity is taking place.
@@ -730,6 +737,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Generates activity metadata specifically for Add/Remove events on a container.
+   *
    * @param map - ChangeMap to update.
    * @param id - Identifier of the container.
    * @param add - If there is a resource being added (`true`) or removed (`false`).

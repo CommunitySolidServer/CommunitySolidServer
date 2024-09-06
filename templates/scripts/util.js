@@ -62,7 +62,7 @@ function addPostListener(callback, formId = 'mainForm', errorId = 'error') {
     event.preventDefault();
 
     try {
-      await callback();
+      return await callback();
     } catch (error) {
       setError(error.message, errorId);
     }
@@ -71,6 +71,7 @@ function addPostListener(callback, formId = 'mainForm', errorId = 'error') {
 
 /**
  * Shows or hides the given element.
+ *
  * @param id - ID of the element.
  * @param visible - If it should be visible.
  */
@@ -88,6 +89,7 @@ function setVisibility(id, visible) {
 
 /**
  * Obtains all children, grandchildren, etc. of the given element.
+ *
  * @param element - Element to get all descendants from.
  */
 function getDescendants(element) {
@@ -96,6 +98,7 @@ function getDescendants(element) {
 
 /**
  * Updates the inner text and href field of an element.
+ *
  * @param id - ID of the element.
  * @param text - Text to put in the field(s). If this is undefined, instead the element will be hidden.
  * @param options - Indicates which fields should be updated.
@@ -117,6 +120,7 @@ function updateElement(id, text, options) {
 
 /**
  * Fetches JSON from the url and converts it to an object.
+ *
  * @param url - URL to fetch JSON from.
  * @param redirectUrl - URL to redirect to in case the response code is >= 400. No redirect happens if undefined.
  */
@@ -159,6 +163,7 @@ function setError(message, errorId = 'error') {
 
 /**
  * Causes the page to redirect to a specific page when a button is clicked.
+ *
  * @param element - The id of the button.
  * @param url - The URL to redirect to.
  */

@@ -1,5 +1,6 @@
+import type { Json } from '../../util/Json';
 import { ACCOUNT_ID_KEY } from './account/AccountIdRoute';
-import type { Json, JsonRepresentation } from './InteractionUtil';
+import type { JsonRepresentation } from './InteractionUtil';
 import type { JsonInteractionHandlerInput } from './JsonInteractionHandler';
 import { JsonInteractionHandler } from './JsonInteractionHandler';
 import type { InteractionRoute } from './routing/InteractionRoute';

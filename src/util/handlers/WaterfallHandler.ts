@@ -16,6 +16,7 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
 
   /**
    * Creates a new WaterfallHandler that stores the given handlers.
+   *
    * @param handlers - Handlers over which it will run.
    */
   public constructor(handlers: AsyncHandler<TIn, TOut>[]) {
@@ -23,7 +24,8 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
   }
 
   /**
-   * Checks if any of the stored handlers can handle the given input.
+   * Checks whether any of the stored handlers can handle the given input.
+   *
    * @param input - The data that would need to be handled.
    *
    * @returns A promise resolving if at least 1 handler supports to input, or rejecting if none do.
@@ -34,6 +36,7 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
 
   /**
    * Finds a handler that supports the given input and then lets it handle the given data.
+   *
    * @param input - The data that needs to be handled.
    *
    * @returns A promise corresponding to the handle call of a handler that supports the input.
@@ -55,6 +58,7 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
   /**
    * Identical to {@link AsyncHandler.handleSafe} but optimized for composite
    * by only needing 1 canHandle call on members.
+   *
    * @param input - The input data.
    *
    * @returns A promise corresponding to the handle call of a handler that supports the input.

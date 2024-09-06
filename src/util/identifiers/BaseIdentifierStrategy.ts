@@ -1,9 +1,18 @@
-import { URL } from 'node:url';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { errorTermsToMetadata } from '../errors/HttpErrorUtil';
 import { InternalServerError } from '../errors/InternalServerError';
-import { ensureTrailingSlash, isContainerIdentifier } from '../PathUtil';
+import { isContainerIdentifier } from '../PathUtil';
 import type { IdentifierStrategy } from './IdentifierStrategy';
+
+/**
+ * Regular expression used to determine the parent container of a resource.
+ */
+const parentRegex = /^(.+\/)[^/]+\/*$/u;
+
+/**
+ * Used during containment check to determine if an identifier is a direct child or not.
+ */
+const tailRegex = /\/./u;
 
 /**
  * Provides a default implementation for `getParentContainer`
@@ -27,10 +36,9 @@ export abstract class BaseIdentifierStrategy implements IdentifierStrategy {
       throw new InternalServerError(`Cannot obtain the parent of ${identifier.path} because it is a root container.`);
     }
 
-    // Trailing slash is necessary for URL library
-    const parentPath = new URL('..', ensureTrailingSlash(identifier.path)).href;
-
-    return { path: parentPath };
+    // Due to the checks above we know this will always succeed
+    const match = parentRegex.exec(identifier.path);
+    return { path: match![1] };
   }
 
   public abstract isRootContainer(identifier: ResourceIdentifier): boolean;
@@ -50,6 +58,6 @@ export abstract class BaseIdentifierStrategy implements IdentifierStrategy {
 
     const tail = identifier.path.slice(container.path.length);
     // If there is at least one `/` followed by a char this is not a direct parent container
-    return !/\/./u.test(tail);
+    return !tailRegex.test(tail);
   }
 }

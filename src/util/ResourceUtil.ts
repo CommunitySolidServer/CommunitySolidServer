@@ -13,6 +13,7 @@ import namedNode = DataFactory.namedNode;
 
 /**
  * Helper function to generate type quads for a Container or Resource.
+ *
  * @param metadata - Metadata to add to.
  * @param isContainer - If the identifier corresponds to a container.
  */
@@ -26,6 +27,7 @@ export function addResourceMetadata(metadata: RepresentationMetadata, isContaine
 
 /**
  * Updates the dc:modified time to the given time.
+ *
  * @param metadata - Metadata to update.
  * @param date - Last modified date. Defaults to current time.
  */
@@ -38,6 +40,7 @@ export function updateModifiedDate(metadata: RepresentationMetadata, date = new 
 
 /**
  * Links a template file with a given content-type to the metadata using the SOLID_META.template predicate.
+ *
  * @param metadata - Metadata to update.
  * @param templateFile - Path to the template.
  * @param contentType - Content-type of the template after it is rendered.
@@ -52,6 +55,7 @@ void {
 /**
  * Helper function to clone a representation, the original representation can still be used.
  * This function loads the entire stream in memory.
+ *
  * @param representation - The representation to clone.
  *
  * @returns The cloned representation.

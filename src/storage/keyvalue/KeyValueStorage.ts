@@ -6,18 +6,21 @@ export interface KeyValueStorage<TKey, TValue> {
   /**
    * Returns the value stored for the given identifier.
    * `undefined` if no value is stored.
+   *
    * @param identifier - Identifier to get the value for.
    */
   get: (key: TKey) => Promise<TValue | undefined>;
 
   /**
-   * Checks if there is a value stored for the given key.
+   * Checks whether there is a value stored for the given key.
+   *
    * @param identifier - Identifier to check.
    */
   has: (key: TKey) => Promise<boolean>;
 
   /**
    * Sets the value for the given key.
+   *
    * @param key - Key to set/update.
    * @param value - Value to store.
    *
@@ -27,6 +30,7 @@ export interface KeyValueStorage<TKey, TValue> {
 
   /**
    * Deletes the value stored for the given key.
+   *
    * @param key - Key to delete.
    *
    * @returns If there was a value to delete.

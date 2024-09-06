@@ -26,6 +26,7 @@ export interface ETagHandler {
   /**
    * Validates whether 2 ETags correspond to the same state of a resource,
    * independent of the representation the ETags correspond to.
+   *
    * @param eTag1 - First ETag to compare.
    * @param eTag2 - Second ETag to compare.
    */

@@ -61,10 +61,9 @@ export class HandlerServerConfigurator extends ServerConfigurator {
    */
   private createErrorMessage(error: unknown): string {
     if (!isError(error)) {
-      // eslint-disable-next-line ts/restrict-template-expressions
-      return `Unknown error: ${error}.\n`;
+      return `Unknown error: ${error as string}.\n`;
     }
-    if (this.showStackTrace && error.stack) {
+    if (this.showStackTrace && isError(error) && error.stack) {
       return `${error.stack}\n`;
     }
     return `${error.name}: ${error.message}\n`;

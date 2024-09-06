@@ -21,7 +21,6 @@ describe('A WebSocket2023Emitter', (): void => {
   beforeEach(async(): Promise<void> => {
     webSocket = {
       send: jest.fn(),
-      close: jest.fn(),
     } as any;
 
     socketMap = new WrappedSetMultiMap();

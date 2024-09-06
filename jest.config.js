@@ -70,7 +70,7 @@ module.exports = {
     '^jose/(.*)$': '<rootDir>/node_modules/jose/dist/node/cjs/$1',
   },
   // Slower machines had problems calling the WebSocket integration callbacks on time
-  testTimeout: 60000,
+  testTimeout: 90000,
 
   reporters: ci ? [ 'default', 'github-actions' ] : [ 'default' ],
   ...ci && jestGithubRunnerSpecs(),

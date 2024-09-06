@@ -1,7 +1,7 @@
 import { QueryEngine } from '@comunica/query-sparql';
 import arrayifyStream from 'arrayify-stream';
 import type { Store } from 'n3';
-import type { Bindings, Quad, Term } from 'rdf-js';
+import type { Bindings, Quad, Term } from '@rdfjs/types';
 import { mapTerms } from 'rdf-terms';
 import { Generator, Wildcard } from 'sparqljs';
 import type { SparqlGenerator } from 'sparqljs';
@@ -140,9 +140,9 @@ export class N3Patcher extends RepresentationPatcher<RdfDatasetRepresentation> {
       }
 
       // Apply bindings to deletes/inserts
-      deletes = deletes.map((quad): Quad => mapTerms<Quad>(quad, (term): Term =>
+      deletes = deletes.map((quad): Quad => mapTerms(quad, (term): Term =>
         term.termType === 'Variable' ? bindings[0].get(term)! : term));
-      inserts = inserts.map((quad): Quad => mapTerms<Quad>(quad, (term): Term =>
+      inserts = inserts.map((quad): Quad => mapTerms(quad, (term): Term =>
         term.termType === 'Variable' ? bindings[0].get(term)! : term));
     }
 

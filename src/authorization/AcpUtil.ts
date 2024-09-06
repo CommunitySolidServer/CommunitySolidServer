@@ -7,7 +7,7 @@ import type {
   IPolicy,
 } from '@solid/access-control-policy';
 import type { Store } from 'n3';
-import type { NamedNode, Term } from 'rdf-js';
+import type { NamedNode, Term } from '@rdfjs/types';
 import { ACP } from '../util/Vocabularies';
 
 /**
@@ -27,6 +27,7 @@ function getObjectValues(data: Store, subject: Term, predicate: NamedNode): stri
 
 /**
  * Finds the {@link IMatcher} with the given identifier in the given dataset.
+ *
  * @param data - Dataset to look in.
  * @param matcher - Identifier of the matcher.
  */
@@ -42,6 +43,7 @@ export function getMatcher(data: Store, matcher: Term): IMatcher {
 
 /**
  * Finds the {@link IPolicy} with the given identifier in the given dataset.
+ *
  * @param data - Dataset to look in.
  * @param policy - Identifier of the policy.
  */
@@ -58,6 +60,7 @@ export function getPolicy(data: Store, policy: Term): IPolicy {
 
 /**
  * Finds the {@link IAccessControl} with the given identifier in the given dataset.
+ *
  * @param data - Dataset to look in.
  * @param accessControl - Identifier of the access control.
  */
@@ -71,6 +74,7 @@ export function getAccessControl(data: Store, accessControl: Term): IAccessContr
 
 /**
  * Finds the {@link IAccessControlResource} with the given identifier in the given dataset.
+ *
  * @param data - Dataset to look in.
  * @param acr - Identifier of the access control resource.
  */
@@ -88,6 +92,7 @@ export function getAccessControlResource(data: Store, acr: Term): IAccessControl
 
 /**
  * Finds all {@link IAccessControlledResource} in the given dataset.
+ *
  * @param data - Dataset to look in.
  */
 export function* getAccessControlledResources(data: Store): Iterable<IAccessControlledResource> {

@@ -4,7 +4,7 @@ import { AsyncHandler } from './AsyncHandler';
 /**
  * Handler that does not support any input and will always throw an error.
  */
-export class UnsupportedAsyncHandler extends AsyncHandler<any, never> {
+export class UnsupportedAsyncHandler extends AsyncHandler<unknown, never> {
   private readonly errorMessage?: string;
 
   public constructor(errorMessage?: string) {

@@ -21,7 +21,7 @@ export class AgentGroupAccessChecker extends AccessChecker {
       const { webId } = credentials.agent;
       const groups = acl.getObjects(rule, ACL.terms.agentGroup, null);
 
-      return await promiseSome(groups.map(async(group: Term): Promise<boolean> =>
+      return promiseSome(groups.map(async(group: Term): Promise<boolean> =>
         this.isMemberOfGroup(webId, group)));
     }
     return false;
@@ -29,6 +29,7 @@ export class AgentGroupAccessChecker extends AccessChecker {
 
   /**
    * Checks if the given agent is member of a given vCard group.
+   *
    * @param webId - WebID of the agent that needs access.
    * @param group - URL of the vCard group that needs to be checked.
    *
@@ -50,6 +51,6 @@ export class AgentGroupAccessChecker extends AccessChecker {
       const representation = await fetchDataset(url);
       return readableToQuads(representation.data);
     })();
-    return await prom;
+    return prom;
   }
 }

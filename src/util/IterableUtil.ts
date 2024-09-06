@@ -12,7 +12,7 @@
 export function* map<TIn, TOut>(
   iterable: Iterable<TIn>,
   callbackFn: (element: TIn, index: number) => TOut,
-  thisArg?: any,
+  thisArg?: unknown,
 ): Iterable<TOut> {
   const boundMapFn = callbackFn.bind(thisArg);
   let count = 0;
@@ -31,8 +31,11 @@ export function* map<TIn, TOut>(
  * @param callbackFn - Function that is called to test every element.
  * @param thisArg - Value to use as `this` when executing `callbackFn`.
  */
-export function* filter<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean, thisArg?: any):
-Iterable<T> {
+export function* filter<T>(
+  iterable: Iterable<T>,
+  callbackFn: (element: T, index: number) => boolean,
+  thisArg?: unknown,
+): Iterable<T> {
   const boundFilterFn = callbackFn.bind(thisArg);
   let count = 0;
   for (const value of iterable) {
@@ -45,6 +48,7 @@ Iterable<T> {
 
 /**
  * Creates a new iterable that is a concatenation of all the iterables in the input.
+ *
  * @param iterables - An iterable of which the contents will be concatenated into a new iterable.
  */
 export function* concat<T>(iterables: Iterable<Iterable<T>>): Iterable<T> {
@@ -63,7 +67,7 @@ export function* concat<T>(iterables: Iterable<Iterable<T>>): Iterable<T> {
  * @param callbackFn - Function that is called to test every element.
  * @param thisArg - Value to use as `this` when executing `callbackFn`.
  */
-export function find<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean, thisArg?: any):
+export function find<T>(iterable: Iterable<T>, callbackFn: (element: T, index: number) => boolean, thisArg?: unknown):
 T | undefined {
   const boundMapFn = callbackFn.bind(thisArg);
   const count = 0;
@@ -184,7 +188,12 @@ async function findNextSorted<T>(
 export async function* sortedAsyncMerge<T>(iterators: AsyncIterator<T>[], comparator?: (left: T, right: T) => number):
 AsyncIterable<T> {
   if (!comparator) {
-    comparator = (left, right): number => left < right ? -1 : (left > right ? 1 : 0);
+    comparator = (left, right): number => {
+      if (left < right) {
+        return -1;
+      }
+      return left > right ? 1 : 0;
+    };
   }
 
   // Initialize the array to the first result of every iterator

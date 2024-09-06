@@ -7,6 +7,8 @@ import type { IdentifierGenerator } from './IdentifierGenerator';
 /**
  * Generates identifiers by using the name as a subdomain on the base URL.
  * Non-alphanumeric characters will be replaced with `-`.
+ *
+ * When extracting the pod, the base URl is also seen as a pod as there is no issue of nested containers here.
  */
 export class SubdomainIdentifierGenerator implements IdentifierGenerator {
   private readonly baseParts: { scheme: string; rest: string };
@@ -32,8 +34,8 @@ export class SubdomainIdentifierGenerator implements IdentifierGenerator {
 
     const idx = path.indexOf(this.baseParts.rest);
 
-    // If the idx is smaller than this, either there was no match, or there is no subdomain
-    if (idx <= this.baseParts.scheme.length) {
+    // If the idx is smaller than this, there was no match
+    if (idx < 0) {
       throw new BadRequestHttpError(`Invalid identifier ${path}`);
     }
 

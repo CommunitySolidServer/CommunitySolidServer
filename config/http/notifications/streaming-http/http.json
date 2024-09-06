@@ -1,0 +1,87 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:StreamingHTTP2023Route",
+      "@type": "RelativePathInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:NotificationRoute" },
+      "relativePath": "/StreamingHTTPChannel2023/"
+    },
+    {
+      "comment": "Creates updatesViaStreamingHttp2023 Link relations",
+      "@id": "urn:solid-server:default:StreamingHttpMetadataWriter",
+      "@type": "StreamingHttpMetadataWriter",
+      "route": { "@id": "urn:solid-server:default:StreamingHTTP2023Route" }
+    },
+    {
+      "comment": "Allows discovery of the corresponding streaming HTTP channel",
+      "@id": "urn:solid-server:default:MetadataWriter",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:StreamingHttpMetadataWriter" }
+      ]
+    },
+    {
+      "comment": "Handles the request targeting a StreamingHTTPChannel2023 receiveFrom endpoint.",
+      "@id": "urn:solid-server:default:StreamingHttp2023Router",
+      "@type": "OperationRouterHandler",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "allowedMethods": [ "GET" ],
+      "allowedPathNames": [ "/StreamingHTTPChannel2023/" ],
+      "handler": {
+        "@id": "urn:solid-server:default:StreamingHttp2023RequestHandler",
+        "@type": "StreamingHttpRequestHandler",
+        "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" },
+        "route": { "@id": "urn:solid-server:default:StreamingHTTP2023Route" },
+        "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
+        "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
+        "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
+        "permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
+        "authorizer": { "@id": "urn:solid-server:default:Authorizer" }
+      }
+    },
+    {
+      "comment": "Add the router to notification type handler",
+      "@id": "urn:solid-server:default:NotificationTypeHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:StreamingHttp2023Router" }
+      ]
+    },
+    {
+      "comment": "Opened response streams will be stored in this Map.",
+      "@id": "urn:solid-server:default:StreamingHttpMap",
+      "@type": "StreamingHttpMap"
+    },
+    {
+      "comment": "Emits serialized notifications through Streaming HTTP.",
+      "@id": "urn:solid-server:default:StreamingHttp2023Emitter",
+      "@type": "StreamingHttp2023Emitter",
+      "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" }
+    },
+    {
+      "comment": "Listens to the activities emitted by the MonitoringStore.",
+      "@id": "urn:solid-server:default:StreamingHttpListeningActivityHandler",
+      "@type": "StreamingHttpListeningActivityHandler",
+      "emitter": { "@id": "urn:solid-server:default:ResourceStore" },
+      "streamMap": { "@id": "urn:solid-server:default:StreamingHttpMap" },
+      "source": {
+        "comment": "Handles the generation and serialization of notifications for StreamingHTTPChannel2023",
+        "@id": "urn:solid-server:default:StreamingHttpNotificationHandler",
+        "@type": "ComposedNotificationHandler",
+        "generator": { "@id": "urn:solid-server:default:BaseNotificationGenerator" },
+        "serializer": { "@id": "urn:solid-server:default:BaseNotificationSerializer" },
+        "emitter": { "@id": "urn:solid-server:default:StreamingHttp2023Emitter" },
+        "eTagHandler": { "@id": "urn:solid-server:default:ETagHandler" }
+      }
+    },
+    {
+      "comment": "Add the activity handler to the primary initializer",
+      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:StreamingHttpListeningActivityHandler" }
+      ]
+    }
+  ]
+}

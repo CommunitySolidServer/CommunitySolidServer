@@ -1,4 +1,5 @@
-import type { Json, JsonRepresentation } from './InteractionUtil';
+import type { Json } from '../../util/Json';
+import type { JsonRepresentation } from './InteractionUtil';
 import { JsonInteractionHandler } from './JsonInteractionHandler';
 
 /**
