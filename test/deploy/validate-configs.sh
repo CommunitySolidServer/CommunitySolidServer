@@ -82,7 +82,7 @@ run_server_with_config () {
     timeout 30s tail --pid=$PID -f /dev/null
   fi
 
-  rm -rf test/tmp/data/*
+  rm -rf test/tmp/data/
   return $FAILURE
 }
 
