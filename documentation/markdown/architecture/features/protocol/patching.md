@@ -17,7 +17,7 @@ The architecture is described more in-depth below.
 flowchart LR
   PatchingStore("<strong>ResourceStore_Patching</strong><br>ResourceStore")
   PatchingStore --> PatchHandler("<strong>PatchHandler</strong><br>RepresentationPatchHandler")
-  PatchHandler --> Patchers("<br>WaterfallHandler")
+  PatchHandler --> Patchers("<br>StatusWaterfallHandler")
   Patchers --> ConvertingPatcher("<br>ConvertingPatcher")
   ConvertingPatcher --> RdfPatcher("<strong>RdfPatcher</strong><br>RdfPatcher")
 ```
@@ -25,12 +25,12 @@ flowchart LR
 ```mermaid
 flowchart LR
   RdfPatcher("<strong>RdfPatcher</strong><br>RdfPatcher")
-  RdfPatcher --> RDFStore("<strong>PatchHandler_RDFStore</strong><br>WaterfallHandler")
+  RdfPatcher --> RDFStore("<strong>PatchHandler_RDFStore</strong><br>StatusWaterfallHandler")
   RDFStore --> RDFStoreArgs
 
   subgraph RDFStoreArgs[" "]
     Immutable("<strong>PatchHandler_ImmutableMetadata</strong><br>ImmutableMetadataPatcher")
-    RDF("<strong>PatchHandler_RDF</strong><br>WaterfallHandler")
+    RDF("<strong>PatchHandler_RDF</strong><br>StatusWaterfallHandler")
     Immutable --> RDF
   end
 

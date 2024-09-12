@@ -38,12 +38,12 @@ flowchart TD
   CredentialsExtractor --> CredentialsExtractorArgs
 
   subgraph CredentialsExtractorArgs[" "]
-    WaterfallHandler("<br>WaterfallHandler")
+    StatusWaterfallHandler("<br>StatusWaterfallHandler")
     PublicCredentialsExtractor("<br>PublicCredentialsExtractor")
   end
 
-  WaterfallHandler --> WaterfallHandlerArgs
-  subgraph WaterfallHandlerArgs[" "]
+  StatusWaterfallHandler --> StatusWaterfallHandlerArgs
+  subgraph StatusWaterfallHandlerArgs[" "]
     direction LR
     DPoPWebIdExtractor("<br>DPoPWebIdExtractor") --> BearerWebIdExtractor("<br>BearerWebIdExtractor")
   end
@@ -69,7 +69,7 @@ based on the request contents.
 ```mermaid
 flowchart TD
   ModesExtractor("<strong>ModesExtractor</strong><br>IntermediateCreateExtractor")
-  ModesExtractor --> HttpModesExtractor("<strong>HttpModesExtractor</strong><br>WaterfallHandler")
+  ModesExtractor --> HttpModesExtractor("<strong>HttpModesExtractor</strong><br>StatusWaterfallHandler")
 
   HttpModesExtractor --> HttpModesExtractorArgs
 
@@ -93,7 +93,7 @@ where the necessary modes depend on the body and the PATCH type.
 
 ```mermaid
 flowchart TD
-  PatchModesExtractor("<strong>PatchModesExtractor</strong><br>WaterfallHandler") --> PatchModesExtractorArgs
+  PatchModesExtractor("<strong>PatchModesExtractor</strong><br>StatusWaterfallHandler") --> PatchModesExtractorArgs
   subgraph PatchModesExtractorArgs[" "]
     N3PatchModesExtractor("<br>N3PatchModesExtractor")
     SparqlUpdateModesExtractor("<br>SparqlUpdateModesExtractor")

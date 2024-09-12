@@ -63,7 +63,7 @@ which allows classes to have different support for GET and POST requests.
 ```json
 {
   "@id": "urn:solid-server:default:InteractionRouteHandler",
-  "@type": "WaterfallHandler",
+  "@type": "StatusWaterfallHandler",
   "handlers": [
     { "@id": "urn:solid-server:default:AccountWebIdRouter" }
   ]

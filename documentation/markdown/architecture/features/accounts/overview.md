@@ -24,7 +24,7 @@ The `InteractionHandler` is many handlers chained together as follows:
 ```mermaid
 flowchart TD
   HttpHandler("<strong>IdentityProviderHttpHandler</strong><br>IdentityProviderHttpHandler")
-  HttpHandler --> InteractionHandler("<strong>InteractionHandler</strong><br>WaterfallHandler")
+  HttpHandler --> InteractionHandler("<strong>InteractionHandler</strong><br>StatusWaterfallHandler")
   InteractionHandler --> InteractionHandlerArgs
 
   subgraph InteractionHandlerArgs[" "]
@@ -37,7 +37,7 @@ flowchart TD
   VersionHandler --> CookieInteractionHandler("<strong>CookieInteractionHandler</strong><br>CookieInteractionHandler")
   CookieInteractionHandler --> RootControlHandler("<strong>RootControlHandler</strong><br>ControlHandler")
   RootControlHandler --> LocationInteractionHandler("<strong>LocationInteractionHandler</strong><br>LocationInteractionHandler")
-  LocationInteractionHandler --> InteractionRouteHandler("<strong>InteractionRouteHandler</strong><br>WaterfallHandler")
+  LocationInteractionHandler --> InteractionRouteHandler("<strong>InteractionRouteHandler</strong><br>StatusWaterfallHandler")
 ```
 
 The `HtmlViewHandler` catches all request that request an HTML output.
@@ -55,4 +55,4 @@ We'll list and summarize these here:
 * `RootControlHandler`: Responsible for adding all the [controls](controls.md) to the output.
   Will take as input multiple other control handlers which create the nested values in the `controls` field.
 * `LocationInteractionHandler`: Catches redirect errors and converts them to JSON objects with a `location` field.
-* `InteractionRouteHandler`: A `WaterfallHandler` containing an entry for every supported API [route](routes.md).
+* `InteractionRouteHandler`: A `StatusWaterfallHandler` containing an entry for every supported API [route](routes.md).
