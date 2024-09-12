@@ -10,13 +10,13 @@ flowchart LR
   subgraph HttpHandlerArgs[" "]
     direction LR
     Middleware("<strong>Middleware</strong><br><i>HttpHandler</i>")
-    WaterfallHandler("<br>WaterfallHandler")
+    BaseHttpHandler("<strong>BaseHttpHandler</strong><br>StatusWaterfallHandler")
   end
 
-  Middleware --> WaterfallHandler
-  WaterfallHandler --> WaterfallHandlerArgs
+  Middleware --> BaseHttpHandler
+  BaseHttpHandler --> BaseHttpHandlerArgs
 
-  subgraph WaterfallHandlerArgs[" "]
+  subgraph BaseHttpHandlerArgs[" "]
     direction TB
     StaticAssetHandler("<strong>StaticAssetHandler</strong><br>StaticAssetHandler")
     OidcHandler("<strong>OidcHandler</strong><br><i>HttpHandler</i>")
@@ -39,7 +39,7 @@ The `HttpHandler` is responsible for handling an incoming HTTP request.
 The request will always first go through the `Middleware`,
 where certain required headers will be added such as CORS headers.
 
-After that it will go through the list in the `WaterfallHandler`
+After that it will go through the list in the `StatusWaterfallHandler`
 to find the first handler that understands the request,
 with the `LdpHandler` at the bottom being the catch-all default.
 

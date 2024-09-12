@@ -47,7 +47,7 @@ To subscribe, a client has to send a specific JSON-LD request to the URL found d
 
 ```mermaid
 flowchart LR
-  NotificationTypeHandler("<strong>NotificationTypeHandler</strong><br>WaterfallHandler")
+  NotificationTypeHandler("<strong>NotificationTypeHandler</strong><br>StatusWaterfallHandler")
   NotificationTypeHandler --> NotificationTypeHandlerArgs
 
   subgraph NotificationTypeHandlerArgs[" "]
@@ -76,7 +76,7 @@ flowchart TB
   subgraph ListeningActivityHandlerArgs[" "]
     NotificationChannelStorage("<strong>NotificationChannelStorage</strong><br><i>NotificationChannelStorage</i>")
     ResourceStore("<strong>ResourceStore</strong><br><i>ActivityEmitter</i>")
-    NotificationHandler("<strong>NotificationHandler</strong><br>WaterfallHandler")
+    NotificationHandler("<strong>NotificationHandler</strong><br>StatusWaterfallHandler")
   end
 
   NotificationHandler --> NotificationHandlerArgs
@@ -93,7 +93,7 @@ The `ListeningActivityHandler` is the class that listens to these events
 and makes sure relevant notifications get sent out.
 
 It will pull the relevant subscriptions from the storage and call the stored `NotificationHandler` for each of time.
-For every subscription type, a `NotificationHandler` should be added to the `WaterfallHandler`
+For every subscription type, a `NotificationHandler` should be added to the `StatusWaterfallHandler`
 that handles notifications for the specific type.
 
 ## WebSocketChannel2023
