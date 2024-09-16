@@ -20,8 +20,8 @@ For example, if the input data claims to be JSON-LD but is actually not.
 The power of using this interface really shines when using certain utility classes.
 The one we use the most is the `StatusWaterfallHandler`,
 which takes as input a list of handlers of the same type.
-The input and output of a `StatusWaterfallHandler` is the same as those of its inputs,
-meaning it can be used in the same places.
+The output(s) of a `StatusWaterfallHandler` will conform to the same interface(s)
+as its input handler(s), meaning it can be used in the same places.
 When doing a `canHandle` call, it will iterate over all its input handlers
 to find the first one where the `canHandle` call succeeds,
 and when calling `handle` it will return the result of that specific handler.
