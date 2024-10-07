@@ -20,7 +20,7 @@ describe('A BinarySliceResourceStore', (): void => {
       getRepresentation: jest.fn().mockResolvedValue(representation),
     } satisfies Partial<ResourceStore> as any;
 
-    store = new BinarySliceResourceStore(source);
+    store = new BinarySliceResourceStore(source, 5);
   });
 
   it('slices the data stream and stores the metadata.', async(): Promise<void> => {
@@ -37,6 +37,24 @@ describe('A BinarySliceResourceStore', (): void => {
     await expect(readableToString(result.data)).resolves.toBe('6789');
     expect(result.metadata.get(SOLID_HTTP.terms.unit)?.value).toBe('bytes');
     expect(result.metadata.get(SOLID_HTTP.terms.start)?.value).toBe('-4');
+  });
+
+  it('limits response size to default slice size.', async(): Promise<void> => {
+    representation.metadata.set(POSIX.terms.size, '10');
+    const result = await store.getRepresentation(identifier, { range: { unit: 'bytes', parts: [{ start: 0 }]}});
+    await expect(readableToString(result.data)).resolves.toBe('01234');
+    expect(result.metadata.get(SOLID_HTTP.terms.unit)?.value).toBe('bytes');
+    expect(result.metadata.get(SOLID_HTTP.terms.start)?.value).toBe('0');
+    expect(result.metadata.get(SOLID_HTTP.terms.end)?.value).toBe('4');
+  });
+
+  it('does not go out of range when default slice size extends beyond the resource size.', async(): Promise<void> => {
+    representation.metadata.set(POSIX.terms.size, '10');
+    const result = await store.getRepresentation(identifier, { range: { unit: 'bytes', parts: [{ start: 8 }]}});
+    await expect(readableToString(result.data)).resolves.toBe('89');
+    expect(result.metadata.get(SOLID_HTTP.terms.unit)?.value).toBe('bytes');
+    expect(result.metadata.get(SOLID_HTTP.terms.start)?.value).toBe('8');
+    expect(result.metadata.get(SOLID_HTTP.terms.end)?.value).toBe('9');
   });
 
   it('does not add end metadata if there is none.', async(): Promise<void> => {
@@ -85,5 +103,11 @@ describe('A BinarySliceResourceStore', (): void => {
     await expect(store.getRepresentation(identifier, { range: { unit: 'bytes', parts: [{ start: -5 }]}}))
       .rejects.toThrow(RangeNotSatisfiedHttpError);
     expect(representation.data.destroy).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns all bytes when a defaultSliceSize is not provided.', async(): Promise<void> => {
+    store = new BinarySliceResourceStore(source);
+    const result = await store.getRepresentation(identifier, { range: { unit: 'bytes', parts: [{ start: 0 }]}});
+    await expect(readableToString(result.data)).resolves.toBe('0123456789');
   });
 });
