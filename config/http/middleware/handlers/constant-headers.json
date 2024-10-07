@@ -13,6 +13,10 @@
         {
           "HeaderHandler:_headers_key": "X-Powered-By",
           "HeaderHandler:_headers_value": "Community Solid Server"
+        },
+        {
+          "HeaderHandler:_headers_key": "Accept-Ranges",
+          "HeaderHandler:_headers_value": "bytes"
         }
       ]
     }

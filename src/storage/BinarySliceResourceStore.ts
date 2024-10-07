@@ -21,9 +21,18 @@ import type { ResourceStore } from './ResourceStore';
  * If the slice happens, unit/start/end values will be written to the metadata to indicate such.
  * The values are dependent on the preferences we got as an input,
  * as we don't know the actual size of the data stream.
+ *
+ * The `defaultSliceSize` parameter can be used to set how large a slice should be if the end of a range is not defined.
+ * Setting this to 0, which is the default, will cause the end of the stream to be used as the end of the slice.
  */
 export class BinarySliceResourceStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
   protected readonly logger = getLoggerFor(this);
+  private readonly defaultSliceSize: number;
+
+  public constructor(source: T, defaultSliceSize = 0) {
+    super(source);
+    this.defaultSliceSize = defaultSliceSize;
+  }
 
   public async getRepresentation(
     identifier: ResourceIdentifier,
@@ -47,7 +56,14 @@ export class BinarySliceResourceStore<T extends ResourceStore = ResourceStore> e
       throw new RangeNotSatisfiedHttpError('Multipart range requests are not supported.');
     }
 
-    const [{ start, end }] = preferences.range.parts;
+    let [{ start, end }] = preferences.range.parts;
+    const size = termToInt(result.metadata.get(POSIX.terms.size));
+
+    // Set the default end size if not set already
+    if (this.defaultSliceSize > 0 && typeof end !== 'number' && typeof size === 'number' && start >= 0) {
+      end = Math.min(size, start + this.defaultSliceSize) - 1;
+    }
+
     result.metadata.set(SOLID_HTTP.terms.unit, preferences.range.unit);
     result.metadata.set(SOLID_HTTP.terms.start, toLiteral(start, XSD.terms.integer));
     if (typeof end === 'number') {
@@ -55,7 +71,6 @@ export class BinarySliceResourceStore<T extends ResourceStore = ResourceStore> e
     }
 
     try {
-      const size = termToInt(result.metadata.get(POSIX.terms.size));
       // The reason we don't determine the object mode based on the object mode of the parent stream
       // is that `guardedStreamFrom` does not create object streams when inputting streams/buffers.
       // Something to potentially update in the future.
