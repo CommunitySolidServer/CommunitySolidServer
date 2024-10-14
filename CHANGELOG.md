@@ -3,6 +3,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.3](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.2...v7.1.3) (2024-10-14)
+
+### Fixes
+
+* Streaming video by adding a limit to streaming chunks ([b8bcec9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b8bcec90ccdea30b21b4095c38c6494a39a599cc))
+
+### Chores
+
+* Update @bergos/jsonparse to v1.4.2 ([7c31053](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7c310535f0f5fca1c1d2098b7a7b95bc8c2ac783))
+
 ## [7.1.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.1...v7.1.2) (2024-08-20)
 
 ### Fixes
