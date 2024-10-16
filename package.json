@@ -127,7 +127,7 @@
     "proper-lockfile": "^4.1.2",
     "pump": "^3.0.0",
     "punycode": "^2.3.0",
-    "rdf-dereference": "^2.2.0",
+    "rdf-dereference": "^4.0.0",
     "rdf-parse": "^2.3.2",
     "rdf-serialize": "^2.2.2",
     "rdf-string": "^1.6.3",
