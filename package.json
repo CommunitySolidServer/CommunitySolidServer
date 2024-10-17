@@ -72,7 +72,7 @@
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
   "dependencies": {
-    "@comunica/context-entries": "^3.0.1",
+    "@comunica/context-entries": "^4.0.2",
     "@comunica/query-sparql": "^3.0.1",
     "@rdfjs/types": "^1.1.0",
     "@solid/access-control-policy": "^0.1.3",
