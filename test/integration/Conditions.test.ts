@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { App } from '../../src/init/App';
 import { deleteResource, expectQuads, getResource, patchResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
@@ -11,8 +11,6 @@ import {
   instantiateFromConfig,
   removeFolder,
 } from './Config';
-
-const { namedNode, quad } = DataFactory;
 
 const port = getPort('Conditions');
 const baseUrl = `http://localhost:${port}/`;
@@ -106,8 +104,8 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     // Verify the contents got updated
     response = await getResource(documentUrl);
     const expected = [
-      quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
-      quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')),
+      DF.quad(DF.namedNode('http://test.com/s1'), DF.namedNode('http://test.com/p1'), DF.namedNode('http://test.com/o1')),
+      DF.quad(DF.namedNode('http://test.com/s2'), DF.namedNode('http://test.com/p2'), DF.namedNode('http://test.com/o2')),
     ];
     await expectQuads(response, expected, true);
 

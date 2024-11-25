@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import type { Readable } from 'node:stream';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
@@ -16,8 +16,6 @@ import { guardedStreamFrom, readableToString } from '../../../../src/util/Stream
 import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
-
-const { namedNode, quad } = DataFactory;
 
 jest.mock('node:fs');
 jest.mock('fs-extra');
@@ -323,7 +321,7 @@ describe('A FileDataAccessor', (): void => {
         data.emit('error', new Error('error'));
         return null;
       };
-      metadata.add(namedNode('likes'), 'apples');
+      metadata.add(DF.namedNode('likes'), 'apples');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .rejects.toThrow('error');
       expect(cache.data['resource.meta']).toBeUndefined();
@@ -331,9 +329,9 @@ describe('A FileDataAccessor', (): void => {
 
     it('updates the filename if the content-type gets updated.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.', 'resource.meta': '<this> <is> <metadata>.' };
-      metadata.identifier = DataFactory.namedNode(`${base}resource`);
+      metadata.identifier = DF.namedNode(`${base}resource`);
       metadata.contentType = 'text/plain';
-      metadata.add(namedNode('new'), 'metadata');
+      metadata.add(DF.namedNode('new'), 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .resolves.toBeUndefined();
       expect(cache.data).toEqual({
@@ -343,9 +341,9 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('does not try to update the content-type if there is no original file.', async(): Promise<void> => {
-      metadata.identifier = DataFactory.namedNode(`${base}resource.txt`);
+      metadata.identifier = DF.namedNode(`${base}resource.txt`);
       metadata.contentType = 'text/turtle';
-      metadata.add(namedNode('new'), 'metadata');
+      metadata.add(DF.namedNode('new'), 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource.txt` }, data, metadata))
         .resolves.toBeUndefined();
       expect(cache.data).toEqual({
@@ -428,12 +426,12 @@ describe('A FileDataAccessor', (): void => {
       await accessor.writeDocument(resourceIdentifier, data, inputMetadata);
 
       const extraMetadata = new RepresentationMetadata(resourceIdentifier);
-      extraMetadata.addQuad(namedNode('a'), namedNode('b'), namedNode('c'));
+      extraMetadata.addQuad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c'));
       await expect(accessor.writeMetadata(resourceIdentifier, extraMetadata)).resolves.toBeUndefined();
 
       const outputMetadata = await accessor.getMetadata(resourceIdentifier);
       expect(outputMetadata.quads(`${base}a`))
-        .toStrictEqual([ quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}c`)) ]);
+        .toStrictEqual([ DF.quad(DF.namedNode(`${base}a`), DF.namedNode(`${base}b`), DF.namedNode(`${base}c`)) ]);
     });
   });
 

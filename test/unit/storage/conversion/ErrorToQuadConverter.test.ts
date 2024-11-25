@@ -1,12 +1,10 @@
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ErrorToQuadConverter } from '../../../../src/storage/conversion/ErrorToQuadConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { DC, SOLID_ERROR } from '../../../../src/util/Vocabularies';
-
-const { literal, namedNode, quad } = DataFactory;
 
 describe('An ErrorToQuadConverter', (): void => {
   const identifier = { path: 'http://test.com/error' };
@@ -27,9 +25,9 @@ describe('An ErrorToQuadConverter', (): void => {
     expect(result.metadata.contentType).toBe('internal/quads');
     const quads = await arrayifyStream(result.data);
     expect(quads).toBeRdfIsomorphic([
-      quad(namedNode(identifier.path), DC.terms.title, literal('BadRequestHttpError')),
-      quad(namedNode(identifier.path), DC.terms.description, literal('error text')),
-      quad(namedNode(identifier.path), SOLID_ERROR.terms.stack, literal(error.stack!)),
+      DF.quad(DF.namedNode(identifier.path), DC.terms.title, DF.literal('BadRequestHttpError')),
+      DF.quad(DF.namedNode(identifier.path), DC.terms.description, DF.literal('error text')),
+      DF.quad(DF.namedNode(identifier.path), SOLID_ERROR.terms.stack, DF.literal(error.stack!)),
     ]);
   });
 
@@ -44,8 +42,8 @@ describe('An ErrorToQuadConverter', (): void => {
     expect(result.metadata.contentType).toBe('internal/quads');
     const quads = await arrayifyStream(result.data);
     expect(quads).toBeRdfIsomorphic([
-      quad(namedNode(identifier.path), DC.terms.title, literal('BadRequestHttpError')),
-      quad(namedNode(identifier.path), DC.terms.description, literal('error text')),
+      DF.quad(DF.namedNode(identifier.path), DC.terms.title, DF.literal('BadRequestHttpError')),
+      DF.quad(DF.namedNode(identifier.path), DC.terms.description, DF.literal('error text')),
     ]);
   });
 });

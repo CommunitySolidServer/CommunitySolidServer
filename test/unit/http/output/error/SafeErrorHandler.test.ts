@@ -6,7 +6,6 @@ import { BasicRepresentation } from '../../../../../src/http/representation/Basi
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 import { readableToString } from '../../../../../src/util/StreamUtil';
 import { HTTP, XSD } from '../../../../../src/util/Vocabularies';
-import literal = DataFactory.literal;
 
 describe('A SafeErrorHandler', (): void => {
   let error: Error;
@@ -47,7 +46,8 @@ describe('A SafeErrorHandler', (): void => {
       await expect(prom).resolves.toBeDefined();
       const result = await prom;
       expect(result.statusCode).toBe(404);
-      expect(result.metadata?.get(HTTP.terms.statusCodeNumber)).toEqualRdfTerm(literal(404, XSD.terms.integer));
+      expect(result.metadata?.get(HTTP.terms.statusCodeNumber))
+        .toEqualRdfTerm(DataFactory.literal(404, XSD.terms.integer));
       expect(result.metadata?.contentType).toBe('text/plain');
       await expect(readableToString(result.data!)).resolves.toBe(`${stack}\n`);
     });
@@ -58,7 +58,8 @@ describe('A SafeErrorHandler', (): void => {
       await expect(prom).resolves.toBeDefined();
       const result = await prom;
       expect(result.statusCode).toBe(404);
-      expect(result.metadata?.get(HTTP.terms.statusCodeNumber)).toEqualRdfTerm(literal(404, XSD.terms.integer));
+      expect(result.metadata?.get(HTTP.terms.statusCodeNumber))
+        .toEqualRdfTerm(DataFactory.literal(404, XSD.terms.integer));
       expect(result.metadata?.contentType).toBe('text/plain');
       await expect(readableToString(result.data!)).resolves.toBe(`NotFoundHttpError: not here\n`);
     });
@@ -69,7 +70,8 @@ describe('A SafeErrorHandler', (): void => {
       await expect(prom).resolves.toBeDefined();
       const result = await prom;
       expect(result.statusCode).toBe(404);
-      expect(result.metadata?.get(HTTP.terms.statusCodeNumber)).toEqualRdfTerm(literal(404, XSD.terms.integer));
+      expect(result.metadata?.get(HTTP.terms.statusCodeNumber))
+        .toEqualRdfTerm(DataFactory.literal(404, XSD.terms.integer));
       expect(result.metadata?.contentType).toBe('text/plain');
       await expect(readableToString(result.data!)).resolves.toBe(`NotFoundHttpError: not here\n`);
     });

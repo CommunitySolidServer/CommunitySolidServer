@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import type { Term } from '@rdfjs/types';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { BodyParserArgs } from '../../../../../src/http/input/body/BodyParser';
 import { N3PatchBodyParser } from '../../../../../src/http/input/body/N3PatchBodyParser';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
@@ -8,8 +8,6 @@ import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { guardedStreamFrom } from '../../../../../src/util/StreamUtil';
-
-const { defaultGraph, literal, namedNode, quad, variable } = DataFactory;
 
 describe('An N3PatchBodyParser', (): void => {
   let input: BodyParserArgs;
@@ -45,14 +43,14 @@ _:rename a solid:InsertDeletePatch;
     input.request = guardedStreamFrom([ n3 ]) as HttpRequest;
     const patch = await parser.handle(input);
     expect(patch.conditions).toBeRdfIsomorphic([
-      quad(variable('person'), namedNode('http://www.example.org/terms#familyName'), literal('Garcia')),
-      quad(variable('person'), namedNode('http://www.example.org/terms#nickName'), literal('Garry')),
+      DF.quad(DF.variable('person'), DF.namedNode('http://www.example.org/terms#familyName'), DF.literal('Garcia')),
+      DF.quad(DF.variable('person'), DF.namedNode('http://www.example.org/terms#nickName'), DF.literal('Garry')),
     ]);
     expect(patch.inserts).toBeRdfIsomorphic([
-      quad(variable('person'), namedNode('http://www.example.org/terms#givenName'), literal('Alex')),
+      DF.quad(DF.variable('person'), DF.namedNode('http://www.example.org/terms#givenName'), DF.literal('Alex')),
     ]);
     expect(patch.deletes).toBeRdfIsomorphic([
-      quad(variable('person'), namedNode('http://www.example.org/terms#givenName'), literal('Claudia')),
+      DF.quad(DF.variable('person'), DF.namedNode('http://www.example.org/terms#givenName'), DF.literal('Claudia')),
     ]);
   });
 
@@ -69,7 +67,7 @@ _:rename a solid:InsertDeletePatch;
     const quads = [ ...patch.deletes, ...patch.inserts, ...patch.conditions ];
     const uniqueGraphs = [ ...new Set(quads.map((entry): Term => entry.graph)) ];
     expect(uniqueGraphs).toHaveLength(1);
-    expect(uniqueGraphs[0]).toEqualRdfTerm(defaultGraph());
+    expect(uniqueGraphs[0]).toEqualRdfTerm(DF.defaultGraph());
   });
 
   it('errors if no solid:InsertDeletePatch is found.', async(): Promise<void> => {

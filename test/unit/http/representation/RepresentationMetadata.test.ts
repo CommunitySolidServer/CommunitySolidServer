@@ -1,12 +1,10 @@
 import 'jest-rdf';
 import type { BlankNode } from 'n3';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { NamedNode, Quad } from '@rdfjs/types';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { ContentType } from '../../../../src/util/Header';
 import { CONTENT_TYPE_TERM, RDFS, SOLID_META } from '../../../../src/util/Vocabularies';
-
-const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
 // Helper functions to filter quads
 function getQuads(quads: Quad[], subject?: string, predicate?: string, object?: string, graph?: string): Quad[] {
@@ -24,16 +22,16 @@ function removeQuads(quads: Quad[], subject?: string, predicate?: string, object
 
 describe('A RepresentationMetadata', (): void => {
   let metadata: RepresentationMetadata;
-  const identifier = namedNode('http://example.com/id');
-  const graphNode = namedNode('http://graph');
+  const identifier = DF.namedNode('http://example.com/id');
+  const graphNode = DF.namedNode('http://graph');
   const inputQuads = [
-    quad(identifier, namedNode('has'), literal('data')),
-    quad(identifier, namedNode('has'), literal('moreData')),
-    quad(identifier, namedNode('hasOne'), literal('otherData')),
-    quad(identifier, namedNode('has'), literal('data'), graphNode),
-    quad(namedNode('otherNode'), namedNode('linksTo'), identifier),
-    quad(namedNode('otherNode'), namedNode('has'), literal('otherData')),
-    quad(namedNode('otherNode'), namedNode('graphData'), literal('otherData'), graphNode),
+    DF.quad(identifier, DF.namedNode('has'), DF.literal('data')),
+    DF.quad(identifier, DF.namedNode('has'), DF.literal('moreData')),
+    DF.quad(identifier, DF.namedNode('hasOne'), DF.literal('otherData')),
+    DF.quad(identifier, DF.namedNode('has'), DF.literal('data'), graphNode),
+    DF.quad(DF.namedNode('otherNode'), DF.namedNode('linksTo'), identifier),
+    DF.quad(DF.namedNode('otherNode'), DF.namedNode('has'), DF.literal('otherData')),
+    DF.quad(DF.namedNode('otherNode'), DF.namedNode('graphData'), DF.literal('otherData'), graphNode),
   ];
 
   describe('constructor', (): void => {
@@ -44,13 +42,13 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('stores the given identifier if given.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata(namedNode('identifier'));
-      expect(metadata.identifier).toEqualRdfTerm(namedNode('identifier'));
+      metadata = new RepresentationMetadata(DF.namedNode('identifier'));
+      expect(metadata.identifier).toEqualRdfTerm(DF.namedNode('identifier'));
     });
 
     it('converts identifiers to named nodes.', async(): Promise<void> => {
       metadata = new RepresentationMetadata({ path: 'identifier' });
-      expect(metadata.identifier).toEqualRdfTerm(namedNode('identifier'));
+      expect(metadata.identifier).toEqualRdfTerm(DF.namedNode('identifier'));
     });
 
     it('converts string to content type.', async(): Promise<void> => {
@@ -77,28 +75,29 @@ describe('A RepresentationMetadata', (): void => {
     it('copies an other metadata object.', async(): Promise<void> => {
       const other = new RepresentationMetadata({ path: 'otherId' }, { 'test:pred': 'objVal' });
       metadata = new RepresentationMetadata(other);
-      expect(metadata.identifier).toEqualRdfTerm(namedNode('otherId'));
+      expect(metadata.identifier).toEqualRdfTerm(DF.namedNode('otherId'));
       expect(metadata.quads()).toBeRdfIsomorphic([
-        quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal')),
+        DF.quad(DF.namedNode('otherId'), DF.namedNode('test:pred'), DF.literal('objVal')),
       ]);
     });
 
     it('takes overrides for specific predicates.', async(): Promise<void> => {
       metadata = new RepresentationMetadata({ predVal: 'objVal' });
-      expect(metadata.get(namedNode('predVal'))).toEqualRdfTerm(literal('objVal'));
+      expect(metadata.get(DF.namedNode('predVal'))).toEqualRdfTerm(DF.literal('objVal'));
 
-      metadata = new RepresentationMetadata({ predVal: literal('objVal') });
-      expect(metadata.get(namedNode('predVal'))).toEqualRdfTerm(literal('objVal'));
+      metadata = new RepresentationMetadata({ predVal: DF.literal('objVal') });
+      expect(metadata.get(DF.namedNode('predVal'))).toEqualRdfTerm(DF.literal('objVal'));
 
-      metadata = new RepresentationMetadata({ predVal: [ 'objVal1', literal('objVal2') ], predVal2: 'objVal3' });
-      expect(metadata.getAll(namedNode('predVal'))).toEqualRdfTermArray([ literal('objVal1'), literal('objVal2') ]);
-      expect(metadata.get(namedNode('predVal2'))).toEqualRdfTerm(literal('objVal3'));
+      metadata = new RepresentationMetadata({ predVal: [ 'objVal1', DF.literal('objVal2') ], predVal2: 'objVal3' });
+      expect(metadata.getAll(DF.namedNode('predVal')))
+        .toEqualRdfTermArray([ DF.literal('objVal1'), DF.literal('objVal2') ]);
+      expect(metadata.get(DF.namedNode('predVal2'))).toEqualRdfTerm(DF.literal('objVal3'));
     });
 
     it('can combine overrides with an identifier.', async(): Promise<void> => {
       metadata = new RepresentationMetadata(identifier, { predVal: 'objVal' });
       expect(metadata.quads()).toBeRdfIsomorphic([
-        quad(identifier, namedNode('predVal'), literal('objVal')),
+        DF.quad(identifier, DF.namedNode('predVal'), DF.literal('objVal')),
       ]);
     });
 
@@ -106,7 +105,7 @@ describe('A RepresentationMetadata', (): void => {
       const other = new RepresentationMetadata({ path: 'otherId' }, { 'test:pred': 'objVal' });
       metadata = new RepresentationMetadata(other, { 'test:pred': 'objVal2' });
       expect(metadata.quads()).toBeRdfIsomorphic([
-        quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal2')),
+        DF.quad(DF.namedNode('otherId'), DF.namedNode('test:pred'), DF.literal('objVal2')),
       ]);
     });
   });
@@ -121,20 +120,20 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('can query quads.', async(): Promise<void> => {
-      expect(metadata.quads(null, namedNode('has'))).toHaveLength(getQuads(inputQuads, undefined, 'has').length);
-      expect(metadata.quads(null, null, literal('otherData')))
+      expect(metadata.quads(null, DF.namedNode('has'))).toHaveLength(getQuads(inputQuads, undefined, 'has').length);
+      expect(metadata.quads(null, null, DF.literal('otherData')))
         .toHaveLength(getQuads(inputQuads, undefined, undefined, 'otherData').length);
     });
 
     it('can change the stored identifier.', async(): Promise<void> => {
-      const newIdentifier = namedNode('newNode');
+      const newIdentifier = DF.namedNode('newNode');
       metadata.identifier = newIdentifier;
       const newQuads = inputQuads.map((triple): Quad => {
         if (triple.subject.equals(identifier)) {
-          return quad(newIdentifier, triple.predicate, triple.object, triple.graph);
+          return DF.quad(newIdentifier, triple.predicate, triple.object, triple.graph);
         }
         if (triple.object.equals(identifier)) {
-          return quad(triple.subject, triple.predicate, newIdentifier, triple.graph);
+          return DF.quad(triple.subject, triple.predicate, newIdentifier, triple.graph);
         }
         return triple;
       });
@@ -149,7 +148,7 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.identifier).toEqual(other.identifier);
       expect(metadata.quads()).toBeRdfIsomorphic([
         ...inputQuads,
-        quad(identifier, namedNode('test:pred'), literal('objVal')),
+        DF.quad(identifier, DF.namedNode('test:pred'), DF.literal('objVal')),
       ]);
     });
 
@@ -159,28 +158,28 @@ describe('A RepresentationMetadata', (): void => {
 
       // `setMetadata` should have the same result as the following
       const expectedMetadata = new RepresentationMetadata(identifier).addQuads(inputQuads);
-      expectedMetadata.identifier = namedNode('otherId');
-      expectedMetadata.add(namedNode('test:pred'), 'objVal');
+      expectedMetadata.identifier = DF.namedNode('otherId');
+      expectedMetadata.add(DF.namedNode('test:pred'), 'objVal');
 
       expect(metadata.identifier).toEqual(other.identifier);
       expect(metadata.quads()).toBeRdfIsomorphic(expectedMetadata.quads());
     });
 
     it('can add a quad.', async(): Promise<void> => {
-      const newQuad = quad(namedNode('random'), namedNode('new'), literal('triple'));
-      metadata.addQuad('random', namedNode('new'), 'triple');
+      const newQuad = DF.quad(DF.namedNode('random'), DF.namedNode('new'), DF.literal('triple'));
+      metadata.addQuad('random', DF.namedNode('new'), 'triple');
       expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads, newQuad ]);
     });
 
     it('can add a quad with a graph.', async(): Promise<void> => {
-      const newQuad = quad(namedNode('random'), namedNode('new'), literal('triple'), namedNode('graph'));
-      metadata.addQuad('random', namedNode('new'), 'triple', 'graph');
+      const newQuad = DF.quad(DF.namedNode('random'), DF.namedNode('new'), DF.literal('triple'), DF.namedNode('graph'));
+      metadata.addQuad('random', DF.namedNode('new'), 'triple', 'graph');
       expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads, newQuad ]);
     });
 
     it('can add quads.', async(): Promise<void> => {
       const newQuads: Quad[] = [
-        quad(namedNode('random'), namedNode('new'), namedNode('triple')),
+        DF.quad(DF.namedNode('random'), DF.namedNode('new'), DF.namedNode('triple')),
       ];
       metadata.addQuads(newQuads);
       expect(metadata.quads()).toBeRdfIsomorphic([ ...newQuads, ...inputQuads ]);
@@ -193,7 +192,7 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('removes all matching triples if graph is undefined.', async(): Promise<void> => {
-      metadata.removeQuad(identifier, namedNode('has'), 'data');
+      metadata.removeQuad(identifier, DF.namedNode('has'), 'data');
       expect(metadata.quads()).toHaveLength(inputQuads.length - 2);
       expect(metadata.quads()).toBeRdfIsomorphic(removeQuads(inputQuads, identifier.value, 'has', 'data'));
     });
@@ -204,51 +203,51 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('can add a single value for a predicate.', async(): Promise<void> => {
-      const newQuad = quad(identifier, namedNode('new'), namedNode('triple'));
+      const newQuad = DF.quad(identifier, DF.namedNode('new'), DF.namedNode('triple'));
       metadata.add(newQuad.predicate as NamedNode, newQuad.object as NamedNode);
       expect(metadata.quads()).toBeRdfIsomorphic([ newQuad, ...inputQuads ]);
     });
 
     it('can add single values as string.', async(): Promise<void> => {
-      const newQuad = quad(identifier, namedNode('new'), literal('triple'));
+      const newQuad = DF.quad(identifier, DF.namedNode('new'), DF.literal('triple'));
       metadata.add(newQuad.predicate as NamedNode, newQuad.object.value);
       expect(metadata.quads()).toBeRdfIsomorphic([ newQuad, ...inputQuads ]);
     });
 
     it('can add multiple values for a predicate.', async(): Promise<void> => {
       const newQuads = [
-        quad(identifier, namedNode('new'), namedNode('triple')),
-        quad(identifier, namedNode('new'), namedNode('triple2')),
+        DF.quad(identifier, DF.namedNode('new'), DF.namedNode('triple')),
+        DF.quad(identifier, DF.namedNode('new'), DF.namedNode('triple2')),
       ];
-      metadata.add(namedNode('new'), [ namedNode('triple'), namedNode('triple2') ]);
+      metadata.add(DF.namedNode('new'), [ DF.namedNode('triple'), DF.namedNode('triple2') ]);
       expect(metadata.quads()).toBeRdfIsomorphic([ ...newQuads, ...inputQuads ]);
     });
 
     it('can remove a single value for a predicate.', async(): Promise<void> => {
-      metadata.remove(namedNode('has'), literal('data'));
+      metadata.remove(DF.namedNode('has'), DF.literal('data'));
       expect(metadata.quads()).toBeRdfIsomorphic(removeQuads(inputQuads, identifier.value, 'has', 'data'));
     });
 
     it('can remove single values as string.', async(): Promise<void> => {
-      metadata.remove(namedNode('has'), 'data');
+      metadata.remove(DF.namedNode('has'), 'data');
       expect(metadata.quads()).toBeRdfIsomorphic(removeQuads(inputQuads, identifier.value, 'has', 'data'));
     });
 
     it('can remove multiple values for a predicate.', async(): Promise<void> => {
-      metadata.remove(namedNode('has'), [ literal('data'), 'moreData' ]);
+      metadata.remove(DF.namedNode('has'), [ DF.literal('data'), 'moreData' ]);
       let expected = removeQuads(inputQuads, identifier.value, 'has', 'data');
       expected = removeQuads(expected, identifier.value, 'has', 'moreData');
       expect(metadata.quads()).toBeRdfIsomorphic(expected);
     });
 
     it('can remove all values for a predicate.', async(): Promise<void> => {
-      const pred = namedNode('has');
+      const pred = DF.namedNode('has');
       metadata.removeAll(pred);
       expect(metadata.quads()).toBeRdfIsomorphic(removeQuads(inputQuads, identifier.value, 'has'));
     });
 
     it('can remove all values for a predicate in a specific graph.', async(): Promise<void> => {
-      const pred = namedNode('has');
+      const pred = DF.namedNode('has');
       metadata.removeAll(pred, graphNode);
       expect(metadata.quads()).toBeRdfIsomorphic(
         removeQuads(inputQuads, identifier.value, 'has', undefined, graphNode.value),
@@ -256,50 +255,50 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('can check the existence of a triple.', async(): Promise<void> => {
-      expect(metadata.has(namedNode('has'), literal('data'))).toBe(true);
-      expect(metadata.has(namedNode('has'))).toBe(true);
-      expect(metadata.has(undefined, literal('data'))).toBe(true);
-      expect(metadata.has(namedNode('has'), literal('wrongData'))).toBe(false);
+      expect(metadata.has(DF.namedNode('has'), DF.literal('data'))).toBe(true);
+      expect(metadata.has(DF.namedNode('has'))).toBe(true);
+      expect(metadata.has(undefined, DF.literal('data'))).toBe(true);
+      expect(metadata.has(DF.namedNode('has'), DF.literal('wrongData'))).toBe(false);
     });
 
     it('can get all values for a predicate.', async(): Promise<void> => {
-      expect(metadata.getAll(namedNode('has'))).toEqualRdfTermArray(
-        [ literal('data'), literal('moreData'), literal('data') ],
+      expect(metadata.getAll(DF.namedNode('has'))).toEqualRdfTermArray(
+        [ DF.literal('data'), DF.literal('moreData'), DF.literal('data') ],
       );
     });
 
     it('can get all values for a predicate in a graph.', async(): Promise<void> => {
-      expect(metadata.getAll(namedNode('has'), defaultGraph())).toEqualRdfTermArray(
-        [ literal('data'), literal('moreData') ],
+      expect(metadata.getAll(DF.namedNode('has'), DF.defaultGraph())).toEqualRdfTermArray(
+        [ DF.literal('data'), DF.literal('moreData') ],
       );
     });
 
     it('can get the single value for a predicate.', async(): Promise<void> => {
-      expect(metadata.get(namedNode('hasOne'))).toEqualRdfTerm(literal('otherData'));
+      expect(metadata.get(DF.namedNode('hasOne'))).toEqualRdfTerm(DF.literal('otherData'));
     });
 
     it('returns undefined if getting an undefined predicate.', async(): Promise<void> => {
-      expect(metadata.get(namedNode('doesntExist'))).toBeUndefined();
+      expect(metadata.get(DF.namedNode('doesntExist'))).toBeUndefined();
     });
 
     it('errors if there are multiple values when getting a value.', async(): Promise<void> => {
-      expect((): any => metadata.get(namedNode('has'))).toThrow(Error);
+      expect((): any => metadata.get(DF.namedNode('has'))).toThrow(Error);
     });
 
     it('can set the value of a predicate.', async(): Promise<void> => {
-      metadata.set(namedNode('has'), literal('singleValue'));
-      expect(metadata.get(namedNode('has'))).toEqualRdfTerm(literal('singleValue'));
+      metadata.set(DF.namedNode('has'), DF.literal('singleValue'));
+      expect(metadata.get(DF.namedNode('has'))).toEqualRdfTerm(DF.literal('singleValue'));
     });
 
     it('can set multiple values of a predicate.', async(): Promise<void> => {
-      metadata.set(namedNode('has'), [ literal('value1'), literal('value2') ]);
-      expect(metadata.getAll(namedNode('has'))).toEqualRdfTermArray([ literal('value1'), literal('value2') ]);
+      metadata.set(DF.namedNode('has'), [ DF.literal('value1'), DF.literal('value2') ]);
+      expect(metadata.getAll(DF.namedNode('has'))).toEqualRdfTermArray([ DF.literal('value1'), DF.literal('value2') ]);
     });
 
     it('has a shorthand for content-type.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       metadata.contentType = 'a/b';
-      expect(metadata.get(CONTENT_TYPE_TERM)).toEqualRdfTerm(literal('a/b'));
+      expect(metadata.get(CONTENT_TYPE_TERM)).toEqualRdfTerm(DF.literal('a/b'));
       expect(metadata.contentType).toBe('a/b');
       metadata.contentType = undefined;
       expect(metadata.contentType).toBeUndefined();

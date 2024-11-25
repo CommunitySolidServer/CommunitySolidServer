@@ -9,8 +9,6 @@ import { NOTIFY } from '../../util/Vocabularies';
 import { StorageDescriber } from '../description/StorageDescriber';
 import type { NotificationChannelType } from './NotificationChannelType';
 
-const { namedNode, quad } = DataFactory;
-
 /**
  * Outputs quads describing all the subscription services of the server,
  * as described in https://solidproject.org/TR/2022/notifications-protocol-20221231#discovery and
@@ -30,7 +28,7 @@ export class NotificationDescriber extends StorageDescriber {
   }
 
   public async handle(identifier: ResourceIdentifier): Promise<Quad[]> {
-    const subject = namedNode(identifier.path);
+    const subject = DataFactory.namedNode(identifier.path);
 
     const subscriptionLinks: Quad[] = [];
     const preferences = { type: { [INTERNAL_QUADS]: 1 }};
@@ -39,7 +37,7 @@ export class NotificationDescriber extends StorageDescriber {
       const representation = new BasicRepresentation(JSON.stringify(jsonld), { path: jsonld.id }, APPLICATION_LD_JSON);
       const converted = await this.converter.handleSafe({ identifier, representation, preferences });
       const arr = await arrayifyStream<Quad>(converted.data);
-      subscriptionLinks.push(quad(subject, NOTIFY.terms.subscription, namedNode(jsonld.id)));
+      subscriptionLinks.push(DataFactory.quad(subject, NOTIFY.terms.subscription, DataFactory.namedNode(jsonld.id)));
       return arr;
     }));
 

@@ -1,7 +1,7 @@
 import { createReadStream } from 'node:fs';
 import fetch from 'cross-fetch';
 import type { Quad } from 'n3';
-import { DataFactory, Parser, Store } from 'n3';
+import { DataFactory as DF, Parser, Store } from 'n3';
 import { joinFilePath, joinUrl, PIM, RDF } from '../../src/';
 import type { App } from '../../src/';
 import { LDP } from '../../src/util/Vocabularies';
@@ -22,8 +22,6 @@ import {
   instantiateFromConfig,
   removeFolder,
 } from './Config';
-
-const { literal, namedNode, quad } = DataFactory;
 
 const port = getPort('LpdHandlerWithoutAuth');
 const baseUrl = `http://localhost:${port}/`;
@@ -94,7 +92,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     const parser = new Parser({ baseIRI: baseUrl });
     const quads = parser.parse(await response.text());
     const store = new Store(quads);
-    expect(store.countQuads(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container, null)).toBe(1);
+    expect(store.countQuads(DF.namedNode(baseUrl), RDF.terms.type, LDP.terms.Container, null)).toBe(1);
   });
 
   it('can add a document to the store, read it and delete it.', async(): Promise<void> => {
@@ -140,7 +138,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
     // Verify container listing
     await expectQuads(response, [
-      quad(namedNode(containerUrl), RDF.terms.type, LDP.terms.Container),
+      DF.quad(DF.namedNode(containerUrl), RDF.terms.type, LDP.terms.Container),
     ]);
 
     // DELETE
@@ -268,8 +266,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
     const response = await getResource(containerUrl);
     await expectQuads(response, [
-      quad(namedNode(containerUrl), LDP.terms.contains, namedNode(subContainerUrl)),
-      quad(namedNode(containerUrl), LDP.terms.contains, namedNode(documentUrl)),
+      DF.quad(DF.namedNode(containerUrl), LDP.terms.contains, DF.namedNode(subContainerUrl)),
+      DF.quad(DF.namedNode(containerUrl), LDP.terms.contains, DF.namedNode(documentUrl)),
     ]);
 
     // DELETE
@@ -310,7 +308,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     response = await getResource(containerUrl);
 
     await expectQuads(response, [
-      quad(namedNode(containerUrl), namedNode('http://www.w3.org/2000/01/rdf-schema#label'), literal('My Resource')),
+      DF.quad(DF.namedNode(containerUrl), DF.namedNode('http://www.w3.org/2000/01/rdf-schema#label'), DF.literal('My Resource')),
     ]);
 
     // DELETE
@@ -372,15 +370,15 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     // GET
     response = await getResource(documentUrl);
     const expected = [
-      quad(
-        namedNode('http://test.com/s3'),
-        namedNode('http://test.com/p3'),
-        namedNode('http://test.com/o3'),
+      DF.quad(
+        DF.namedNode('http://test.com/s3'),
+        DF.namedNode('http://test.com/p3'),
+        DF.namedNode('http://test.com/o3'),
       ),
-      quad(
-        namedNode(`${documentUrl}#s4`),
-        namedNode(`${documentUrl}#p4`),
-        namedNode(`${documentUrl}#o4`),
+      DF.quad(
+        DF.namedNode(`${documentUrl}#s4`),
+        DF.namedNode(`${documentUrl}#p4`),
+        DF.namedNode(`${documentUrl}#o4`),
       ),
     ];
     await expectQuads(response, expected, true);
@@ -427,15 +425,15 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     // GET
     response = await getResource(documentUrl);
     const expected = [
-      quad(
-        namedNode('http://test.com/s3'),
-        namedNode('http://test.com/p3'),
-        namedNode('http://test.com/o3'),
+      DF.quad(
+        DF.namedNode('http://test.com/s3'),
+        DF.namedNode('http://test.com/p3'),
+        DF.namedNode('http://test.com/o3'),
       ),
-      quad(
-        namedNode(`${documentUrl}#s4`),
-        namedNode(`${documentUrl}#p4`),
-        namedNode(`${documentUrl}#o4`),
+      DF.quad(
+        DF.namedNode(`${documentUrl}#s4`),
+        DF.namedNode(`${documentUrl}#p4`),
+        DF.namedNode(`${documentUrl}#o4`),
       ),
     ];
     await expectQuads(response, expected, true);
@@ -562,20 +560,20 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await promise;
 
     const expected = [
-      quad(
-        namedNode('http://test.com/s2'),
-        namedNode('http://test.com/p2'),
-        namedNode('http://test.com/o2'),
+      DF.quad(
+        DF.namedNode('http://test.com/s2'),
+        DF.namedNode('http://test.com/p2'),
+        DF.namedNode('http://test.com/o2'),
       ),
-      quad(
-        namedNode('http://test.com/s3'),
-        namedNode('http://test.com/p3'),
-        namedNode('http://test.com/o3'),
+      DF.quad(
+        DF.namedNode('http://test.com/s3'),
+        DF.namedNode('http://test.com/p3'),
+        DF.namedNode('http://test.com/o3'),
       ),
-      quad(
-        namedNode('http://test.com/s4'),
-        namedNode('http://test.com/p4'),
-        namedNode('http://test.com/o4'),
+      DF.quad(
+        DF.namedNode('http://test.com/s4'),
+        DF.namedNode('http://test.com/p4'),
+        DF.namedNode('http://test.com/o4'),
       ),
     ];
     await expectQuads(response, expected, true);
@@ -648,7 +646,9 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
     // GET
     const response = await fetch(documentMetaURL);
-    await expectQuads(response, [ quad(namedNode(`${baseUrl}a`), namedNode(`${baseUrl}b`), namedNode(`${baseUrl}c`)) ]);
+    await expectQuads(response, [
+      DF.quad(DF.namedNode(`${baseUrl}a`), DF.namedNode(`${baseUrl}b`), DF.namedNode(`${baseUrl}c`)),
+    ]);
 
     // DELETE
     await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
@@ -698,7 +698,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   it('can read metadata.', async(): Promise<void> => {
     const response = await fetch(baseUrl + metaSuffix);
     expect(response.status).toBe(200);
-    await expectQuads(response, [ quad(namedNode(baseUrl), namedNode(RDF.type), namedNode(PIM.Storage)) ]);
+    await expectQuads(response, [ DF.quad(DF.namedNode(baseUrl), DF.namedNode(RDF.type), DF.namedNode(PIM.Storage)) ]);
   });
 
   it('preserves metadata when link header is present.', async(): Promise<void> => {

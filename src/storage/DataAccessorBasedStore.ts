@@ -46,7 +46,6 @@ import {
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './conditions/Conditions';
 import type { ChangeMap, ResourceStore } from './ResourceStore';
-import namedNode = DataFactory.namedNode;
 
 /**
  * ResourceStore which uses a DataAccessor for backend access.
@@ -224,7 +223,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Preserve the old metadata
     if (oldMetadata && representation.metadata.has(
       SOLID_META.terms.preserve,
-      namedNode(this.metadataStrategy.getAuxiliaryIdentifier(identifier).path),
+      DataFactory.namedNode(this.metadataStrategy.getAuxiliaryIdentifier(identifier).path),
     )) {
       // Preserve all the quads from the old metadata apart from the ContentType
       oldMetadata.contentType = undefined;
@@ -746,7 +745,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   private addContainerActivity(map: ChangeMap, id: ResourceIdentifier, add: boolean, object: ResourceIdentifier): void {
     const metadata = new RepresentationMetadata({
       [SOLID_AS.activity]: add ? AS.terms.Add : AS.terms.Remove,
-      [AS.object]: namedNode(object.path),
+      [AS.object]: DataFactory.namedNode(object.path),
     });
     map.set(id, metadata);
   }

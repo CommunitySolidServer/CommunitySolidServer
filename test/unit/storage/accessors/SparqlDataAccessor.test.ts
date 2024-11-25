@@ -2,7 +2,7 @@ import 'jest-rdf';
 import { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { Quad } from '@rdfjs/types';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -16,8 +16,6 @@ import type { Guarded } from '../../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE_TERM, LDP, RDF } from '../../../../src/util/Vocabularies';
-
-const { literal, namedNode, quad } = DataFactory;
 
 jest.mock('fetch-sparql-endpoint');
 
@@ -44,9 +42,9 @@ describe('A SparqlDataAccessor', (): void => {
   beforeEach(async(): Promise<void> => {
     metadata = new RepresentationMetadata();
     data = guardedStreamFrom(
-      [ quad(namedNode('http://name'), namedNode('http://pred'), literal('value')) ],
+      [ DF.quad(DF.namedNode('http://name'), DF.namedNode('http://pred'), DF.literal('value')) ],
     );
-    triples = [ quad(namedNode('this'), namedNode('a'), namedNode('triple')) ];
+    triples = [ DF.quad(DF.namedNode('this'), DF.namedNode('a'), DF.namedNode('triple')) ];
 
     // Makes it so the `SparqlEndpointFetcher` will always return the contents of the `triples` array
     fetchTriples = jest.fn(async(): Promise<Readable> => {
@@ -82,7 +80,7 @@ describe('A SparqlDataAccessor', (): void => {
   it('returns the corresponding quads when data is requested.', async(): Promise<void> => {
     const result = await accessor.getData({ path: 'http://identifier' });
     await expect(arrayifyStream(result)).resolves.toBeRdfIsomorphic([
-      quad(namedNode('this'), namedNode('a'), namedNode('triple')),
+      DF.quad(DF.namedNode('this'), DF.namedNode('a'), DF.namedNode('triple')),
     ]);
 
     expect(fetchTriples).toHaveBeenCalledTimes(1);
@@ -95,8 +93,8 @@ describe('A SparqlDataAccessor', (): void => {
   it('returns the corresponding metadata when requested.', async(): Promise<void> => {
     metadata = await accessor.getMetadata({ path: 'http://identifier' });
     expect(metadata.quads()).toBeRdfIsomorphic([
-      quad(namedNode('this'), namedNode('a'), namedNode('triple')),
-      quad(namedNode('http://identifier'), CONTENT_TYPE_TERM, literal(INTERNAL_QUADS)),
+      DF.quad(DF.namedNode('this'), DF.namedNode('a'), DF.namedNode('triple')),
+      DF.quad(DF.namedNode('http://identifier'), CONTENT_TYPE_TERM, DF.literal(INTERNAL_QUADS)),
     ]);
 
     expect(fetchTriples).toHaveBeenCalledTimes(1);
@@ -109,7 +107,7 @@ describe('A SparqlDataAccessor', (): void => {
   it('does not set the content-type for container metadata.', async(): Promise<void> => {
     metadata = await accessor.getMetadata({ path: 'http://container/' });
     expect(metadata.quads()).toBeRdfIsomorphic([
-      quad(namedNode('this'), namedNode('a'), namedNode('triple')),
+      DF.quad(DF.namedNode('this'), DF.namedNode('a'), DF.namedNode('triple')),
     ]);
 
     expect(fetchTriples).toHaveBeenCalledTimes(1);
@@ -120,7 +118,7 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('requests the container data to find its children.', async(): Promise<void> => {
-    triples = [ quad(namedNode('http://container/'), LDP.terms.contains, namedNode('http://container/child')) ];
+    triples = [ DF.quad(DF.namedNode('http://container/'), LDP.terms.contains, DF.namedNode('http://container/child')) ];
     const children = [];
     for await (const child of accessor.getChildren({ path: 'http://container/' })) {
       children.push(child);
@@ -269,7 +267,7 @@ describe('A SparqlDataAccessor', (): void => {
 
   it('errors when writing triples in a non-default graph.', async(): Promise<void> => {
     data = guardedStreamFrom(
-      [ quad(namedNode('http://name'), namedNode('http://pred'), literal('value'), namedNode('badGraph!')) ],
+      [ DF.quad(DF.namedNode('http://name'), DF.namedNode('http://pred'), DF.literal('value'), DF.namedNode('badGraph!')) ],
     );
     const result = accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata);
     await expect(result).rejects.toThrow(NotImplementedHttpError);
@@ -303,7 +301,7 @@ describe('A SparqlDataAccessor', (): void => {
     const resourceIdentifier = { path: `${base}resource` };
 
     const newMetadata = new RepresentationMetadata(resourceIdentifier);
-    newMetadata.addQuad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}c`));
+    newMetadata.addQuad(DF.namedNode(`${base}a`), DF.namedNode(`${base}b`), DF.namedNode(`${base}c`));
     await expect(accessor.writeMetadata(resourceIdentifier, newMetadata)).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);

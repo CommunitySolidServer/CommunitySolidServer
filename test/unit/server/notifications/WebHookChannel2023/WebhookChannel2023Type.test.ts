@@ -18,9 +18,6 @@ import {
   WebhookChannel2023Type,
 } from '../../../../../src/server/notifications/WebhookChannel2023/WebhookChannel2023Type';
 import { NOTIFY, RDF } from '../../../../../src/util/Vocabularies';
-import quad = DataFactory.quad;
-import blankNode = DataFactory.blankNode;
-import namedNode = DataFactory.namedNode;
 
 jest.mock('global-logger-factory', (): any => {
   const logger: Logger =
@@ -33,7 +30,7 @@ jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a5
 describe('A WebhookChannel2023Type', (): void => {
   const sendTo = 'http://example.org/somewhere-else';
   const topic = 'https://storage.example/resource';
-  const subject = blankNode();
+  const subject = DataFactory.blankNode();
   let data: Store;
   let channel: WebhookChannel2023;
   const route = new AbsolutePathInteractionRoute('http://example.com/webhooks/');
@@ -43,9 +40,9 @@ describe('A WebhookChannel2023Type', (): void => {
 
   beforeEach(async(): Promise<void> => {
     data = new Store();
-    data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebhookChannel2023));
-    data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));
-    data.addQuad(quad(subject, NOTIFY.terms.sendTo, namedNode(sendTo)));
+    data.addQuad(DataFactory.quad(subject, RDF.terms.type, NOTIFY.terms.WebhookChannel2023));
+    data.addQuad(DataFactory.quad(subject, NOTIFY.terms.topic, DataFactory.namedNode(topic)));
+    data.addQuad(DataFactory.quad(subject, NOTIFY.terms.sendTo, DataFactory.namedNode(sendTo)));
 
     const id = 'http://example.com/webhooks/4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
     channel = {

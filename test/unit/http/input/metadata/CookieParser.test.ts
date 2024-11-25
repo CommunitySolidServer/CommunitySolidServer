@@ -2,7 +2,6 @@ import { DataFactory } from 'n3';
 import { CookieParser } from '../../../../../src/http/input/metadata/CookieParser';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
-import namedNode = DataFactory.namedNode;
 
 describe('A CookieParser', (): void => {
   const parser = new CookieParser({ custom1: 'http://example.com/pred1', custom2: 'http://example.com/pred2' });
@@ -23,7 +22,7 @@ describe('A CookieParser', (): void => {
     request.headers.cookie = 'custom1=my-value;unknown=unknown-value;custom2=other-value';
     await parser.handle({ request, metadata });
     expect(metadata.quads()).toHaveLength(2);
-    expect(metadata.get(namedNode('http://example.com/pred1'))?.value).toBe('my-value');
-    expect(metadata.get(namedNode('http://example.com/pred2'))?.value).toBe('other-value');
+    expect(metadata.get(DataFactory.namedNode('http://example.com/pred1'))?.value).toBe('my-value');
+    expect(metadata.get(DataFactory.namedNode('http://example.com/pred2'))?.value).toBe('other-value');
   });
 });

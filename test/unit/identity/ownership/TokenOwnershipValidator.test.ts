@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { Quad } from 'n3';
 import rdfDereferencer from 'rdf-dereference';
 import { v4 } from 'uuid';
@@ -8,8 +8,6 @@ import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringS
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { SOLID } from '../../../../src/util/Vocabularies';
-
-const { literal, namedNode, quad } = DataFactory;
 
 jest.mock('uuid');
 jest.mock('rdf-dereference', (): any => ({
@@ -28,7 +26,7 @@ describe('A TokenOwnershipValidator', (): void => {
   const rdfDereferenceMock: jest.Mocked<typeof rdfDereferencer> = rdfDereferencer as any;
   const webId = 'http://alice.test.com/#me';
   const token = 'randomlyGeneratedToken';
-  const tokenTriple = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal(token));
+  const tokenTriple = DF.quad(DF.namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, DF.literal(token));
   const tokenString = `${quadToString(tokenTriple)}.`;
   let storage: ExpiringStorage<string, string>;
   let validator: TokenOwnershipValidator;
@@ -91,7 +89,7 @@ describe('A TokenOwnershipValidator', (): void => {
   });
 
   it('fails if the WebId contains the wrong verification triple.', async(): Promise<void> => {
-    const wrongQuad = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal('wrongToken'));
+    const wrongQuad = DF.quad(DF.namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, DF.literal('wrongToken'));
     mockDereference(wrongQuad);
     // First call will add the token to the storage
     await expect(validator.handle({ webId })).rejects.toThrow(tokenString);

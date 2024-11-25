@@ -1,10 +1,8 @@
 import 'jest-rdf';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { StaticStorageDescriber } from '../../../../src/server/description/StaticStorageDescriber';
 import { LDP, PIM, RDF } from '../../../../src/util/Vocabularies';
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
 
 describe('A StaticStorageDescriber', (): void => {
   const target: ResourceIdentifier = { path: 'http://example.com/foo' };
@@ -12,7 +10,7 @@ describe('A StaticStorageDescriber', (): void => {
   it('returns the stored triples.', async(): Promise<void> => {
     const describer = new StaticStorageDescriber({ [RDF.type]: PIM.Storage });
     await expect(describer.handle(target)).resolves.toEqualRdfQuadArray([
-      quad(namedNode(target.path), RDF.terms.type, PIM.terms.Storage),
+      DF.quad(DF.namedNode(target.path), RDF.terms.type, PIM.terms.Storage),
     ]);
   });
 
@@ -24,8 +22,8 @@ describe('A StaticStorageDescriber', (): void => {
   it('accepts an array in the object position.', async(): Promise<void> => {
     const describer = new StaticStorageDescriber({ [RDF.type]: [ PIM.Storage, LDP.Resource ]});
     await expect(describer.handle(target)).resolves.toEqualRdfQuadArray([
-      quad(namedNode(target.path), RDF.terms.type, PIM.terms.Storage),
-      quad(namedNode(target.path), RDF.terms.type, LDP.terms.Resource),
+      DF.quad(DF.namedNode(target.path), RDF.terms.type, PIM.terms.Storage),
+      DF.quad(DF.namedNode(target.path), RDF.terms.type, LDP.terms.Resource),
     ]);
   });
 });

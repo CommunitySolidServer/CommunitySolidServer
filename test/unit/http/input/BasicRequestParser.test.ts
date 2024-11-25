@@ -4,7 +4,6 @@ import type { ConditionsParser } from '../../../../src/http/input/conditions/Con
 import type { TargetExtractor } from '../../../../src/http/input/identifier/TargetExtractor';
 import type { MetadataParser } from '../../../../src/http/input/metadata/MetadataParser';
 import type { PreferenceParser } from '../../../../src/http/input/preferences/PreferenceParser';
-import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A BasicRequestParser', (): void => {
@@ -37,12 +36,14 @@ describe('A BasicRequestParser', (): void => {
 
   it('returns the output of all input parsers after calling handle.', async(): Promise<void> => {
     bodyParser.handle = ({ metadata }): any => ({ data: 'body', metadata });
-    await expect(requestParser.handle({ url: 'url', method: 'GET' } as any)).resolves.toEqual({
+    const result = await requestParser.handle({ url: 'url', method: 'GET' } as any);
+    expect(result).toEqual({
       method: 'GET',
       target: { path: 'target' },
       preferences: 'preference',
       conditions: 'conditions',
-      body: { data: 'body', metadata: new RepresentationMetadata({ path: 'target' }) },
+      body: expect.objectContaining({ data: 'body' }),
     });
+    expect(result.body.metadata.identifier.value).toBe('target');
   });
 });

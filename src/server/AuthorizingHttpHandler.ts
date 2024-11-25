@@ -1,4 +1,4 @@
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
@@ -12,8 +12,6 @@ import { HttpError } from '../util/errors/HttpError';
 import { SOLID_META } from '../util/Vocabularies';
 import type { OperationHttpHandlerInput } from './OperationHttpHandler';
 import { OperationHttpHandler } from './OperationHttpHandler';
-
-const { blankNode, namedNode, literal } = DataFactory;
 
 export interface AuthorizingHttpHandlerArgs {
   /**
@@ -99,11 +97,11 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
 
   private addAccessModesToError(error: HttpError, requestedModes: AccessMap): void {
     for (const [ identifier, modes ] of requestedModes.entrySets()) {
-      const bnode = blankNode();
+      const bnode = DF.blankNode();
       error.metadata.add(SOLID_META.terms.requestedAccess, bnode);
-      error.metadata.addQuad(bnode, SOLID_META.terms.accessTarget, namedNode(identifier.path));
+      error.metadata.addQuad(bnode, SOLID_META.terms.accessTarget, DF.namedNode(identifier.path));
       for (const mode of modes.values()) {
-        error.metadata.addQuad(bnode, SOLID_META.terms.accessMode, literal(mode));
+        error.metadata.addQuad(bnode, SOLID_META.terms.accessMode, DF.literal(mode));
       }
     }
   }

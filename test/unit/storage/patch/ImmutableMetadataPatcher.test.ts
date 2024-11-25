@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { DataFactory, Store } from 'n3';
+import { DataFactory as DF, Store } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
 import type { RdfDatasetRepresentation } from '../../../../src/http/representation/RdfDatasetRepresentation';
@@ -13,8 +13,6 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 import { FilterPattern } from '../../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
-
-const { namedNode, quad } = DataFactory;
 
 function getPatch(): Patch {
   const prefixedQuery = `This is a valid patch query`;
@@ -45,7 +43,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
       handle: jest.fn(async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>):
       Promise<RdfDatasetRepresentation> => {
         const patcherStore = new Store([
-          quad(namedNode(`${base}foo`), namedNode(`${base}p`), namedNode(`${base}o`)),
+          DF.quad(DF.namedNode(`${base}foo`), DF.namedNode(`${base}p`), DF.namedNode(`${base}o`)),
         ]);
         patcherInput.representation!.dataset = patcherStore;
         return patcherInput.representation!;
@@ -76,7 +74,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
   it('handles patches if they do not change immutable metadata.', async(): Promise<void> => {
     const result = await handler.handleSafe(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode(`${base}foo`), namedNode(`${base}p`), namedNode(`${base}o`)),
+      DF.quad(DF.namedNode(`${base}foo`), DF.namedNode(`${base}p`), DF.namedNode(`${base}o`)),
     ]);
     expect(patcher.handle).toHaveBeenCalledTimes(1);
     expect(patcher.handle).toHaveBeenLastCalledWith(input);
@@ -87,7 +85,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
     const result = await handler.handleSafe(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode(`${base}foo`), namedNode(`${base}p`), namedNode(`${base}o`)),
+      DF.quad(DF.namedNode(`${base}foo`), DF.namedNode(`${base}p`), DF.namedNode(`${base}o`)),
     ]);
     expect(patcher.handle).toHaveBeenCalledTimes(1);
     expect(patcher.handle).toHaveBeenLastCalledWith(input);
@@ -140,8 +138,8 @@ describe('A ImmutableMetadataPatcher', (): void => {
     jest.spyOn(patcher, 'handle').mockImplementation(
       async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<RdfDatasetRepresentation> => {
         const patcherStore = new Store([
-          quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
-          quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}o`)),
+          DF.quad(DF.namedNode(`${base}a`), DF.namedNode(`${base}p`), DF.namedNode(`${base}c`)),
+          DF.quad(DF.namedNode(`${base}a`), DF.namedNode(`${base}b`), DF.namedNode(`${base}o`)),
         ]);
         patcherInput.representation!.dataset = patcherStore;
         return patcherInput.representation!;
@@ -150,19 +148,23 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
     const result = await handler.handleSafe(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
-      quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}o`)),
+      DF.quad(DF.namedNode(`${base}a`), DF.namedNode(`${base}p`), DF.namedNode(`${base}c`)),
+      DF.quad(DF.namedNode(`${base}a`), DF.namedNode(`${base}b`), DF.namedNode(`${base}o`)),
     ]);
     expect(patcher.handle).toHaveBeenCalledTimes(1);
     expect(patcher.handle).toHaveBeenLastCalledWith(input);
   });
 
   it('rejects patches that replaces immutable triples.', async(): Promise<void> => {
-    input.representation!.dataset.addQuad(namedNode(identifier.path), namedNode(`${base}p`), namedNode(`${base}o1`));
+    input.representation!.dataset.addQuad(
+      DF.namedNode(identifier.path),
+      DF.namedNode(`${base}p`),
+      DF.namedNode(`${base}o1`),
+    );
     jest.spyOn(patcher, 'handle').mockImplementation(
       async(patcherInput: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<RdfDatasetRepresentation> => {
         const patcherStore = new Store([
-          quad(namedNode(identifier.path), namedNode(`${base}p`), namedNode(`${base}o2`)),
+          DF.quad(DF.namedNode(identifier.path), DF.namedNode(`${base}p`), DF.namedNode(`${base}o2`)),
         ]);
         patcherInput.representation!.dataset = patcherStore;
         return patcherInput.representation!;

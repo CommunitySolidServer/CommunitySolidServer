@@ -1,4 +1,4 @@
-import { DataFactory, Store } from 'n3';
+import { DataFactory as DF, Store } from 'n3';
 import type { Credentials } from '../../../../src/authentication/Credentials';
 import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
 import {
@@ -9,14 +9,10 @@ import type { NotificationChannel } from '../../../../src/server/notifications/N
 import { UnprocessableEntityHttpError } from '../../../../src/util/errors/UnprocessableEntityHttpError';
 import { IdentifierSetMultiMap } from '../../../../src/util/map/IdentifierMap';
 import { NOTIFY, RDF, XSD } from '../../../../src/util/Vocabularies';
-import namedNode = DataFactory.namedNode;
-import quad = DataFactory.quad;
-import blankNode = DataFactory.blankNode;
-import literal = DataFactory.literal;
 
 jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 
-const dummyType = namedNode('http://example.com/DummyType');
+const dummyType = DF.namedNode('http://example.com/DummyType');
 class DummyChannelType extends BaseChannelType {
   public constructor(features?: string[], properties?: unknown[]) {
     super(
@@ -67,11 +63,11 @@ describe('A BaseChannelType', (): void => {
 
   describe('#initChannel', (): void => {
     let data: Store;
-    const subject = blankNode();
+    const subject = DF.blankNode();
     beforeEach(async(): Promise<void> => {
       data = new Store();
-      data.addQuad(quad(subject, RDF.terms.type, dummyType));
-      data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode('https://storage.example/resource')));
+      data.addQuad(DF.quad(subject, RDF.terms.type, dummyType));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.topic, DF.namedNode('https://storage.example/resource')));
     });
 
     it('converts the quads to a channel with an identifier.', async(): Promise<void> => {
@@ -83,7 +79,7 @@ describe('A BaseChannelType', (): void => {
     });
 
     it('requires exactly 1 topic.', async(): Promise<void> => {
-      data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode('https://storage.example/resource2')));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.topic, DF.namedNode('https://storage.example/resource2')));
       await expect(channelType.initChannel(data, credentials)).rejects.toThrow(UnprocessableEntityHttpError);
 
       data.removeQuads(data.getQuads(subject, NOTIFY.terms.topic, null, null));
@@ -91,27 +87,27 @@ describe('A BaseChannelType', (): void => {
       await expect(channelType.initChannel(data, credentials)).rejects.toThrow(UnprocessableEntityHttpError);
 
       // Data is correct again now
-      data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode('https://storage.example/resource')));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.topic, DF.namedNode('https://storage.example/resource')));
       await expect(channelType.initChannel(data, credentials)).resolves.toBeDefined();
 
       // Also make sure we can't have 2 different subjects with 1 topic each
-      data.addQuad(quad(blankNode(), NOTIFY.terms.topic, namedNode('https://storage.example/resource2')));
+      data.addQuad(DF.quad(DF.blankNode(), NOTIFY.terms.topic, DF.namedNode('https://storage.example/resource2')));
       await expect(channelType.initChannel(data, credentials)).rejects.toThrow(UnprocessableEntityHttpError);
     });
 
     it('requires the correct type.', async(): Promise<void> => {
       data = new Store();
-      data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode('https://storage.example/resource')));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.topic, DF.namedNode('https://storage.example/resource')));
       await expect(channelType.initChannel(data, credentials)).rejects.toThrow(UnprocessableEntityHttpError);
 
-      data.addQuad(quad(subject, RDF.terms.type, namedNode('http://example.com/wrongType')));
+      data.addQuad(DF.quad(subject, RDF.terms.type, DF.namedNode('http://example.com/wrongType')));
       await expect(channelType.initChannel(data, credentials)).rejects.toThrow(UnprocessableEntityHttpError);
 
-      data.addQuad(quad(subject, RDF.terms.type, dummyType));
+      data.addQuad(DF.quad(subject, RDF.terms.type, dummyType));
       await expect(channelType.initChannel(data, credentials)).rejects.toThrow(UnprocessableEntityHttpError);
 
-      data.removeQuads(data.getQuads(subject, RDF.terms.type, namedNode('http://example.com/wrongType'), null));
-      data.addQuad(quad(subject, RDF.terms.type, dummyType));
+      data.removeQuads(data.getQuads(subject, RDF.terms.type, DF.namedNode('http://example.com/wrongType'), null));
+      data.addQuad(DF.quad(subject, RDF.terms.type, dummyType));
       await expect(channelType.initChannel(data, credentials)).resolves.toBeDefined();
     });
 
@@ -119,7 +115,7 @@ describe('A BaseChannelType', (): void => {
       const date = '1988-03-09T14:48:00.000Z';
       const ms = Date.parse(date);
 
-      data.addQuad(quad(subject, NOTIFY.terms.startAt, literal(date, XSD.terms.dateTime)));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.startAt, DF.literal(date, XSD.terms.dateTime)));
       await expect(channelType.initChannel(data, credentials)).resolves.toEqual(expect.objectContaining({
         startAt: ms,
       }));
@@ -129,14 +125,14 @@ describe('A BaseChannelType', (): void => {
       const date = '1988-03-09T14:48:00.000Z';
       const ms = Date.parse(date);
 
-      data.addQuad(quad(subject, NOTIFY.terms.endAt, literal(date, XSD.terms.dateTime)));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.endAt, DF.literal(date, XSD.terms.dateTime)));
       await expect(channelType.initChannel(data, credentials)).resolves.toEqual(expect.objectContaining({
         endAt: ms,
       }));
     });
 
     it('converts the rate to a number.', async(): Promise<void> => {
-      data.addQuad(quad(subject, NOTIFY.terms.rate, literal('PT10S', XSD.terms.duration)));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.rate, DF.literal('PT10S', XSD.terms.duration)));
       await expect(channelType.initChannel(data, credentials)).resolves.toEqual(expect.objectContaining({
         rate: 10 * 1000,
       }));
@@ -145,11 +141,11 @@ describe('A BaseChannelType', (): void => {
     it('removes features from the input that are not supported.', async(): Promise<void> => {
       const date = '1988-03-09T14:48:00.000Z';
 
-      data.addQuad(quad(subject, NOTIFY.terms.startAt, literal(date, XSD.terms.dateTime)));
-      data.addQuad(quad(subject, NOTIFY.terms.endAt, literal(date, XSD.terms.dateTime)));
-      data.addQuad(quad(subject, NOTIFY.terms.rate, literal('PT10S', XSD.terms.duration)));
-      data.addQuad(quad(subject, NOTIFY.terms.accept, literal('text/turtle')));
-      data.addQuad(quad(subject, NOTIFY.terms.state, literal('123456')));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.startAt, DF.literal(date, XSD.terms.dateTime)));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.endAt, DF.literal(date, XSD.terms.dateTime)));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.rate, DF.literal('PT10S', XSD.terms.duration)));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.accept, DF.literal('text/turtle')));
+      data.addQuad(DF.quad(subject, NOTIFY.terms.state, DF.literal('123456')));
 
       const featChannelType = new DummyChannelType([ 'notify:endAt', 'notify:accept', NOTIFY.state ]);
       await expect(featChannelType.initChannel(data, credentials)).resolves.toEqual({
@@ -166,7 +162,7 @@ describe('A BaseChannelType', (): void => {
       for (const feature of DEFAULT_NOTIFICATION_FEATURES) {
         const badData = new Store(data.getQuads(null, null, null, null));
         // No feature accepts an integer
-        badData.addQuad(quad(subject, namedNode(feature), literal(123456, XSD.terms.integer)));
+        badData.addQuad(DF.quad(subject, DF.namedNode(feature), DF.literal(123456, XSD.terms.integer)));
         await expect(channelType.initChannel(badData, credentials)).rejects.toThrow(UnprocessableEntityHttpError);
       }
     });
@@ -174,24 +170,24 @@ describe('A BaseChannelType', (): void => {
     it('requires that features occur at most once.', async(): Promise<void> => {
       const values = {
         [NOTIFY.startAt]: [
-          literal('1988-03-09T14:48:00.000Z', XSD.terms.dateTime),
-          literal('2023-03-09T14:48:00.000Z', XSD.terms.dateTime),
+          DF.literal('1988-03-09T14:48:00.000Z', XSD.terms.dateTime),
+          DF.literal('2023-03-09T14:48:00.000Z', XSD.terms.dateTime),
         ],
         [NOTIFY.endAt]: [
-          literal('1988-03-09T14:48:00.000Z', XSD.terms.dateTime),
-          literal('2023-03-09T14:48:00.000Z', XSD.terms.dateTime),
+          DF.literal('1988-03-09T14:48:00.000Z', XSD.terms.dateTime),
+          DF.literal('2023-03-09T14:48:00.000Z', XSD.terms.dateTime),
         ],
-        [NOTIFY.rate]: [ literal('PT10S', XSD.terms.duration), literal('PT11S', XSD.terms.duration) ],
-        [NOTIFY.accept]: [ literal('text/turtle'), literal('application/ld+json') ],
-        [NOTIFY.state]: [ literal('123456'), literal('654321') ],
+        [NOTIFY.rate]: [ DF.literal('PT10S', XSD.terms.duration), DF.literal('PT11S', XSD.terms.duration) ],
+        [NOTIFY.accept]: [ DF.literal('text/turtle'), DF.literal('application/ld+json') ],
+        [NOTIFY.state]: [ DF.literal('123456'), DF.literal('654321') ],
       };
 
       for (const [ predicate, objects ] of Object.entries(values)) {
         const badData = new Store(data.getQuads(null, null, null, null));
-        badData.addQuad(quad(subject, namedNode(predicate), objects[0]));
+        badData.addQuad(DF.quad(subject, DF.namedNode(predicate), objects[0]));
         // One entry is fine
         await expect(channelType.initChannel(badData, credentials)).resolves.toBeDefined();
-        badData.addQuad(quad(subject, namedNode(predicate), objects[1]));
+        badData.addQuad(DF.quad(subject, DF.namedNode(predicate), objects[1]));
         await expect(channelType.initChannel(badData, credentials)).rejects.toThrow(UnprocessableEntityHttpError);
       }
     });

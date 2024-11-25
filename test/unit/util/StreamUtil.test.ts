@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { PassThrough, Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { BlankNode, Literal, NamedNode, Quad, Store } from 'n3';
@@ -51,7 +52,7 @@ describe('StreamUtil', (): void => {
       quads.add(quad3);
 
       const stream = Readable.from([ quad1, quad2, quad3 ]);
-      await expect(readableToQuads(stream)).resolves.toEqual(quads);
+      await expect(readableToQuads(stream)).resolves.toBeRdfIsomorphic(quads);
     });
   });
 

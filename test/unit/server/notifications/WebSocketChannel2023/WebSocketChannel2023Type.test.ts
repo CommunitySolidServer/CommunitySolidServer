@@ -14,24 +14,21 @@ import {
   WebSocketChannel2023Type,
 } from '../../../../../src/server/notifications/WebSocketChannel2023/WebSocketChannel2023Type';
 import { NOTIFY, RDF } from '../../../../../src/util/Vocabularies';
-import quad = DataFactory.quad;
-import blankNode = DataFactory.blankNode;
-import namedNode = DataFactory.namedNode;
 
 jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 
 describe('A WebSocketChannel2023', (): void => {
   let data: Store;
   let channel: WebSocketChannel2023;
-  const subject = blankNode();
+  const subject = DataFactory.blankNode();
   const topic = 'https://storage.example/resource';
   const route = new AbsolutePathInteractionRoute('http://example.com/foo');
   let channelType: WebSocketChannel2023Type;
 
   beforeEach(async(): Promise<void> => {
     data = new Store();
-    data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebSocketChannel2023));
-    data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));
+    data.addQuad(DataFactory.quad(subject, RDF.terms.type, NOTIFY.terms.WebSocketChannel2023));
+    data.addQuad(DataFactory.quad(subject, NOTIFY.terms.topic, DataFactory.namedNode(topic)));
 
     const id = 'http://example.com/foo/4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
     channel = {

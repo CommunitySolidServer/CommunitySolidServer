@@ -5,7 +5,6 @@ import type { HttpRequest } from '../../../server/HttpRequest';
 import { SOLID_META } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataParser } from './MetadataParser';
-import namedNode = DataFactory.namedNode;
 
 /**
  * Parses the cookie header and stores their values as metadata.
@@ -19,7 +18,7 @@ export class CookieParser extends MetadataParser {
   public constructor(cookieMap: Record<string, string>) {
     super();
     this.cookieMap = Object.fromEntries(
-      Object.entries(cookieMap).map(([ name, uri ]): [string, NamedNode] => [ name, namedNode(uri) ]),
+      Object.entries(cookieMap).map(([ name, uri ]): [string, NamedNode] => [ name, DataFactory.namedNode(uri) ]),
     );
   }
 

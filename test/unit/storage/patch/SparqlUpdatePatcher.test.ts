@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { DataFactory, Store } from 'n3';
+import { DataFactory as DF, Store } from 'n3';
 import type { Quad } from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
@@ -12,8 +12,6 @@ import { SparqlUpdatePatcher } from '../../../../src/storage/patch/SparqlUpdateP
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
-
-const { namedNode, quad } = DataFactory;
 
 function getPatch(query: string): SparqlUpdatePatch {
   const prefixedQuery = `prefix : <http://test.com/>\n${query}`;
@@ -36,14 +34,14 @@ describe('A SparqlUpdatePatcher', (): void => {
   let representation: RdfDatasetRepresentation;
 
   beforeEach(async(): Promise<void> => {
-    startQuads = [ quad(
-      namedNode('http://test.com/startS1'),
-      namedNode('http://test.com/startP1'),
-      namedNode('http://test.com/startO1'),
-    ), quad(
-      namedNode('http://test.com/startS2'),
-      namedNode('http://test.com/startP2'),
-      namedNode('http://test.com/startO2'),
+    startQuads = [ DF.quad(
+      DF.namedNode('http://test.com/startS1'),
+      DF.namedNode('http://test.com/startP1'),
+      DF.namedNode('http://test.com/startO1'),
+    ), DF.quad(
+      DF.namedNode('http://test.com/startS2'),
+      DF.namedNode('http://test.com/startP2'),
+      DF.namedNode('http://test.com/startO2'),
     ) ];
     store = new Store(startQuads);
 
@@ -74,8 +72,8 @@ describe('A SparqlUpdatePatcher', (): void => {
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
       ...startQuads,
-      quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
-      quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')),
+      DF.quad(DF.namedNode('http://test.com/s1'), DF.namedNode('http://test.com/p1'), DF.namedNode('http://test.com/o1')),
+      DF.quad(DF.namedNode('http://test.com/s2'), DF.namedNode('http://test.com/p2'), DF.namedNode('http://test.com/o2')),
     ]);
   });
 
@@ -83,10 +81,10 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch('DELETE DATA { :startS1 :startP1 :startO1 }');
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(
-        namedNode('http://test.com/startS2'),
-        namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2'),
+      DF.quad(
+        DF.namedNode('http://test.com/startS2'),
+        DF.namedNode('http://test.com/startP2'),
+        DF.namedNode('http://test.com/startO2'),
       ),
     ]);
   });
@@ -95,10 +93,10 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch('DELETE WHERE { :startS1 :startP1 :startO1 }');
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(
-        namedNode('http://test.com/startS2'),
-        namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2'),
+      DF.quad(
+        DF.namedNode('http://test.com/startS2'),
+        DF.namedNode('http://test.com/startP2'),
+        DF.namedNode('http://test.com/startO2'),
       ),
     ]);
   });
@@ -107,10 +105,10 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch('DELETE WHERE { :startS1 :startP1 ?o }');
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(
-        namedNode('http://test.com/startS2'),
-        namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2'),
+      DF.quad(
+        DF.namedNode('http://test.com/startS2'),
+        DF.namedNode('http://test.com/startP2'),
+        DF.namedNode('http://test.com/startO2'),
       ),
     ]);
   });
@@ -119,15 +117,15 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch('DELETE { :startS1 :startP1 :startO1 } INSERT { :s1 :p1 :o1 . } WHERE {}');
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(
-        namedNode('http://test.com/startS2'),
-        namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2'),
+      DF.quad(
+        DF.namedNode('http://test.com/startS2'),
+        DF.namedNode('http://test.com/startP2'),
+        DF.namedNode('http://test.com/startO2'),
       ),
-      quad(
-        namedNode('http://test.com/s1'),
-        namedNode('http://test.com/p1'),
-        namedNode('http://test.com/o1'),
+      DF.quad(
+        DF.namedNode('http://test.com/s1'),
+        DF.namedNode('http://test.com/p1'),
+        DF.namedNode('http://test.com/o1'),
       ),
     ]);
   });
@@ -138,15 +136,15 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch(query);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(
-        namedNode('http://test.com/startS2'),
-        namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2'),
+      DF.quad(
+        DF.namedNode('http://test.com/startS2'),
+        DF.namedNode('http://test.com/startP2'),
+        DF.namedNode('http://test.com/startO2'),
       ),
-      quad(
-        namedNode('http://test.com/s2'),
-        namedNode('http://test.com/p2'),
-        namedNode('http://test.com/o2'),
+      DF.quad(
+        DF.namedNode('http://test.com/s2'),
+        DF.namedNode('http://test.com/p2'),
+        DF.namedNode('http://test.com/o2'),
       ),
     ]);
   });
@@ -157,20 +155,20 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.patch = getPatch(query);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(
-        namedNode('http://test.com/startS2'),
-        namedNode('http://test.com/startP2'),
-        namedNode('http://test.com/startO2'),
+      DF.quad(
+        DF.namedNode('http://test.com/startS2'),
+        DF.namedNode('http://test.com/startP2'),
+        DF.namedNode('http://test.com/startO2'),
       ),
-      quad(
-        namedNode('http://test.com/s1'),
-        namedNode('http://test.com/p1'),
-        namedNode('http://test.com/o1'),
+      DF.quad(
+        DF.namedNode('http://test.com/s1'),
+        DF.namedNode('http://test.com/p1'),
+        DF.namedNode('http://test.com/o1'),
       ),
-      quad(
-        namedNode('http://test.com/s2'),
-        namedNode('http://test.com/p2'),
-        namedNode('http://test.com/o2'),
+      DF.quad(
+        DF.namedNode('http://test.com/s2'),
+        DF.namedNode('http://test.com/p2'),
+        DF.namedNode('http://test.com/o2'),
       ),
     ]);
   });
@@ -216,7 +214,7 @@ describe('A SparqlUpdatePatcher', (): void => {
     input.representation!.dataset = new Store();
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
+      DF.quad(DF.namedNode('http://test.com/s1'), DF.namedNode('http://test.com/p1'), DF.namedNode('http://test.com/o1')),
     ]);
   });
 });

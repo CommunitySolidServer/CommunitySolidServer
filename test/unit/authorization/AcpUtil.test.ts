@@ -1,5 +1,5 @@
 import { ACL } from '@solid/access-control-policy';
-import { DataFactory, Parser, Store } from 'n3';
+import { DataFactory as DF, Parser, Store } from 'n3';
 import {
   getAccessControl,
   getAccessControlledResources,
@@ -9,7 +9,6 @@ import {
 } from '../../../src/authorization/AcpUtil';
 import { joinUrl } from '../../../src/util/PathUtil';
 import { ACP } from '../../../src/util/Vocabularies';
-import namedNode = DataFactory.namedNode;
 
 describe('AcpUtil', (): void => {
   const baseUrl = 'http://example.com/';
@@ -37,7 +36,7 @@ describe('AcpUtil', (): void => {
 
   describe('#getMatcher', (): void => {
     it('returns the relevant matcher.', async(): Promise<void> => {
-      expect(getMatcher(data, namedNode(`${baseUrl}matcher`))).toEqual({
+      expect(getMatcher(data, DF.namedNode(`${baseUrl}matcher`))).toEqual({
         iri: joinUrl(baseUrl, 'matcher'),
         agent: [ `${ACP.namespace}PublicAgent`, `${baseUrl}agent` ],
         client: [ `${baseUrl}client` ],
@@ -46,7 +45,7 @@ describe('AcpUtil', (): void => {
       });
     });
     it('returns an empty matcher if no data is found.', async(): Promise<void> => {
-      expect(getMatcher(data, namedNode(`${baseUrl}unknown`))).toEqual({
+      expect(getMatcher(data, DF.namedNode(`${baseUrl}unknown`))).toEqual({
         iri: `${baseUrl}unknown`,
         agent: [],
         client: [],
@@ -58,7 +57,7 @@ describe('AcpUtil', (): void => {
 
   describe('#getPolicy', (): void => {
     it('returns the relevant policy.', async(): Promise<void> => {
-      expect(getPolicy(data, namedNode(`${baseUrl}policy`))).toEqual({
+      expect(getPolicy(data, DF.namedNode(`${baseUrl}policy`))).toEqual({
         iri: `${baseUrl}policy`,
         allow: new Set([ ACL.Read, ACL.Append ]),
         deny: new Set([ ACL.Write ]),
@@ -68,7 +67,7 @@ describe('AcpUtil', (): void => {
       });
     });
     it('returns an empty policy if no data is found.', async(): Promise<void> => {
-      expect(getPolicy(data, namedNode(`${baseUrl}unknown`))).toEqual({
+      expect(getPolicy(data, DF.namedNode(`${baseUrl}unknown`))).toEqual({
         iri: `${baseUrl}unknown`,
         allow: new Set(),
         deny: new Set(),
@@ -81,13 +80,13 @@ describe('AcpUtil', (): void => {
 
   describe('#getAccessControl', (): void => {
     it('returns the relevant access control.', async(): Promise<void> => {
-      expect(getAccessControl(data, namedNode(`${baseUrl}ac`))).toEqual({
+      expect(getAccessControl(data, DF.namedNode(`${baseUrl}ac`))).toEqual({
         iri: `${baseUrl}ac`,
         policy: [ expect.objectContaining({ iri: `${baseUrl}policy` }) ],
       });
     });
     it('returns an empty access control if no data is found.', async(): Promise<void> => {
-      expect(getAccessControl(data, namedNode(`${baseUrl}unknown`))).toEqual({
+      expect(getAccessControl(data, DF.namedNode(`${baseUrl}unknown`))).toEqual({
         iri: `${baseUrl}unknown`,
         policy: [],
       });
@@ -96,14 +95,14 @@ describe('AcpUtil', (): void => {
 
   describe('#getAccessControlResource', (): void => {
     it('returns the relevant access control resource.', async(): Promise<void> => {
-      expect(getAccessControlResource(data, namedNode(`${baseUrl}acr`))).toEqual({
+      expect(getAccessControlResource(data, DF.namedNode(`${baseUrl}acr`))).toEqual({
         iri: `${baseUrl}acr`,
         accessControl: [ expect.objectContaining({ iri: `${baseUrl}ac` }) ],
         memberAccessControl: [ expect.objectContaining({ iri: `${baseUrl}ac` }) ],
       });
     });
     it('returns an empty access control resource if no data is found.', async(): Promise<void> => {
-      expect(getAccessControlResource(data, namedNode(`${baseUrl}unknown`))).toEqual({
+      expect(getAccessControlResource(data, DF.namedNode(`${baseUrl}unknown`))).toEqual({
         iri: `${baseUrl}unknown`,
         accessControl: [],
         memberAccessControl: [],

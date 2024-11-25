@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
@@ -12,8 +12,6 @@ import type {
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { NOTIFY } from '../../../../src/util/Vocabularies';
-
-const { namedNode, quad } = DataFactory;
 
 describe('A NotificationDescriber', (): void => {
   const identifier: ResourceIdentifier = { path: 'http://example.com/solid/' };
@@ -36,7 +34,7 @@ describe('A NotificationDescriber', (): void => {
       handleSafe: jest.fn(async({ representation }: RepresentationConverterArgs): Promise<Representation> => {
         const jsonld = JSON.parse(await readableToString(representation.data));
         return new BasicRepresentation([
-          quad(namedNode(jsonld.id), NOTIFY.terms.feature, NOTIFY.terms.rate),
+          DF.quad(DF.namedNode(jsonld.id), NOTIFY.terms.feature, NOTIFY.terms.rate),
         ], INTERNAL_QUADS);
       }),
     } as any;
@@ -46,12 +44,12 @@ describe('A NotificationDescriber', (): void => {
 
   it('converts the JSON-LD to quads.', async(): Promise<void> => {
     await expect(describer.handle(identifier)).resolves.toBeRdfIsomorphic([
-      quad(namedNode(identifier.path), NOTIFY.terms.subscription, namedNode(jsonld1.id)),
-      quad(namedNode(identifier.path), NOTIFY.terms.subscription, namedNode(jsonld2.id)),
+      DF.quad(DF.namedNode(identifier.path), NOTIFY.terms.subscription, DF.namedNode(jsonld1.id)),
+      DF.quad(DF.namedNode(identifier.path), NOTIFY.terms.subscription, DF.namedNode(jsonld2.id)),
 
-      quad(namedNode(jsonld1.id), NOTIFY.terms.feature, NOTIFY.terms.rate),
+      DF.quad(DF.namedNode(jsonld1.id), NOTIFY.terms.feature, NOTIFY.terms.rate),
 
-      quad(namedNode(jsonld2.id), NOTIFY.terms.feature, NOTIFY.terms.rate),
+      DF.quad(DF.namedNode(jsonld2.id), NOTIFY.terms.feature, NOTIFY.terms.rate),
     ]);
   });
 });

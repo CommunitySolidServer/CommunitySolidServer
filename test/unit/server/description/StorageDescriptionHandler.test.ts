@@ -10,8 +10,6 @@ import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { readableToQuads } from '../../../../src/util/StreamUtil';
 import { PIM, RDF } from '../../../../src/util/Vocabularies';
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
 
 describe('A StorageDescriptionHandler', (): void => {
   const path = '.well-known/solid';
@@ -41,7 +39,7 @@ describe('A StorageDescriptionHandler', (): void => {
     describer = {
       canHandle: jest.fn(),
       handle: jest.fn(async(target): Promise<Quad[]> =>
-        [ quad(namedNode(target.path), RDF.terms.type, PIM.terms.Storage) ]),
+        [ DataFactory.quad(DataFactory.namedNode(target.path), RDF.terms.type, PIM.terms.Storage) ]),
     } as any;
 
     handler = new StorageDescriptionHandler(store, path, describer);

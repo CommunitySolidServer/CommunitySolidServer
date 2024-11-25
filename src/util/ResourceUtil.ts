@@ -9,7 +9,6 @@ import { NotModifiedHttpError } from './errors/NotModifiedHttpError';
 import { guardedStreamFrom } from './StreamUtil';
 import { toLiteral } from './TermUtil';
 import { CONTENT_TYPE_TERM, DC, HH, LDP, RDF, SOLID_META, XSD } from './Vocabularies';
-import namedNode = DataFactory.namedNode;
 
 /**
  * Helper function to generate type quads for a Container or Resource.
@@ -47,7 +46,7 @@ export function updateModifiedDate(metadata: RepresentationMetadata, date = new 
  */
 export function addTemplateMetadata(metadata: RepresentationMetadata, templateFile: string, contentType: string):
 void {
-  const templateNode = namedNode(templateFile);
+  const templateNode = DataFactory.namedNode(templateFile);
   metadata.add(SOLID_META.terms.template, templateNode);
   metadata.addQuad(templateNode, CONTENT_TYPE_TERM, contentType);
 }

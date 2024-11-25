@@ -1,4 +1,4 @@
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { Credentials } from '../../../src/authentication/Credentials';
 import type { AccessChecker } from '../../../src/authorization/access/AccessChecker';
 import type { PermissionReaderInput } from '../../../src/authorization/PermissionReader';
@@ -20,7 +20,7 @@ import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/Sing
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 import { compareMaps } from '../../util/Util';
 
-const { namedNode: nn, quad } = DataFactory;
+const nn = DF.namedNode.bind(DF);
 
 const acl = 'http://www.w3.org/ns/auth/acl#';
 const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
@@ -60,7 +60,7 @@ describe('A WebAclReader', (): void => {
 
     store = {
       getRepresentation: jest.fn().mockResolvedValue(new BasicRepresentation([
-        quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+        DF.quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       ], INTERNAL_QUADS)),
     } as any;
 
@@ -83,9 +83,9 @@ describe('A WebAclReader', (): void => {
   it('reads the accessTo value of the acl resource.', async(): Promise<void> => {
     credentials.agent = { webId: 'http://test.com/user' };
     store.getRepresentation.mockResolvedValue(new BasicRepresentation([
-      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      DF.quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      DF.quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+      DF.quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, { read: true }]]));
   });
@@ -93,9 +93,9 @@ describe('A WebAclReader', (): void => {
   it('ignores accessTo fields pointing to different resources.', async(): Promise<void> => {
     credentials.agent = { webId: 'http://test.com/user' };
     store.getRepresentation.mockResolvedValue(new BasicRepresentation([
-      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-      quad(nn('auth'), nn(`${acl}accessTo`), nn('somewhereElse')),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      DF.quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      DF.quad(nn('auth'), nn(`${acl}accessTo`), nn('somewhereElse')),
+      DF.quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, {}]]));
   });
@@ -103,10 +103,10 @@ describe('A WebAclReader', (): void => {
   it('handles all valid modes and ignores other ones.', async(): Promise<void> => {
     credentials.agent = { webId: 'http://test.com/user' };
     store.getRepresentation.mockResolvedValue(new BasicRepresentation([
-      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}fakeMode1`)),
+      DF.quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      DF.quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+      DF.quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      DF.quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}fakeMode1`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, { read: true }]]));
   });
@@ -114,24 +114,24 @@ describe('A WebAclReader', (): void => {
   it('reads the default value of a parent if there is no direct acl resource.', async(): Promise<void> => {
     resourceSet.hasResource.mockImplementation(async(id): Promise<boolean> => !id.path.endsWith('foo.acl'));
     store.getRepresentation.mockResolvedValue(new BasicRepresentation([
-      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-      quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
-      quad(nn('auth'), nn(`${acl}default`), nn(identifierStrategy.getParentContainer(identifier).path)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      DF.quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      DF.quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+      DF.quad(nn('auth'), nn(`${acl}default`), nn(identifierStrategy.getParentContainer(identifier).path)),
+      DF.quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, { read: true }]]));
   });
 
   it('does not use default authorizations for the resource itself.', async(): Promise<void> => {
     store.getRepresentation.mockResolvedValue(new BasicRepresentation([
-      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-      quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
-      quad(nn('auth'), nn(`${acl}default`), nn(identifier.path)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
-      quad(nn('auth2'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-      quad(nn('auth2'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
-      quad(nn('auth2'), nn(`${acl}accessTo`), nn(identifier.path)),
-      quad(nn('auth2'), nn(`${acl}mode`), nn(`${acl}Append`)),
+      DF.quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      DF.quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+      DF.quad(nn('auth'), nn(`${acl}default`), nn(identifier.path)),
+      DF.quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      DF.quad(nn('auth2'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      DF.quad(nn('auth2'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+      DF.quad(nn('auth2'), nn(`${acl}accessTo`), nn(identifier.path)),
+      DF.quad(nn('auth2'), nn(`${acl}mode`), nn(`${acl}Append`)),
     ], INTERNAL_QUADS));
     compareMaps(await reader.handle(input), new IdentifierMap([[ identifier, { append: true }]]));
   });
@@ -155,12 +155,12 @@ describe('A WebAclReader', (): void => {
     accessChecker.handleSafe.mockImplementation(async({ rule }): Promise<boolean> => rule.value !== 'auth1');
 
     store.getRepresentation.mockResolvedValue(new BasicRepresentation([
-      quad(nn('auth1'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-      quad(nn('auth1'), nn(`${acl}accessTo`), nn(identifier.path)),
-      quad(nn('auth1'), nn(`${acl}mode`), nn(`${acl}Read`)),
-      quad(nn('auth2'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-      quad(nn('auth2'), nn(`${acl}accessTo`), nn(identifier.path)),
-      quad(nn('auth2'), nn(`${acl}mode`), nn(`${acl}Append`)),
+      DF.quad(nn('auth1'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      DF.quad(nn('auth1'), nn(`${acl}accessTo`), nn(identifier.path)),
+      DF.quad(nn('auth1'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      DF.quad(nn('auth2'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      DF.quad(nn('auth2'), nn(`${acl}accessTo`), nn(identifier.path)),
+      DF.quad(nn('auth2'), nn(`${acl}mode`), nn(`${acl}Append`)),
     ], INTERNAL_QUADS));
 
     compareMaps(await reader.handle(input), new IdentifierMap<PermissionSet>([[ identifier, { append: true }]]));
@@ -176,22 +176,22 @@ describe('A WebAclReader', (): void => {
     store.getRepresentation.mockImplementation(async(id: ResourceIdentifier): Promise<Representation> => {
       if (id.path === 'http://example.com/.acl') {
         return new BasicRepresentation([
-          quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-          quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
-          quad(nn('auth'), nn(`${acl}default`), nn('http://example.com/')),
-          quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+          DF.quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+          DF.quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+          DF.quad(nn('auth'), nn(`${acl}default`), nn('http://example.com/')),
+          DF.quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
         ], INTERNAL_QUADS);
       }
       if (id.path === 'http://example.com/bar/.acl') {
         return new BasicRepresentation([
-          quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-          quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
-          quad(nn('auth'), nn(`${acl}default`), nn(identifier2.path)),
-          quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Append`)),
-          quad(nn('auth2'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
-          quad(nn('auth2'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
-          quad(nn('auth2'), nn(`${acl}accessTo`), nn(identifier2.path)),
-          quad(nn('auth2'), nn(`${acl}mode`), nn(`${acl}Read`)),
+          DF.quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+          DF.quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+          DF.quad(nn('auth'), nn(`${acl}default`), nn(identifier2.path)),
+          DF.quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Append`)),
+          DF.quad(nn('auth2'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+          DF.quad(nn('auth2'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+          DF.quad(nn('auth2'), nn(`${acl}accessTo`), nn(identifier2.path)),
+          DF.quad(nn('auth2'), nn(`${acl}mode`), nn(`${acl}Read`)),
         ], INTERNAL_QUADS);
       }
       throw new NotFoundHttpError();
