@@ -8,7 +8,7 @@ import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import { AclMode } from './permissions/AclPermissionSet';
 import type { AclPermissionSet } from './permissions/AclPermissionSet';
-import type { AccessMap, AccessMode, PermissionMap, PermissionSet } from './permissions/Permissions';
+import type { AccessMap, AccessMode, MultiPermissionMap, PermissionSet } from './permissions/Permissions';
 
 /**
  * Determines the permission for authorization resources (such as ACL or ACR).
@@ -30,7 +30,7 @@ export class AuthAuxiliaryReader extends PermissionReader {
     this.authStrategy = authStrategy;
   }
 
-  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<PermissionMap> {
+  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<MultiPermissionMap> {
     // Finds all the ACL identifiers
     const authMap = new Map(this.findAuth(requestedModes));
 

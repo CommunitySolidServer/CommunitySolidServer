@@ -2,7 +2,7 @@ import { StatusUnionHandler } from '../util/handlers/StatusUnionHandler';
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import { getDefault } from '../util/map/MapUtil';
 import type { PermissionReader } from './PermissionReader';
-import type { PermissionMap, PermissionSet } from './permissions/Permissions';
+import type { MultiPermissionMap, PermissionSet } from './permissions/Permissions';
 
 /**
  * Combines the results of multiple PermissionReaders.
@@ -13,8 +13,8 @@ export class UnionPermissionReader extends StatusUnionHandler<PermissionReader> 
     super(readers);
   }
 
-  protected async combine(results: PermissionMap[]): Promise<PermissionMap> {
-    const result: PermissionMap = new IdentifierMap();
+  protected async combine(results: MultiPermissionMap[]): Promise<MultiPermissionMap> {
+    const result: MultiPermissionMap = new IdentifierMap();
     for (const permissionMap of results) {
       this.mergePermissionMaps(permissionMap, result);
     }
@@ -24,7 +24,7 @@ export class UnionPermissionReader extends StatusUnionHandler<PermissionReader> 
   /**
    * Merges all entries of the given map into the result map.
    */
-  private mergePermissionMaps(permissionMap: PermissionMap, result: PermissionMap): void {
+  private mergePermissionMaps(permissionMap: MultiPermissionMap, result: MultiPermissionMap): void {
     for (const [ identifier, permissionSet ] of permissionMap) {
       const resultSet = getDefault(result, identifier, (): PermissionSet => ({}));
       result.set(identifier, this.mergePermissions(permissionSet, resultSet));

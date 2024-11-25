@@ -5,7 +5,7 @@ import { getDefault } from '../util/map/MapUtil';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/PathUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { AccessMap, PermissionMap } from './permissions/Permissions';
+import type { AccessMap, MultiPermissionMap } from './permissions/Permissions';
 
 /**
  * Redirects requests to specific PermissionReaders based on their identifier.
@@ -29,8 +29,8 @@ export class PathBasedReader extends PermissionReader {
     this.paths = new Map(entries);
   }
 
-  public async handle(input: PermissionReaderInput): Promise<PermissionMap> {
-    const results: PermissionMap[] = [];
+  public async handle(input: PermissionReaderInput): Promise<MultiPermissionMap> {
+    const results: MultiPermissionMap[] = [];
     for (const [ reader, readerModes ] of this.matchReaders(input.requestedModes)) {
       results.push(await reader.handleSafe({ credentials: input.credentials, requestedModes: readerModes }));
     }

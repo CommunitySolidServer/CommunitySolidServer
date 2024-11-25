@@ -18,7 +18,7 @@ import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import type { AclPermissionSet } from './permissions/AclPermissionSet';
 import { AclMode } from './permissions/AclPermissionSet';
-import type { PermissionMap } from './permissions/Permissions';
+import type { MultiPermissionMap } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 // Maps WebACL-specific modes to generic access modes.
@@ -64,7 +64,7 @@ export class WebAclReader extends PermissionReader {
    * Checks if an agent is allowed to execute the requested actions.
    * Will throw an error if this is not the case.
    */
-  public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
+  public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<MultiPermissionMap> {
     // Determine the required access modes
     this.logger.debug(`Retrieving permissions of ${credentials.agent?.webId ?? 'an unknown agent'}`);
     const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
@@ -82,8 +82,8 @@ export class WebAclReader extends PermissionReader {
    * @param credentials - Credentials to check permissions for.
    */
   private async findPermissions(aclMap: Map<Store, ResourceIdentifier[]>, credentials: Credentials):
-  Promise<PermissionMap> {
-    const result: PermissionMap = new IdentifierMap();
+  Promise<MultiPermissionMap> {
+    const result: MultiPermissionMap = new IdentifierMap();
     for (const [ store, aclIdentifiers ] of aclMap) {
       const permissionSet = await this.determinePermissions(store, credentials);
       for (const identifier of aclIdentifiers) {

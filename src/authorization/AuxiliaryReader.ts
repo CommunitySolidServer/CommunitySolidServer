@@ -6,7 +6,7 @@ import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { AccessMap, AccessMode, PermissionMap } from './permissions/Permissions';
+import type { AccessMap, AccessMode, MultiPermissionMap } from './permissions/Permissions';
 
 /**
  * Determines the permissions of auxiliary resources by finding those of the corresponding subject resources.
@@ -23,7 +23,7 @@ export class AuxiliaryReader extends PermissionReader {
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
-  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<PermissionMap> {
+  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<MultiPermissionMap> {
     // Finds all the dependent auxiliary identifiers
     const auxiliaries = this.findAuxiliaries(requestedModes);
 

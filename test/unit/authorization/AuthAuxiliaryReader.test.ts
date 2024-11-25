@@ -2,7 +2,7 @@ import type { Credentials } from '../../../src/authentication/Credentials';
 import { AuthAuxiliaryReader } from '../../../src/authorization/AuthAuxiliaryReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import { AclMode } from '../../../src/authorization/permissions/AclPermissionSet';
-import type { AccessMap, PermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
+import type { AccessMap, MultiPermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
@@ -18,7 +18,7 @@ describe('An AuthAuxiliaryReader', (): void => {
   const acl2 = { path: joinUrl(subject2.path, '.acl') };
   const credentials: Credentials = {};
   let requestedModes: AccessMap;
-  let sourceResult: PermissionMap;
+  let sourceResult: MultiPermissionMap;
   let aclStrategy: jest.Mocked<AuxiliaryStrategy>;
   let source: jest.Mocked<PermissionReader>;
   let reader: AuthAuxiliaryReader;
@@ -61,7 +61,7 @@ describe('An AuthAuxiliaryReader', (): void => {
 
     const resultSet = { read: true, write: true, control: true } as PermissionSet;
     sourceResult.set(subject1, resultSet);
-    const resultMap: PermissionMap = new IdentifierMap([
+    const resultMap: MultiPermissionMap = new IdentifierMap([
       [ acl1, { read: true, write: true, control: true, append: true } as PermissionSet ],
       [ subject1, resultSet ],
     ]);
