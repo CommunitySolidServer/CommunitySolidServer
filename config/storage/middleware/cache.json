@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "import": [
+    "css:config/storage/middleware/base/base.json"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Converting",
+      "@type": "RepresentationConvertingStore",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Cached" }
+    },
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Cached",
+      "@type": "CachedResourceStore",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
+    }
+  ]
+}

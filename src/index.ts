@@ -520,6 +520,7 @@ export * from './storage/AtomicResourceStore';
 export * from './storage/BaseResourceStore';
 export * from './storage/BinarySliceResourceStore';
 export * from './storage/CachedResourceSet';
+export * from './storage/CachedResourceStore';
 export * from './storage/DataAccessorBasedStore';
 export * from './storage/IndexRepresentationStore';
 export * from './storage/LockingResourceStore';
@@ -599,6 +600,7 @@ export * from './util/templates/TemplateEngine';
 export * from './util/templates/TemplateUtil';
 
 // Util
+export * from './util/CacheUtil';
 export * from './util/ContentTypes';
 export * from './util/FetchUtil';
 export * from './util/GenericEventEmitter';
