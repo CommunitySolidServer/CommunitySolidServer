@@ -3,7 +3,7 @@ import type { CredentialsExtractor } from '../../../src/authentication/Credentia
 import type { Authorizer } from '../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import type { ModesExtractor } from '../../../src/authorization/permissions/ModesExtractor';
-import type { AccessMap, PermissionMap } from '../../../src/authorization/permissions/Permissions';
+import type { AccessMap, MultiPermissionMap } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { Operation } from '../../../src/http/Operation';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
@@ -22,7 +22,7 @@ describe('An AuthorizingHttpHandler', (): void => {
   const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>(
     [[ target, new Set([ AccessMode.read, AccessMode.write ]) ]],
   );
-  const availablePermissions: PermissionMap = new IdentifierMap(
+  const availablePermissions: MultiPermissionMap = new IdentifierMap(
     [[ target, { read: true, write: true }]],
   );
   const request: HttpRequest = {} as any;

@@ -1,7 +1,7 @@
 import type { Credentials } from '../../../src/authentication/Credentials';
 import { ParentContainerReader } from '../../../src/authorization/ParentContainerReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
-import type { AccessMap, PermissionMap } from '../../../src/authorization/permissions/Permissions';
+import type { AccessMap, MultiPermissionMap } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
@@ -18,7 +18,7 @@ describe('A ParentContainerReader', (): void => {
   const target3 = { path: joinUrl(parent3.path, 'baz') };
   const credentials: Credentials = {};
   let requestedModes: AccessMap;
-  let sourceResult: PermissionMap;
+  let sourceResult: MultiPermissionMap;
   const identifierStrategy = new SingleRootIdentifierStrategy(baseUrl);
   let source: jest.Mocked<PermissionReader>;
   let reader: ParentContainerReader;

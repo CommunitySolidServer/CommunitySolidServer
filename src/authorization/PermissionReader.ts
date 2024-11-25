@@ -1,6 +1,6 @@
 import { AsyncHandler } from 'asynchronous-handlers';
 import type { Credentials } from '../authentication/Credentials';
-import type { AccessMap, PermissionMap } from './permissions/Permissions';
+import type { AccessMap, MultiPermissionMap } from './permissions/Permissions';
 
 export interface PermissionReaderInput {
   /**
@@ -19,4 +19,4 @@ export interface PermissionReaderInput {
  * If the reader finds no permission for the requested identifiers and credentials,
  * it can return an empty or incomplete map.
  */
-export abstract class PermissionReader extends AsyncHandler<PermissionReaderInput, PermissionMap> {}
+export abstract class PermissionReader extends AsyncHandler<PermissionReaderInput, MultiPermissionMap> {}

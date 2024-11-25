@@ -22,7 +22,7 @@ import { PermissionReader } from './PermissionReader';
 import type { AclPermissionSet } from './permissions/AclPermissionSet';
 import { AclMode } from './permissions/AclPermissionSet';
 import { AccessMode } from './permissions/Permissions';
-import type { PermissionMap, PermissionSet } from './permissions/Permissions';
+import type { MultiPermissionMap, PermissionSet } from './permissions/Permissions';
 
 const modesMap: Record<string, readonly (keyof AclPermissionSet)[]> = {
   [ACL.Read]: [ AccessMode.read ],
@@ -51,10 +51,10 @@ export class AcpReader extends PermissionReader {
     this.identifierStrategy = identifierStrategy;
   }
 
-  public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
+  public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<MultiPermissionMap> {
     this.logger.debug(`Retrieving permissions of ${JSON.stringify(credentials)}`);
     const resourceCache = new IdentifierMap<IAccessControlledResource[]>();
-    const permissionMap: PermissionMap = new IdentifierMap();
+    const permissionMap: MultiPermissionMap = new IdentifierMap();
 
     // Resolves the targets sequentially so the `resourceCache` can be filled and reused
     for (const target of requestedModes.distinctKeys()) {

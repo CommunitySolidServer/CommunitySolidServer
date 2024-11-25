@@ -6,7 +6,7 @@ import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { AccessMap, PermissionMap, PermissionSet } from './permissions/Permissions';
+import type { AccessMap, MultiPermissionMap, PermissionSet } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 /**
@@ -28,7 +28,7 @@ export class ParentContainerReader extends PermissionReader {
     this.identifierStrategy = identifierStrategy;
   }
 
-  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<PermissionMap> {
+  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<MultiPermissionMap> {
     // Finds the entries for which we require parent container permissions
     const containerMap = this.findParents(requestedModes);
 

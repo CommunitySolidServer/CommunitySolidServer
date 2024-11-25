@@ -24,4 +24,4 @@ export type PermissionSet = Partial<Record<AccessMode, boolean>>;
 /**
  * PermissionSet per identifier.
  */
-export type PermissionMap = IdentifierMap<PermissionSet>;
+export type MultiPermissionMap = IdentifierMap<PermissionSet>;

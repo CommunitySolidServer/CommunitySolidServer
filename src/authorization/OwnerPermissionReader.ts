@@ -8,7 +8,7 @@ import { IdentifierMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import type { AclPermissionSet } from './permissions/AclPermissionSet';
-import type { PermissionMap } from './permissions/Permissions';
+import type { MultiPermissionMap } from './permissions/Permissions';
 
 /**
  * Allows control access if the request is being made by an owner of the pod containing the resource.
@@ -31,8 +31,8 @@ export class OwnerPermissionReader extends PermissionReader {
     this.storageStrategy = storageStrategy;
   }
 
-  public async handle(input: PermissionReaderInput): Promise<PermissionMap> {
-    const result: PermissionMap = new IdentifierMap();
+  public async handle(input: PermissionReaderInput): Promise<MultiPermissionMap> {
+    const result: MultiPermissionMap = new IdentifierMap();
     const requestedResources = input.requestedModes.distinctKeys();
     const auths = [ ...filter(requestedResources, (id): boolean => this.authStrategy.isAuxiliaryIdentifier(id)) ];
     if (auths.length === 0) {

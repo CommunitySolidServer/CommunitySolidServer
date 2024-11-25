@@ -1,6 +1,6 @@
 import { AuxiliaryReader } from '../../../src/authorization/AuxiliaryReader';
 import type { PermissionReader, PermissionReaderInput } from '../../../src/authorization/PermissionReader';
-import type { AccessMap, PermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
+import type { AccessMap, MultiPermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
@@ -20,7 +20,7 @@ describe('An AuxiliaryReader', (): void => {
   let strategy: jest.Mocked<AuxiliaryStrategy>;
   let reader: AuxiliaryReader;
 
-  function handleSafe({ requestedModes }: PermissionReaderInput): PermissionMap {
+  function handleSafe({ requestedModes }: PermissionReaderInput): MultiPermissionMap {
     return new IdentifierMap(map(requestedModes.distinctKeys(), (identifier): [ResourceIdentifier, PermissionSet] =>
       [ identifier, permissionSet ]));
   }
@@ -45,7 +45,7 @@ describe('An AuxiliaryReader', (): void => {
       [ auxiliaryIdentifier1, AccessMode.delete ],
       [{ path: 'http://example.com/other' }, AccessMode.read ],
     ]);
-    const permissionMap: PermissionMap = new IdentifierMap([
+    const permissionMap: MultiPermissionMap = new IdentifierMap([
       [ subjectIdentifier, permissionSet ],
       [{ path: 'http://example.com/other' }, permissionSet ],
       [ auxiliaryIdentifier1, permissionSet ],
@@ -64,7 +64,7 @@ describe('An AuxiliaryReader', (): void => {
     const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>([
       [ auxiliaryIdentifier1, AccessMode.delete ],
     ]);
-    const permissionMap: PermissionMap = new IdentifierMap([
+    const permissionMap: MultiPermissionMap = new IdentifierMap([
       [ auxiliaryIdentifier1, {}],
     ]);
     compareMaps(await reader.handle({ credentials, requestedModes }), permissionMap);
@@ -78,7 +78,7 @@ describe('An AuxiliaryReader', (): void => {
     ]);
     const resultSet = { read: true, write: true, delete: true };
     source.handleSafe.mockResolvedValueOnce(new IdentifierMap([[ subjectIdentifier, resultSet ]]));
-    const permissionMap: PermissionMap = new IdentifierMap([
+    const permissionMap: MultiPermissionMap = new IdentifierMap([
       [ subjectIdentifier, resultSet ],
       [ auxiliaryIdentifier1, resultSet ],
       [ auxiliaryIdentifier2, resultSet ],

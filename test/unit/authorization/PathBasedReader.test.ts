@@ -1,6 +1,6 @@
 import { PathBasedReader } from '../../../src/authorization/PathBasedReader';
 import type { PermissionReader, PermissionReaderInput } from '../../../src/authorization/PermissionReader';
-import type { PermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
+import type { MultiPermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { map } from '../../../src/util/IterableUtil';
@@ -14,7 +14,7 @@ describe('A PathBasedReader', (): void => {
   let readers: jest.Mocked<PermissionReader>[];
   let reader: PathBasedReader;
 
-  function handleSafe({ requestedModes }: PermissionReaderInput): PermissionMap {
+  function handleSafe({ requestedModes }: PermissionReaderInput): MultiPermissionMap {
     return new IdentifierMap(map(requestedModes.distinctKeys(), (identifier): [ResourceIdentifier, PermissionSet] =>
       [ identifier, permissionSet ]));
   }

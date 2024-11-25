@@ -1,6 +1,6 @@
 import { AsyncHandler } from 'asynchronous-handlers';
 import type { Credentials } from '../authentication/Credentials';
-import type { AccessMap, PermissionMap } from './permissions/Permissions';
+import type { AccessMap, MultiPermissionMap } from './permissions/Permissions';
 
 export interface AuthorizerInput {
   /**
@@ -14,7 +14,7 @@ export interface AuthorizerInput {
   /**
    * Actual permissions available per resource and per credential group.
    */
-  availablePermissions: PermissionMap;
+  availablePermissions: MultiPermissionMap;
 }
 
 /**
