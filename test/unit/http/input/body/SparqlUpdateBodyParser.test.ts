@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
 import * as algebra from 'sparqlalgebrajs';
 import type { BodyParserArgs } from '../../../../../src/http/input/body/BodyParser';
@@ -11,8 +11,6 @@ import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHt
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { ContentType } from '../../../../../src/util/Header';
 import { guardedStreamFrom } from '../../../../../src/util/StreamUtil';
-
-const { namedNode, quad } = DataFactory;
 
 describe('A SparqlUpdateBodyParser', (): void => {
   const bodyParser = new SparqlUpdateBodyParser();
@@ -56,10 +54,10 @@ describe('A SparqlUpdateBodyParser', (): void => {
     ) as HttpRequest;
     const result = await bodyParser.handle(input);
     expect(result.algebra.type).toBe(Algebra.types.DELETE_INSERT);
-    expect((result.algebra as Algebra.DeleteInsert).delete).toBeRdfIsomorphic([ quad(
-      namedNode('http://test.com/s'),
-      namedNode('http://test.com/p'),
-      namedNode('http://test.com/o'),
+    expect((result.algebra as Algebra.DeleteInsert).delete).toBeRdfIsomorphic([ DF.quad(
+      DF.namedNode('http://test.com/s'),
+      DF.namedNode('http://test.com/p'),
+      DF.namedNode('http://test.com/o'),
     ) ]);
     expect(result.binary).toBe(true);
     expect(result.metadata).toBe(input.metadata);
@@ -73,13 +71,13 @@ describe('A SparqlUpdateBodyParser', (): void => {
     input.request = guardedStreamFrom(
       [ 'INSERT DATA { <#it> <http://test.com/p> <http://test.com/o> }' ],
     ) as HttpRequest;
-    input.metadata.identifier = namedNode('http://test.com/my-document.ttl');
+    input.metadata.identifier = DF.namedNode('http://test.com/my-document.ttl');
     const result = await bodyParser.handle(input);
     expect(result.algebra.type).toBe(Algebra.types.DELETE_INSERT);
-    expect((result.algebra as Algebra.DeleteInsert).insert).toBeRdfIsomorphic([ quad(
-      namedNode('http://test.com/my-document.ttl#it'),
-      namedNode('http://test.com/p'),
-      namedNode('http://test.com/o'),
+    expect((result.algebra as Algebra.DeleteInsert).insert).toBeRdfIsomorphic([ DF.quad(
+      DF.namedNode('http://test.com/my-document.ttl#it'),
+      DF.namedNode('http://test.com/p'),
+      DF.namedNode('http://test.com/o'),
     ) ]);
     expect(result.binary).toBe(true);
     expect(result.metadata).toBe(input.metadata);

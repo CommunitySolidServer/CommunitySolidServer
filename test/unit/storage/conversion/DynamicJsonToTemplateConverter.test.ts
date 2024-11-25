@@ -9,7 +9,6 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 import { CONTENT_TYPE_TERM, SOLID_META } from '../../../../src/util/Vocabularies';
-import namedNode = DataFactory.namedNode;
 
 describe('A DynamicJsonToTemplateConverter', (): void => {
   const templateFile = '/path/to/template.html.ejs';
@@ -24,7 +23,7 @@ describe('A DynamicJsonToTemplateConverter', (): void => {
     representation = new BasicRepresentation('{ "json": true }', identifier, 'application/json');
 
     // Create dummy template metadata
-    const templateNode = namedNode(templateFile);
+    const templateNode = DataFactory.namedNode(templateFile);
     representation.metadata.add(SOLID_META.terms.template, templateNode);
     representation.metadata.addQuad(templateNode, CONTENT_TYPE_TERM, 'text/html');
 
@@ -80,7 +79,7 @@ describe('A DynamicJsonToTemplateConverter', (): void => {
 
   it('still converts if JSON is preferred but there is a JSON template.', async(): Promise<void> => {
     input.preferences.type = { 'application/json': 1 };
-    const templateNode = namedNode(templateFile);
+    const templateNode = DataFactory.namedNode(templateFile);
     representation.metadata.add(SOLID_META.terms.template, templateNode);
     representation.metadata.addQuad(templateNode, CONTENT_TYPE_TERM, 'application/json');
     const result = await converter.handle(input);

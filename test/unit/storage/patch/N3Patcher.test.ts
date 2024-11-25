@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { DataFactory, Store } from 'n3';
+import { DataFactory as DF, Store } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { N3Patch } from '../../../../src/http/representation/N3Patch';
 import type { RdfDatasetRepresentation } from '../../../../src/http/representation/RdfDatasetRepresentation';
@@ -9,8 +9,6 @@ import type { RepresentationPatcherInput } from '../../../../src/storage/patch/R
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-
-const { namedNode, quad, variable } = DataFactory;
 
 describe('An N3Patcher', (): void => {
   let patch: N3Patch;
@@ -55,47 +53,47 @@ describe('An N3Patcher', (): void => {
   });
 
   it('can delete and insert triples.', async(): Promise<void> => {
-    patch.deletes = [ quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')) ];
-    patch.inserts = [ quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')) ];
+    patch.deletes = [ DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')) ];
+    patch.inserts = [ DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')) ];
     input.representation?.dataset.addQuads([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
-      quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
     ]);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
-      quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
     ]);
   });
 
   it('can create new representations using insert.', async(): Promise<void> => {
-    patch.inserts = [ quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')) ];
+    patch.inserts = [ DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')) ];
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('ex:s2'), namedNode('ex:p2'), namedNode('ex:o2')),
+      DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
     ]);
   });
 
   it('can use conditions to target specific triples.', async(): Promise<void> => {
-    patch.conditions = [ quad(variable('v'), namedNode('ex:p1'), namedNode('ex:o1')) ];
-    patch.deletes = [ quad(variable('v'), namedNode('ex:p1'), namedNode('ex:o1')) ];
-    patch.inserts = [ quad(variable('v'), namedNode('ex:p2'), namedNode('ex:o2')) ];
+    patch.conditions = [ DF.quad(DF.variable('v'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')) ];
+    patch.deletes = [ DF.quad(DF.variable('v'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')) ];
+    patch.inserts = [ DF.quad(DF.variable('v'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')) ];
     input.representation?.dataset.addQuads([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
-      quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
     ]);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
-      quad(namedNode('ex:s1'), namedNode('ex:p2'), namedNode('ex:o2')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
     ]);
   });
 
   it('errors if the conditions find no match.', async(): Promise<void> => {
-    patch.conditions = [ quad(variable('v'), namedNode('ex:p3'), namedNode('ex:o3')) ];
+    patch.conditions = [ DF.quad(DF.variable('v'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')) ];
     input.representation?.dataset.addQuads([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
-      quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
     ]);
     const prom = patcher.handle(input);
     await expect(prom).rejects.toThrow(ConflictHttpError);
@@ -105,10 +103,10 @@ describe('An N3Patcher', (): void => {
   });
 
   it('errors if the conditions find multiple matches.', async(): Promise<void> => {
-    patch.conditions = [ quad(variable('v'), namedNode('ex:p0'), namedNode('ex:o0')) ];
+    patch.conditions = [ DF.quad(DF.variable('v'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')) ];
     input.representation?.dataset.addQuads([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
-      quad(namedNode('ex:s1'), namedNode('ex:p0'), namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
     ]);
     const prom = patcher.handle(input);
     await expect(prom).rejects.toThrow(ConflictHttpError);
@@ -118,9 +116,9 @@ describe('An N3Patcher', (): void => {
   });
 
   it('errors if the delete triples have no match.', async(): Promise<void> => {
-    patch.deletes = [ quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')) ];
+    patch.deletes = [ DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')) ];
     input.representation?.dataset.addQuads([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
     ]);
     const prom = patcher.handle(input);
     await expect(prom).rejects.toThrow(ConflictHttpError);
@@ -130,18 +128,18 @@ describe('An N3Patcher', (): void => {
   });
 
   it('works correctly if there are duplicate delete triples.', async(): Promise<void> => {
-    patch.conditions = [ quad(variable('v'), namedNode('ex:p1'), namedNode('ex:o1')) ];
+    patch.conditions = [ DF.quad(DF.variable('v'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')) ];
     patch.deletes = [
-      quad(variable('v'), namedNode('ex:p1'), namedNode('ex:o1')),
-      quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+      DF.quad(DF.variable('v'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+      DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
     ];
     input.representation?.dataset.addQuads([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
-      quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
     ]);
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
-      quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
     ]);
   });
 });

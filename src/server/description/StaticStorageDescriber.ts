@@ -3,8 +3,6 @@ import { DataFactory } from 'n3';
 import { stringToTerm } from 'rdf-string';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { StorageDescriber } from './StorageDescriber';
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
 
 /**
  * Adds a fixed set of triples to the storage description resource,
@@ -32,14 +30,14 @@ export class StaticStorageDescriber extends StorageDescriber {
   }
 
   public async handle(target: ResourceIdentifier): Promise<Quad[]> {
-    const subject = namedNode(target.path);
+    const subject = DataFactory.namedNode(target.path);
     return [ ...this.generateTriples(subject) ];
   }
 
   private* generateTriples(subject: NamedNode): Iterable<Quad> {
     for (const [ predicate, objects ] of this.terms.entries()) {
       for (const object of objects) {
-        yield quad(subject, predicate, object);
+        yield DataFactory.quad(subject, predicate, object);
       }
     }
   }

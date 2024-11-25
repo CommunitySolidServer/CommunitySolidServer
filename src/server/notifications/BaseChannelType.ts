@@ -21,7 +21,6 @@ import { NOTIFY, RDF, XSD } from '../../util/Vocabularies';
 import { CONTEXT_NOTIFICATION } from './Notification';
 import type { NotificationChannel } from './NotificationChannel';
 import type { NotificationChannelType, SubscriptionService } from './NotificationChannelType';
-import namedNode = DataFactory.namedNode;
 
 /**
  * Helper type used to store information about the default features.
@@ -106,7 +105,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
       if (feature.startsWith('notify:')) {
         feature = `${NOTIFY.namespace}${feature.slice('notify:'.length)}`;
       }
-      return namedNode(feature);
+      return DataFactory.namedNode(feature);
     });
 
     // Inject requested properties into default SHACL shape

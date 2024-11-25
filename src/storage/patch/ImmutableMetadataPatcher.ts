@@ -9,7 +9,6 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
 import type { FilterPattern } from '../../util/QuadUtil';
 import type { RepresentationPatcherInput } from './RepresentationPatcher';
 import { RepresentationPatcher } from './RepresentationPatcher';
-import namedNode = DataFactory.namedNode;
 
 /**
  * Guarantees that certain PATCH operations MUST NOT update certain triples in metadata resources.
@@ -49,7 +48,7 @@ export class ImmutableMetadataPatcher extends RepresentationPatcher<RdfDatasetRe
     const store = input.representation.dataset;
 
     const immutablePatternMap = new Map<FilterPattern, Quad[]>();
-    const baseSubject = namedNode(this.metadataStrategy.getSubjectIdentifier(input.identifier).path);
+    const baseSubject = DataFactory.namedNode(this.metadataStrategy.getSubjectIdentifier(input.identifier).path);
     for (const immutablePattern of this.immutablePatterns) {
       const { predicate, object } = immutablePattern;
       const subject = immutablePattern.subject ?? baseSubject;

@@ -1,7 +1,7 @@
 import 'jest-rdf';
 import type { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
-import { DataFactory, Store } from 'n3';
+import { DataFactory as DF, Store } from 'n3';
 import type { Conditions } from '../../../src';
 import { CONTENT_TYPE_TERM } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
@@ -27,9 +27,7 @@ import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { AS, CONTENT_TYPE, DC, LDP, PIM, RDF, SOLID_AS, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../util/SimpleSuffixStrategy';
 
-const { namedNode, quad, literal } = DataFactory;
-
-const GENERATED_PREDICATE = namedNode('generated');
+const GENERATED_PREDICATE = DF.namedNode('generated');
 
 class SimpleDataAccessor implements DataAccessor {
   public readonly data: Record<string, Representation> = {};
@@ -117,20 +115,20 @@ describe('A DataAccessorBasedStore', (): void => {
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [
-        namedNode(LDP.Resource),
-        namedNode(LDP.Container),
-        namedNode(LDP.BasicContainer),
+        DF.namedNode(LDP.Resource),
+        DF.namedNode(LDP.Container),
+        DF.namedNode(LDP.BasicContainer),
       ]},
     );
     const rootMetadata = new RepresentationMetadata(containerMetadata);
-    rootMetadata.identifier = namedNode(root);
+    rootMetadata.identifier = DF.namedNode(root);
     accessor.data[root] = { metadata: rootMetadata } as Representation;
 
     representation = {
       binary: true,
       data: guardedStreamFrom([ resourceData ]),
       metadata: new RepresentationMetadata(
-        { [CONTENT_TYPE]: 'text/plain', [RDF.type]: namedNode(LDP.Resource) },
+        { [CONTENT_TYPE]: 'text/plain', [RDF.type]: DF.namedNode(LDP.Resource) },
       ),
       isEmpty: false,
     };
@@ -143,19 +141,19 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('will return the stored representation for resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
-      representation.metadata.identifier = namedNode(resourceID.path);
+      representation.metadata.identifier = DF.namedNode(resourceID.path);
       accessor.data[resourceID.path] = representation;
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: true });
       await expect(arrayifyStream(result.data)).resolves.toEqual([ resourceData ]);
       expect(result.metadata.contentType).toBe('text/plain');
-      expect(result.metadata.get(namedNode('AUXILIARY'))?.value)
+      expect(result.metadata.get(DF.namedNode('AUXILIARY'))?.value)
         .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will return a data stream that matches the metadata for containers.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
-      containerMetadata.identifier = namedNode(resourceID.path);
+      containerMetadata.identifier = DF.namedNode(resourceID.path);
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
       const metaMirror = new RepresentationMetadata(containerMetadata);
       // Generated metadata will have its graph removed
@@ -165,13 +163,13 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).toMatchObject({ binary: false });
       await expect(arrayifyStream(result.data)).resolves.toBeRdfIsomorphic(metaMirror.quads());
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
-      expect(result.metadata.get(namedNode('AUXILIARY'))?.value)
+      expect(result.metadata.get(DF.namedNode('AUXILIARY'))?.value)
         .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will remove containment triples referencing auxiliary resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
-      containerMetadata.identifier = namedNode(resourceID.path);
+      containerMetadata.identifier = DF.namedNode(resourceID.path);
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
       accessor.data[`${resourceID.path}.dummy`] = representation;
       accessor.data[`${resourceID.path}resource`] = representation;
@@ -185,7 +183,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('will return the stored representation for metadata resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       const metaResourceID = { path: `${root}resource.meta` };
-      representation.metadata.identifier = namedNode(resourceID.path);
+      representation.metadata.identifier = DF.namedNode(resourceID.path);
 
       accessor.data[resourceID.path] = representation;
 
@@ -193,7 +191,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const quads = await arrayifyStream(result.data);
       expect(result).toMatchObject({ binary: false });
       expect(new Store(quads)).toBeRdfDatasetContaining(
-        quad(namedNode(resourceID.path), CONTENT_TYPE_TERM, literal('text/plain')),
+        DF.quad(DF.namedNode(resourceID.path), CONTENT_TYPE_TERM, DF.literal('text/plain')),
       );
       expect(result.metadata.contentType).toBe(INTERNAL_QUADS);
     });
@@ -208,10 +206,10 @@ describe('A DataAccessorBasedStore', (): void => {
       const result = await store.getRepresentation(metaResourceID);
       const quads = await arrayifyStream(result.data);
       expect(new Store(quads)).toBeRdfDatasetContaining(
-        quad(
-          namedNode(root),
-          namedNode(LDP.contains),
-          namedNode(resourceID.path),
+        DF.quad(
+          DF.namedNode(root),
+          DF.namedNode(LDP.contains),
+          DF.namedNode(resourceID.path),
           SOLID_META.terms.ResponseMetadata,
         ),
       );
@@ -408,7 +406,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('will error if the path has a different slash than the existing one.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       accessor.data[`${resourceID.path}/`] = representation;
-      representation.metadata.identifier = namedNode(`${resourceID.path}/`);
+      representation.metadata.identifier = DF.namedNode(`${resourceID.path}/`);
       const prom = store.setRepresentation(resourceID, representation);
       await expect(prom).rejects.toThrow(`${resourceID.path} conflicts with existing path ${resourceID.path}/`);
       await expect(prom).rejects.toThrow(ConflictHttpError);
@@ -511,15 +509,15 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('does not write generated metadata.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
-      representation.metadata.add(namedNode('notGen'), 'value');
-      representation.metadata.add(namedNode('gen'), 'value', SOLID_META.terms.ResponseMetadata);
+      representation.metadata.add(DF.namedNode('notGen'), 'value');
+      representation.metadata.add(DF.namedNode('gen'), 'value', SOLID_META.terms.ResponseMetadata);
       const result = await store.setRepresentation(resourceID, representation);
       expect(result.size).toBe(2);
       expect(result.get({ path: root })?.get(SOLID_AS.terms.activity)).toEqualRdfTerm(AS.terms.Add);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqualRdfTerm(AS.terms.Create);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
-      expect(accessor.data[resourceID.path].metadata.get(namedNode('notGen'))?.value).toBe('value');
-      expect(accessor.data[resourceID.path].metadata.get(namedNode('gen'))).toBeUndefined();
+      expect(accessor.data[resourceID.path].metadata.get(DF.namedNode('notGen'))?.value).toBe('value');
+      expect(accessor.data[resourceID.path].metadata.get(DF.namedNode('gen'))).toBeUndefined();
     });
 
     it('can write resources even if root does not exist.', async(): Promise<void> => {
@@ -576,19 +574,19 @@ describe('A DataAccessorBasedStore', (): void => {
       const metaResourceID = { path: `${root}resource.meta` };
 
       accessor.data[resourceID.path] = representation;
-      const metaRepresentation = new BasicRepresentation([ quad(
-        namedNode(resourceID.path),
-        namedNode(DC.description),
-        literal('something'),
+      const metaRepresentation = new BasicRepresentation([ DF.quad(
+        DF.namedNode(resourceID.path),
+        DF.namedNode(DC.description),
+        DF.literal('something'),
       ) ], resourceID);
 
       const result = await store.setRepresentation(metaResourceID, metaRepresentation);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqualRdfTerm(AS.terms.Update);
       expect(accessor.data[resourceID.path].metadata.quads()).toBeRdfIsomorphic([
-        quad(
-          namedNode(resourceID.path),
-          namedNode(DC.description),
-          literal('something'),
+        DF.quad(
+          DF.namedNode(resourceID.path),
+          DF.namedNode(DC.description),
+          DF.literal('something'),
         ),
       ]);
     });
@@ -597,10 +595,10 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}resource` };
       const metaResourceID = { path: `${root}resource.meta` };
 
-      const quads = [ quad(
-        namedNode(resourceID.path),
-        namedNode(DC.description),
-        literal('something'),
+      const quads = [ DF.quad(
+        DF.namedNode(resourceID.path),
+        DF.namedNode(DC.description),
+        DF.literal('something'),
       ) ];
       accessor.data[resourceID.path] = representation;
       const metaRepresentation = new BasicRepresentation(guardedStreamFrom(quads), resourceID, INTERNAL_QUADS);
@@ -631,7 +629,7 @@ describe('A DataAccessorBasedStore', (): void => {
         data: guardedStreamFrom([ resourceData ]),
         metadata: new RepresentationMetadata({
           [CONTENT_TYPE]: 'text/plain',
-          [RDF.type]: [ namedNode(LDP.Resource), namedNode('http://example.org/Type') ],
+          [RDF.type]: [ DF.namedNode(LDP.Resource), DF.namedNode('http://example.org/Type') ],
         }),
         isEmpty: false,
       };
@@ -640,15 +638,15 @@ describe('A DataAccessorBasedStore', (): void => {
       const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
       representation.metadata.add(
         SOLID_META.terms.preserve,
-        namedNode(metaResourceID.path),
+        DF.namedNode(metaResourceID.path),
         SOLID_META.terms.ResponseMetadata,
       );
 
       await store.setRepresentation(resourceID, representation);
       expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toHaveLength(2);
       expect(accessor.data[resourceID.path].metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic([
-        quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
-        quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')),
+        DF.quad(DF.namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
+        DF.quad(DF.namedNode(resourceID.path), RDF.terms.type, DF.namedNode('http://example.org/Type')),
       ]);
     });
 
@@ -659,7 +657,7 @@ describe('A DataAccessorBasedStore', (): void => {
         data: guardedStreamFrom([ '<a> <b> <c>' ]),
         metadata: new RepresentationMetadata({
           [CONTENT_TYPE]: 'text/turtle',
-          [RDF.type]: [ namedNode(LDP.Resource), namedNode('http://example.org/Type') ],
+          [RDF.type]: [ DF.namedNode(LDP.Resource), DF.namedNode('http://example.org/Type') ],
         }),
         isEmpty: false,
       };
@@ -669,7 +667,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
       representation.metadata.add(
         SOLID_META.terms.preserve,
-        namedNode(metaResourceID.path),
+        DF.namedNode(metaResourceID.path),
         SOLID_META.terms.ResponseMetadata,
       );
       representation.metadata.contentTypeObject = new ContentType('text/plain', { charset: 'UTF-8' });
@@ -677,8 +675,8 @@ describe('A DataAccessorBasedStore', (): void => {
       const { metadata } = accessor.data[resourceID.path];
       expect(metadata.quads(null, RDF.terms.type)).toHaveLength(2);
       expect(metadata.quads(null, RDF.terms.type)).toBeRdfIsomorphic([
-        quad(namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
-        quad(namedNode(resourceID.path), RDF.terms.type, namedNode('http://example.org/Type')),
+        DF.quad(DF.namedNode(resourceID.path), RDF.terms.type, LDP.terms.Resource),
+        DF.quad(DF.namedNode(resourceID.path), RDF.terms.type, DF.namedNode('http://example.org/Type')),
       ]);
       expect(metadata.contentType).toBe('text/plain');
       expect(metadata.contentTypeObject?.parameters).toEqual({ charset: 'UTF-8' });

@@ -1,5 +1,5 @@
 import type { Quad } from 'n3';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import { v4 } from 'uuid';
 import { getLoggerFor } from 'global-logger-factory';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
@@ -8,8 +8,6 @@ import { errorTermsToMetadata } from '../../util/errors/HttpErrorUtil';
 import { fetchDataset } from '../../util/FetchUtil';
 import { SOLID } from '../../util/Vocabularies';
 import { OwnershipValidator } from './OwnershipValidator';
-
-const { literal, namedNode, quad } = DataFactory;
 
 /**
  * Validates ownership of a WebId by seeing if a specific triple can be added.
@@ -66,7 +64,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
    */
   private async hasToken(webId: string, token: string): Promise<boolean> {
     const representation = await fetchDataset(webId);
-    const expectedQuad = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal(token));
+    const expectedQuad = DF.quad(DF.namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, DF.literal(token));
     for await (const data of representation.data) {
       const triple = data as Quad;
       if (triple.equals(expectedQuad)) {

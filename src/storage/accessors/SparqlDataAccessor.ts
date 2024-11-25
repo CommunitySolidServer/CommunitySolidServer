@@ -1,7 +1,7 @@
 import type { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { NamedNode, Quad } from '@rdfjs/types';
 import type {
   ConstructQuery,
@@ -29,8 +29,6 @@ import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrate
 import { isContainerIdentifier } from '../../util/PathUtil';
 import { CONTENT_TYPE_TERM, LDP } from '../../util/Vocabularies';
 import type { DataAccessor } from './DataAccessor';
-
-const { defaultGraph, namedNode, quad, variable } = DataFactory;
 
 /**
  * Stores all data and metadata of resources in a SPARQL backend.
@@ -72,7 +70,7 @@ export class SparqlDataAccessor implements DataAccessor {
    * Note that this will not throw a 404 if no results were found.
    */
   public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
-    const name = namedNode(identifier.path);
+    const name = DF.namedNode(identifier.path);
     return this.sendSparqlConstruct(this.sparqlConstruct(name));
   }
 
@@ -81,7 +79,7 @@ export class SparqlDataAccessor implements DataAccessor {
    * Will throw 404 if no metadata was found.
    */
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
-    const name = namedNode(identifier.path);
+    const name = DF.namedNode(identifier.path);
     const query = this.sparqlConstruct(this.getMetadataNode(name));
     const stream = await this.sendSparqlConstruct(query);
     const quads: Quad[] = await arrayifyStream(stream);
@@ -100,7 +98,7 @@ export class SparqlDataAccessor implements DataAccessor {
 
   public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
     // Only triples that have a container identifier as subject are the containment triples
-    const name = namedNode(identifier.path);
+    const name = DF.namedNode(identifier.path);
     const stream = await this.sendSparqlConstruct(this.sparqlConstruct(name));
     for await (const entry of stream) {
       yield new RepresentationMetadata((entry as Quad).object as NamedNode);
@@ -126,7 +124,7 @@ export class SparqlDataAccessor implements DataAccessor {
     const { name, parent } = this.getRelatedNames(identifier);
 
     const triples = await arrayifyStream<Quad>(data);
-    const def = defaultGraph();
+    const def = DF.defaultGraph();
     if (triples.some((triple): boolean => !def.equals(triple.graph))) {
       throw new NotImplementedHttpError('Only triples in the default graph are supported.');
     }
@@ -160,7 +158,7 @@ export class SparqlDataAccessor implements DataAccessor {
    * In case of a root container only the name will be returned.
    */
   private getRelatedNames(identifier: ResourceIdentifier): { name: NamedNode; parent?: NamedNode } {
-    const name = namedNode(identifier.path);
+    const name = DF.namedNode(identifier.path);
 
     // Root containers don't have a parent
     if (this.identifierStrategy.isRootContainer(identifier)) {
@@ -168,7 +166,7 @@ export class SparqlDataAccessor implements DataAccessor {
     }
 
     const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
-    const parent = namedNode(parentIdentifier.path);
+    const parent = DF.namedNode(parentIdentifier.path);
     return { name, parent };
   }
 
@@ -178,7 +176,7 @@ export class SparqlDataAccessor implements DataAccessor {
    * @param name - Name of the (non-metadata) resource.
    */
   private getMetadataNode(name: NamedNode): NamedNode {
-    return namedNode(`meta:${name.value}`);
+    return DF.namedNode(`meta:${name.value}`);
   }
 
   /**
@@ -194,7 +192,7 @@ export class SparqlDataAccessor implements DataAccessor {
    * @param name - Name of the resource to query.
    */
   private sparqlConstruct(name: NamedNode): ConstructQuery {
-    const pattern = quad(variable('s'), variable('p'), variable('o'));
+    const pattern = DF.quad(DF.variable('s'), DF.variable('p'), DF.variable('o'));
     return {
       queryType: 'CONSTRUCT',
       template: [ pattern ],
@@ -228,7 +226,7 @@ export class SparqlDataAccessor implements DataAccessor {
     // Insert new metadata and containment triple
     const insert: GraphQuads[] = [ this.sparqlUpdateGraph(metaName, metadata.quads()) ];
     if (parent) {
-      insert.push(this.sparqlUpdateGraph(parent, [ quad(parent, LDP.terms.contains, name) ]));
+      insert.push(this.sparqlUpdateGraph(parent, [ DF.quad(parent, LDP.terms.contains, name) ]));
     }
 
     // Necessary updates: delete metadata and insert new data
@@ -301,7 +299,7 @@ export class SparqlDataAccessor implements DataAccessor {
     if (parent) {
       update.updates.push({
         updateType: 'delete',
-        delete: [ this.sparqlUpdateGraph(parent, [ quad(parent, LDP.terms.contains, name) ]) ],
+        delete: [ this.sparqlUpdateGraph(parent, [ DF.quad(parent, LDP.terms.contains, name) ]) ],
       });
     }
 
@@ -317,7 +315,7 @@ export class SparqlDataAccessor implements DataAccessor {
   private sparqlUpdateDeleteAll(name: NamedNode): InsertDeleteOperation {
     return {
       updateType: 'deletewhere',
-      delete: [ this.sparqlUpdateGraph(name, [ quad(variable(`s`), variable(`p`), variable(`o`)) ]) ],
+      delete: [ this.sparqlUpdateGraph(name, [ DF.quad(DF.variable(`s`), DF.variable(`p`), DF.variable(`o`)) ]) ],
     };
   }
 

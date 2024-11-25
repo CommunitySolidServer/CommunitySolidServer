@@ -14,14 +14,13 @@ import type {
 import type { HttpError } from '../../../../../src/util/errors/HttpError';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 import { HTTP, XSD } from '../../../../../src/util/Vocabularies';
-import literal = DataFactory.literal;
 
 const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
 
 async function expectValidArgs(args: RepresentationConverterArgs, stack?: string, cause?: Error): Promise<void> {
   expect(args.preferences).toBe(preferences);
   expect(args.representation.metadata.get(HTTP.terms.statusCodeNumber))
-    .toEqualRdfTerm(literal(404, XSD.terms.integer));
+    .toEqualRdfTerm(DataFactory.literal(404, XSD.terms.integer));
   expect(args.representation.metadata.contentType).toBe('internal/error');
 
   // Error contents

@@ -8,8 +8,6 @@ import { WebhookWebId } from '../../../../../src/server/notifications/WebhookCha
 import { readableToString } from '../../../../../src/util/StreamUtil';
 import { SOLID } from '../../../../../src/util/Vocabularies';
 
-const { namedNode, quad } = DataFactory;
-
 describe('A WebhookWebId', (): void => {
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
@@ -35,10 +33,10 @@ describe('A WebhookWebId', (): void => {
     expect(turtle.data).toBeDefined();
     const quads = new Parser({ baseIRI: operation.target.path }).parse(await readableToString(turtle.data!));
     expect(quads).toHaveLength(1);
-    expect(quads).toEqualRdfQuadArray([ quad(
-      namedNode('http://example.com/.notifications/webhooks/webid'),
+    expect(quads).toEqualRdfQuadArray([ DataFactory.quad(
+      DataFactory.namedNode('http://example.com/.notifications/webhooks/webid'),
       SOLID.terms.oidcIssuer,
-      namedNode('http://example.com'),
+      DataFactory.namedNode('http://example.com'),
     ) ]);
   });
 

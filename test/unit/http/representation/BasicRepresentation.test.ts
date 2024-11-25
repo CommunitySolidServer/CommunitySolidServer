@@ -8,8 +8,6 @@ import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
-const { namedNode } = DataFactory;
-
 describe('BasicRepresentation', (): void => {
   it('creates a representation with (data, metadata, binary).', (): void => {
     const data = guardedStreamFrom([ '' ]);
@@ -83,7 +81,7 @@ describe('BasicRepresentation', (): void => {
     const data = guardedStreamFrom([ '' ]);
     const representation = new BasicRepresentation(data, identifier, { [CONTENT_TYPE]: 'text/custom' });
     expect(representation.data).toBe(data);
-    expect(representation.metadata.identifier).toEqualRdfTerm(namedNode(identifier.path));
+    expect(representation.metadata.identifier).toEqualRdfTerm(DataFactory.namedNode(identifier.path));
     expect(representation.metadata.contentType).toBe('text/custom');
     expect(representation.binary).toBe(true);
   });
@@ -93,13 +91,13 @@ describe('BasicRepresentation', (): void => {
     const data = guardedStreamFrom([ '' ]);
     const representation = new BasicRepresentation(data, identifier, 'text/custom');
     expect(representation.data).toBe(data);
-    expect(representation.metadata.identifier).toEqualRdfTerm(namedNode(identifier.path));
+    expect(representation.metadata.identifier).toEqualRdfTerm(DataFactory.namedNode(identifier.path));
     expect(representation.metadata.contentType).toBe('text/custom');
     expect(representation.binary).toBe(true);
   });
 
   it('creates a representation with (data, identifier term, metadata record).', (): void => {
-    const identifier = namedNode('http://example.org/#');
+    const identifier = DataFactory.namedNode('http://example.org/#');
     const data = guardedStreamFrom([ '' ]);
     const representation = new BasicRepresentation(data, identifier, { [CONTENT_TYPE]: 'text/custom' });
     expect(representation.data).toBe(data);
@@ -109,7 +107,7 @@ describe('BasicRepresentation', (): void => {
   });
 
   it('creates a representation with (data, identifier term, content type).', (): void => {
-    const identifier = namedNode('http://example.org/#');
+    const identifier = DataFactory.namedNode('http://example.org/#');
     const data = guardedStreamFrom([ '' ]);
     const representation = new BasicRepresentation(data, identifier, 'text/custom');
     expect(representation.data).toBe(data);

@@ -1,6 +1,5 @@
 import { DataFactory } from 'n3';
 import type { AuxiliaryStrategy, RepresentationMetadata, ResourceIdentifier } from '../../src';
-import namedNode = DataFactory.namedNode;
 
 export class SimpleSuffixStrategy implements AuxiliaryStrategy {
   private readonly suffix: string;
@@ -36,7 +35,7 @@ export class SimpleSuffixStrategy implements AuxiliaryStrategy {
   public async addMetadata(metadata: RepresentationMetadata): Promise<void> {
     const identifier = { path: metadata.identifier.value };
     // Random triple to test on
-    metadata.add(namedNode('AUXILIARY'), this.getAuxiliaryIdentifier(identifier).path);
+    metadata.add(DataFactory.namedNode('AUXILIARY'), this.getAuxiliaryIdentifier(identifier).path);
   }
 
   public async validate(): Promise<void> {

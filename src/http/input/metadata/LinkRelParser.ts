@@ -7,7 +7,6 @@ import { parseLinkHeader } from '../../../util/HeaderUtil';
 import { SOLID_META } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataParser } from './MetadataParser';
-import namedNode = DataFactory.namedNode;
 
 /**
  * Parses Link headers with a specific `rel` value and adds them as metadata with the given predicate.
@@ -43,7 +42,7 @@ export class LinkRelObject {
    * @param allowList - (Optional) Contains the objects that are allowed to be used with the given predicate.
    */
   public constructor(value: string, ephemeral?: boolean, allowList?: string[]) {
-    this.value = namedNode(value);
+    this.value = DataFactory.namedNode(value);
     this.ephemeral = ephemeral ?? false;
     this.allowList = allowList;
   }
@@ -69,13 +68,13 @@ export class LinkRelObject {
   public addToMetadata(object: string, metadata: RepresentationMetadata, logger: Logger): void {
     if (this.objectAllowed(object)) {
       if (this.ephemeral) {
-        metadata.add(this.value, namedNode(object), SOLID_META.terms.ResponseMetadata);
+        metadata.add(this.value, DataFactory.namedNode(object), SOLID_META.terms.ResponseMetadata);
         logger.debug(
           `"<${metadata.identifier.value}> <${this.value.value}> <${object}>." ` +
           `will not be stored permanently in the metadata.`,
         );
       } else {
-        metadata.add(this.value, namedNode(object));
+        metadata.add(this.value, DataFactory.namedNode(object));
       }
     } else {
       logger.debug(

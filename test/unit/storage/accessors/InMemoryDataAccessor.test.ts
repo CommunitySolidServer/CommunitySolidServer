@@ -11,8 +11,6 @@ import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIde
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, LDP, POSIX, RDF } from '../../../../src/util/Vocabularies';
 
-const { namedNode } = DataFactory;
-
 class DummyStrategy extends BaseIdentifierStrategy {
   public supportsIdentifier(): boolean {
     return true;
@@ -220,10 +218,10 @@ describe('An InMemoryDataAccessor', (): void => {
       await accessor.writeDocument(resourceIdentifier, data, inputMetadata);
 
       const extraMetadata = new RepresentationMetadata(resourceIdentifier);
-      extraMetadata.addQuad(namedNode('a'), namedNode('b'), namedNode('c'));
+      extraMetadata.addQuad(DataFactory.namedNode('a'), DataFactory.namedNode('b'), DataFactory.namedNode('c'));
       await expect(accessor.writeMetadata(resourceIdentifier, extraMetadata)).resolves.toBeUndefined();
 
-      await expect(accessor.getMetadata(resourceIdentifier)).resolves.toStrictEqual(extraMetadata);
+      expect((await accessor.getMetadata(resourceIdentifier)).quads()).toBeRdfIsomorphic(extraMetadata.quads());
     });
   });
 

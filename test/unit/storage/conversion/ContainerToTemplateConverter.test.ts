@@ -1,4 +1,4 @@
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ContainerToTemplateConverter } from '../../../../src/storage/conversion/ContainerToTemplateConverter';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
@@ -6,7 +6,7 @@ import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 import { LDP, RDF } from '../../../../src/util/Vocabularies';
 
-const { namedNode: nn, quad } = DataFactory;
+const nn = DF.namedNode.bind(DF);
 
 describe('A ContainerToTemplateConverter', (): void => {
   const preferences = {};
@@ -38,13 +38,13 @@ describe('A ContainerToTemplateConverter', (): void => {
   it('calls the template with the contained resources.', async(): Promise<void> => {
     const container = { path: 'http://test.com/foo/bar/my-container/' };
     const representation = new BasicRepresentation([
-      quad(nn(container.path), RDF.terms.type, LDP.terms.BasicContainer),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}b`)),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}c%20c`)),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}d/`)),
-      quad(nn(`${container.path}d/`), LDP.terms.contains, nn(`${container.path}d`)),
+      DF.quad(nn(container.path), RDF.terms.type, LDP.terms.BasicContainer),
+      DF.quad(nn(container.path), LDP.terms.contains, nn(`${container.path}b`)),
+      DF.quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
+      DF.quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
+      DF.quad(nn(container.path), LDP.terms.contains, nn(`${container.path}c%20c`)),
+      DF.quad(nn(container.path), LDP.terms.contains, nn(`${container.path}d/`)),
+      DF.quad(nn(`${container.path}d/`), LDP.terms.contains, nn(`${container.path}d`)),
     ], 'internal/quads', false);
     const converted = await converter.handle({ identifier: container, representation, preferences });
 
@@ -104,10 +104,10 @@ describe('A ContainerToTemplateConverter', (): void => {
   it('converts the root container.', async(): Promise<void> => {
     const container = { path: 'http://test.com/' };
     const representation = new BasicRepresentation([
-      quad(nn(container.path), RDF.terms.type, LDP.terms.BasicContainer),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}b`)),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}c`)),
+      DF.quad(nn(container.path), RDF.terms.type, LDP.terms.BasicContainer),
+      DF.quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
+      DF.quad(nn(container.path), LDP.terms.contains, nn(`${container.path}b`)),
+      DF.quad(nn(container.path), LDP.terms.contains, nn(`${container.path}c`)),
     ], 'internal/quads', false);
     await converter.handle({ identifier: container, representation, preferences });
 

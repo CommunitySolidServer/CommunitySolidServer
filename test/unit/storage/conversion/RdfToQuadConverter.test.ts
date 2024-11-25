@@ -14,8 +14,6 @@ import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuad
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 
-const { namedNode, triple, literal, quad } = DataFactory;
-
 // All of this is necessary to not break the cross-fetch imports that happen in `rdf-parse`
 jest.mock('cross-fetch', (): any => {
   const mock = jest.fn();
@@ -75,10 +73,10 @@ describe('A RdfToQuadConverter', (): void => {
       metadata: expect.any(RepresentationMetadata),
     });
     expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
-    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ triple(
-      namedNode('http://test.com/s'),
-      namedNode('http://test.com/p'),
-      namedNode('http://test.com/o'),
+    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ DataFactory.triple(
+      DataFactory.namedNode('http://test.com/s'),
+      DataFactory.namedNode('http://test.com/p'),
+      DataFactory.namedNode('http://test.com/o'),
     ) ]);
   });
 
@@ -102,7 +100,7 @@ describe('A RdfToQuadConverter', (): void => {
     await arrayifyStream(result.data);
 
     expect(result.metadata.quads(null, PREFERRED_PREFIX_TERM, null)).toBeRdfIsomorphic([
-      quad(namedNode('http://xmlns.com/foaf/0.1/'), PREFERRED_PREFIX_TERM, literal('foaf'), SOLID_META.terms.ResponseMetadata),
+      DataFactory.quad(DataFactory.namedNode('http://xmlns.com/foaf/0.1/'), PREFERRED_PREFIX_TERM, DataFactory.literal('foaf'), SOLID_META.terms.ResponseMetadata),
     ]);
   });
 
@@ -120,10 +118,10 @@ describe('A RdfToQuadConverter', (): void => {
       metadata: expect.any(RepresentationMetadata),
     });
     expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
-    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ triple(
-      namedNode('http://test.com/s'),
-      namedNode('http://test.com/p'),
-      namedNode('http://test.com/o'),
+    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ DataFactory.triple(
+      DataFactory.namedNode('http://test.com/s'),
+      DataFactory.namedNode('http://test.com/p'),
+      DataFactory.namedNode('http://test.com/o'),
     ) ]);
   });
 
@@ -172,14 +170,14 @@ describe('A RdfToQuadConverter', (): void => {
     const representation = new BasicRepresentation(JSON.stringify(jsonld), 'application/ld+json');
     const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await contextConverter.handle({ identifier, representation, preferences });
-    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ triple(
-      namedNode('http://example.com/resource'),
-      namedNode('http://example.com/context#predicate'),
-      literal(123),
-    ), triple(
-      namedNode('http://example.com/resource'),
-      namedNode('http://example.com/context2#predicate2'),
-      literal(456),
+    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ DataFactory.triple(
+      DataFactory.namedNode('http://example.com/resource'),
+      DataFactory.namedNode('http://example.com/context#predicate'),
+      DataFactory.literal(123),
+    ), DataFactory.triple(
+      DataFactory.namedNode('http://example.com/resource'),
+      DataFactory.namedNode('http://example.com/context2#predicate2'),
+      DataFactory.literal(456),
     ) ]);
   });
 });

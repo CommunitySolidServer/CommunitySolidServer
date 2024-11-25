@@ -2,12 +2,10 @@ import { Readable } from 'node:stream';
 import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { Response } from 'cross-fetch';
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import rdfDereferencer from 'rdf-dereference';
 import { RdfToQuadConverter } from '../../../src/storage/conversion/RdfToQuadConverter';
 import { fetchDataset, responseToDataset } from '../../../src/util/FetchUtil';
-
-const { namedNode, quad } = DataFactory;
 
 jest.mock('rdf-dereference', (): any => ({
   dereference: jest.fn<string, any>(),
@@ -47,11 +45,11 @@ describe('FetchUtil', (): void => {
     });
 
     it('returns a Representation with quads.', async(): Promise<void> => {
-      const quads = [ quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')) ];
+      const quads = [ DF.quad(DF.namedNode('http://test.com/s'), DF.namedNode('http://test.com/p'), DF.namedNode('http://test.com/o')) ];
       mockDereference(quads);
       const representation = await fetchDataset(url);
       await expect(arrayifyStream(representation.data)).resolves.toEqual([
-        quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')),
+        DF.quad(DF.namedNode('http://test.com/s'), DF.namedNode('http://test.com/p'), DF.namedNode('http://test.com/o')),
       ]);
     });
   });
@@ -64,7 +62,7 @@ describe('FetchUtil', (): void => {
       const body = await response.text();
       const representation = await responseToDataset(response, converter, body);
       await expect(arrayifyStream(representation.data)).resolves.toEqual([
-        quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')),
+        DF.quad(DF.namedNode('http://test.com/s'), DF.namedNode('http://test.com/p'), DF.namedNode('http://test.com/o')),
       ]);
     });
 

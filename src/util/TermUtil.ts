@@ -1,8 +1,6 @@
 import { DataFactory } from 'n3';
 import type { Literal, NamedNode, Term } from '@rdfjs/types';
 
-const { namedNode, literal } = DataFactory;
-
 /**
  * @param input - Checks if this is a {@link Term}.
  */
@@ -19,7 +17,7 @@ export function toNamedTerm(subject: string): NamedNode;
 export function toNamedTerm<T extends Term>(subject: T): T;
 export function toNamedTerm<T extends Term>(subject: T | string): T | NamedNode;
 export function toNamedTerm(subject: Term | string): Term {
-  return typeof subject === 'string' ? namedNode(subject) : subject;
+  return typeof subject === 'string' ? DataFactory.namedNode(subject) : subject;
 }
 
 export const toPredicateTerm = toNamedTerm;
@@ -35,7 +33,7 @@ export function toObjectTerm<T extends Term>(object: T, preferLiteral?: boolean)
 export function toObjectTerm<T extends Term>(object: T | string, preferLiteral?: boolean): T | NamedNode;
 export function toObjectTerm(object: Term | string, preferLiteral = false): Term {
   if (typeof object === 'string') {
-    return preferLiteral ? literal(object) : namedNode(object);
+    return preferLiteral ? DataFactory.literal(object) : DataFactory.namedNode(object);
   }
   return object;
 }
@@ -47,5 +45,5 @@ export function toObjectTerm(object: Term | string, preferLiteral = false): Term
  * @param dataType - Object data type (as string).
  */
 export function toLiteral(object: string | number, dataType: NamedNode): Literal {
-  return literal(`${object}`, dataType);
+  return DataFactory.literal(`${object}`, dataType);
 }

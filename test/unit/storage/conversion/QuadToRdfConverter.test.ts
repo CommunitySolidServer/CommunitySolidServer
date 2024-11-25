@@ -10,8 +10,6 @@ import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { DC, PREFERRED_PREFIX_TERM, SOLID_META } from '../../../../src/util/Vocabularies';
 
-const { namedNode, triple, quad } = DataFactory;
-
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
   const identifier: ResourceIdentifier = { path: 'http://example.org/foo/bar/' };
@@ -46,10 +44,10 @@ describe('A QuadToRdfConverter', (): void => {
 
   it('converts quads to Turtle.', async(): Promise<void> => {
     const representation = new BasicRepresentation(
-      [ triple(
-        namedNode('http://test.com/s'),
-        namedNode('http://test.com/p'),
-        namedNode('http://test.com/o'),
+      [ DataFactory.triple(
+        DataFactory.namedNode('http://test.com/s'),
+        DataFactory.namedNode('http://test.com/p'),
+        DataFactory.namedNode('http://test.com/o'),
       ) ],
       metadata,
     );
@@ -69,10 +67,10 @@ describe('A QuadToRdfConverter', (): void => {
   it('converts quads with prefixes to Turtle.', async(): Promise<void> => {
     metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc');
     metadata.addQuad('http://test.com/', PREFERRED_PREFIX_TERM, 'test');
-    const representation = new BasicRepresentation([ triple(
-      namedNode('http://test.com/s'),
+    const representation = new BasicRepresentation([ DataFactory.triple(
+      DataFactory.namedNode('http://test.com/s'),
       DC.terms.modified,
-      namedNode('http://test.com/o'),
+      DataFactory.namedNode('http://test.com/o'),
     ) ], metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
@@ -87,10 +85,10 @@ test:s dc:modified test:o.
   });
 
   it('uses the base IRI when converting quads to Turtle.', async(): Promise<void> => {
-    const representation = new BasicRepresentation([ triple(
-      namedNode('http://example.org/foo/bar/'),
-      namedNode('http://example.org/foo/bar/#abc'),
-      namedNode('http://example.org/foo/bar/def/ghi'),
+    const representation = new BasicRepresentation([ DataFactory.triple(
+      DataFactory.namedNode('http://example.org/foo/bar/'),
+      DataFactory.namedNode('http://example.org/foo/bar/#abc'),
+      DataFactory.namedNode('http://example.org/foo/bar/def/ghi'),
     ) ], metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
@@ -103,10 +101,10 @@ test:s dc:modified test:o.
 
   it('converts quads to JSON-LD.', async(): Promise<void> => {
     metadata.contentType = INTERNAL_QUADS;
-    const representation = new BasicRepresentation([ triple(
-      namedNode('http://test.com/s'),
-      namedNode('http://test.com/p'),
-      namedNode('http://test.com/o'),
+    const representation = new BasicRepresentation([ DataFactory.triple(
+      DataFactory.namedNode('http://test.com/s'),
+      DataFactory.namedNode('http://test.com/p'),
+      DataFactory.namedNode('http://test.com/o'),
     ) ], metadata);
     const preferences: RepresentationPreferences = { type: { 'application/ld+json': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
@@ -131,10 +129,10 @@ test:s dc:modified test:o.
   });
 
   it('converts quads in the ResponseMetadata graph to the default graph.', async(): Promise<void> => {
-    const representation = new BasicRepresentation([ quad(
-      namedNode('http://test.com/s'),
-      namedNode('http://test.com/p'),
-      namedNode('http://test.com/o'),
+    const representation = new BasicRepresentation([ DataFactory.quad(
+      DataFactory.namedNode('http://test.com/s'),
+      DataFactory.namedNode('http://test.com/p'),
+      DataFactory.namedNode('http://test.com/o'),
       SOLID_META.terms.ResponseMetadata,
     ) ], metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};

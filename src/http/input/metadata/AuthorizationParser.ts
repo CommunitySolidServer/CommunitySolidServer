@@ -5,7 +5,6 @@ import { matchesAuthorizationScheme } from '../../../util/HeaderUtil';
 import { SOLID_META } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataParser } from './MetadataParser';
-import namedNode = DataFactory.namedNode;
 
 /**
  * Parses specific authorization schemes and stores their value as metadata.
@@ -22,7 +21,7 @@ export class AuthorizationParser extends MetadataParser {
   public constructor(authMap: Record<string, string>) {
     super();
     this.authMap = Object.fromEntries(
-      Object.entries(authMap).map(([ scheme, uri ]): [string, NamedNode] => [ scheme, namedNode(uri) ]),
+      Object.entries(authMap).map(([ scheme, uri ]): [string, NamedNode] => [ scheme, DataFactory.namedNode(uri) ]),
     );
   }
 

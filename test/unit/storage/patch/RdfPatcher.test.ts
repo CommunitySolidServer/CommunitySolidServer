@@ -14,8 +14,6 @@ import type {
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { readableToQuads } from '../../../../src/util/StreamUtil';
 
-const { quad, namedNode } = DataFactory;
-
 describe('An RdfPatcher,', (): void => {
   let patcher: jest.Mocked<RepresentationPatcher<RdfDatasetRepresentation>>;
   let startQuads: Quad[];
@@ -25,14 +23,14 @@ describe('An RdfPatcher,', (): void => {
   let patch: Patch;
 
   beforeEach((): void => {
-    startQuads = [ quad(
-      namedNode('http://test.com/startS1'),
-      namedNode('http://test.com/startP1'),
-      namedNode('http://test.com/startO1'),
-    ), quad(
-      namedNode('http://test.com/startS2'),
-      namedNode('http://test.com/startP2'),
-      namedNode('http://test.com/startO2'),
+    startQuads = [ DataFactory.quad(
+      DataFactory.namedNode('http://test.com/startS1'),
+      DataFactory.namedNode('http://test.com/startP1'),
+      DataFactory.namedNode('http://test.com/startO1'),
+    ), DataFactory.quad(
+      DataFactory.namedNode('http://test.com/startS2'),
+      DataFactory.namedNode('http://test.com/startP2'),
+      DataFactory.namedNode('http://test.com/startO2'),
     ) ];
     patcher = {
       canHandle: jest.fn(),

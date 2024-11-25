@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { DataFactory, Parser, Store } from 'n3';
+import { DataFactory as DF, Parser, Store } from 'n3';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
@@ -14,7 +14,6 @@ import {
   instantiateFromConfig,
   removeFolder,
 } from './Config';
-import namedNode = DataFactory.namedNode;
 
 const port = getPort('StreamingHTTPChannel2023');
 const baseUrl = `http://localhost:${port}/`;
@@ -110,7 +109,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     try {
       const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Update ]);
-      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(topic) ]);
     } finally {
       reader.releaseLock();
       await streamingResponse.body!.cancel();
@@ -127,7 +126,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
     try {
       const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Delete ]);
-      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(topic) ]);
     } finally {
       reader.releaseLock();
       await streamingResponse.body!.cancel();
@@ -146,12 +145,12 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       // Expected initial notification
       const updateQuads = await readChunk(reader);
       expect(updateQuads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Update ]);
-      expect(updateQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+      expect(updateQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(topic) ]);
 
       // Expected initial notification on other receiver
       const otherQuads = await readChunk(otherReader);
       expect(otherQuads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Update ]);
-      expect(otherQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+      expect(otherQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(topic) ]);
 
       // Delete resource
       const response = await fetch(topic, {
@@ -162,7 +161,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       // If it was caused by the other receiver connecting, it would have been Update as well
       const deleteQuads = await readChunk(reader);
       expect(deleteQuads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Delete ]);
-      expect(deleteQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+      expect(deleteQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(topic) ]);
     } finally {
       reader.releaseLock();
       await streamingResponse.body!.cancel();
@@ -192,7 +191,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
       const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Create ]);
-      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(topic) ]);
     } finally {
       reader.releaseLock();
       await streamingResponse.body!.cancel();
@@ -218,7 +217,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
       const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Update ]);
-      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(topic) ]);
     } finally {
       reader.releaseLock();
       await streamingResponse.body!.cancel();
@@ -242,7 +241,7 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
 
       const quads = await readChunk(reader);
       expect(quads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Delete ]);
-      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+      expect(quads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(topic) ]);
     } finally {
       reader.releaseLock();
       await streamingResponse.body!.cancel();
@@ -312,8 +311,8 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       const addQuads = await readChunk(reader);
 
       expect(addQuads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Add ]);
-      expect(addQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(resource) ]);
-      expect(addQuads.getObjects(null, AS.terms.target, null)).toEqualRdfTermArray([ namedNode(baseUrl) ]);
+      expect(addQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(resource) ]);
+      expect(addQuads.getObjects(null, AS.terms.target, null)).toEqualRdfTermArray([ DF.namedNode(baseUrl) ]);
 
       // Remove contained resource
       const removeResponse = await fetch(resource, {
@@ -324,8 +323,8 @@ describe.each(stores)('A server supporting StreamingHTTPChannel2023 using %s', (
       // Will receive the Remove notification
       const removeQuads = await readChunk(reader);
       expect(removeQuads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ AS.terms.Remove ]);
-      expect(removeQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ namedNode(resource) ]);
-      expect(removeQuads.getObjects(null, AS.terms.target, null)).toEqualRdfTermArray([ namedNode(baseUrl) ]);
+      expect(removeQuads.getObjects(null, AS.terms.object, null)).toEqualRdfTermArray([ DF.namedNode(resource) ]);
+      expect(removeQuads.getObjects(null, AS.terms.target, null)).toEqualRdfTermArray([ DF.namedNode(baseUrl) ]);
     } finally {
       reader.releaseLock();
       await streamingResponse.body!.cancel();

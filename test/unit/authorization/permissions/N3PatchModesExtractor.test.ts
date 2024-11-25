@@ -1,4 +1,4 @@
-import { DataFactory } from 'n3';
+import { DataFactory as DF } from 'n3';
 import type { Quad } from '@rdfjs/types';
 import { N3PatchModesExtractor } from '../../../../src/authorization/permissions/N3PatchModesExtractor';
 import type { AccessMap } from '../../../../src/authorization/permissions/Permissions';
@@ -12,11 +12,9 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 import { IdentifierSetMultiMap } from '../../../../src/util/map/IdentifierMap';
 import { compareMaps } from '../../../util/Util';
 
-const { quad, namedNode } = DataFactory;
-
 describe('An N3PatchModesExtractor', (): void => {
   const target: ResourceIdentifier = { path: 'http://example.com/foo' };
-  const triple: Quad = quad(namedNode('a'), namedNode('b'), namedNode('c'));
+  const triple: Quad = DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c'));
   let patch: N3Patch;
   let operation: Operation;
   let resourceSet: jest.Mocked<ResourceSet>;

@@ -19,7 +19,6 @@ import {
   instantiateFromConfig,
   removeFolder,
 } from './Config';
-import quad = DataFactory.quad;
 
 const port = getPort('WebhookChannel2023');
 const baseUrl = `http://localhost:${port}/`;
@@ -96,7 +95,7 @@ describe.each(stores)('A server supporting WebhookChannel2023 using %s', (name, 
     // Find the notification channel for websockets
     const subscriptions = quads.getObjects(null, NOTIFY.terms.subscription, null);
     const webhookSubscriptions = subscriptions.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, NOTIFY.terms.channelType, NOTIFY.terms.WebhookChannel2023),
+      DataFactory.quad(channel as NamedNode, NOTIFY.terms.channelType, NOTIFY.terms.WebhookChannel2023),
     ));
     expect(webhookSubscriptions).toHaveLength(1);
     subscriptionUrl = webhookSubscriptions[0].value;

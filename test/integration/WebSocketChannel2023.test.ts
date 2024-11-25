@@ -18,8 +18,6 @@ import {
   instantiateFromConfig,
   removeFolder,
 } from './Config';
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
 
 const port = getPort('WebSocketChannel2023');
 const baseUrl = `http://localhost:${port}/`;
@@ -89,7 +87,7 @@ describe.each(stores)('A server supporting WebSocketChannel2023 using %s', (name
     // Find the notification channel for websockets
     const subscriptions = quads.getObjects(null, NOTIFY.terms.subscription, null);
     const websocketSubscriptions = subscriptions.filter((channel): boolean => quads.has(
-      quad(channel as NamedNode, NOTIFY.terms.channelType, NOTIFY.terms.WebSocketChannel2023),
+      DataFactory.quad(channel as NamedNode, NOTIFY.terms.channelType, NOTIFY.terms.WebSocketChannel2023),
     ));
     expect(websocketSubscriptions).toHaveLength(1);
     subscriptionUrl = websocketSubscriptions[0].value;
@@ -306,7 +304,7 @@ describe.each(stores)('A server supporting WebSocketChannel2023 using %s', (name
     const quads = new Store(parser.parse(await response.text()));
 
     expect(quads.getObjects(null, RDF.terms.type, null)).toEqualRdfTermArray([ NOTIFY.terms.WebSocketChannel2023 ]);
-    expect(quads.getObjects(null, NOTIFY.terms.topic, null)).toEqualRdfTermArray([ namedNode(topic) ]);
+    expect(quads.getObjects(null, NOTIFY.terms.topic, null)).toEqualRdfTermArray([ DataFactory.namedNode(topic) ]);
     expect(quads.countQuads(null, NOTIFY.terms.receiveFrom, null, null)).toBe(1);
   });
 

@@ -2,7 +2,6 @@ import { DataFactory } from 'n3';
 import { AuthorizationParser } from '../../../../../src/http/input/metadata/AuthorizationParser';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
-import namedNode = DataFactory.namedNode;
 
 describe('An AuthorizationParser', (): void => {
   const parser = new AuthorizationParser({ custom: 'http://example.com/pred' });
@@ -23,7 +22,7 @@ describe('An AuthorizationParser', (): void => {
     request.headers.authorization = 'custom my-value';
     await parser.handle({ request, metadata });
     expect(metadata.quads()).toHaveLength(1);
-    expect(metadata.get(namedNode('http://example.com/pred'))?.value).toBe('my-value');
+    expect(metadata.get(DataFactory.namedNode('http://example.com/pred'))?.value).toBe('my-value');
   });
 
   it('ignores unknown values.', async(): Promise<void> => {
