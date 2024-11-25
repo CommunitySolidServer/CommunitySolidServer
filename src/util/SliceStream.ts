@@ -99,9 +99,8 @@ export class SliceStream extends Transform {
    */
   protected checkEnd(): void {
     if (this.remainingRead <= 0) {
-      this.source.unpipe();
+      this.source.unpipe(this);
       this.end();
-      this.source.destroy();
     }
   }
 }

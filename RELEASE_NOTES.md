@@ -4,7 +4,8 @@
 
 ### New features
 
-- ...
+- Backend resources are cached, as long as they don't change, improving response speed.
+  This only works for servers running on a single thread.
 
 ### Data migration
 
@@ -19,7 +20,9 @@ The `@context` needs to be updated to
 
 The following changes pertain to the imports in the default configs:
 
-- ...
+- There is a new import option for `storage/middleware`: `cache.json`, which adds caching for backend resources.
+  All default configurations have been changed to use that option.
+  Servers using worker threads can not use this option.
 
 The following changes are relevant for v7 custom configs that replaced certain features.
 
@@ -31,6 +34,7 @@ The following changes are relevant for v7 custom configs that replaced certain f
     - `BooleanHandler` -> `StatusBooleanHandler`
     - `UnionHandler` -> `StatusUnionHandler`
     - `WaterfallHandler` -> `StatusWaterfallHandler`
+- Some contents of `storage/middleware/default.json` have moved to `storage/middleware/base/base.json`.
 
 ### Interface changes
 
