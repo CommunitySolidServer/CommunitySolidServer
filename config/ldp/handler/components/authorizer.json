@@ -2,10 +2,16 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Matches requested permissions with those available.",
+      "comment": "Throws a 404 when deleting a non-existent resource if the client has read permissions.",
       "@id": "urn:solid-server:default:Authorizer",
-      "@type": "PermissionBasedAuthorizer",
-      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+      "@type": "ReadDeleteAuthorizer",
+      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "source": {
+        "comment": "Matches requested permissions with those available.",
+        "@id": "urn:solid-server:default:PermissionBasedAuthorizer",
+        "@type": "PermissionBasedAuthorizer"
+      }
     }
   ]
 }

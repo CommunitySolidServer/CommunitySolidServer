@@ -10,7 +10,7 @@ import type { MultiPermissionMap, PermissionSet } from './permissions/Permission
  */
 export class UnionPermissionReader extends StatusUnionHandler<PermissionReader> {
   public constructor(readers: PermissionReader[]) {
-    super(readers);
+    super(readers, false, false);
   }
 
   protected async combine(results: MultiPermissionMap[]): Promise<MultiPermissionMap> {

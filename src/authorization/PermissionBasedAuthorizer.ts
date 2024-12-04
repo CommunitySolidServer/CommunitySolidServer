@@ -1,14 +1,10 @@
 import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../authentication/Credentials';
-import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import type { ResourceSet } from '../storage/ResourceSet';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import type { AuthorizerInput } from './Authorizer';
 import { Authorizer } from './Authorizer';
-import type { PermissionSet } from './permissions/Permissions';
-import { AccessMode } from './permissions/Permissions';
+import type { AccessMode, PermissionSet } from './permissions/Permissions';
 
 /**
  * Authorizer that bases its decision on the output it gets from its PermissionReader.
@@ -18,19 +14,6 @@ import { AccessMode } from './permissions/Permissions';
  */
 export class PermissionBasedAuthorizer extends Authorizer {
   protected readonly logger = getLoggerFor(this);
-
-  private readonly resourceSet: ResourceSet;
-
-  /**
-   * The existence of the target resource determines the output status code for certain situations.
-   * The provided {@link ResourceSet} will be used for that.
-   *
-   * @param resourceSet - {@link ResourceSet} that can verify the target resource existence.
-   */
-  public constructor(resourceSet: ResourceSet) {
-    super();
-    this.resourceSet = resourceSet;
-  }
 
   public async handle(input: AuthorizerInput): Promise<void> {
     const { credentials, requestedModes, availablePermissions } = input;
@@ -43,35 +26,10 @@ export class PermissionBasedAuthorizer extends Authorizer {
       );
       const permissionSet = availablePermissions.get(identifier) ?? {};
       for (const mode of modes) {
-        try {
-          this.requireModePermission(credentials, permissionSet, mode);
-        } catch (error: unknown) {
-          await this.reportAccessError(identifier, modes, permissionSet, error);
-        }
+        this.requireModePermission(credentials, permissionSet, mode);
       }
       this.logger.debug(`${JSON.stringify(credentials)} has ${modeString} permissions for ${identifier.path}`);
     }
-  }
-
-  /**
-   * If we know the operation will return a 404 regardless (= resource does not exist and is not being created),
-   * and the agent is allowed to know about its existence (= the agent has Read permissions),
-   * then immediately send the 404 here, as it makes any other agent permissions irrelevant.
-   *
-   * Otherwise, deny access based on existing grounds.
-   */
-  private async reportAccessError(
-    identifier: ResourceIdentifier,
-    modes: ReadonlySet<AccessMode>,
-    permissionSet: PermissionSet,
-    cause: unknown,
-  ): Promise<never> {
-    const exposeExistence = permissionSet[AccessMode.read];
-    if (exposeExistence && !modes.has(AccessMode.create) && !await this.resourceSet.hasResource(identifier)) {
-      throw new NotFoundHttpError();
-    }
-
-    throw cause;
   }
 
   /**
@@ -83,7 +41,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * @param permissionSet - PermissionSet describing the available permissions of the credentials.
    * @param mode - Which mode is requested.
    */
-  private requireModePermission(credentials: Credentials, permissionSet: PermissionSet, mode: AccessMode): void {
+  protected requireModePermission(credentials: Credentials, permissionSet: PermissionSet, mode: AccessMode): void {
     if (!permissionSet[mode]) {
       if (this.isAuthenticated(credentials)) {
         this.logger.warn(`Agent ${JSON.stringify(credentials)} has no ${mode} permissions`);
@@ -103,7 +61,7 @@ export class PermissionBasedAuthorizer extends Authorizer {
    *
    * @param credentials - Credentials to check.
    */
-  private isAuthenticated(credentials: Credentials): boolean {
+  protected isAuthenticated(credentials: Credentials): boolean {
     return Object.values(credentials).some((cred): boolean => cred !== undefined);
   }
 }

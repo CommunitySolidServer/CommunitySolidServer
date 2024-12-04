@@ -29,7 +29,7 @@
         "@id": "urn:solid-server:default:IdentityProviderAuthorizingHandler",
         "credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
         "modesExtractor": { "@id": "urn:solid-server:default:ModesExtractor" },
-        "authorizer": { "@id": "urn:solid-server:default:Authorizer" },
+        "authorizer": { "@id": "urn:solid-server:default:PermissionBasedAuthorizer" },
         "operationHandler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
       }
     },
