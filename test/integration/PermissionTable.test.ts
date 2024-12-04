@@ -39,8 +39,6 @@ _:rename a solid:InsertDeletePatch;
 const N3 = 'text/n3';
 const TXT = 'text/plain';
 
-const allModes = [ AM.read, AM.append, AM.create, AM.write, AM.delete ];
-
 // Based on https://github.com/solid/specification/issues/14#issuecomment-683480525
 // Columns: method, target, C/ permissions, C/R permissions, body, content-type, target exists, target does not exist
 // `undefined` implies C/R inherits the permissions of C/
@@ -106,6 +104,7 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   [ 'DELETE',  'C/R', [],                     [ AM.read ],            '',     '',  401, 404 ],
   [ 'DELETE',  'C/R', [],                     [ AM.append ],          '',     '',  401, 401 ],
   [ 'DELETE',  'C/R', [],                     [ AM.write ],           '',     '',  401, 401 ],
+  [ 'DELETE',  'C/R', [ AM.read ],            [],                     '',     '',  401, 404 ],
   [ 'DELETE',  'C/R', [ AM.read ],            undefined,              '',     '',  401, 404 ],
   [ 'DELETE',  'C/R', [ AM.append ],          undefined,              '',     '',  401, 401 ],
   [ 'DELETE',  'C/R', [ AM.append ],          [ AM.read ],            '',     '',  401, 404 ],
@@ -254,7 +253,7 @@ describe.each(stores)('A request on a server with %s authorization and %s', (
     let init: RequestInit;
 
     beforeEach(async(): Promise<void> => {
-      // POST is special as the request targets the container but we care about the generated resource
+      // POST is special as the request targets the container, but we care about the generated resource
       const parent = targetingContainer && method !== 'POST' ? root : container;
 
       // Create C/ and set up permissions
@@ -269,7 +268,8 @@ describe.each(stores)('A request on a server with %s authorization and %s', (
       await authFunction(
         store,
         parent,
-        toPermission(parent === root ? allModes : cPerm),
+        // Only provide write to root parent, as giving read changes DELETE responses
+        toPermission(parent === root ? [ AM.write ] : cPerm),
         toPermission(parent === root ? cPerm : crPerm),
       );
 

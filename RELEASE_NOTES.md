@@ -35,6 +35,8 @@ The following changes are relevant for v7 custom configs that replaced certain f
     - `UnionHandler` -> `StatusUnionHandler`
     - `WaterfallHandler` -> `StatusWaterfallHandler`
 - Some contents of `storage/middleware/default.json` have moved to `storage/middleware/base/base.json`.
+- Due to the permission/authorization changes, configs in `ldp/authorization/*`,
+  `ldp/handler/components/authorizer.json`, and `ldp/modes/*` have changed.
 
 ### Interface changes
 
@@ -46,6 +48,7 @@ These changes are relevant if you wrote custom modules for the server that depen
     - `AsyncHandler` and utility handlers such as `WaterfallHandler`: [asynchronous-handlers`](https://www.npmjs.com/package/asynchronous-handlers).
     - Utilities for creating vocabularies: [rdf-vocabulary](https://www.npmjs.com/package/rdf-vocabulary).
 - The handler changes discussed above also impact the code if you depended on these.
+- The `DeleteParentExtractor` class has been removed.
 
 ## v7.0.0
 

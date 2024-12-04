@@ -31,17 +31,24 @@
               "@type": "OwnerPermissionReader"
             },
             {
-              "comment": "Adds parent container checks needed for create/delete permissions.",
-              "@id": "urn:solid-server:default:ParentContainerReader",
-              "@type": "ParentContainerReader",
+              "comment": "Makes sure the necessary read permissions are checked when deleting non-existent resources.",
+              "@id": "urn:solid-server:default:ReadDeleteReader",
+              "@type": "ReadDeleteReader",
+              "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
               "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-              "reader": {
-                "comment": [
-                  "Reinterprets Control permissions as Read/Write on the auth resource.",
-                  "The config that determines the authorization strategy needs to set the `authStrategy` and `reader` fields of this object."
-                ],
-                "@id": "urn:solid-server:default:AuthAuxiliaryReader",
-                "@type": "AuthAuxiliaryReader"
+              "source": {
+                "comment": "Adds parent container checks needed for create/delete permissions.",
+                "@id": "urn:solid-server:default:ParentContainerReader",
+                "@type": "ParentContainerReader",
+                "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+                "reader": {
+                  "comment": [
+                    "Reinterprets Control permissions as Read/Write on the auth resource.",
+                    "The config that determines the authorization strategy needs to set the `authStrategy` and `reader` fields of this object."
+                  ],
+                  "@id": "urn:solid-server:default:AuthAuxiliaryReader",
+                  "@type": "AuthAuxiliaryReader"
+                }
               }
             }
           ]
