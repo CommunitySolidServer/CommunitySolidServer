@@ -1,5 +1,11 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/policy-engine/^0.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "spe:config/acp.json"
+  ],
   "@graph": [
     {
       "@id": "urn:solid-server:default:OwnerPermissionReader",
@@ -16,10 +22,16 @@
     {
       "comment": "Reads out permissions from ACR documents for subject resources.",
       "@id": "urn:solid-server:default:AcpReader",
-      "@type": "AcpReader",
-      "acrStrategy": { "@id": "urn:solid-server:default:AcrStrategy" },
-      "acrStore": { "@id": "urn:solid-server:default:ResourceStore" },
-      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+      "@type": "PolicyEngineReader",
+      "engine": { "@id": "urn:solidlab:policy-engine:PolicyEngine" }
+    },
+
+    {
+      "@id": "urn:solidlab:policy-engine:AuthorizationManager",
+      "@type": "BaseAuthorizationManager",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "authStrategy": { "@id": "urn:solid-server:default:AcrStrategy" },
+      "store": { "@id": "urn:solid-server:default:ResourceStore" }
     }
   ]
 }

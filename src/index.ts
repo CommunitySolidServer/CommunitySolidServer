@@ -8,12 +8,6 @@ export * from './authentication/UnionCredentialsExtractor';
 export * from './authentication/UnsecureConstantCredentialsExtractor';
 export * from './authentication/UnsecureWebIdExtractor';
 
-// Authorization/Access
-export * from './authorization/access/AccessChecker';
-export * from './authorization/access/AgentAccessChecker';
-export * from './authorization/access/AgentClassAccessChecker';
-export * from './authorization/access/AgentGroupAccessChecker';
-
 // Authorization/Permissions
 export * from './authorization/permissions/AclPermissionSet';
 export * from './authorization/permissions/CreateModesExtractor';
@@ -25,21 +19,19 @@ export * from './authorization/permissions/Permissions';
 export * from './authorization/permissions/SparqlUpdateModesExtractor';
 
 // Authorization
-export * from './authorization/AcpReader';
-export * from './authorization/AcpUtil';
 export * from './authorization/AllStaticReader';
 export * from './authorization/AuthAuxiliaryReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
+export * from './authorization/BaseAuthorizationManager';
 export * from './authorization/OwnerPermissionReader';
-export * from './authorization/ParentContainerReader';
 export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
+export * from './authorization/PolicyEngineReader';
 export * from './authorization/ReadDeleteAuthorizer';
 export * from './authorization/ReadDeleteReader';
 export * from './authorization/UnionPermissionReader';
-export * from './authorization/WebAclReader';
 
 // HTTP/Auxiliary
 export * from './http/auxiliary/AuxiliaryIdentifierStrategy';

@@ -1,5 +1,5 @@
-import { ACP } from '@solid/access-control-policy';
 import { createResponse } from 'node-mocks-http';
+import { ACP } from '@solidlab/policy-engine';
 import type { AuxiliaryIdentifierStrategy } from '../../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { TargetExtractor } from '../../../../src/http/input/identifier/TargetExtractor';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
