@@ -43,7 +43,8 @@ describe('An AuthAuxiliaryReader', (): void => {
     sourceResult.set(subject1, { control: true } as PermissionSet);
 
     const result = await reader.handle({ requestedModes, credentials });
-    expect(result.get(acl1)).toEqual({ read: true, append: true, write: true, control: true });
+    expect(result.get(acl1))
+      .toEqual({ read: true, append: true, write: true, control: true, create: true, delete: true });
     expect(result.get(acl2)).toEqual({});
 
     const updatedMap = new IdentifierMap();
@@ -62,7 +63,7 @@ describe('An AuthAuxiliaryReader', (): void => {
     const resultSet = { read: true, write: true, control: true } as PermissionSet;
     sourceResult.set(subject1, resultSet);
     const resultMap: MultiPermissionMap = new IdentifierMap([
-      [ acl1, { read: true, write: true, control: true, append: true } as PermissionSet ],
+      [ acl1, { read: true, write: true, control: true, append: true, create: true, delete: true } as PermissionSet ],
       [ subject1, resultSet ],
     ]);
     compareMaps(await reader.handle({ credentials, requestedModes }), resultMap);

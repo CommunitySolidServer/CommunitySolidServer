@@ -1,5 +1,5 @@
-import type { IAccessControl, IAccessControlledResource, IMatcher, IPolicy } from '@solid/access-control-policy';
 import { v4 } from 'uuid';
+import type { AccessControl, AccessControlResource, Matcher, Policy } from '@solidlab/policy-engine';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../src/http/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
@@ -10,15 +10,15 @@ export type CreateMatcherInput = { publicAgent: true } | { agent: string };
 export type CreatePolicyInput = {
   allow?: Iterable<'read' | 'append' | 'write' | 'control'>;
   deny?: Iterable<'read' | 'append' | 'write' | 'control'>;
-  allOf?: Iterable<IMatcher>;
-  anyOf?: Iterable<IMatcher>;
-  noneOf?: Iterable<IMatcher>;
+  allOf?: Iterable<Matcher>;
+  anyOf?: Iterable<Matcher>;
+  noneOf?: Iterable<Matcher>;
 };
 
 export type CreateAcrInput = {
   resource: string | ResourceIdentifier;
-  policies?: Iterable<IPolicy>;
-  memberPolicies?: Iterable<IPolicy>;
+  policies?: Iterable<Policy>;
+  memberPolicies?: Iterable<Policy>;
 };
 
 const baseUrl = 'http://acp.example.com/';
@@ -33,7 +33,7 @@ export class AcpHelper {
     this.store = store;
   }
 
-  public createMatcher(input: CreateMatcherInput): IMatcher {
+  public createMatcher(input: CreateMatcherInput): Matcher {
     return {
       iri: joinUrl(baseUrl, v4()),
       // Prefixed URI as this will be inserted into turtle below
@@ -44,7 +44,7 @@ export class AcpHelper {
     };
   }
 
-  public createPolicy({ allow, deny, allOf, anyOf, noneOf }: CreatePolicyInput): IPolicy {
+  public createPolicy({ allow, deny, allOf, anyOf, noneOf }: CreatePolicyInput): Policy {
     return {
       iri: joinUrl(baseUrl, v4()),
       // Using the wrong identifiers so the turtle generated below uses the prefixed version
@@ -64,30 +64,28 @@ export class AcpHelper {
     }
   }
 
-  public createAcr({ resource, policies, memberPolicies }: CreateAcrInput): IAccessControlledResource {
+  public createAcr({ resource, policies, memberPolicies }: CreateAcrInput): AccessControlResource {
     return {
-      iri: (resource as ResourceIdentifier).path ?? resource,
-      accessControlResource: {
-        iri: joinUrl(baseUrl, v4()),
-        accessControl: policies ?
-            [{
-              iri: joinUrl(baseUrl, v4()),
-              policy: [ ...policies ],
-            }] :
-            [],
-        memberAccessControl: memberPolicies ?
-            [{
-              iri: joinUrl(baseUrl, v4()),
-              policy: [ ...memberPolicies ],
-            }] :
-            [],
-      },
+      iri: joinUrl(baseUrl, v4()),
+      resource: [ (resource as ResourceIdentifier).path ?? resource ],
+      accessControl: policies ?
+          [{
+            iri: joinUrl(baseUrl, v4()),
+            policy: [ ...policies ],
+          }] :
+          [],
+      memberAccessControl: memberPolicies ?
+          [{
+            iri: joinUrl(baseUrl, v4()),
+            policy: [ ...memberPolicies ],
+          }] :
+          [],
     };
   }
 
   public async setAcp(
     id: string | ResourceIdentifier,
-    resources: IAccessControlledResource[] | IAccessControlledResource,
+    resources: AccessControlResource[] | AccessControlResource,
   ): Promise<void> {
     const turtle = this.toTurtle(resources);
     await this.store.setRepresentation(
@@ -96,7 +94,7 @@ export class AcpHelper {
     );
   }
 
-  public toTurtle(resources: IAccessControlledResource[] | IAccessControlledResource): string {
+  public toTurtle(resources: AccessControlResource[] | AccessControlResource): string {
     if (!Array.isArray(resources)) {
       resources = [ resources ];
     }
@@ -106,16 +104,16 @@ export class AcpHelper {
     ];
 
     const added = new Set<string>();
-    const acs: IAccessControl[] = [];
-    const policies: IPolicy[] = [];
-    const matchers: IMatcher[] = [];
+    const acs: AccessControl[] = [];
+    const policies: Policy[] = [];
+    const matchers: Matcher[] = [];
 
     for (const resource of resources) {
-      result.push(`<${resource.accessControlResource.iri}> a acp:AccessControlResource`);
-      result.push(`  ; acp:resource <${resource.iri}>`);
+      result.push(`<${resource.iri}> a acp:AccessControlResource`);
+      result.push(`  ; acp:resource <${resource.resource[0]}>`);
       for (const key of [ 'accessControl', 'memberAccessControl' ] as const) {
-        if (resource.accessControlResource[key].length > 0) {
-          result.push(`  ; acp:${key} ${resource.accessControlResource[key].map((ac): string => {
+        if (resource[key].length > 0) {
+          result.push(`  ; acp:${key} ${resource[key].map((ac): string => {
             acs.push(ac);
             return `<${ac.iri}>`;
           }).join(', ')}`);
@@ -161,7 +159,7 @@ export class AcpHelper {
     return result.join('\n');
   }
 
-  private policyToTurtle(policy: IPolicy): { policyString: string; requiredMatchers: IMatcher[] } {
+  private policyToTurtle(policy: Policy): { policyString: string; requiredMatchers: Matcher[] } {
     const result: string[] = [];
 
     result.push(`<${policy.iri}> a acp:Policy`);
@@ -172,7 +170,7 @@ export class AcpHelper {
       }
     }
 
-    const requiredMatchers: IMatcher[] = [];
+    const requiredMatchers: Matcher[] = [];
     for (const key of [ 'allOf', 'anyOf', 'noneOf' ] as const) {
       if (policy[key].length > 0) {
         result.push(`  ; acp:${key} ${policy[key].map((matcher): string => {
@@ -187,7 +185,7 @@ export class AcpHelper {
     return { policyString: result.join('\n'), requiredMatchers };
   }
 
-  private matcherToTurtle(matcher: IMatcher): string {
+  private matcherToTurtle(matcher: Matcher): string {
     const result: string[] = [];
 
     result.push(`<${matcher.iri}> a acp:Matcher`);

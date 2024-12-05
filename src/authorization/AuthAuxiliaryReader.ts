@@ -72,6 +72,8 @@ export class AuthAuxiliaryReader extends PermissionReader {
       read: control,
       append: control,
       write: control,
+      create: control,
+      delete: control,
       control,
     } as AclPermissionSet;
   }

@@ -6,6 +6,11 @@
 
 - Backend resources are cached, as long as they don't change, improving response speed.
   This only works for servers running on a single thread.
+- Several parts of the codebase have been exported to external libraries.
+    - Everything related to logging: [global-logger-factory](https://www.npmjs.com/package/global-logger-factory).
+    - `AsyncHandler` and utility handlers such as `WaterfallHandler`: [asynchronous-handlers`](https://www.npmjs.com/package/asynchronous-handlers).
+    - Utilities for creating vocabularies: [rdf-vocabulary](https://www.npmjs.com/package/rdf-vocabulary).
+    - WAC/ACP authorization: [@solidlab/policy-engine]
 
 ### Data migration
 
@@ -42,11 +47,7 @@ The following changes are relevant for v7 custom configs that replaced certain f
 
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 
-- Several parts of the codebase have been exported to external libraries,
-  so if you depended on these you will have to add the new dependencies.
-    - Everything related to logging: [global-logger-factory](https://www.npmjs.com/package/global-logger-factory).
-    - `AsyncHandler` and utility handlers such as `WaterfallHandler`: [asynchronous-handlers`](https://www.npmjs.com/package/asynchronous-handlers).
-    - Utilities for creating vocabularies: [rdf-vocabulary](https://www.npmjs.com/package/rdf-vocabulary).
+- Due to several features being extracted, all related classes are impacted.
 - The handler changes discussed above also impact the code if you depended on these.
 - The `DeleteParentExtractor` class has been removed.
 
