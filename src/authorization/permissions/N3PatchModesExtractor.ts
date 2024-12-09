@@ -1,3 +1,4 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { Operation } from '../../http/Operation';
 import type { N3Patch } from '../../http/representation/N3Patch';
 import { isN3Patch } from '../../http/representation/N3Patch';
@@ -6,7 +7,6 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
 import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 import { ModesExtractor } from './ModesExtractor';
 import type { AccessMap } from './Permissions';
-import { AccessMode } from './Permissions';
 
 /**
  * Extracts the required access modes from an N3 Patch.
@@ -43,19 +43,19 @@ export class N3PatchModesExtractor extends ModesExtractor {
 
     // When ?conditions is non-empty, servers MUST treat the request as a Read operation.
     if (conditions.length > 0) {
-      requiredModes.add(target, AccessMode.read);
+      requiredModes.add(target, PERMISSIONS.Read);
     }
     // When ?insertions is non-empty, servers MUST (also) treat the request as an Append operation.
     if (inserts.length > 0) {
-      requiredModes.add(target, AccessMode.append);
+      requiredModes.add(target, PERMISSIONS.Append);
       if (!await this.resourceSet.hasResource(target)) {
-        requiredModes.add(target, AccessMode.create);
+        requiredModes.add(target, PERMISSIONS.Create);
       }
     }
     // When ?deletions is non-empty, servers MUST treat the request as a Read and Write operation.
     if (deletes.length > 0) {
-      requiredModes.add(target, AccessMode.read);
-      requiredModes.add(target, AccessMode.write);
+      requiredModes.add(target, PERMISSIONS.Read);
+      requiredModes.add(target, PERMISSIONS.Modify);
     }
 
     return requiredModes;

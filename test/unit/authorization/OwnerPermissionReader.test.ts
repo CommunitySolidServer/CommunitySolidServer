@@ -1,6 +1,6 @@
+import { ACL, PERMISSIONS } from '@solidlab/policy-engine';
 import type { Credentials } from '../../../src/authentication/Credentials';
 import { OwnerPermissionReader } from '../../../src/authorization/OwnerPermissionReader';
-import { AclMode } from '../../../src/authorization/permissions/AclPermissionSet';
 import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
@@ -26,7 +26,7 @@ describe('An OwnerPermissionReader', (): void => {
 
     identifier = { path: `${podBaseUrl}.acl` };
 
-    requestedModes = new IdentifierSetMultiMap([[ identifier, AclMode.control ]]) as any;
+    requestedModes = new IdentifierSetMultiMap([[ identifier, ACL.Control ]]) as any;
 
     podStore = {
       findByBaseUrl: jest.fn().mockResolvedValue(accountId),
@@ -78,12 +78,12 @@ describe('An OwnerPermissionReader', (): void => {
     compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap([[
       identifier,
       {
-        read: true,
-        write: true,
-        append: true,
-        create: true,
-        delete: true,
-        control: true,
+        [PERMISSIONS.Read]: true,
+        [PERMISSIONS.Modify]: true,
+        [PERMISSIONS.Append]: true,
+        [PERMISSIONS.Create]: true,
+        [PERMISSIONS.Delete]: true,
+        [ACL.Control]: true,
       },
     ]]));
   });

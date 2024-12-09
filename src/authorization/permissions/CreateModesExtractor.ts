@@ -1,8 +1,8 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { Operation } from '../../http/Operation';
 import type { ResourceSet } from '../../storage/ResourceSet';
 import { ModesExtractor } from './ModesExtractor';
 import type { AccessMap } from './Permissions';
-import { AccessMode } from './Permissions';
 
 /**
  * Adds the `create` access mode to the result of the source in case the target resource does not exist.
@@ -24,9 +24,9 @@ export class CreateModesExtractor extends ModesExtractor {
   public async handle(operation: Operation): Promise<AccessMap> {
     const accessMap = await this.source.handle(operation);
 
-    if (!accessMap.hasEntry(operation.target, AccessMode.create) &&
+    if (!accessMap.hasEntry(operation.target, PERMISSIONS.Create) &&
       !await this.resourceSet.hasResource(operation.target)) {
-      accessMap.add(operation.target, AccessMode.create);
+      accessMap.add(operation.target, PERMISSIONS.Create);
     }
 
     return accessMap;

@@ -1,7 +1,5 @@
 import fetch from 'cross-fetch';
 import { v4 } from 'uuid';
-import type { AclPermissionSet } from '../../src/authorization/permissions/AclPermissionSet';
-import { AccessMode as AM } from '../../src/authorization/permissions/Permissions';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
@@ -44,46 +42,47 @@ const TXT = 'text/plain';
 // `undefined` implies C/R inherits the permissions of C/
 // For PUT/PATCH/DELETE we return 205 instead of 200/204
 /* eslint-disable style/no-multi-spaces */
-const table: [string, string, AM[], AM[] | undefined, string, string, number, number][] = [
+type Perm = 'read' | 'append' | 'write' | 'control';
+const table: [string, string, Perm[], Perm[] | undefined, string, string, number, number][] = [
   // No authorization headers are sent in an OPTIONS request making it impossible to grant permission.
   // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1246#issuecomment-1087325235
   // From https://fetch.spec.whatwg.org/#cors-preflight-fetch it follows
   // that a preflight check should always return an OK response.
   [ 'OPTIONS', 'C/R', [],                     undefined,              '',     '',  204, 204 ],
-  [ 'OPTIONS', 'C/R', [],                     [ AM.read ],            '',     '',  204, 204 ],
-  [ 'OPTIONS', 'C/R', [ AM.read ],            undefined,              '',     '',  204, 204 ],
+  [ 'OPTIONS', 'C/R', [],                     [ 'read' ],            '',     '',  204, 204 ],
+  [ 'OPTIONS', 'C/R', [ 'read' ],            undefined,              '',     '',  204, 204 ],
 
   [ 'HEAD',    'C/R', [],                     undefined,              '',     '',  401, 401 ],
-  [ 'HEAD',    'C/R', [],                     [ AM.read ],            '',     '',  200, 404 ],
-  [ 'HEAD',    'C/R', [ AM.read ],            undefined,              '',     '',  200, 404 ],
+  [ 'HEAD',    'C/R', [],                     [ 'read' ],            '',     '',  200, 404 ],
+  [ 'HEAD',    'C/R', [ 'read' ],            undefined,              '',     '',  200, 404 ],
 
   [ 'GET',     'C/R', [],                     undefined,              '',     '',  401, 401 ],
-  [ 'GET',     'C/R', [],                     [ AM.read ],            '',     '',  200, 404 ],
-  [ 'GET',     'C/R', [ AM.read ],            undefined,              '',     '',  200, 404 ],
+  [ 'GET',     'C/R', [],                     [ 'read' ],            '',     '',  200, 404 ],
+  [ 'GET',     'C/R', [ 'read' ],            undefined,              '',     '',  200, 404 ],
   // Agreed upon deviation from the original table; more conservative interpretation allowed.
   // Original returns 404 in the case of C/R not existing.
-  [ 'GET',     'C/R', [ AM.read ],            [ AM.write ],           '',     '',  401, 401 ],
+  [ 'GET',     'C/R', [ 'read' ],            [ 'write' ],           '',     '',  401, 401 ],
 
   [ 'POST',    'C/',  [],                     undefined,              '',     TXT, 401, 401 ],
-  [ 'POST',    'C/',  [],                     [ AM.read ],            '',     TXT, 401, 401 ],
-  [ 'POST',    'C/',  [ AM.append ],          undefined,              '',     TXT, 201, 201 ],
-  [ 'POST',    'C/',  [ AM.append ],          [ AM.read ],            '',     TXT, 201, 201 ],
-  [ 'POST',    'C/',  [ AM.read, AM.append ], undefined,              '',     TXT, 201, 201 ],
-  [ 'POST',    'C/',  [ AM.read, AM.append ], [ AM.read ],            '',     TXT, 201, 201 ],
+  [ 'POST',    'C/',  [],                     [ 'read' ],            '',     TXT, 401, 401 ],
+  [ 'POST',    'C/',  [ 'append' ],          undefined,              '',     TXT, 201, 201 ],
+  [ 'POST',    'C/',  [ 'append' ],          [ 'read' ],            '',     TXT, 201, 201 ],
+  [ 'POST',    'C/',  [ 'read', 'append' ], undefined,              '',     TXT, 201, 201 ],
+  [ 'POST',    'C/',  [ 'read', 'append' ], [ 'read' ],            '',     TXT, 201, 201 ],
 
   [ 'PUT',     'C/',  [],                     undefined,              '',     N3,  401, 401 ],
-  [ 'PUT',     'C/',  [ AM.read ],            undefined,              '',     N3,  401, 401 ],
+  [ 'PUT',     'C/',  [ 'read' ],            undefined,              '',     N3,  401, 401 ],
   // We return a 409 when targeting an existing container as we only allow changes targeting the metadata directly
-  [ 'PUT',     'C/',  [ AM.write ],           undefined,              '',     '',  409, 201 ],
+  [ 'PUT',     'C/',  [ 'write' ],           undefined,              '',     '',  409, 201 ],
 
   [ 'PUT',     'C/R', [],                     undefined,              '',     TXT, 401, 401 ],
-  [ 'PUT',     'C/R', [],                     [ AM.read ],            '',     TXT, 401, 401 ],
-  [ 'PUT',     'C/R', [],                     [ AM.append ],          '',     TXT, 401, 401 ],
-  [ 'PUT',     'C/R', [],                     [ AM.write ],           '',     TXT, 205, 401 ],
-  [ 'PUT',     'C/R', [ AM.read ],            undefined,              '',     TXT, 401, 401 ],
-  [ 'PUT',     'C/R', [ AM.append ],          undefined,              '',     TXT, 401, 201 ],
-  [ 'PUT',     'C/R', [ AM.write ],           undefined,              '',     TXT, 205, 201 ],
-  [ 'PUT',     'C/R', [ AM.append ],          [ AM.write ],           '',     TXT, 205, 201 ],
+  [ 'PUT',     'C/R', [],                     [ 'read' ],            '',     TXT, 401, 401 ],
+  [ 'PUT',     'C/R', [],                     [ 'append' ],          '',     TXT, 401, 401 ],
+  [ 'PUT',     'C/R', [],                     [ 'write' ],           '',     TXT, 205, 401 ],
+  [ 'PUT',     'C/R', [ 'read' ],            undefined,              '',     TXT, 401, 401 ],
+  [ 'PUT',     'C/R', [ 'append' ],          undefined,              '',     TXT, 401, 201 ],
+  [ 'PUT',     'C/R', [ 'write' ],           undefined,              '',     TXT, 205, 201 ],
+  [ 'PUT',     'C/R', [ 'append' ],          [ 'write' ],           '',     TXT, 205, 201 ],
 
   // All PATCH operations with read permissions return 401 instead of 404 if the target does not exist.
   // This is a consequence of PATCH always creating a resource in case it does not exist.
@@ -91,44 +90,40 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   // "Start from the RDF dataset in the target document,
   // or an empty RDF dataset if the target resource does not exist yet."
   [ 'PATCH',   'C/R', [],                     undefined,              DELETE, N3,  401, 401 ],
-  [ 'PATCH',   'C/R', [],                     [ AM.read ],            DELETE, N3,  401, 401 ],
-  [ 'PATCH',   'C/R', [],                     [ AM.append ],          INSERT, N3,  205, 401 ],
-  [ 'PATCH',   'C/R', [],                     [ AM.append ],          DELETE, N3,  401, 401 ],
-  [ 'PATCH',   'C/R', [],                     [ AM.write ],           INSERT, N3,  205, 401 ],
-  [ 'PATCH',   'C/R', [],                     [ AM.write ],           DELETE, N3,  401, 401 ],
-  [ 'PATCH',   'C/R', [ AM.append ],          [ AM.write ],           INSERT, N3,  205, 201 ],
-  [ 'PATCH',   'C/R', [ AM.append ],          [ AM.write ],           DELETE, N3,  401, 401 ],
-  [ 'PATCH',   'C/R', [],                     [ AM.read, AM.write ],  DELETE, N3,  205, 401 ],
+  [ 'PATCH',   'C/R', [],                     [ 'read' ],             DELETE, N3,  401, 401 ],
+  [ 'PATCH',   'C/R', [],                     [ 'append' ],           INSERT, N3,  205, 401 ],
+  [ 'PATCH',   'C/R', [],                     [ 'append' ],           DELETE, N3,  401, 401 ],
+  [ 'PATCH',   'C/R', [],                     [ 'write' ],            INSERT, N3,  205, 401 ],
+  [ 'PATCH',   'C/R', [],                     [ 'write' ],            DELETE, N3,  401, 401 ],
+  [ 'PATCH',   'C/R', [ 'append' ],           [ 'write' ],            INSERT, N3,  205, 201 ],
+  [ 'PATCH',   'C/R', [ 'append' ],           [ 'write' ],            DELETE, N3,  401, 401 ],
+  [ 'PATCH',   'C/R', [],                     [ 'read', 'write' ],    DELETE, N3,  205, 401 ],
 
   [ 'DELETE',  'C/R', [],                     undefined,              '',     '',  401, 401 ],
-  [ 'DELETE',  'C/R', [],                     [ AM.read ],            '',     '',  401, 404 ],
-  [ 'DELETE',  'C/R', [],                     [ AM.append ],          '',     '',  401, 401 ],
-  [ 'DELETE',  'C/R', [],                     [ AM.write ],           '',     '',  401, 401 ],
-  [ 'DELETE',  'C/R', [ AM.read ],            [],                     '',     '',  401, 404 ],
-  [ 'DELETE',  'C/R', [ AM.read ],            undefined,              '',     '',  401, 404 ],
-  [ 'DELETE',  'C/R', [ AM.append ],          undefined,              '',     '',  401, 401 ],
-  [ 'DELETE',  'C/R', [ AM.append ],          [ AM.read ],            '',     '',  401, 404 ],
-  [ 'DELETE',  'C/R', [ AM.write ],           undefined,              '',     '',  205, 401 ],
-  [ 'DELETE',  'C/R', [ AM.write ],           [ AM.read ],            '',     '',  401, 404 ],
-  [ 'DELETE',  'C/R', [ AM.write ],           [ AM.append ],          '',     '',  401, 401 ],
+  [ 'DELETE',  'C/R', [],                     [ 'read' ],             '',     '',  401, 404 ],
+  [ 'DELETE',  'C/R', [],                     [ 'append' ],           '',     '',  401, 401 ],
+  [ 'DELETE',  'C/R', [],                     [ 'write' ],            '',     '',  401, 401 ],
+  [ 'DELETE',  'C/R', [ 'read' ],             [],                     '',     '',  401, 404 ],
+  [ 'DELETE',  'C/R', [ 'read' ],             undefined,              '',     '',  401, 404 ],
+  [ 'DELETE',  'C/R', [ 'append' ],           undefined,              '',     '',  401, 401 ],
+  [ 'DELETE',  'C/R', [ 'append' ],           [ 'read' ],             '',     '',  401, 404 ],
+  [ 'DELETE',  'C/R', [ 'write' ],            undefined,              '',     '',  205, 401 ],
+  [ 'DELETE',  'C/R', [ 'write' ],            [ 'read' ],             '',     '',  401, 404 ],
+  [ 'DELETE',  'C/R', [ 'write' ],            [ 'append' ],           '',     '',  401, 401 ],
 
   [ 'DELETE',  'C/',  [],                     undefined,              '',     '',  401, 401 ],
-  [ 'DELETE',  'C/',  [ AM.read ],            undefined,              '',     '',  401, 404 ],
-  [ 'DELETE',  'C/',  [ AM.append ],          undefined,              '',     '',  401, 401 ],
-  [ 'DELETE',  'C/',  [ AM.write ],           undefined,              '',     '',  401, 401 ],
-  [ 'DELETE',  'C/',  [ AM.read, AM.write ],  undefined,              '',     '',  205, 404 ],
+  [ 'DELETE',  'C/',  [ 'read' ],             undefined,              '',     '',  401, 404 ],
+  [ 'DELETE',  'C/',  [ 'append' ],           undefined,              '',     '',  401, 401 ],
+  [ 'DELETE',  'C/',  [ 'write' ],            undefined,              '',     '',  401, 401 ],
+  [ 'DELETE',  'C/',  [ 'read', 'write' ],    undefined,              '',     '',  205, 404 ],
 ];
 /* eslint-enable style/no-multi-spaces */
-
-function toPermission(modes: AM[]): AclPermissionSet {
-  return Object.fromEntries(modes.map((mode): [AM, boolean] => [ mode, true ]));
-}
 
 async function setWebAclPermissions(
   store: ResourceStore,
   target: string,
-  permissions: AclPermissionSet,
-  childPermissions: AclPermissionSet,
+  permissions: Perm[],
+  childPermissions: Perm[],
 ): Promise<void> {
   const aclHelper = new AclHelper(store);
   await aclHelper.setSimpleAcl(target, [
@@ -140,18 +135,18 @@ async function setWebAclPermissions(
 async function setAcpPermissions(
   store: ResourceStore,
   target: string,
-  permissions: AclPermissionSet,
-  childPermissions: AclPermissionSet,
+  permissions: Perm[],
+  childPermissions: Perm[],
 ): Promise<void> {
   const acpHelper = new AcpHelper(store);
   const publicMatcher = acpHelper.createMatcher({ publicAgent: true });
   const policies = [ acpHelper.createPolicy({
     // Casting from enum to strings
-    allow: Object.keys(permissions) as any,
+    allow: permissions,
     anyOf: [ publicMatcher ],
   }) ];
   const memberPolicies = [ acpHelper.createPolicy({
-    allow: Object.keys(childPermissions) as any,
+    allow: childPermissions,
     anyOf: [ publicMatcher ],
   }) ];
   await acpHelper.setAcp(target, acpHelper.createAcr({
@@ -165,7 +160,7 @@ const port = getPort('PermissionTable');
 const baseUrl = `http://localhost:${port}/`;
 
 type AuthFunctionType = (store: ResourceStore, target: string,
-  permissions: AclPermissionSet, childPermissions: AclPermissionSet) => Promise<void>;
+  permissions: Perm[], childPermissions: Perm[]) => Promise<void>;
 
 const rootFilePath = getTestFolder('permissionTable');
 const stores: [string, string, { configs: string[]; authFunction: AuthFunctionType; teardown: () => Promise<void> }][] =
@@ -269,8 +264,8 @@ describe.each(stores)('A request on a server with %s authorization and %s', (
         store,
         parent,
         // Only provide write to root parent, as giving read changes DELETE responses
-        toPermission(parent === root ? [ AM.write ] : cPerm),
-        toPermission(parent === root ? cPerm : crPerm),
+        parent === root ? [ 'write' ] : cPerm,
+        parent === root ? cPerm : crPerm,
       );
 
       // Set up fetch parameters

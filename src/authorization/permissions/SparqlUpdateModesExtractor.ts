@@ -1,3 +1,4 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { Algebra } from 'sparqlalgebrajs';
 import type { Operation } from '../../http/Operation';
 import type { Representation } from '../../http/representation/Representation';
@@ -7,7 +8,6 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
 import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 import { ModesExtractor } from './ModesExtractor';
 import type { AccessMap } from './Permissions';
-import { AccessMode } from './Permissions';
 
 /**
  * Generates permissions for a SPARQL DELETE/INSERT body.
@@ -48,17 +48,17 @@ export class SparqlUpdateModesExtractor extends ModesExtractor {
 
     // Access modes inspired by the requirements on N3 Patch requests
     if (this.hasConditions(update)) {
-      requiredModes.add(target, AccessMode.read);
+      requiredModes.add(target, PERMISSIONS.Read);
     }
     if (this.hasInserts(update)) {
-      requiredModes.add(target, AccessMode.append);
+      requiredModes.add(target, PERMISSIONS.Append);
       if (!await this.resourceSet.hasResource(target)) {
-        requiredModes.add(target, AccessMode.create);
+        requiredModes.add(target, PERMISSIONS.Create);
       }
     }
     if (this.hasDeletes(update)) {
-      requiredModes.add(target, AccessMode.read);
-      requiredModes.add(target, AccessMode.write);
+      requiredModes.add(target, PERMISSIONS.Read);
+      requiredModes.add(target, PERMISSIONS.Modify);
     }
 
     return requiredModes;

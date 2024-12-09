@@ -1,11 +1,10 @@
 import { createResponse } from 'node-mocks-http';
-import { ACP } from '@solidlab/policy-engine';
+import { ACL, ACP } from '@solidlab/policy-engine';
 import type { AuxiliaryIdentifierStrategy } from '../../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { TargetExtractor } from '../../../../src/http/input/identifier/TargetExtractor';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import { AcpHeaderHandler } from '../../../../src/server/middleware/AcpHeaderHandler';
-import { ACL } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 
 describe('an AcpHeaderHandler', (): void => {

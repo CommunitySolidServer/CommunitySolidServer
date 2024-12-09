@@ -1,9 +1,9 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { Operation } from '../../http/Operation';
 import type { ResourceSet } from '../../storage/ResourceSet';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { ModesExtractor } from './ModesExtractor';
 import type { AccessMap } from './Permissions';
-import { AccessMode } from './Permissions';
 
 /**
  * Returns the required access modes from the source {@link ModesExtractor}.
@@ -39,14 +39,14 @@ export class IntermediateCreateExtractor extends ModesExtractor {
     const requestedModes = await this.source.handle(input);
 
     for (const key of requestedModes.distinctKeys()) {
-      if (requestedModes.hasEntry(key, AccessMode.create)) {
+      if (requestedModes.hasEntry(key, PERMISSIONS.Create)) {
         // Add the `create` mode if the parent does not exist yet
         const parent = this.strategy.getParentContainer(key);
         if (!await this.resourceSet.hasResource(parent)) {
           // It is not completely clear at this point which permissions need to be available
           // on intermediate containers to create them,
           // so we stick with `create` for now.
-          requestedModes.add(parent, AccessMode.create);
+          requestedModes.add(parent, PERMISSIONS.Create);
         }
       }
     }

@@ -1,10 +1,10 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { getLoggerFor } from 'global-logger-factory';
 import type { Logger } from 'global-logger-factory';
 import type { CredentialsExtractor } from '../../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../../src/authorization/PermissionReader';
 import type { AccessMap } from '../../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
@@ -69,7 +69,7 @@ describe('A NotificationSubscriber', (): void => {
       initChannel: jest.fn().mockResolvedValue(channel),
       toJsonLd: jest.fn().mockResolvedValue({}),
       extractModes: jest.fn(async(subscription): Promise<AccessMap> =>
-        new IdentifierSetMultiMap([[{ path: subscription.topic }, AccessMode.read ]]) as AccessMap),
+        new IdentifierSetMultiMap([[{ path: subscription.topic }, PERMISSIONS.Read ]]) as AccessMap),
       completeChannel: jest.fn(),
     };
 
@@ -82,7 +82,7 @@ describe('A NotificationSubscriber', (): void => {
     } as any;
 
     permissionReader = {
-      handleSafe: jest.fn().mockResolvedValue(new IdentifierMap([[ topic, AccessMode.read ]])),
+      handleSafe: jest.fn().mockResolvedValue(new IdentifierMap([[ topic, PERMISSIONS.Read ]])),
     } as any;
 
     authorizer = {

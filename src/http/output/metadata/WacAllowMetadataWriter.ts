@@ -1,7 +1,8 @@
 import type { Term } from '@rdfjs/types';
+import { ACL } from '@solidlab/policy-engine';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
-import { ACL, AUTH } from '../../../util/Vocabularies';
+import { AUTH } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataWriter } from './MetadataWriter';
 

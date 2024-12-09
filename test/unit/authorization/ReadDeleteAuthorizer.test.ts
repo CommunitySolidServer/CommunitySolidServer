@@ -1,7 +1,7 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { Credentials } from '../../../src/authentication/Credentials';
 import type { Authorizer, AuthorizerInput } from '../../../src/authorization/Authorizer';
 import type { AccessMap, MultiPermissionMap } from '../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import { ReadDeleteAuthorizer } from '../../../src/authorization/ReadDeleteAuthorizer';
 import type { ResourceSet } from '../../../src/storage/ResourceSet';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
@@ -59,34 +59,35 @@ describe('A ReadDeleteAuthorizer', (): void => {
   });
 
   it('throws a 404 when trying to delete a non-existent readable resource.', async(): Promise<void> => {
-    requestedModes.add({ path: resource }, AccessMode.delete);
-    availablePermissions.set({ path: resource }, { read: true });
+    requestedModes.add({ path: resource }, PERMISSIONS.Delete);
+    availablePermissions.set({ path: resource }, { [PERMISSIONS.Read]: true });
     resourceSet.hasResource.mockResolvedValue(false);
 
     await expect(authorizer.handle(input)).rejects.toThrow(NotFoundHttpError);
   });
 
   it('throws a 404 when trying to delete a non-existent resource with readable parent.', async(): Promise<void> => {
-    requestedModes.add({ path: resource }, AccessMode.delete);
-    availablePermissions.set({ path: baseUrl }, { read: true });
+    requestedModes.add({ path: resource }, PERMISSIONS.Delete);
+    availablePermissions.set({ path: baseUrl }, { [PERMISSIONS.Read]: true });
     resourceSet.hasResource.mockResolvedValue(false);
 
     await expect(authorizer.handle(input)).rejects.toThrow(NotFoundHttpError);
   });
 
   it('calls the source when trying to delete a non-existent resource with no read access.', async(): Promise<void> => {
-    requestedModes.add({ path: resource }, AccessMode.delete);
+    requestedModes.add({ path: resource }, PERMISSIONS.Delete);
     resourceSet.hasResource.mockResolvedValue(false);
 
     await expect(authorizer.handle(input)).rejects.toThrow(InternalServerError);
   });
 
   it('removes the delete permission if the resource does not exist.', async(): Promise<void> => {
-    requestedModes.add({ path: resource }, AccessMode.delete);
-    availablePermissions.set({ path: resource }, { delete: true });
+    requestedModes.add({ path: resource }, PERMISSIONS.Delete);
+    availablePermissions.set({ path: resource }, { [PERMISSIONS.Delete]: true });
     resourceSet.hasResource.mockResolvedValue(false);
 
     await expect(authorizer.handle(input)).rejects.toThrow(InternalServerError);
-    expect(source.handle.mock.calls[0][0].availablePermissions.get({ path: resource })?.delete).toBe(false);
+    expect(source.handle.mock.calls[0][0].availablePermissions.get({ path: resource })?.[PERMISSIONS.Delete])
+      .toBe(false);
   });
 });

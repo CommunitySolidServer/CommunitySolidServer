@@ -1,7 +1,8 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { PathBasedReader } from '../../../src/authorization/PathBasedReader';
 import type { PermissionReader, PermissionReaderInput } from '../../../src/authorization/PermissionReader';
-import type { MultiPermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../src/authorization/permissions/Permissions';
+import type { MultiPermissionMap } from '../../../src/authorization/permissions/Permissions';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { map } from '../../../src/util/IterableUtil';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
@@ -10,12 +11,12 @@ import { compareMaps } from '../../util/Util';
 
 describe('A PathBasedReader', (): void => {
   const baseUrl = 'http://test.com/foo/';
-  const permissionSet: PermissionSet = { read: true };
+  const permissionSet: PermissionMap = { [PERMISSIONS.Read]: true };
   let readers: jest.Mocked<PermissionReader>[];
   let reader: PathBasedReader;
 
   function handleSafe({ requestedModes }: PermissionReaderInput): MultiPermissionMap {
-    return new IdentifierMap(map(requestedModes.distinctKeys(), (identifier): [ResourceIdentifier, PermissionSet] =>
+    return new IdentifierMap(map(requestedModes.distinctKeys(), (identifier): [ResourceIdentifier, PermissionMap] =>
       [ identifier, permissionSet ]));
   }
 
@@ -34,11 +35,11 @@ describe('A PathBasedReader', (): void => {
   it('passes the handle requests to the matching reader.', async(): Promise<void> => {
     const input: PermissionReaderInput = {
       credentials: {},
-      requestedModes: new IdentifierSetMultiMap<AccessMode>([
-        [{ path: joinUrl(baseUrl, 'first') }, AccessMode.read ],
-        [{ path: joinUrl(baseUrl, 'second') }, AccessMode.read ],
-        [{ path: joinUrl(baseUrl, 'nothere') }, AccessMode.read ],
-        [{ path: 'http://wrongsite' }, AccessMode.read ],
+      requestedModes: new IdentifierSetMultiMap<string>([
+        [{ path: joinUrl(baseUrl, 'first') }, PERMISSIONS.Read ],
+        [{ path: joinUrl(baseUrl, 'second') }, PERMISSIONS.Read ],
+        [{ path: joinUrl(baseUrl, 'nothere') }, PERMISSIONS.Read ],
+        [{ path: 'http://wrongsite' }, PERMISSIONS.Read ],
       ]),
     };
 
@@ -52,14 +53,14 @@ describe('A PathBasedReader', (): void => {
     expect(readers[0].handleSafe.mock.calls[0][0].credentials).toEqual({});
     compareMaps(
       readers[0].handleSafe.mock.calls[0][0].requestedModes,
-      new IdentifierSetMultiMap([[{ path: joinUrl(baseUrl, 'first') }, AccessMode.read ]]),
+      new IdentifierSetMultiMap([[{ path: joinUrl(baseUrl, 'first') }, PERMISSIONS.Read ]]),
     );
 
     expect(readers[1].handleSafe).toHaveBeenCalledTimes(1);
     expect(readers[1].handleSafe.mock.calls[0][0].credentials).toEqual({});
     compareMaps(
       readers[1].handleSafe.mock.calls[0][0].requestedModes,
-      new IdentifierSetMultiMap([[{ path: joinUrl(baseUrl, 'second') }, AccessMode.read ]]),
+      new IdentifierSetMultiMap([[{ path: joinUrl(baseUrl, 'second') }, PERMISSIONS.Read ]]),
     );
   });
 });

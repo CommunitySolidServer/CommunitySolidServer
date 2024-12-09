@@ -1,7 +1,6 @@
 import 'jest-rdf';
 import { fetch } from 'cross-fetch';
 import { Parser } from 'n3';
-import type { AclPermissionSet } from '../../src/authorization/permissions/AclPermissionSet';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
@@ -43,7 +42,11 @@ async function expectPatch(
   // Verify if the resource has the expected RDF data
   if (expected.turtle) {
     // Might not have read permissions so need to update
-    await aclHelper.setSimpleAcl(url, { permissions: { read: true }, agentClass: 'agent', accessTo: true });
+    await aclHelper.setSimpleAcl(url, {
+      permissions: [ 'read' ],
+      agentClass: 'agent',
+      accessTo: true,
+    });
     const get = await fetch(url, {
       method: 'GET',
       headers: { accept: 'text/turtle' },
@@ -59,7 +62,8 @@ async function expectPatch(
 }
 
 // Creates/updates a resource with the given data and permissions
-async function setResource(path: string, turtle: string, permissions: AclPermissionSet): Promise<void> {
+async function setResource(path: string, turtle: string, permissions: ('read' | 'write' | 'append' | 'control')[]):
+Promise<void> {
   const url = joinUrl(baseUrl, path);
   await store.setRepresentation({ path: url }, new BasicRepresentation(turtle, 'text/turtle'));
   await aclHelper.setSimpleAcl(url, { permissions, agentClass: 'agent', accessTo: true });
@@ -125,7 +129,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only read access.', async(): Promise<void> => {
-      await setResource('/read-only', '<a> <b> <c>.', { read: true });
+      await setResource('/read-only', '<a> <b> <c>.', [ 'read' ]);
       await expectPatch(
         { path: '/read-only', body: `<> a solid:InsertDeletePatch; solid:inserts { <x> <y> <z>. }.` },
         { status: 401 },
@@ -133,7 +137,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('succeeds if there is only read access.', async(): Promise<void> => {
-      await setResource('/append-only', '<a> <b> <c>.', { append: true });
+      await setResource('/append-only', '<a> <b> <c>.', [ 'append' ]);
       await expectPatch(
         { path: '/append-only', body: `<> a solid:InsertDeletePatch; solid:inserts { <x> <y> <z>. }.` },
         { status: 205, turtle: '<a> <b> <c>. <x> <y> <z>.' },
@@ -141,7 +145,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('succeeds if there is only write access.', async(): Promise<void> => {
-      await setResource('/write-only', '<a> <b> <c>.', { write: true });
+      await setResource('/write-only', '<a> <b> <c>.', [ 'write' ]);
       await expectPatch(
         { path: '/write-only', body: `<> a solid:InsertDeletePatch; solid:inserts { <x> <y> <z>. }.` },
         { status: 205, turtle: '<a> <b> <c>. <x> <y> <z>.' },
@@ -160,7 +164,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only read access.', async(): Promise<void> => {
-      await setResource('/read-only', '<a> <b> <c>.', { read: true });
+      await setResource('/read-only', '<a> <b> <c>.', [ 'read' ]);
       await expectPatch(
         { path: '/read-only', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { ?a <y> <z>. };
@@ -170,7 +174,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only append access.', async(): Promise<void> => {
-      await setResource('/append-only', '<a> <b> <c>.', { append: true });
+      await setResource('/append-only', '<a> <b> <c>.', [ 'append' ]);
       await expectPatch(
         { path: '/append-only', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { ?a <y> <z>. };
@@ -180,7 +184,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only write access.', async(): Promise<void> => {
-      await setResource('/write-only', '<a> <b> <c>.', { write: true });
+      await setResource('/write-only', '<a> <b> <c>.', [ 'write' ]);
       await expectPatch(
         { path: '/write-only', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { ?a <y> <z>. };
@@ -191,7 +195,7 @@ describe('A Server supporting N3 Patch', (): void => {
 
     describe('with read/append access', (): void => {
       it('succeeds if the conditions match.', async(): Promise<void> => {
-        await setResource('/read-append', '<a> <b> <c>.', { read: true, append: true });
+        await setResource('/read-append', '<a> <b> <c>.', [ 'read', 'append' ]);
         await expectPatch(
           { path: '/read-append', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { ?a <y> <z>. };
@@ -201,7 +205,7 @@ describe('A Server supporting N3 Patch', (): void => {
       });
 
       it('rejects if there is no match.', async(): Promise<void> => {
-        await setResource('/read-append', '<a> <b> <c>.', { read: true, append: true });
+        await setResource('/read-append', '<a> <b> <c>.', [ 'read', 'append' ]);
         await expectPatch(
           { path: '/read-append', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { ?a <y> <z>. };
@@ -211,7 +215,7 @@ describe('A Server supporting N3 Patch', (): void => {
       });
 
       it('rejects if there are multiple matches.', async(): Promise<void> => {
-        await setResource('/read-append', '<a> <b> <c>. <c> <b> <c>.', { read: true, append: true });
+        await setResource('/read-append', '<a> <b> <c>. <c> <b> <c>.', [ 'read', 'append' ]);
         await expectPatch(
           { path: '/read-append', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { ?a <y> <z>. };
@@ -223,7 +227,7 @@ describe('A Server supporting N3 Patch', (): void => {
 
     describe('with read/write access', (): void => {
       it('succeeds if the conditions match.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { ?a <y> <z>. };
@@ -244,7 +248,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only append access.', async(): Promise<void> => {
-      await setResource('/append-only', '<a> <b> <c>.', { append: true });
+      await setResource('/append-only', '<a> <b> <c>.', [ 'append' ]);
       await expectPatch(
         { path: '/append-only', body: `<> a solid:InsertDeletePatch;
                  solid:deletes { <x> <y> <z>. }.` },
@@ -253,7 +257,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only write access.', async(): Promise<void> => {
-      await setResource('/write-only', '<a> <b> <c>.', { write: true });
+      await setResource('/write-only', '<a> <b> <c>.', [ 'write' ]);
       await expectPatch(
         { path: '/write-only', body: `<> a solid:InsertDeletePatch;
                  solid:deletes { <x> <y> <z>. }.` },
@@ -262,7 +266,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only read/append access.', async(): Promise<void> => {
-      await setResource('/read-append', '<a> <b> <c>.', { read: true, append: true });
+      await setResource('/read-append', '<a> <b> <c>.', [ 'read', 'append' ]);
       await expectPatch(
         { path: '/read-append', body: `<> a solid:InsertDeletePatch;
                  solid:deletes { <x> <y> <z>. }.` },
@@ -272,7 +276,7 @@ describe('A Server supporting N3 Patch', (): void => {
 
     describe('with read/write access', (): void => {
       it('succeeds if the delete triples exist.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>. <x> <y> <z>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>. <x> <y> <z>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:deletes { <x> <y> <z>. }.` },
@@ -281,7 +285,7 @@ describe('A Server supporting N3 Patch', (): void => {
       });
 
       it('fails if the delete triples do not exist.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>. <x> <y> <z>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>. <x> <y> <z>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:deletes { <a> <y> <z>. }.` },
@@ -290,7 +294,7 @@ describe('A Server supporting N3 Patch', (): void => {
       });
 
       it('succeeds if the conditions match.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>. <x> <y> <z>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>. <x> <y> <z>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:where   { ?a <y> <z>. };
@@ -300,7 +304,7 @@ describe('A Server supporting N3 Patch', (): void => {
       });
 
       it('fails if the conditions do not match.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:where   { ?a <y> <z>. };
@@ -322,7 +326,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only append access.', async(): Promise<void> => {
-      await setResource('/append-only', '<a> <b> <c>.', { append: true });
+      await setResource('/append-only', '<a> <b> <c>.', [ 'append' ]);
       await expectPatch(
         { path: '/append-only', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { <x> <y> <z>. };
@@ -332,7 +336,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only write access.', async(): Promise<void> => {
-      await setResource('/write-only', '<a> <b> <c>.', { write: true });
+      await setResource('/write-only', '<a> <b> <c>.', [ 'write' ]);
       await expectPatch(
         { path: '/write-only', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { <x> <y> <z>. };
@@ -342,7 +346,7 @@ describe('A Server supporting N3 Patch', (): void => {
     });
 
     it('fails if there is only read/append access.', async(): Promise<void> => {
-      await setResource('/read-append', '<a> <b> <c>.', { read: true, append: true });
+      await setResource('/read-append', '<a> <b> <c>.', [ 'read', 'append' ]);
       await expectPatch(
         { path: '/read-append', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { <x> <y> <z>. };
@@ -353,7 +357,7 @@ describe('A Server supporting N3 Patch', (): void => {
 
     describe('with read/write access', (): void => {
       it('executes deletes before inserts.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { <x> <y> <z>. };
@@ -363,7 +367,7 @@ describe('A Server supporting N3 Patch', (): void => {
       });
 
       it('succeeds if the delete triples exist.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:inserts { <x> <y> <z>. };
@@ -373,7 +377,7 @@ describe('A Server supporting N3 Patch', (): void => {
       });
 
       it('succeeds if the conditions match.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:where   { ?a <b> <c>. };
@@ -384,7 +388,7 @@ describe('A Server supporting N3 Patch', (): void => {
       });
 
       it('fails if the conditions do not match.', async(): Promise<void> => {
-        await setResource('/read-write', '<a> <b> <c>.', { read: true, write: true });
+        await setResource('/read-write', '<a> <b> <c>.', [ 'read', 'write' ]);
         await expectPatch(
           { path: '/read-write', body: `<> a solid:InsertDeletePatch;
                  solid:where   { ?a <y> <z>. };

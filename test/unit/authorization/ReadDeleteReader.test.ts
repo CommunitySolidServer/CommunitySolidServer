@@ -1,7 +1,7 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { Credentials } from '../../../src/authentication/Credentials';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import { ReadDeleteReader } from '../../../src/authorization/ReadDeleteReader';
 import type { ResourceSet } from '../../../src/storage/ResourceSet';
 import type { IdentifierStrategy } from '../../../src/util/identifiers/IdentifierStrategy';
@@ -46,50 +46,50 @@ describe('A ReadDeleteReader', (): void => {
   });
 
   it('adds read to the requested modes if all conditions are met.', async(): Promise<void> => {
-    requestedModes.add({ path: resource }, AccessMode.delete);
+    requestedModes.add({ path: resource }, PERMISSIONS.Delete);
     identifierStrategy.isRootContainer.mockReturnValue(false);
     resourceSet.hasResource.mockResolvedValue(false);
 
     await expect(reader.handle({ credentials, requestedModes })).resolves.toBe(result);
     const newModes = source.handle.mock.calls[0][0].requestedModes;
     expect(newModes.size).toBe(3);
-    expect(newModes.get({ path: resource })).toContain(AccessMode.read);
-    expect(newModes.get({ path: baseUrl })).toContain(AccessMode.read);
+    expect(newModes.get({ path: resource })).toContain(PERMISSIONS.Read);
+    expect(newModes.get({ path: baseUrl })).toContain(PERMISSIONS.Read);
   });
 
   it('does not change the results if no delete access is required.', async(): Promise<void> => {
-    requestedModes.add({ path: resource }, AccessMode.write);
+    requestedModes.add({ path: resource }, PERMISSIONS.Modify);
     identifierStrategy.isRootContainer.mockReturnValue(false);
     resourceSet.hasResource.mockResolvedValue(false);
 
     await expect(reader.handle({ credentials, requestedModes })).resolves.toBe(result);
     const newModes = source.handle.mock.calls[0][0].requestedModes;
     expect(newModes.size).toBe(1);
-    expect(newModes.get({ path: resource })).not.toContain(AccessMode.read);
+    expect(newModes.get({ path: resource })).not.toContain(PERMISSIONS.Read);
     expect(newModes.get({ path: baseUrl })).toBeUndefined();
   });
 
   it('does not add parent modes if the target is a root container.', async(): Promise<void> => {
-    requestedModes.add({ path: resource }, AccessMode.delete);
+    requestedModes.add({ path: resource }, PERMISSIONS.Delete);
     identifierStrategy.isRootContainer.mockReturnValue(true);
     resourceSet.hasResource.mockResolvedValue(false);
 
     await expect(reader.handle({ credentials, requestedModes })).resolves.toBe(result);
     const newModes = source.handle.mock.calls[0][0].requestedModes;
     expect(newModes.size).toBe(2);
-    expect(newModes.get({ path: resource })).toContain(AccessMode.read);
+    expect(newModes.get({ path: resource })).toContain(PERMISSIONS.Read);
     expect(newModes.get({ path: baseUrl })).toBeUndefined();
   });
 
   it('does not change the results if the target exists.', async(): Promise<void> => {
-    requestedModes.add({ path: resource }, AccessMode.delete);
+    requestedModes.add({ path: resource }, PERMISSIONS.Delete);
     identifierStrategy.isRootContainer.mockReturnValue(false);
     resourceSet.hasResource.mockResolvedValue(true);
 
     await expect(reader.handle({ credentials, requestedModes })).resolves.toBe(result);
     const newModes = source.handle.mock.calls[0][0].requestedModes;
     expect(newModes.size).toBe(1);
-    expect(newModes.get({ path: resource })).not.toContain(AccessMode.read);
+    expect(newModes.get({ path: resource })).not.toContain(PERMISSIONS.Read);
     expect(newModes.get({ path: baseUrl })).toBeUndefined();
   });
 });

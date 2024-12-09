@@ -1,8 +1,8 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { DataFactory as DF } from 'n3';
 import type { Quad } from '@rdfjs/types';
 import { N3PatchModesExtractor } from '../../../../src/authorization/permissions/N3PatchModesExtractor';
 import type { AccessMap } from '../../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { N3Patch } from '../../../../src/http/representation/N3Patch';
@@ -20,9 +20,9 @@ describe('An N3PatchModesExtractor', (): void => {
   let resourceSet: jest.Mocked<ResourceSet>;
   let extractor: N3PatchModesExtractor;
 
-  function getMap(modes: AccessMode[], identifier?: ResourceIdentifier): AccessMap {
+  function getMap(modes: string[], identifier?: ResourceIdentifier): AccessMap {
     return new IdentifierSetMultiMap(
-      modes.map((mode): [ResourceIdentifier, AccessMode] => [ identifier ?? target, mode ]),
+      modes.map((mode): [ResourceIdentifier, string] => [ identifier ?? target, mode ]),
     );
   }
 
@@ -56,29 +56,31 @@ describe('An N3PatchModesExtractor', (): void => {
 
   it('requires read access when there are conditions.', async(): Promise<void> => {
     patch.conditions = [ triple ];
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.read ]));
+    compareMaps(await extractor.handle(operation), getMap([ PERMISSIONS.Read ]));
   });
 
   it('requires append access when there are inserts.', async(): Promise<void> => {
     patch.inserts = [ triple ];
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.append ]));
+    compareMaps(await extractor.handle(operation), getMap([ PERMISSIONS.Append ]));
   });
 
   it('requires create access when there are inserts and the resource does not exist.', async(): Promise<void> => {
     resourceSet.hasResource.mockResolvedValueOnce(false);
     patch.inserts = [ triple ];
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.append, AccessMode.create ]));
+    compareMaps(await extractor.handle(operation), getMap([ PERMISSIONS.Append, PERMISSIONS.Create ]));
   });
 
   it('requires read and write access when there are inserts.', async(): Promise<void> => {
     patch.deletes = [ triple ];
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.read, AccessMode.write ]));
+    compareMaps(await extractor.handle(operation), getMap([ PERMISSIONS.Read, PERMISSIONS.Modify ]));
   });
 
   it('combines required access modes when required.', async(): Promise<void> => {
     patch.conditions = [ triple ];
     patch.inserts = [ triple ];
     patch.deletes = [ triple ];
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.read, AccessMode.append, AccessMode.write ]));
+    compareMaps(await extractor.handle(operation), getMap(
+      [ PERMISSIONS.Read, PERMISSIONS.Append, PERMISSIONS.Modify ],
+    ));
   });
 });

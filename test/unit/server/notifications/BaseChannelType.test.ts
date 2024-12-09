@@ -1,6 +1,6 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { DataFactory as DF, Store } from 'n3';
 import type { Credentials } from '../../../../src/authentication/Credentials';
-import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
 import {
   AbsolutePathInteractionRoute,
 } from '../../../../src/identity/interaction/routing/AbsolutePathInteractionRoute';
@@ -228,7 +228,7 @@ describe('A BaseChannelType', (): void => {
       topic: 'https://storage.example/resource',
     };
     await expect(channelType.extractModes(channel)).resolves
-      .toEqual(new IdentifierSetMultiMap([[{ path: channel.topic }, AccessMode.read ]]));
+      .toEqual(new IdentifierSetMultiMap([[{ path: channel.topic }, PERMISSIONS.Read ]]));
   });
 
   it('does nothing when completing the channel.', async(): Promise<void> => {

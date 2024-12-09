@@ -1,10 +1,10 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { ResourceSet } from '../storage/ResourceSet';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { IdentifierSetMultiMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import type { MultiPermissionMap } from './permissions/Permissions';
-import { AccessMode } from './permissions/Permissions';
 
 /**
  * When trying to delete a non-existent resource, the server needs to return a different result
@@ -31,11 +31,11 @@ export class ReadDeleteReader extends PermissionReader {
   public async handle(input: PermissionReaderInput): Promise<MultiPermissionMap> {
     const requestedModes = new IdentifierSetMultiMap(input.requestedModes);
     for (const identifier of requestedModes.distinctKeys()) {
-      if (requestedModes.hasEntry(identifier, AccessMode.delete) && !await this.resourceSet.hasResource(identifier)) {
-        requestedModes.add(identifier, AccessMode.read);
+      if (requestedModes.hasEntry(identifier, PERMISSIONS.Delete) && !await this.resourceSet.hasResource(identifier)) {
+        requestedModes.add(identifier, PERMISSIONS.Read);
         if (!this.identifierStrategy.isRootContainer(identifier)) {
           const parent = this.identifierStrategy.getParentContainer(identifier);
-          requestedModes.add(parent, AccessMode.read);
+          requestedModes.add(parent, PERMISSIONS.Read);
         }
       }
     }

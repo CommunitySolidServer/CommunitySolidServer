@@ -1,27 +1,12 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
 import type { IdentifierMap, IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 
 /**
- * Different modes that require permission.
+ * Permissions per identifier.
  */
-export enum AccessMode {
-  read = 'read',
-  append = 'append',
-  write = 'write',
-  create = 'create',
-  delete = 'delete',
-}
+export type AccessMap = IdentifierSetMultiMap<string>;
 
 /**
- * Access modes per identifier.
+ * PermissionMap per identifier.
  */
-export type AccessMap = IdentifierSetMultiMap<AccessMode>;
-
-/**
- * A data interface indicating which permissions are required (based on the context).
- */
-export type PermissionSet = Partial<Record<AccessMode, boolean>>;
-
-/**
- * PermissionSet per identifier.
- */
-export type MultiPermissionMap = IdentifierMap<PermissionSet>;
+export type MultiPermissionMap = IdentifierMap<PermissionMap>;

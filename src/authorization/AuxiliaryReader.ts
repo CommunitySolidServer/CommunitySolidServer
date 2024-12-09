@@ -6,7 +6,7 @@ import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { AccessMap, AccessMode, MultiPermissionMap } from './permissions/Permissions';
+import type { AccessMap, MultiPermissionMap } from './permissions/Permissions';
 
 /**
  * Determines the permissions of auxiliary resources by finding those of the corresponding subject resources.
@@ -46,7 +46,7 @@ export class AuxiliaryReader extends PermissionReader {
    * Maps auxiliary resources that do not have their own authorization checks to their subject resource.
    */
   private findAuxiliaries(requestedModes: AccessMap): IdentifierMap<MapEntry<AccessMap>> {
-    const auxiliaries = new IdentifierMap<[ResourceIdentifier, ReadonlySet<AccessMode>]>();
+    const auxiliaries = new IdentifierMap<[ResourceIdentifier, ReadonlySet<string>]>();
     for (const [ identifier, modes ] of requestedModes.entrySets()) {
       if (this.isDependentAuxiliary(identifier)) {
         auxiliaries.set(identifier, [ this.auxiliaryStrategy.getSubjectIdentifier(identifier), modes ]);

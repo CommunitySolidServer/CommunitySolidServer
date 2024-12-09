@@ -62,7 +62,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
     // Set the root acl file to allow everything and create a single document
     await store.setRepresentation({ path: permanent }, new BasicRepresentation('PERMANENT', 'text/plain'));
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { read: true, write: true, append: true, control: true },
+      permissions: [ 'read', 'write', 'append', 'control' ],
       agentClass: 'agent',
       accessTo: true,
       default: true,
@@ -76,7 +76,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
   it('can add a document, read it and delete it if allowed.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { read: true, write: true, append: true },
+      permissions: [ 'read', 'write', 'append' ],
       agentClass: 'agent',
       accessTo: true,
       default: true,
@@ -97,7 +97,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
   it('can not add a file to the store if not allowed.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { read: true, write: true, append: true },
+      permissions: [ 'read', 'write', 'append' ],
       agentClass: 'authenticated',
       accessTo: true,
       default: true,
@@ -111,7 +111,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
   it('can not add/delete if only read is allowed.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { read: true },
+      permissions: [ 'read' ],
       agentClass: 'agent',
       accessTo: true,
       default: true,
@@ -134,7 +134,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
   it('can add files but not write to them if append is allowed.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { append: true },
+      permissions: [ 'append' ],
       agentClass: 'agent',
       accessTo: true,
       default: true,
@@ -159,7 +159,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
   it('can not access an acl file if no control rights are provided.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { read: true, write: true, append: true },
+      permissions: [ 'read', 'write', 'append' ],
       agentClass: 'agent',
       accessTo: true,
     });
@@ -170,7 +170,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
   it('can only access an acl file if control rights are provided.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { control: true },
+      permissions: [ 'control' ],
       agentClass: 'agent',
       accessTo: true,
     });
@@ -186,7 +186,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
   it('returns the legacy WWW-Authenticate header on 401 requests.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: {},
+      permissions: [],
       agentClass: 'agent',
       accessTo: true,
     });
@@ -221,7 +221,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // Prevent other access to make sure there is no hierarchy bug
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: {},
+      permissions: [],
       agentClass: 'agent',
       default: true,
     });
@@ -239,7 +239,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
     const url = joinUrl(baseUrl, 'foo/bar/');
     // Not allowed since there are no append permissions on the base container
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { write: true },
+      permissions: [ 'write' ],
       agentClass: 'agent',
       default: true,
     });
@@ -248,7 +248,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // Not allowed since there are no write permissions for the target
     await aclHelper.setSimpleAcl(baseUrl, {
-      permissions: { append: true },
+      permissions: [ 'append' ],
       agentClass: 'agent',
       accessTo: true,
     });
@@ -257,8 +257,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // This covers all required permissions
     await aclHelper.setSimpleAcl(baseUrl, [
-      { permissions: { append: true }, agentClass: 'agent', accessTo: true },
-      { permissions: { write: true }, agentClass: 'agent', default: true },
+      { permissions: [ 'append' ], agentClass: 'agent', accessTo: true },
+      { permissions: [ 'write' ], agentClass: 'agent', default: true },
     ]);
     await putResource(url, { contentType: 'text/plain', exists: false });
   });

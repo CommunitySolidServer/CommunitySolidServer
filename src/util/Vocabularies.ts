@@ -1,52 +1,5 @@
 import { createVocabulary } from 'rdf-vocabulary';
 
-export const ACL = createVocabulary(
-  'http://www.w3.org/ns/auth/acl#',
-  'accessTo',
-  'agent',
-  'agentClass',
-  'agentGroup',
-  'AuthenticatedAgent',
-  'Authorization',
-  'default',
-  'mode',
-
-  'Write',
-  'Read',
-  'Append',
-  'Control',
-);
-
-export const ACP = createVocabulary(
-  'http://www.w3.org/ns/solid/acp#',
-
-  // Used for ACP middleware headers
-  'AccessControlResource',
-  'grant',
-  'attribute',
-
-  // Access Control Resource
-  'resource',
-  'accessControl',
-  'memberAccessControl',
-
-  // Access Control,
-  'apply',
-
-  // Policy
-  'allow',
-  'deny',
-  'allOf',
-  'anyOf',
-  'noneOf',
-
-  // Matcher
-  'agent',
-  'client',
-  'issuer',
-  'vc',
-);
-
 export const AS = createVocabulary(
   'https://www.w3.org/ns/activitystreams#',
   'object',

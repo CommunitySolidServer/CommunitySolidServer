@@ -1,8 +1,9 @@
+import { ACL } from '@solidlab/policy-engine';
 import { createResponse } from 'node-mocks-http';
 import { WacAllowMetadataWriter } from '../../../../../src/http/output/metadata/WacAllowMetadataWriter';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
-import { ACL, AUTH } from '../../../../../src/util/Vocabularies';
+import { AUTH } from '../../../../../src/util/Vocabularies';
 
 describe('A WacAllowMetadataWriter', (): void => {
   const writer = new WacAllowMetadataWriter();

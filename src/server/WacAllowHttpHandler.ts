@@ -1,20 +1,19 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
+import { ACL, PERMISSIONS } from '@solidlab/policy-engine';
 import { getLoggerFor } from 'global-logger-factory';
+import type { VocabularyTerm } from 'rdf-vocabulary';
 import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { PermissionReader } from '../authorization/PermissionReader';
-import type { AclPermissionSet } from '../authorization/permissions/AclPermissionSet';
-import { AclMode } from '../authorization/permissions/AclPermissionSet';
 import type { ModesExtractor } from '../authorization/permissions/ModesExtractor';
-import { AccessMode } from '../authorization/permissions/Permissions';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { NotModifiedHttpError } from '../util/errors/NotModifiedHttpError';
-import { ACL, AUTH } from '../util/Vocabularies';
+import { AUTH } from '../util/Vocabularies';
 import type { OperationHttpHandlerInput } from './OperationHttpHandler';
 import { OperationHttpHandler } from './OperationHttpHandler';
 
 const VALID_METHODS = new Set([ 'HEAD', 'GET' ]);
-const VALID_ACL_MODES = new Set([ AccessMode.read, AccessMode.write, AccessMode.append, AclMode.control ]);
 
 export interface WacAllowHttpHandlerArgs {
   credentialsExtractor: CredentialsExtractor;
@@ -74,8 +73,8 @@ export class WacAllowHttpHandler extends OperationHttpHandler {
 
     const permissionSet = availablePermissions.get(operation.target);
     if (permissionSet) {
-      const user: AclPermissionSet = permissionSet;
-      let everyone: AclPermissionSet;
+      const user = permissionSet;
+      let everyone: PermissionMap;
       if (credentials.agent?.webId) {
         // Need to determine public permissions
         this.logger.debug('Determining public permissions');
@@ -103,19 +102,29 @@ export class WacAllowHttpHandler extends OperationHttpHandler {
   /**
    * Converts the found permissions to triples and puts them in the metadata.
    */
-  private addWacAllowMetadata(metadata: RepresentationMetadata, everyone: AclPermissionSet, user: AclPermissionSet):
+  protected addWacAllowMetadata(metadata: RepresentationMetadata, everyone: PermissionMap, user: PermissionMap):
   void {
-    const modes = new Set<AccessMode>([ ...Object.keys(user), ...Object.keys(everyone) ] as AccessMode[]);
+    const modes = new Set([ ...Object.keys(user), ...Object.keys(everyone) ]);
     for (const mode of modes) {
-      if (VALID_ACL_MODES.has(mode)) {
-        const capitalizedMode = mode.charAt(0).toUpperCase() + mode.slice(1) as 'Read' | 'Write' | 'Append' | 'Control';
+      const aclMode = this.toAclMode(mode);
+      if (aclMode) {
         if (everyone[mode]) {
-          metadata.add(AUTH.terms.publicMode, ACL.terms[capitalizedMode]);
+          metadata.add(AUTH.terms.publicMode, aclMode);
         }
         if (user[mode]) {
-          metadata.add(AUTH.terms.userMode, ACL.terms[capitalizedMode]);
+          metadata.add(AUTH.terms.userMode, aclMode);
         }
       }
+    }
+  }
+
+  protected toAclMode(mode: string): VocabularyTerm<typeof ACL> | undefined {
+    switch (mode) {
+      case PERMISSIONS.Read: return ACL.terms.Read;
+      case PERMISSIONS.Append: return ACL.terms.Append;
+      case PERMISSIONS.Modify: return ACL.terms.Write;
+      case ACL.Control: return ACL.terms.Control;
+      default:
     }
   }
 }

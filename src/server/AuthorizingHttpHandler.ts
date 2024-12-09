@@ -73,7 +73,6 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
       [ ...requestedModes.entrySets() ]
         .map(([ id, set ]): string => `{ ${id.path}: ${[ ...set ].join(',')} }`).join(',')
     }`);
-
     const availablePermissions = await this.permissionReader.handleSafe({ credentials, requestedModes });
     this.logger.verbose(`Available permissions are ${
       [ ...availablePermissions.entries() ]

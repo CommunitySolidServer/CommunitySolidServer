@@ -1,6 +1,6 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { MethodModesExtractor } from '../../../../src/authorization/permissions/MethodModesExtractor';
 import type { AccessMap } from '../../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
@@ -20,9 +20,9 @@ describe('A MethodModesExtractor', (): void => {
   let resourceSet: jest.Mocked<ResourceSet>;
   let extractor: MethodModesExtractor;
 
-  function getMap(modes: AccessMode[], identifier?: ResourceIdentifier): AccessMap {
+  function getMap(modes: string[], identifier?: ResourceIdentifier): AccessMap {
     return new IdentifierSetMultiMap(
-      modes.map((mode): [ResourceIdentifier, AccessMode] => [ identifier ?? target, mode ]),
+      modes.map((mode): [ResourceIdentifier, string] => [ identifier ?? target, mode ]),
     );
   }
 
@@ -43,38 +43,38 @@ describe('A MethodModesExtractor', (): void => {
   });
 
   it('requires read for HEAD operations.', async(): Promise<void> => {
-    compareMaps(await extractor.handle({ ...operation, method: 'HEAD' }), getMap([ AccessMode.read ]));
+    compareMaps(await extractor.handle({ ...operation, method: 'HEAD' }), getMap([ PERMISSIONS.Read ]));
   });
 
   it('requires read for GET operations.', async(): Promise<void> => {
-    compareMaps(await extractor.handle({ ...operation, method: 'GET' }), getMap([ AccessMode.read ]));
+    compareMaps(await extractor.handle({ ...operation, method: 'GET' }), getMap([ PERMISSIONS.Read ]));
   });
 
   it('requires append for POST operations.', async(): Promise<void> => {
-    compareMaps(await extractor.handle({ ...operation, method: 'POST' }), getMap([ AccessMode.append ]));
+    compareMaps(await extractor.handle({ ...operation, method: 'POST' }), getMap([ PERMISSIONS.Append ]));
   });
 
   it('requires write for PUT operations.', async(): Promise<void> => {
-    compareMaps(await extractor.handle({ ...operation, method: 'PUT' }), getMap([ AccessMode.write ]));
+    compareMaps(await extractor.handle({ ...operation, method: 'PUT' }), getMap([ PERMISSIONS.Modify ]));
   });
 
   it('requires append/create for PUT operations if the target does not exist.', async(): Promise<void> => {
     resourceSet.hasResource.mockResolvedValueOnce(false);
     compareMaps(
       await extractor.handle({ ...operation, method: 'PUT' }),
-      getMap([ AccessMode.append, AccessMode.create ]),
+      getMap([ PERMISSIONS.Append, PERMISSIONS.Create ]),
     );
   });
 
   it('requires delete for DELETE operations.', async(): Promise<void> => {
-    compareMaps(await extractor.handle({ ...operation, method: 'DELETE' }), getMap([ AccessMode.delete ]));
+    compareMaps(await extractor.handle({ ...operation, method: 'DELETE' }), getMap([ PERMISSIONS.Delete ]));
   });
 
   it('also requires read for DELETE operations on containers.', async(): Promise<void> => {
     const identifier = { path: 'http://example.com/foo/' };
     compareMaps(
       await extractor.handle({ ...operation, method: 'DELETE', target: identifier }),
-      getMap([ AccessMode.delete, AccessMode.read ], identifier),
+      getMap([ PERMISSIONS.Delete, PERMISSIONS.Read ], identifier),
     );
   });
 });

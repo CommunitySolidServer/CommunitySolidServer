@@ -2,9 +2,7 @@ import type { PolicyEngine } from '@solidlab/policy-engine';
 import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { Credentials } from '../../../src/authentication/Credentials';
 import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import { PolicyEngineReader } from '../../../src/authorization/PolicyEngineReader';
-import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 
 describe('A PolicyEngineReader', (): void => {
@@ -27,8 +25,8 @@ describe('A PolicyEngineReader', (): void => {
   });
 
   it('converts the returned permissions to access modes.', async(): Promise<void> => {
-    requestedModes.add(identifier, AccessMode.write);
-    requestedModes.add(identifier2, AccessMode.read);
+    requestedModes.add(identifier, PERMISSIONS.Modify);
+    requestedModes.add(identifier2, PERMISSIONS.Read);
     engine.getPermissions.mockResolvedValue({
       [PERMISSIONS.Modify]: true,
       [PERMISSIONS.Create]: false,
@@ -36,26 +34,12 @@ describe('A PolicyEngineReader', (): void => {
     const result = await reader.handle({ credentials, requestedModes });
     expect(result.size).toBe(2);
     expect(result.get(identifier)).toEqual({
-      [AccessMode.write]: true,
-      [AccessMode.create]: false,
+      [PERMISSIONS.Modify]: true,
+      [PERMISSIONS.Create]: false,
     });
     expect(result.get(identifier2)).toEqual({
-      [AccessMode.write]: true,
-      [AccessMode.create]: false,
-    });
-  });
-
-  it('throws an error for unknown permissions.', async(): Promise<void> => {
-    requestedModes.add(identifier, AccessMode.write);
-    engine.getPermissions.mockResolvedValue({
       [PERMISSIONS.Modify]: true,
-      unknown: false,
+      [PERMISSIONS.Create]: false,
     });
-    await expect(reader.handle({ credentials, requestedModes })).rejects.toThrow(InternalServerError);
-  });
-
-  it('throws an error for unknown access modes.', async(): Promise<void> => {
-    requestedModes.add(identifier, 'unknown' as any);
-    await expect(reader.handle({ credentials, requestedModes })).rejects.toThrow(InternalServerError);
   });
 });

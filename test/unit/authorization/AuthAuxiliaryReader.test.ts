@@ -1,9 +1,9 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
+import { ACL, PERMISSIONS } from '@solidlab/policy-engine';
 import type { Credentials } from '../../../src/authentication/Credentials';
 import { AuthAuxiliaryReader } from '../../../src/authorization/AuthAuxiliaryReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
-import { AclMode } from '../../../src/authorization/permissions/AclPermissionSet';
-import type { AccessMap, MultiPermissionMap, PermissionSet } from '../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../src/authorization/permissions/Permissions';
+import type { AccessMap, MultiPermissionMap } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
@@ -38,18 +38,25 @@ describe('An AuthAuxiliaryReader', (): void => {
   });
 
   it('requires control permissions on the subject resource to do everything.', async(): Promise<void> => {
-    requestedModes.set(acl1, AccessMode.read);
-    requestedModes.set(acl2, AccessMode.read);
-    sourceResult.set(subject1, { control: true } as PermissionSet);
+    requestedModes.set(acl1, PERMISSIONS.Read);
+    requestedModes.set(acl2, PERMISSIONS.Read);
+    sourceResult.set(subject1, { [ACL.Control]: true });
 
     const result = await reader.handle({ requestedModes, credentials });
     expect(result.get(acl1))
-      .toEqual({ read: true, append: true, write: true, control: true, create: true, delete: true });
+      .toEqual({
+        [PERMISSIONS.Read]: true,
+        [PERMISSIONS.Append]: true,
+        [PERMISSIONS.Modify]: true,
+        [ACL.Control]: true,
+        [PERMISSIONS.Create]: true,
+        [PERMISSIONS.Delete]: true,
+      });
     expect(result.get(acl2)).toEqual({});
 
     const updatedMap = new IdentifierMap();
-    updatedMap.set(subject1, new Set([ AclMode.control ]));
-    updatedMap.set(subject2, new Set([ AclMode.control ]));
+    updatedMap.set(subject1, new Set([ ACL.Control ]));
+    updatedMap.set(subject2, new Set([ ACL.Control ]));
     expect(source.handleSafe).toHaveBeenCalledTimes(1);
     expect(source.handleSafe.mock.calls[0][0].credentials).toBe(credentials);
     compareMaps(source.handleSafe.mock.calls[0][0].requestedModes, updatedMap);
@@ -57,17 +64,24 @@ describe('An AuthAuxiliaryReader', (): void => {
   });
 
   it('combines the modes with the subject resource if it is also being requested.', async(): Promise<void> => {
-    requestedModes.set(acl1, AccessMode.read);
-    requestedModes.set(subject1, AccessMode.write);
+    requestedModes.set(acl1, PERMISSIONS.Read);
+    requestedModes.set(subject1, PERMISSIONS.Modify);
 
-    const resultSet = { read: true, write: true, control: true } as PermissionSet;
+    const resultSet = { [PERMISSIONS.Read]: true, [PERMISSIONS.Modify]: true, [ACL.Control]: true };
     sourceResult.set(subject1, resultSet);
-    const resultMap: MultiPermissionMap = new IdentifierMap([
-      [ acl1, { read: true, write: true, control: true, append: true, create: true, delete: true } as PermissionSet ],
+    const resultMap: MultiPermissionMap = new IdentifierMap<PermissionMap>([
+      [ acl1, {
+        [PERMISSIONS.Read]: true,
+        [PERMISSIONS.Modify]: true,
+        [ACL.Control]: true,
+        [PERMISSIONS.Append]: true,
+        [PERMISSIONS.Create]: true,
+        [PERMISSIONS.Delete]: true,
+      }],
       [ subject1, resultSet ],
     ]);
     compareMaps(await reader.handle({ credentials, requestedModes }), resultMap);
     expect(source.handleSafe.mock.calls[0][0].requestedModes.get(subject1))
-      .toEqual(new Set([ AccessMode.write, AclMode.control ]));
+      .toEqual(new Set([ PERMISSIONS.Modify, ACL.Control ]));
   });
 });

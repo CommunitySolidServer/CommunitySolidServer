@@ -1,3 +1,4 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { Operation } from '../../http/Operation';
 import type { ResourceSet } from '../../storage/ResourceSet';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
@@ -5,7 +6,6 @@ import { IdentifierSetMultiMap } from '../../util/map/IdentifierMap';
 import { isContainerIdentifier } from '../../util/PathUtil';
 import { ModesExtractor } from './ModesExtractor';
 import type { AccessMap } from './Permissions';
-import { AccessMode } from './Permissions';
 
 const READ_METHODS = new Set([ 'OPTIONS', 'GET', 'HEAD' ]);
 const SUPPORTED_METHODS = new Set([ ...READ_METHODS, 'PUT', 'POST', 'DELETE' ]);
@@ -38,29 +38,29 @@ export class MethodModesExtractor extends ModesExtractor {
     const requiredModes: AccessMap = new IdentifierSetMultiMap();
     // Reading requires Read permissions on the resource
     if (READ_METHODS.has(method)) {
-      requiredModes.add(target, AccessMode.read);
+      requiredModes.add(target, PERMISSIONS.Read);
     }
     if (method === 'PUT') {
       if (await this.resourceSet.hasResource(target)) {
         // Replacing a resource's representation with PUT requires Write permissions
-        requiredModes.add(target, AccessMode.write);
+        requiredModes.add(target, PERMISSIONS.Modify);
       } else {
         // ... while creating a new resource with PUT requires Append and Create permissions.
-        requiredModes.add(target, AccessMode.append);
-        requiredModes.add(target, AccessMode.create);
+        requiredModes.add(target, PERMISSIONS.Append);
+        requiredModes.add(target, PERMISSIONS.Create);
       }
     }
     // Creating a new resource in a container requires Append access to that container
     if (method === 'POST') {
-      requiredModes.add(target, AccessMode.append);
+      requiredModes.add(target, PERMISSIONS.Append);
     }
     // Deleting a resource requires Delete access
     if (method === 'DELETE') {
-      requiredModes.add(target, AccessMode.delete);
+      requiredModes.add(target, PERMISSIONS.Delete);
       // …and, if the target is a container, Read permissions are required as well
       // as this exposes if a container is empty or not
       if (isContainerIdentifier(target)) {
-        requiredModes.add(target, AccessMode.read);
+        requiredModes.add(target, PERMISSIONS.Read);
       }
     }
     return requiredModes;

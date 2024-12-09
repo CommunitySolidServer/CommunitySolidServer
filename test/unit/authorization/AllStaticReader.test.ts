@@ -1,16 +1,16 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { AllStaticReader } from '../../../src/authorization/AllStaticReader';
-import type { PermissionSet } from '../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 import { compareMaps } from '../../util/Util';
 
-function getPermissions(allow: boolean): PermissionSet {
+function getPermissions(allow: boolean): PermissionMap {
   return {
-    read: allow,
-    write: allow,
-    append: allow,
-    create: allow,
-    delete: allow,
+    [PERMISSIONS.Read]: allow,
+    [PERMISSIONS.Modify]: allow,
+    [PERMISSIONS.Append]: allow,
+    [PERMISSIONS.Create]: allow,
+    [PERMISSIONS.Delete]: allow,
   };
 }
 
@@ -25,7 +25,7 @@ describe('An AllStaticReader', (): void => {
 
   it('always returns permissions matching the given allow parameter.', async(): Promise<void> => {
     let authorizer = new AllStaticReader(true);
-    const requestedModes = new IdentifierSetMultiMap<AccessMode>([[ identifier, AccessMode.read ]]);
+    const requestedModes = new IdentifierSetMultiMap<string>([[ identifier, PERMISSIONS.Read ]]);
     let result = await authorizer.handle({ credentials, requestedModes });
     compareMaps(result, new IdentifierMap([[ identifier, getPermissions(true) ]]));
 

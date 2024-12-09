@@ -1,10 +1,10 @@
 import { PassThrough } from 'node:stream';
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../../../authentication/Credentials';
 import type { CredentialsExtractor } from '../../../authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../authorization/Authorizer';
 import type { PermissionReader } from '../../../authorization/PermissionReader';
-import { AccessMode } from '../../../authorization/permissions/Permissions';
 import { OkResponseDescription } from '../../../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../../../http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../../../http/representation/BasicRepresentation';
@@ -72,7 +72,7 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
   }
 
   private async authorize(credentials: Credentials, topic: string): Promise<void> {
-    const requestedModes = new IdentifierSetMultiMap<AccessMode>([[{ path: topic }, AccessMode.read ]]);
+    const requestedModes = new IdentifierSetMultiMap<string>([[{ path: topic }, PERMISSIONS.Read ]]);
     this.logger.debug(`Retrieved required modes: ${[ ...requestedModes.entrySets() ].join(',')}`);
 
     const availablePermissions = await this.permissionReader.handleSafe({ credentials, requestedModes });

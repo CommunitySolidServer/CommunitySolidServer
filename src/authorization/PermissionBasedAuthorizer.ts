@@ -1,10 +1,10 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
 import { getLoggerFor } from 'global-logger-factory';
 import type { Credentials } from '../authentication/Credentials';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import type { AuthorizerInput } from './Authorizer';
 import { Authorizer } from './Authorizer';
-import type { AccessMode, PermissionSet } from './permissions/Permissions';
 
 /**
  * Authorizer that bases its decision on the output it gets from its PermissionReader.
@@ -38,11 +38,11 @@ export class PermissionBasedAuthorizer extends Authorizer {
    * if access is not allowed.
    *
    * @param credentials - Credentials that require access.
-   * @param permissionSet - PermissionSet describing the available permissions of the credentials.
+   * @param permissionMap - PermissionMap describing the available permissions of the credentials.
    * @param mode - Which mode is requested.
    */
-  protected requireModePermission(credentials: Credentials, permissionSet: PermissionSet, mode: AccessMode): void {
-    if (!permissionSet[mode]) {
+  protected requireModePermission(credentials: Credentials, permissionMap: PermissionMap, mode: string): void {
+    if (!permissionMap[mode]) {
       if (this.isAuthenticated(credentials)) {
         this.logger.warn(`Agent ${JSON.stringify(credentials)} has no ${mode} permissions`);
         throw new ForbiddenHttpError();

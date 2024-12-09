@@ -1,3 +1,5 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
+import { ACL, PERMISSIONS } from '@solidlab/policy-engine';
 import { getLoggerFor } from 'global-logger-factory';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
@@ -6,9 +8,7 @@ import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import { AclMode } from './permissions/AclPermissionSet';
-import type { AclPermissionSet } from './permissions/AclPermissionSet';
-import type { AccessMap, AccessMode, MultiPermissionMap, PermissionSet } from './permissions/Permissions';
+import type { AccessMap, MultiPermissionMap } from './permissions/Permissions';
 
 /**
  * Determines the permission for authorization resources (such as ACL or ACR).
@@ -44,7 +44,7 @@ export class AuthAuxiliaryReader extends PermissionReader {
     // Extracts the permissions based on the subject control permissions
     for (const [ identifier, [ subject ]] of authMap) {
       this.logger.debug(`Mapping ${subject.path} control permission to all permissions for ${identifier.path}`);
-      result.set(identifier, this.interpretControl(identifier, result.get(subject)));
+      result.set(identifier, this.interpretControl(result.get(subject)));
     }
     return result;
   }
@@ -56,8 +56,7 @@ export class AuthAuxiliaryReader extends PermissionReader {
     for (const [ identifier ] of accessMap) {
       if (this.authStrategy.isAuxiliaryIdentifier(identifier)) {
         const subject = this.authStrategy.getSubjectIdentifier(identifier);
-        // Unfortunately there is no enum inheritance so we have to cast like this
-        yield [ identifier, [ subject, new Set([ AclMode.control ] as unknown as AccessMode[]) ]];
+        yield [ identifier, [ subject, new Set([ ACL.Control ]) ]];
       }
     }
   }
@@ -66,15 +65,15 @@ export class AuthAuxiliaryReader extends PermissionReader {
    * Updates the permissions for an authorization resource
    * by interpreting the Control access mode as allowing full access.
    */
-  protected interpretControl(identifier: ResourceIdentifier, permissionSet: AclPermissionSet = {}): PermissionSet {
-    const { control } = permissionSet;
+  protected interpretControl(permissionMap: PermissionMap = {}): PermissionMap {
+    const control = permissionMap[ACL.Control];
     return {
-      read: control,
-      append: control,
-      write: control,
-      create: control,
-      delete: control,
-      control,
-    } as AclPermissionSet;
+      [PERMISSIONS.Read]: control,
+      [PERMISSIONS.Append]: control,
+      [PERMISSIONS.Modify]: control,
+      [PERMISSIONS.Create]: control,
+      [PERMISSIONS.Delete]: control,
+      [ACL.Control]: control,
+    };
   }
 }

@@ -1,10 +1,10 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { BlankNode } from 'n3';
 import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import type { ModesExtractor } from '../../../src/authorization/permissions/ModesExtractor';
 import type { AccessMap, MultiPermissionMap } from '../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { Operation } from '../../../src/http/Operation';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import { AuthorizingHttpHandler } from '../../../src/server/AuthorizingHttpHandler';
@@ -19,8 +19,8 @@ import { SOLID_META } from '../../../src/util/Vocabularies';
 describe('An AuthorizingHttpHandler', (): void => {
   const credentials = {};
   const target = { path: 'http://example.com/foo' };
-  const requestedModes: AccessMap = new IdentifierSetMultiMap<AccessMode>(
-    [[ target, new Set([ AccessMode.read, AccessMode.write ]) ]],
+  const requestedModes: AccessMap = new IdentifierSetMultiMap<string>(
+    [[ target, new Set([ PERMISSIONS.Read, PERMISSIONS.Modify ]) ]],
   );
   const availablePermissions: MultiPermissionMap = new IdentifierMap(
     [[ target, { read: true, write: true }]],
@@ -96,8 +96,8 @@ describe('An AuthorizingHttpHandler', (): void => {
     expect(targetQuad.object.value).toBe(target.path);
     const modeQuads = handlerError?.metadata?.quads(bnode as BlankNode, SOLID_META.terms.accessMode) ?? [];
     const modes = modeQuads.map((quad): string => quad.object.value);
-    expect(modes).toContain(AccessMode.read);
-    expect(modes).toContain(AccessMode.write);
+    expect(modes).toContain(PERMISSIONS.Read);
+    expect(modes).toContain(PERMISSIONS.Modify);
     expect(source.handleSafe).toHaveBeenCalledTimes(0);
   });
 });

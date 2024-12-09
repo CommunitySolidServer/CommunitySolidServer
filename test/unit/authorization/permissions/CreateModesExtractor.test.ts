@@ -1,7 +1,7 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { CreateModesExtractor } from '../../../../src/authorization/permissions/CreateModesExtractor';
 import type { ModesExtractor } from '../../../../src/authorization/permissions/ModesExtractor';
 import type { AccessMap } from '../../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
@@ -25,7 +25,7 @@ describe('A CreateModesExtractor', (): void => {
       preferences: {},
     };
 
-    result = new IdentifierSetMultiMap<AccessMode>([[ target, AccessMode.read ]]);
+    result = new IdentifierSetMultiMap<string>([[ target, PERMISSIONS.Read ]]);
 
     resourceSet = {
       hasResource: jest.fn().mockResolvedValue(true),
@@ -48,12 +48,12 @@ describe('A CreateModesExtractor', (): void => {
 
   it('does nothing if the resource exists.', async(): Promise<void> => {
     await expect(extractor.handle(operation)).resolves.toBe(result);
-    compareMaps(result, new IdentifierSetMultiMap([[ target, AccessMode.read ]]));
+    compareMaps(result, new IdentifierSetMultiMap([[ target, PERMISSIONS.Read ]]));
   });
 
   it('adds the create mode if the resource does not exist.', async(): Promise<void> => {
     resourceSet.hasResource.mockResolvedValue(false);
     await expect(extractor.handle(operation)).resolves.toBe(result);
-    compareMaps(result, new IdentifierSetMultiMap([[ target, AccessMode.read ], [ target, AccessMode.create ]]));
+    compareMaps(result, new IdentifierSetMultiMap([[ target, PERMISSIONS.Read ], [ target, PERMISSIONS.Create ]]));
   });
 });
