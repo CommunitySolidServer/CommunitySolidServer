@@ -1,7 +1,7 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { IntermediateCreateExtractor } from '../../../../src/authorization/permissions/IntermediateCreateExtractor';
 import type { ModesExtractor } from '../../../../src/authorization/permissions/ModesExtractor';
 import type { AccessMap } from '../../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { ResourceSet } from '../../../../src/storage/ResourceSet';
@@ -54,9 +54,9 @@ describe('An IntermediateCreateExtractor', (): void => {
 
   it('returns the source output if no create permissions are needed.', async(): Promise<void> => {
     const identifier = { path: joinUrl(baseUrl, 'foo') };
-    sourceMap.set(identifier, new Set([ AccessMode.read ]));
+    sourceMap.set(identifier, new Set([ PERMISSIONS.Read ]));
 
-    const resultMap = new IdentifierSetMultiMap([[ identifier, AccessMode.read ]]);
+    const resultMap = new IdentifierSetMultiMap([[ identifier, PERMISSIONS.Read ]]);
 
     compareMaps(await extractor.handle(operation), resultMap);
     expect(resourceSet.hasResource).toHaveBeenCalledTimes(0);
@@ -69,21 +69,21 @@ describe('An IntermediateCreateExtractor', (): void => {
     const idD = { path: joinUrl(baseUrl, 'd/') };
     const idDE = { path: joinUrl(baseUrl, 'd/e/') };
 
-    sourceMap.set(idABC, new Set([ AccessMode.create, AccessMode.write ]));
-    sourceMap.set(idDE, new Set([ AccessMode.create, AccessMode.append ]));
-    sourceMap.set(idD, new Set([ AccessMode.read ]));
+    sourceMap.set(idABC, new Set([ PERMISSIONS.Create, PERMISSIONS.Modify ]));
+    sourceMap.set(idDE, new Set([ PERMISSIONS.Create, PERMISSIONS.Append ]));
+    sourceMap.set(idD, new Set([ PERMISSIONS.Read ]));
 
     resourceSet.hasResource.mockImplementation(async(id): Promise<boolean> => id.path === baseUrl);
 
     const resultMap = new IdentifierSetMultiMap([
-      [ idA, AccessMode.create ],
-      [ idAB, AccessMode.create ],
-      [ idABC, AccessMode.create ],
-      [ idABC, AccessMode.write ],
-      [ idD, AccessMode.create ],
-      [ idD, AccessMode.read ],
-      [ idDE, AccessMode.create ],
-      [ idDE, AccessMode.append ],
+      [ idA, PERMISSIONS.Create ],
+      [ idAB, PERMISSIONS.Create ],
+      [ idABC, PERMISSIONS.Create ],
+      [ idABC, PERMISSIONS.Modify ],
+      [ idD, PERMISSIONS.Create ],
+      [ idD, PERMISSIONS.Read ],
+      [ idDE, PERMISSIONS.Create ],
+      [ idDE, PERMISSIONS.Append ],
     ]);
 
     compareMaps(await extractor.handle(operation), resultMap);

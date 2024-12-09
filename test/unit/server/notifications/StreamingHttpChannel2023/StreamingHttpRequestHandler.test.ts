@@ -1,18 +1,17 @@
 import { PassThrough } from 'node:stream';
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { getLoggerFor } from 'global-logger-factory';
 import type { Logger } from 'global-logger-factory';
 import type { CredentialsExtractor } from '../../../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../../../src/authorization/Authorizer';
 import type { PermissionReader } from '../../../../../src/authorization/PermissionReader';
 import { IdentifierMap } from '../../../../../src/util/map/IdentifierMap';
-import { AccessMode } from '../../../../../src/authorization/permissions/Permissions';
 import type { ResourceIdentifier } from '../../../../../src/http/representation/ResourceIdentifier';
 import type { Operation } from '../../../../../src/http/Operation';
 import type { NotificationChannel } from '../../../../../src/server/notifications/NotificationChannel';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
-
 import {
   StreamingHttpRequestHandler,
 } from '../../../../../src/server/notifications/StreamingHttpChannel2023/StreamingHttpRequestHandler';
@@ -20,7 +19,6 @@ import { AbsolutePathInteractionRoute, StreamingHttpMap } from '../../../../../s
 import type { NotificationGenerator, NotificationSerializer } from '../../../../../src';
 import type { Notification } from '../../../../../src/server/notifications/Notification';
 import { flushPromises } from '../../../../util/Util';
-
 import * as GuardedStream from '../../../../../src/util/GuardedStream';
 
 jest.mock('global-logger-factory', (): any => {
@@ -89,7 +87,7 @@ describe('A StreamingHttpRequestHandler', (): void => {
     } as any;
 
     permissionReader = {
-      handleSafe: jest.fn().mockResolvedValue(new IdentifierMap([[ topic, AccessMode.read ]])),
+      handleSafe: jest.fn().mockResolvedValue(new IdentifierMap([[ topic, PERMISSIONS.Read ]])),
     } as any;
 
     authorizer = {

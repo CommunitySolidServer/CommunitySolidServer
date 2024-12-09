@@ -9,7 +9,6 @@ export * from './authentication/UnsecureConstantCredentialsExtractor';
 export * from './authentication/UnsecureWebIdExtractor';
 
 // Authorization/Permissions
-export * from './authorization/permissions/AclPermissionSet';
 export * from './authorization/permissions/CreateModesExtractor';
 export * from './authorization/permissions/IntermediateCreateExtractor';
 export * from './authorization/permissions/ModesExtractor';

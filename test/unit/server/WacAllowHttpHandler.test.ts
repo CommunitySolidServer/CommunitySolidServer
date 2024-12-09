@@ -1,4 +1,5 @@
 import 'jest-rdf';
+import { ACL, PERMISSIONS } from '@solidlab/policy-engine';
 import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import type { ModesExtractor } from '../../../src/authorization/permissions/ModesExtractor';
@@ -13,7 +14,7 @@ import type { OperationHttpHandler } from '../../../src/server/OperationHttpHand
 import { WacAllowHttpHandler } from '../../../src/server/WacAllowHttpHandler';
 import { NotModifiedHttpError } from '../../../src/util/errors/NotModifiedHttpError';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
-import { ACL, AUTH } from '../../../src/util/Vocabularies';
+import { AUTH } from '../../../src/util/Vocabularies';
 
 describe('A WacAllowHttpHandler', (): void => {
   const target = { path: 'http://example.com/foo' };
@@ -56,9 +57,12 @@ describe('A WacAllowHttpHandler', (): void => {
   });
 
   it('adds permission metadata.', async(): Promise<void> => {
-    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
-      [[ target, { read: true, write: true, append: false }]],
-    ));
+    permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap([[ target, {
+      [PERMISSIONS.Read]: true,
+      [PERMISSIONS.Modify]: true,
+      [PERMISSIONS.Append]: false,
+      [ACL.Control]: false,
+    }]]));
 
     await expect(handler.handle({ operation, request, response })).resolves.toEqual(output);
     expect(output.metadata!.quads()).toHaveLength(4);
@@ -80,7 +84,7 @@ describe('A WacAllowHttpHandler', (): void => {
 
   it('adds permission metadata for 304 responses.', async(): Promise<void> => {
     permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
-      [[ target, { read: true, write: true, append: false }]],
+      [[ target, { [PERMISSIONS.Read]: true, [PERMISSIONS.Modify]: true, [PERMISSIONS.Append]: false, unknown: true }]],
     ));
 
     source.handleSafe.mockRejectedValueOnce(new NotModifiedHttpError());
@@ -118,10 +122,10 @@ describe('A WacAllowHttpHandler', (): void => {
   it('determines public permissions separately in case of an authenticated request.', async(): Promise<void> => {
     credentialsExtractor.handleSafe.mockResolvedValue({ agent: { webId: 'http://example.com/#me' }});
     permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
-      [[ target, { read: true, write: true, append: false }]],
+      [[ target, { [PERMISSIONS.Read]: true, [PERMISSIONS.Modify]: true, [PERMISSIONS.Append]: false }]],
     ));
     permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
-      [[ target, { read: true, write: false, append: true }]],
+      [[ target, { [PERMISSIONS.Read]: true, [PERMISSIONS.Modify]: false, [PERMISSIONS.Append]: true }]],
     ));
 
     await expect(handler.handle({ operation, request, response })).resolves.toEqual(output);
@@ -148,7 +152,7 @@ describe('A WacAllowHttpHandler', (): void => {
 
   it('adds no permissions if none of them are on the target.', async(): Promise<void> => {
     permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
-      [[{ path: 'http://example/other' }, { read: true, write: false }]],
+      [[{ path: 'http://example/other' }, { [PERMISSIONS.Read]: true, [PERMISSIONS.Modify]: false }]],
     ));
 
     await expect(handler.handle({ operation, request, response })).resolves.toEqual(output);
@@ -158,10 +162,10 @@ describe('A WacAllowHttpHandler', (): void => {
   it('adds no public permissions if the second call has no results for the target.', async(): Promise<void> => {
     credentialsExtractor.handleSafe.mockResolvedValue({ agent: { webId: 'http://example.com/#me' }});
     permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
-      [[ target, { read: true, write: false }]],
+      [[ target, { [PERMISSIONS.Read]: true, [PERMISSIONS.Modify]: false }]],
     ));
     permissionReader.handleSafe.mockResolvedValueOnce(new IdentifierMap(
-      [[{ path: 'http://example/other' }, { read: false, write: true }]],
+      [[{ path: 'http://example/other' }, { [PERMISSIONS.Read]: false, [PERMISSIONS.Modify]: true }]],
     ));
 
     await expect(handler.handle({ operation, request, response })).resolves.toEqual(output);

@@ -1,8 +1,9 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
 import { StatusUnionHandler } from '../util/handlers/StatusUnionHandler';
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import { getDefault } from '../util/map/MapUtil';
 import type { PermissionReader } from './PermissionReader';
-import type { MultiPermissionMap, PermissionSet } from './permissions/Permissions';
+import type { MultiPermissionMap } from './permissions/Permissions';
 
 /**
  * Combines the results of multiple PermissionReaders.
@@ -24,9 +25,9 @@ export class UnionPermissionReader extends StatusUnionHandler<PermissionReader> 
   /**
    * Merges all entries of the given map into the result map.
    */
-  private mergePermissionMaps(permissionMap: MultiPermissionMap, result: MultiPermissionMap): void {
+  protected mergePermissionMaps(permissionMap: MultiPermissionMap, result: MultiPermissionMap): void {
     for (const [ identifier, permissionSet ] of permissionMap) {
-      const resultSet = getDefault(result, identifier, (): PermissionSet => ({}));
+      const resultSet = getDefault(result, identifier, (): PermissionMap => ({}));
       result.set(identifier, this.mergePermissions(permissionSet, resultSet));
     }
   }
@@ -34,8 +35,10 @@ export class UnionPermissionReader extends StatusUnionHandler<PermissionReader> 
   /**
    * Adds the given permissions to the result object according to the combination rules of the class.
    */
-  private mergePermissions(permissions: PermissionSet, result: PermissionSet): PermissionSet {
-    for (const [ key, value ] of Object.entries(permissions) as [ keyof PermissionSet, boolean | undefined ][]) {
+  protected mergePermissions(permissions: PermissionMap, result: PermissionMap): PermissionMap {
+    for (const [ key, value ] of Object.entries(permissions)) {
+      // Value can also be undefined
+      // eslint-disable-next-line ts/no-unnecessary-boolean-literal-compare
       if (typeof value !== 'undefined' && result[key] !== false) {
         result[key] = value;
       }

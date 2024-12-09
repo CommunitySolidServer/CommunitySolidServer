@@ -1,30 +1,32 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { MultiPermissionMap, PermissionSet } from './permissions/Permissions';
+import type { MultiPermissionMap } from './permissions/Permissions';
 
 /**
  * PermissionReader which sets all permissions to true or false
  * independently of the identifier and requested permissions.
  */
 export class AllStaticReader extends PermissionReader {
-  private readonly permissionSet: PermissionSet;
+  protected readonly permissionMap: PermissionMap;
 
   public constructor(allow: boolean) {
     super();
-    this.permissionSet = Object.freeze({
-      read: allow,
-      write: allow,
-      append: allow,
-      create: allow,
-      delete: allow,
+    this.permissionMap = Object.freeze({
+      [PERMISSIONS.Read]: allow,
+      [PERMISSIONS.Modify]: allow,
+      [PERMISSIONS.Append]: allow,
+      [PERMISSIONS.Create]: allow,
+      [PERMISSIONS.Delete]: allow,
     });
   }
 
   public async handle({ requestedModes }: PermissionReaderInput): Promise<MultiPermissionMap> {
-    const availablePermissions = new IdentifierMap<PermissionSet>();
+    const availablePermissions = new IdentifierMap<PermissionMap>();
     for (const [ identifier ] of requestedModes) {
-      availablePermissions.set(identifier, this.permissionSet);
+      availablePermissions.set(identifier, this.permissionMap);
     }
     return availablePermissions;
   }

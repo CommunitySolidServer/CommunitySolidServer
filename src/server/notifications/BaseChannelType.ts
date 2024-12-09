@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream';
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { parse, toSeconds } from 'iso8601-duration';
 import { DataFactory } from 'n3';
@@ -9,7 +10,6 @@ import SHACLValidator from 'rdf-validate-shacl';
 import { v4 } from 'uuid';
 import type { Credentials } from '../../authentication/Credentials';
 import type { AccessMap } from '../../authorization/permissions/Permissions';
-import { AccessMode } from '../../authorization/permissions/Permissions';
 import type { InteractionRoute } from '../../identity/interaction/routing/InteractionRoute';
 import { ContextDocumentLoader } from '../../storage/conversion/ConversionUtil';
 import { UnprocessableEntityHttpError } from '../../util/errors/UnprocessableEntityHttpError';
@@ -287,7 +287,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
   }
 
   public async extractModes(channel: NotificationChannel): Promise<AccessMap> {
-    return new IdentifierSetMultiMap<AccessMode>([[{ path: channel.topic }, AccessMode.read ]]);
+    return new IdentifierSetMultiMap<string>([[{ path: channel.topic }, PERMISSIONS.Read ]]);
   }
 
   // eslint-disable-next-line unused-imports/no-unused-vars

@@ -1,3 +1,4 @@
+import { ACL, PERMISSIONS } from '@solidlab/policy-engine';
 import { getLoggerFor } from 'global-logger-factory';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
@@ -7,7 +8,6 @@ import { filter } from '../util/IterableUtil';
 import { IdentifierMap } from '../util/map/IdentifierMap';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
-import type { AclPermissionSet } from './permissions/AclPermissionSet';
 import type { MultiPermissionMap } from './permissions/Permissions';
 
 /**
@@ -57,13 +57,13 @@ export class OwnerPermissionReader extends PermissionReader {
       if (webIds.includes(webId)) {
         this.logger.debug(`Granting Control permissions to owner on ${auth.path}`);
         result.set(auth, {
-          read: true,
-          write: true,
-          append: true,
-          create: true,
-          delete: true,
-          control: true,
-        } as AclPermissionSet);
+          [PERMISSIONS.Read]: true,
+          [PERMISSIONS.Modify]: true,
+          [PERMISSIONS.Append]: true,
+          [PERMISSIONS.Create]: true,
+          [PERMISSIONS.Delete]: true,
+          [ACL.Control]: true,
+        });
       }
     }
     return result;

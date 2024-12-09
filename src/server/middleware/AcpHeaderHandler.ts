@@ -1,7 +1,7 @@
+import { ACP } from '@solidlab/policy-engine';
 import type { AuxiliaryIdentifierStrategy } from '../../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { TargetExtractor } from '../../http/input/identifier/TargetExtractor';
 import { addHeader } from '../../util/HeaderUtil';
-import { ACP } from '../../util/Vocabularies';
 import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
 

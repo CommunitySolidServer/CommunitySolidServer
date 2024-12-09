@@ -1,6 +1,6 @@
+import { PERMISSIONS } from '@solidlab/policy-engine';
 import { Factory } from 'sparqlalgebrajs';
 import type { AccessMap } from '../../../../src/authorization/permissions/Permissions';
-import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
 import { SparqlUpdateModesExtractor } from '../../../../src/authorization/permissions/SparqlUpdateModesExtractor';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -19,9 +19,9 @@ describe('A SparqlUpdateModesExtractor', (): void => {
   let extractor: SparqlUpdateModesExtractor;
   const factory = new Factory();
 
-  function getMap(modes: AccessMode[], identifier?: ResourceIdentifier): AccessMap {
+  function getMap(modes: string[], identifier?: ResourceIdentifier): AccessMap {
     return new IdentifierSetMultiMap(
-      modes.map((mode): [ResourceIdentifier, AccessMode] => [ identifier ?? target, mode ]),
+      modes.map((mode): [ResourceIdentifier, string] => [ identifier ?? target, mode ]),
     );
   }
 
@@ -66,7 +66,7 @@ describe('A SparqlUpdateModesExtractor', (): void => {
     patch.algebra = factory.createDeleteInsert(undefined, [
       factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
     ]);
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.append ]));
+    compareMaps(await extractor.handle(operation), getMap([ PERMISSIONS.Append ]));
   });
 
   it('requires create for INSERT operations if the resource does not exist.', async(): Promise<void> => {
@@ -74,14 +74,14 @@ describe('A SparqlUpdateModesExtractor', (): void => {
     patch.algebra = factory.createDeleteInsert(undefined, [
       factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
     ]);
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.append, AccessMode.create ]));
+    compareMaps(await extractor.handle(operation), getMap([ PERMISSIONS.Append, PERMISSIONS.Create ]));
   });
 
   it('requires read and write for DELETE operations.', async(): Promise<void> => {
     patch.algebra = factory.createDeleteInsert([
       factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
     ]);
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.read, AccessMode.write ]));
+    compareMaps(await extractor.handle(operation), getMap([ PERMISSIONS.Read, PERMISSIONS.Modify ]));
   });
 
   it('requires read and append for composite operations with an insert and conditions.', async(): Promise<void> => {
@@ -92,7 +92,7 @@ describe('A SparqlUpdateModesExtractor', (): void => {
         factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
       ])),
     ]);
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.append, AccessMode.read ]));
+    compareMaps(await extractor.handle(operation), getMap([ PERMISSIONS.Append, PERMISSIONS.Read ]));
   });
 
   it('requires read, write and append for composite operations with a delete and insert.', async(): Promise<void> => {
@@ -104,6 +104,9 @@ describe('A SparqlUpdateModesExtractor', (): void => {
         factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
       ]),
     ]);
-    compareMaps(await extractor.handle(operation), getMap([ AccessMode.append, AccessMode.read, AccessMode.write ]));
+    compareMaps(
+      await extractor.handle(operation),
+      getMap([ PERMISSIONS.Append, PERMISSIONS.Read, PERMISSIONS.Modify ]),
+    );
   });
 });
