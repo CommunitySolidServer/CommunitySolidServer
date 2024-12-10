@@ -1,0 +1,38 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
+  "@graph": [
+    {
+      "comment": "Contains all features of auxiliary resources (suffix, etc.).",
+      "@id": "urn:solid-server:default:AuthStrategy",
+      "@type": "ComposedAuxiliaryStrategy",
+      "identifierStrategy": { "@id": "urn:solid-server:default:AuthIdentifierStrategy" },
+      "validator": {
+        "@type": "RdfValidator",
+        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+      },
+      "ownAuthorization": true,
+      "requiredInRoot": true
+    },
+    {
+      "@id": "urn:solid-server:default:AuthIdentifierStrategy",
+      "@type": "SuffixAuxiliaryIdentifierStrategy"
+    },
+    {
+      "comment": "Creates the Link header for the auth resources.",
+      "@id": "urn:solid-server:default:MetadataWriter_LinkRelAuth",
+      "@type": "AuxiliaryLinkMetadataWriter",
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "specificStrategy": { "@id": "urn:solid-server:default:AuthStrategy" }
+    },
+    {
+      "@id": "urn:solid-server:default:MetadataWriter",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:MetadataWriter_LinkRelAuth" }
+      ]
+    }
+  ]
+}
