@@ -1,0 +1,15 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld"
+  ],
+  "@graph": [
+    {
+      "comment": "Necessary for the @solidlab/policy-engine library.",
+      "@id": "urn:solidlab:policy-engine:AuthorizationManager",
+      "@type": "BaseAuthorizationManager",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "authStrategy": { "@id": "urn:solid-server:default:AuthStrategy" },
+      "store": { "@id": "urn:solid-server:default:ResourceStore" }
+    }
+  ]
+}

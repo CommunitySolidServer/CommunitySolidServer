@@ -1,0 +1,14 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld"
+  ],
+  "@graph": [
+    {
+      "comment": "Makes sure the necessary read permissions are checked when deleting non-existent resources.",
+      "@id": "urn:solid-server:default:ReadDeleteReader",
+      "@type": "ReadDeleteReader",
+      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+    }
+  ]
+}

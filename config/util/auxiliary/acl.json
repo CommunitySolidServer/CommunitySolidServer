@@ -2,6 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
   "import": [
     "css:config/util/auxiliary/strategies/acl.json",
+    "css:config/util/auxiliary/strategies/default.json",
     "css:config/util/auxiliary/strategies/meta.json"
   ],
   "@graph": [
@@ -10,7 +11,7 @@
       "@id": "urn:solid-server:default:AuxiliaryStrategy",
       "@type": "RoutingAuxiliaryStrategy",
       "sources": [
-        { "@id": "urn:solid-server:default:AclStrategy" },
+        { "@id": "urn:solid-server:default:AuthStrategy" },
         { "@id": "urn:solid-server:default:MetadataStrategy" }
       ]
     }

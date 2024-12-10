@@ -5,36 +5,15 @@
   ],
   "@graph": [
     {
-      "comment": "Contains all features of acr auxiliary resources (suffix, etc.).",
-      "@id": "urn:solid-server:default:AcrStrategy",
-      "@type": "ComposedAuxiliaryStrategy",
-      "identifierStrategy": { "@id": "urn:solid-server:default:AcrIdentifierStrategy" },
-      "validator": {
-        "@type": "RdfValidator",
-        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
-      },
-      "ownAuthorization": true,
-      "requiredInRoot": true
-    },
-    {
-      "@id": "urn:solid-server:default:AcrIdentifierStrategy",
+      "@id": "urn:solid-server:default:AuthIdentifierStrategy",
       "@type": "SuffixAuxiliaryIdentifierStrategy",
       "suffix": ".acr"
     },
     {
-      "comment": "Creates the Link header for the acr resources (which also use 'acl').",
-      "@id": "urn:solid-server:default:MetadataWriter_LinkRelAcr",
+      "comment": "ACP also uses the `acl` link relationship.",
+      "@id": "urn:solid-server:default:MetadataWriter_LinkRelAuth",
       "@type": "AuxiliaryLinkMetadataWriter",
-      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "specificStrategy": { "@id": "urn:solid-server:default:AcrStrategy" },
       "relationType": "acl"
-    },
-    {
-      "@id": "urn:solid-server:default:MetadataWriter",
-      "@type": "ParallelHandler",
-      "handlers": [
-        { "@id": "urn:solid-server:default:MetadataWriter_LinkRelAcr" }
-      ]
     }
   ]
 }

@@ -41,7 +41,7 @@ The following changes are relevant for v7 custom configs that replaced certain f
     - `WaterfallHandler` -> `StatusWaterfallHandler`
 - Some contents of `storage/middleware/default.json` have moved to `storage/middleware/base/base.json`.
 - Due to the permission/authorization changes, configs in `ldp/authorization/*`,
-  `ldp/handler/components/authorizer.json`, and `ldp/modes/*` have changed.
+  `ldp/handler/components/authorizer.json`, `ldp/modes/*`, and `util/auxiliary/*` have changed.
 
 ### Interface changes
 

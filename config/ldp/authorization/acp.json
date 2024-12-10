@@ -1,11 +1,12 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/policy-engine/^0.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
   ],
   "import": [
-    "css:config/ldp/authorization/readers/acp.json",
-    "css:config/ldp/authorization/readers/default.json"
+    "css:config/ldp/authorization/readers/default.json",
+    "spe:config/acp.json"
   ],
   "@graph": [
     {
@@ -21,7 +22,7 @@
       "handlers": [{
         "@type": "AcpHeaderHandler",
         "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
-        "strategy": { "@id": "urn:solid-server:default:AcrIdentifierStrategy" },
+        "strategy": { "@id": "urn:solid-server:default:AuthIdentifierStrategy" },
         "modes": [
           "http://www.w3.org/ns/auth/acl#Read",
           "http://www.w3.org/ns/auth/acl#Append",

@@ -1,0 +1,16 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld"
+  ],
+  "@graph": [
+    {
+      "comment": [
+        "Reinterprets Control permissions as Read/Write on the auth resource.",
+        "The config that determines the authorization strategy needs to set the `authStrategy` and `reader` fields of this object."
+      ],
+      "@id": "urn:solid-server:default:AuthAuxiliaryReader",
+      "@type": "AuthAuxiliaryReader",
+      "authStrategy": { "@id": "urn:solid-server:default:AuthStrategy" }
+    }
+  ]
+}
