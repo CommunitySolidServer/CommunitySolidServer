@@ -16,36 +16,31 @@
         "comment": "Requests permissions on subject resources for auxiliary resources.",
         "@type": "AuxiliaryReader",
         "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-        "reader": {
-          "@type": "UnionPermissionReader",
-          "readers": [
-            {
-              "comment": "This PermissionReader will be used to prevent external access to containers used for internal storage.",
-              "@id": "urn:solid-server:default:PathBasedReader",
-              "@type": "PathBasedReader",
-              "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
-            },
-            {
-              "comment": "The config that determines the authorization strategy needs to set the `authStrategy` field of this object.",
+        "reader":
+        {
+          "comment": "This PermissionReader will be used to prevent external access to containers used for internal storage.",
+          "@id": "urn:solid-server:default:PathBasedReader",
+          "@type": "PathBasedReader",
+          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+          "defaultReader": {
+            "comment": [
+              "Reinterprets Control permissions as Read/Write on the auth resource.",
+              "The config that determines the authorization strategy needs to set the `authStrategy` and `reader` fields of this object."
+            ],
+            "@id": "urn:solid-server:default:AuthAuxiliaryReader",
+            "@type": "AuthAuxiliaryReader",
+            "reader": {
               "@id": "urn:solid-server:default:OwnerPermissionReader",
-              "@type": "OwnerPermissionReader"
-            },
-            {
-              "comment": "Makes sure the necessary read permissions are checked when deleting non-existent resources.",
-              "@id": "urn:solid-server:default:ReadDeleteReader",
-              "@type": "ReadDeleteReader",
-              "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
-              "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-              "source": {
-                "comment": [
-                  "Reinterprets Control permissions as Read/Write on the auth resource.",
-                  "The config that determines the authorization strategy needs to set the `authStrategy` and `reader` fields of this object."
-                ],
-                "@id": "urn:solid-server:default:AuthAuxiliaryReader",
-                "@type": "AuthAuxiliaryReader"
+              "@type": "OwnerPermissionReader",
+              "reader": {
+                "comment": "Makes sure the necessary read permissions are checked when deleting non-existent resources.",
+                "@id": "urn:solid-server:default:ReadDeleteReader",
+                "@type": "ReadDeleteReader",
+                "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" },
+                "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
               }
             }
-          ]
+          }
         }
       }
     }

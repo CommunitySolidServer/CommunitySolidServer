@@ -1,8 +1,9 @@
+import type { PermissionMap } from '@solidlab/policy-engine';
 import { ACL, PERMISSIONS } from '@solidlab/policy-engine';
 import type { Credentials } from '../../../src/authentication/Credentials';
 import { OwnerPermissionReader } from '../../../src/authorization/OwnerPermissionReader';
-import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
-import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
+import type { PermissionReader } from '../../../src/authorization/PermissionReader';
+import type { AccessMap, MultiPermissionMap } from '../../../src/authorization/permissions/Permissions';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { PodStore } from '../../../src/identity/interaction/pod/util/PodStore';
 import type { StorageLocationStrategy } from '../../../src/server/description/StorageLocationStrategy';
@@ -16,75 +17,113 @@ describe('An OwnerPermissionReader', (): void => {
   let credentials: Credentials;
   let identifier: ResourceIdentifier;
   let requestedModes: AccessMap;
+  let sourceMap: MultiPermissionMap;
   let podStore: jest.Mocked<PodStore>;
-  let aclStrategy: jest.Mocked<AuxiliaryIdentifierStrategy>;
   let storageStrategy: jest.Mocked<StorageLocationStrategy>;
+  let source: jest.Mocked<PermissionReader>;
   let reader: OwnerPermissionReader;
 
   beforeEach(async(): Promise<void> => {
     credentials = { agent: { webId: owner }};
 
-    identifier = { path: `${podBaseUrl}.acl` };
+    identifier = { path: podBaseUrl };
 
-    requestedModes = new IdentifierSetMultiMap([[ identifier, ACL.Control ]]) as any;
+    requestedModes = new IdentifierSetMultiMap<string>([[ identifier, ACL.Control ], [ identifier, PERMISSIONS.Read ]]);
 
     podStore = {
       findByBaseUrl: jest.fn().mockResolvedValue(accountId),
       getOwners: jest.fn().mockResolvedValue([{ webId: owner, visible: false }]),
     } satisfies Partial<PodStore> as any;
 
-    aclStrategy = {
-      isAuxiliaryIdentifier: jest.fn((id): boolean => id.path.endsWith('.acl')),
-    } satisfies Partial<AuxiliaryIdentifierStrategy> as any;
-
     storageStrategy = {
       getStorageIdentifier: jest.fn().mockResolvedValue(podBaseUrl),
     };
 
-    reader = new OwnerPermissionReader(podStore, aclStrategy, storageStrategy);
+    sourceMap = new IdentifierMap<PermissionMap>([[ identifier, { [PERMISSIONS.Read]: true }]]);
+    source = {
+      canHandle: jest.fn(),
+      handle: jest.fn().mockResolvedValue(sourceMap),
+      handleSafe: jest.fn(),
+    };
+
+    reader = new OwnerPermissionReader(podStore, storageStrategy, source);
   });
 
-  it('returns empty permissions for non-ACL resources.', async(): Promise<void> => {
-    identifier.path = podBaseUrl;
-    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
+  it('can handle requests its source reader can handle.', async(): Promise<void> => {
+    await expect(reader.canHandle({ credentials, requestedModes })).resolves.toBeUndefined();
+    expect(source.canHandle).toHaveBeenCalledTimes(1);
+
+    source.canHandle.mockRejectedValue(new Error('just no'));
+    await expect(reader.canHandle({ credentials, requestedModes })).rejects.toThrow('just no');
+    expect(source.canHandle).toHaveBeenCalledTimes(2);
   });
 
-  it('returns empty permissions if there is no agent WebID.', async(): Promise<void> => {
-    credentials = {};
-    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
+  it('just sends the request to the source reader if there are no control requests.', async(): Promise<void> => {
+    requestedModes = new IdentifierSetMultiMap<string>([[ identifier, PERMISSIONS.Read ]]);
+    compareMaps(
+      await reader.handle({ credentials, requestedModes }),
+      new IdentifierMap([[ identifier, { [PERMISSIONS.Read]: true }]]),
+    );
+    expect(source.handle).toHaveBeenCalledTimes(1);
+    expect(source.handle).toHaveBeenLastCalledWith({ credentials, requestedModes });
   });
 
-  it('returns empty permissions if no root storage could be determined.', async(): Promise<void> => {
+  it('always returns control permission for owned resources.', async(): Promise<void> => {
+    const identifier2 = { path: `${podBaseUrl}foo` };
+    requestedModes.add(identifier2, ACL.Control);
+    sourceMap.set(identifier2, { [ACL.Control]: false });
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap<PermissionMap>([
+      [ identifier, { [PERMISSIONS.Read]: true, [ACL.Control]: true }],
+      [ identifier2, { [ACL.Control]: true }],
+    ]));
+  });
+
+  it('does not call the source reader if no requests are left for it.', async(): Promise<void> => {
+    requestedModes = new IdentifierSetMultiMap<string>([[ identifier, ACL.Control ]]);
+    compareMaps(
+      await reader.handle({ credentials, requestedModes }),
+      new IdentifierMap([[ identifier, { [ACL.Control]: true }]]),
+    );
+    expect(source.handle).toHaveBeenCalledTimes(0);
+  });
+
+  it('does not add control permissions if there is no WebID.', async(): Promise<void> => {
+    delete credentials.agent;
+    compareMaps(
+      await reader.handle({ credentials, requestedModes }),
+      new IdentifierMap([[ identifier, { [PERMISSIONS.Read]: true }]]),
+    );
+  });
+
+  it('does not add control permissions root storage could be determined.', async(): Promise<void> => {
     storageStrategy.getStorageIdentifier.mockRejectedValueOnce(new Error('no root!'));
-    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
+    compareMaps(
+      await reader.handle({ credentials, requestedModes }),
+      new IdentifierMap([[ identifier, { [PERMISSIONS.Read]: true }]]),
+    );
   });
 
-  it('returns empty permissions if there is no pod object.', async(): Promise<void> => {
+  it('does not add control permissions if there is no pod object.', async(): Promise<void> => {
     podStore.findByBaseUrl.mockResolvedValueOnce(undefined);
-    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
+    compareMaps(
+      await reader.handle({ credentials, requestedModes }),
+      new IdentifierMap([[ identifier, { [PERMISSIONS.Read]: true }]]),
+    );
   });
 
-  it('returns empty permissions if there are no pod owners.', async(): Promise<void> => {
+  it('does not add control permissions if there are no pod owners.', async(): Promise<void> => {
     podStore.getOwners.mockResolvedValueOnce(undefined);
-    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
+    compareMaps(
+      await reader.handle({ credentials, requestedModes }),
+      new IdentifierMap([[ identifier, { [PERMISSIONS.Read]: true }]]),
+    );
   });
 
-  it('returns empty permissions if the agent WebID is not linked to the owner account.', async(): Promise<void> => {
+  it('does not add control permissions if the WebID is not linked to the owner account.', async(): Promise<void> => {
     credentials.agent!.webId = 'http://example.com/otherWebId';
-    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
-  });
-
-  it('returns full permissions if the owner is accessing an ACL resource in their pod.', async(): Promise<void> => {
-    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap([[
-      identifier,
-      {
-        [PERMISSIONS.Read]: true,
-        [PERMISSIONS.Modify]: true,
-        [PERMISSIONS.Append]: true,
-        [PERMISSIONS.Create]: true,
-        [PERMISSIONS.Delete]: true,
-        [ACL.Control]: true,
-      },
-    ]]));
+    compareMaps(
+      await reader.handle({ credentials, requestedModes }),
+      new IdentifierMap([[ identifier, { [PERMISSIONS.Read]: true }]]),
+    );
   });
 });

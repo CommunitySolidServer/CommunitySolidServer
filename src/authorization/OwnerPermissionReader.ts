@@ -1,69 +1,85 @@
-import { ACL, PERMISSIONS } from '@solidlab/policy-engine';
+import type { PermissionMap } from '@solidlab/policy-engine';
+import { ACL } from '@solidlab/policy-engine';
 import { getLoggerFor } from 'global-logger-factory';
-import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { PodStore } from '../identity/interaction/pod/util/PodStore';
 import type { StorageLocationStrategy } from '../server/description/StorageLocationStrategy';
 import { filter } from '../util/IterableUtil';
-import { IdentifierMap } from '../util/map/IdentifierMap';
+import { IdentifierMap, IdentifierSetMultiMap } from '../util/map/IdentifierMap';
+import { getDefault } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import type { MultiPermissionMap } from './permissions/Permissions';
 
 /**
  * Allows control access if the request is being made by an owner of the pod containing the resource.
+ * This overrules any deductions made by the source reader:
+ * if the target resource is owned by the client, they will always have control access.
  */
 export class OwnerPermissionReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly podStore: PodStore;
-  private readonly authStrategy: AuxiliaryIdentifierStrategy;
-  private readonly storageStrategy: StorageLocationStrategy;
+  protected readonly podStore: PodStore;
+  protected readonly storageStrategy: StorageLocationStrategy;
+  protected readonly reader: PermissionReader;
 
   public constructor(
     podStore: PodStore,
-    authStrategy: AuxiliaryIdentifierStrategy,
     storageStrategy: StorageLocationStrategy,
+    reader: PermissionReader,
   ) {
     super();
     this.podStore = podStore;
-    this.authStrategy = authStrategy;
     this.storageStrategy = storageStrategy;
+    this.reader = reader;
+  }
+
+  public async canHandle(input: PermissionReaderInput): Promise<void> {
+    return this.reader.canHandle(input);
   }
 
   public async handle(input: PermissionReaderInput): Promise<MultiPermissionMap> {
-    const result: MultiPermissionMap = new IdentifierMap();
     const requestedResources = input.requestedModes.distinctKeys();
-    const auths = [ ...filter(requestedResources, (id): boolean => this.authStrategy.isAuxiliaryIdentifier(id)) ];
-    if (auths.length === 0) {
-      this.logger.debug(`No authorization resources found that need an ownership check.`);
-      return result;
+    const auths = [ ...filter(requestedResources, (id): boolean => input.requestedModes.hasEntry(id, ACL.Control)) ];
+
+    const owned = await this.findOwnedResources(auths, input.credentials.agent?.webId);
+    const updatedRequest = new IdentifierSetMultiMap(input.requestedModes);
+    for (const identifier of owned) {
+      updatedRequest.deleteEntry(identifier, ACL.Control);
+    }
+    let result: MultiPermissionMap;
+    if (updatedRequest.size > 0) {
+      result = await this.reader.handle({ requestedModes: updatedRequest, credentials: input.credentials });
+    } else {
+      result = new IdentifierMap();
+    }
+    for (const identifier of owned) {
+      const permissions = getDefault(result, identifier, (): PermissionMap => ({}));
+      permissions[ACL.Control] = true;
+      result.set(identifier, permissions);
+    }
+    return result;
+  }
+
+  protected async findOwnedResources(identifiers: ResourceIdentifier[], webId?: string): Promise<ResourceIdentifier[]> {
+    if (identifiers.length === 0) {
+      this.logger.debug(`No resources found that need an ownership check.`);
+      return [];
     }
 
-    const webId = input.credentials.agent?.webId;
     if (!webId) {
       this.logger.debug(`No WebId found for an ownership check on the pod.`);
-      return result;
+      return [];
     }
 
-    const pods = await this.findPods(auths);
+    const pods = await this.findPods(identifiers);
     const owners = await this.findOwners(Object.values(pods));
 
-    for (const auth of auths) {
-      const webIds = owners[pods[auth.path]];
-      if (!webIds) {
-        continue;
-      }
-      if (webIds.includes(webId)) {
-        this.logger.debug(`Granting Control permissions to owner on ${auth.path}`);
-        result.set(auth, {
-          [PERMISSIONS.Read]: true,
-          [PERMISSIONS.Modify]: true,
-          [PERMISSIONS.Append]: true,
-          [PERMISSIONS.Create]: true,
-          [PERMISSIONS.Delete]: true,
-          [ACL.Control]: true,
-        });
+    const result: ResourceIdentifier[] = [];
+    for (const identifier of identifiers) {
+      const webIds = owners[pods[identifier.path]];
+      if (webIds?.includes(webId)) {
+        result.push(identifier);
       }
     }
     return result;
