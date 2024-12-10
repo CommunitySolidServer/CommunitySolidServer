@@ -13,19 +13,19 @@ import type { MultiPermissionMap } from './permissions/Permissions';
  * are checked in such cases.
  */
 export class ReadDeleteReader extends PermissionReader {
-  protected readonly source: PermissionReader;
+  protected readonly reader: PermissionReader;
   protected readonly resourceSet: ResourceSet;
   protected readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(source: PermissionReader, resourceSet: ResourceSet, identifierStrategy: IdentifierStrategy) {
+  public constructor(reader: PermissionReader, resourceSet: ResourceSet, identifierStrategy: IdentifierStrategy) {
     super();
-    this.source = source;
+    this.reader = reader;
     this.resourceSet = resourceSet;
     this.identifierStrategy = identifierStrategy;
   }
 
   public async canHandle(input: PermissionReaderInput): Promise<void> {
-    return this.source.canHandle(input);
+    return this.reader.canHandle(input);
   }
 
   public async handle(input: PermissionReaderInput): Promise<MultiPermissionMap> {
@@ -39,6 +39,6 @@ export class ReadDeleteReader extends PermissionReader {
         }
       }
     }
-    return this.source.handle({ ...input, requestedModes });
+    return this.reader.handle({ ...input, requestedModes });
   }
 }

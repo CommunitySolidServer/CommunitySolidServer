@@ -8,14 +8,14 @@
   ],
   "@graph": [
     {
-      "@id": "urn:solid-server:default:OwnerPermissionReader",
-      "@type": "OwnerPermissionReader",
-      "authStrategy": { "@id": "urn:solid-server:default:AcrStrategy" }
-    },
-    {
       "@id": "urn:solid-server:default:AuthAuxiliaryReader",
       "@type": "AuthAuxiliaryReader",
-      "authStrategy": { "@id": "urn:solid-server:default:AcrStrategy" },
+      "authStrategy": { "@id": "urn:solid-server:default:AcrStrategy" }
+    },
+
+    {
+      "@id": "urn:solid-server:default:ReadDeleteReader",
+      "@type": "ReadDeleteReader",
       "reader": { "@id": "urn:solid-server:default:AcpReader" }
     },
 
