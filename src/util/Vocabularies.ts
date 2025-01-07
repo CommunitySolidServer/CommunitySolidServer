@@ -282,6 +282,8 @@ export const SOLID_AS = createVocabulary(
 export const SOLID_ERROR = createVocabulary(
   'urn:npm:solid:community-server:error:',
   'disallowedMethod',
+  // Boolean value used to indicate that no response body should be returned for this error
+  'emptyBody',
   'errorCode',
   'errorResponse',
   'stack',
