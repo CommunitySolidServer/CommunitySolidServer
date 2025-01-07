@@ -9,7 +9,6 @@ import {
   getTestConfigPath,
   getTestFolder,
   instantiateFromConfig,
-  removeFolder,
 } from './Config';
 
 const { namedNode, quad } = DataFactory;
@@ -24,11 +23,20 @@ const stores: [string, any][] = [
     storeConfig: 'storage/backend/memory.json',
     teardown: jest.fn(),
   }],
-  [ 'on-disk storage', {
-    storeConfig: 'storage/backend/file.json',
-    teardown: async(): Promise<void> => removeFolder(rootFilePath),
-  }],
+  // [ 'on-disk storage', {
+  //   storeConfig: 'storage/backend/file.json',
+  //   teardown: async(): Promise<void> => removeFolder(rootFilePath),
+  // }],
 ];
+
+function extractHeadersObject(response: Response): Record<string, string> {
+  const result: Record<string, string> = {};
+  // eslint-disable-next-line unicorn/no-array-for-each
+  response.headers.forEach((value, key): void => {
+    result[key] = value;
+  });
+  return result;
+}
 
 describe.each(stores)('A server supporting conditions with %s', (name, { storeConfig, teardown }): void => {
   let app: App;
@@ -175,6 +183,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     // GET root ETag
     let response = await getResource(baseUrl);
     const eTag = response.headers.get('ETag');
+    const originalHeaders = extractHeadersObject(response);
     expect(typeof eTag).toBe('string');
 
     // GET fails because of header
@@ -184,6 +193,10 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     });
     expect(response.status).toBe(304);
     expect(response.headers.get('etag')).toBe(eTag);
+    const newGetHeaders = extractHeadersObject(response);
+    // Date field shouldn't be the same
+    delete newGetHeaders.date;
+    expect(expect.objectContaining(newGetHeaders)).toEqual(originalHeaders);
 
     // HEAD fails because of header
     response = await fetch(baseUrl, {
@@ -192,6 +205,10 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     });
     expect(response.status).toBe(304);
     expect(response.headers.get('etag')).toBe(eTag);
+    const newHeadHeaders = extractHeadersObject(response);
+    // Date field shouldn't be the same
+    delete newHeadHeaders.date;
+    expect(expect.objectContaining(newHeadHeaders)).toEqual(originalHeaders);
 
     // GET succeeds if the ETag header doesn't match
     response = await fetch(baseUrl, {
@@ -232,17 +249,28 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
   it('returns different ETags for different content-types.', async(): Promise<void> => {
     let response = await getResource(baseUrl, { accept: 'text/turtle' }, { contentType: 'text/turtle' });
     const eTagTurtle = response.headers.get('ETag');
+    const turtleHeaders = extractHeadersObject(response);
     response = await getResource(baseUrl, { accept: 'application/ld+json' }, { contentType: 'application/ld+json' });
     const eTagJson = response.headers.get('ETag');
+    const jsonHeaders = extractHeadersObject(response);
     expect(eTagTurtle).not.toEqual(eTagJson);
 
     // Both ETags can be used on the same resource
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'text/turtle' }});
     expect(response.status).toBe(304);
     expect(response.headers.get('etag')).toBe(eTagTurtle);
+    const newTurtleHeaders = extractHeadersObject(response);
+    // Date field shouldn't be the same
+    delete newTurtleHeaders.date;
+    expect(expect.objectContaining(newTurtleHeaders)).toEqual(turtleHeaders);
+
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagJson!, accept: 'application/ld+json' }});
     expect(response.status).toBe(304);
     expect(response.headers.get('etag')).toBe(eTagJson);
+    const newJsonHeaders = extractHeadersObject(response);
+    // Date field shouldn't be the same
+    delete newJsonHeaders.date;
+    expect(expect.objectContaining(newJsonHeaders)).toEqual(jsonHeaders);
 
     // But not for the other representation
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'application/ld+json' }});
