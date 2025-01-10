@@ -1,7 +1,8 @@
 import 'jest-rdf';
-import { DataFactory } from 'n3';
-import { parseQuads, serializeQuads, termToInt, uniqueQuads } from '../../../src/util/QuadUtil';
+import { DataFactory, Store } from 'n3';
+import { parseQuads, serializeQuads, solveBgp, termToInt, uniqueQuads } from '../../../src/util/QuadUtil';
 import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
+import variable = DataFactory.variable;
 
 const { literal, namedNode, quad } = DataFactory;
 
@@ -60,6 +61,36 @@ describe('QuadUtil', (): void => {
     it('converts the term to a number.', async(): Promise<void> => {
       expect(termToInt(namedNode('5'))).toBe(5);
       expect(termToInt(namedNode('0xF'), 16)).toBe(15);
+    });
+  });
+
+  describe('#solveBgp', (): void => {
+    it('finds all matching bindings.', async(): Promise<void> => {
+      const bgp = [
+        quad(namedNode('ex:s1'), namedNode('ex:p1'), variable('v1')),
+        quad(variable('v1'), namedNode('ex:p2'), variable('v2')),
+        quad(variable('v1'), variable('v3'), variable('v2')),
+      ];
+      const data = new Store([
+        quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o1')),
+        quad(namedNode('ex:o1'), namedNode('ex:p2'), namedNode('ex:o2')),
+        quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o2')),
+        quad(namedNode('ex:o2'), namedNode('ex:p2'), namedNode('ex:o2')),
+        quad(namedNode('ex:s1'), namedNode('ex:p1'), namedNode('ex:o3')),
+        quad(namedNode('ex:o4'), namedNode('ex:p2'), namedNode('ex:o2')),
+      ]);
+      const bindings = solveBgp(bgp, data);
+      expect(bindings).toHaveLength(2);
+      expect(bindings[0]).toEqual({
+        v1: namedNode('ex:o1'),
+        v2: namedNode('ex:o2'),
+        v3: namedNode('ex:p2'),
+      });
+      expect(bindings[1]).toEqual({
+        v1: namedNode('ex:o2'),
+        v2: namedNode('ex:o2'),
+        v3: namedNode('ex:p2'),
+      });
     });
   });
 });

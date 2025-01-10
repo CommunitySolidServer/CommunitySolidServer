@@ -10,7 +10,7 @@ import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
-const { namedNode, quad, variable } = DataFactory;
+const { blankNode, namedNode, quad, variable } = DataFactory;
 
 describe('An N3Patcher', (): void => {
   let patch: N3Patch;
@@ -142,6 +142,21 @@ describe('An N3Patcher', (): void => {
     const result = await patcher.handle(input);
     expect(result.dataset).toBeRdfIsomorphic([
       quad(namedNode('ex:s0'), namedNode('ex:p0'), namedNode('ex:o0')),
+    ]);
+  });
+
+  it('can delete blank nodes.', async(): Promise<void> => {
+    patch.conditions = [ quad(namedNode('ex:s0'), namedNode('ex:p0'), variable('v')) ];
+    patch.deletes = [
+      quad(variable('v'), namedNode('ex:p1'), namedNode('ex:o1')),
+    ];
+    input.representation?.dataset.addQuads([
+      quad(namedNode('ex:s0'), namedNode('ex:p0'), blankNode('b0')),
+      quad(blankNode('b0'), namedNode('ex:p1'), namedNode('ex:o1')),
+    ]);
+    const result = await patcher.handle(input);
+    expect(result.dataset).toBeRdfIsomorphic([
+      quad(namedNode('ex:s0'), namedNode('ex:p0'), blankNode('b0')),
     ]);
   });
 });

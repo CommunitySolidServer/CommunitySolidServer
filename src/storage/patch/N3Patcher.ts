@@ -1,10 +1,6 @@
-import { QueryEngine } from '@comunica/query-sparql';
-import arrayifyStream from 'arrayify-stream';
 import type { Store } from 'n3';
-import type { Bindings, Quad, Term } from '@rdfjs/types';
+import type { Quad, Term } from '@rdfjs/types';
 import { mapTerms } from 'rdf-terms';
-import { Generator, Wildcard } from 'sparqljs';
-import type { SparqlGenerator } from 'sparqljs';
 import { isN3Patch } from '../../http/representation/N3Patch';
 import type { N3Patch } from '../../http/representation/N3Patch';
 import type { RdfDatasetRepresentation } from '../../http/representation/RdfDatasetRepresentation';
@@ -13,7 +9,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { uniqueQuads } from '../../util/QuadUtil';
+import { solveBgp, uniqueQuads } from '../../util/QuadUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
 import type { RepresentationPatcherInput } from './RepresentationPatcher';
 import { RepresentationPatcher } from './RepresentationPatcher';
@@ -24,14 +20,8 @@ import { RepresentationPatcher } from './RepresentationPatcher';
  */
 export class N3Patcher extends RepresentationPatcher<RdfDatasetRepresentation> {
   protected readonly logger = getLoggerFor(this);
-
-  private readonly engine: QueryEngine;
-  private readonly generator: SparqlGenerator;
-
   public constructor() {
     super();
-    this.engine = new QueryEngine();
-    this.generator = new Generator();
   }
 
   public async canHandle({ patch }: RepresentationPatcherInput<RdfDatasetRepresentation>): Promise<void> {
@@ -112,19 +102,7 @@ export class N3Patcher extends RepresentationPatcher<RdfDatasetRepresentation> {
     if (conditions.length > 0) {
       // Solid, §5.3.1: "If ?conditions is non-empty, find all (possibly empty) variable mappings
       // such that all of the resulting triples occur in the dataset."
-      const sparql = this.generator.stringify({
-        type: 'query',
-        queryType: 'SELECT',
-        variables: [ new Wildcard() ],
-        prefixes: {},
-        where: [{
-          type: 'bgp',
-          triples: conditions,
-        }],
-      });
-      this.logger.debug(`Finding bindings using SPARQL query ${sparql}`);
-      const bindingsStream = await this.engine.queryBindings(sparql, { sources: [ source ], baseIRI: identifier.path });
-      const bindings: Bindings[] = await arrayifyStream(bindingsStream);
+      const bindings: Record<string, Term>[] = solveBgp(conditions, source);
 
       // Solid, §5.3.1: "If no such mapping exists, or if multiple mappings exist,
       // the server MUST respond with a 409 status code."
@@ -141,9 +119,9 @@ export class N3Patcher extends RepresentationPatcher<RdfDatasetRepresentation> {
 
       // Apply bindings to deletes/inserts
       deletes = deletes.map((quad): Quad => mapTerms(quad, (term): Term =>
-        term.termType === 'Variable' ? bindings[0].get(term)! : term));
+        term.termType === 'Variable' ? bindings[0][term.value] : term));
       inserts = inserts.map((quad): Quad => mapTerms(quad, (term): Term =>
-        term.termType === 'Variable' ? bindings[0].get(term)! : term));
+        term.termType === 'Variable' ? bindings[0][term.value] : term));
     }
 
     return {
