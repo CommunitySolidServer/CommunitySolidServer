@@ -3,6 +3,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.4](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.3...v7.1.4) (2025-01-13)
+
+### Fixes
+
+* Support patching data containing blank nodes ([e88349f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e88349fda4f06bbc272117eceafc081feaff5249))
+* Keep headers for 304 responses ([7e1bdbe](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7e1bdbe599632b3878c8aef5da98550db17e55c1))
+
+### Documentation
+
+* Fix language ([faff932](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/faff93241b75eb7ce146f8de086fb766374f0b99))
+
 ## [7.1.3](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.2...v7.1.3) (2024-10-14)
 
 ### Fixes
