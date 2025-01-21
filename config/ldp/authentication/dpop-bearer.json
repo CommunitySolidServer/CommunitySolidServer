@@ -7,22 +7,32 @@
       "@type": "CachedHandler",
       "source": {
         "comment": "Supports DPoP and Bearer access tokens, or no credentials.",
+        "@id": "urn:solid-server:default:UnionCredentialsExtractor",
         "@type": "UnionCredentialsExtractor",
         "extractors": [
           {
+            "@id": "urn:solid-server:default:AccessTokenExtractor",
             "@type": "WaterfallHandler",
             "handlers": [
               {
+                "@id": "urn:solid-server:default:DPoPWebIdExtractor",
                 "@type": "DPoPWebIdExtractor",
                 "originalUrlExtractor": {
+                  "@id": "urn:solid-server:default:DPoPUrlExtractor",
                   "@type": "OriginalUrlExtractor",
                   "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
                 }
               },
-              { "@type": "BearerWebIdExtractor" }
+              {
+                "@id": "urn:solid-server:default:BearerWebIdExtractor",
+                "@type": "BearerWebIdExtractor"
+              }
             ]
           },
-          { "@type": "PublicCredentialsExtractor" }
+          {
+            "@id": "urn:solid-server:default:PublicCredentialsExtractor",
+            "@type": "PublicCredentialsExtractor"
+          }
         ]
       }
     }
