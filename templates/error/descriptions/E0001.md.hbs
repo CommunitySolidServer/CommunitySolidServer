@@ -26,9 +26,10 @@ The problem is typically one of these:
 
 ## Circumventing this for development
 
-For development reasons it might be easier to temporarily allow requests from multiple host locations.
+For development reasons, it can be easier to temporarily allow requests from multiple host locations.
 This can be done by adding the following lines to your server configuration,
-forcing the server to always assume the host header is the one defined by the `--baseUrl` parameter.
+causing the server to always assume the value of the `host` header is defined 
+by the `--baseUrl` parameter.
 
 ```json
 {
