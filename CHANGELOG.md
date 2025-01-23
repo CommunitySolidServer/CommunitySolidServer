@@ -3,6 +3,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.5](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.4...v7.1.5) (2025-01-23)
+
+### Features
+
+* Provide option to ignore host header when generating identifiers ([510cf97](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/510cf97933d0f9b664b52c4f4e7c41e0865ada10))
+* Add identifiers to authentication configuration ([fccf48a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fccf48a7473cb4bde800a39889aaabdc79dd60c9))
+
+### Fixes
+
+* Use the correct field when adding a pod owner ([4457ea7](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4457ea7b2c519feec3105eda25d19c66b471cae5))
+* Prevent server from crashing when a lock is compromised ([5f8febe](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5f8febedde60d831c8d6d7cfd3444abfce095ce6))
+* Handle error correctly if identifier could not be added to it ([6101130](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6101130bebe62a5f639f01dff0d8c98ccbd5ef7a))
+
 ## [7.1.4](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.3...v7.1.4) (2025-01-13)
 
 ### Fixes
