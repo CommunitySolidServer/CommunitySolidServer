@@ -78,7 +78,7 @@ describe('A ConstantConverter', (): void => {
     const representation = { metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }) } as any;
     const args = { identifier, representation, preferences };
 
-    converter = new ConstantConverter('abc/def/test.html', 'text/html', { enabledMediaRanges: [ 'text/turtle' ]});
+    converter = new ConstantConverter('abc/def/index.html', 'text/html', { enabledMediaRanges: [ 'text/turtle' ]});
 
     await expect(converter.canHandle(args)).rejects.toThrow('text/plain is not one of the enabled media types.');
   });
