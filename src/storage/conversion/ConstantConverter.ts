@@ -110,10 +110,12 @@ export class ConstantConverter extends RepresentationConverter {
     }
 
     // Only replace the representation if it matches the media range settings
-    if (!this.options.enabledMediaRanges.some((type): boolean => matchesMediaType(sourceContentType, type))) {
+    if (!isContainer &&
+      !this.options.enabledMediaRanges.some((type): boolean => matchesMediaType(sourceContentType, type))) {
       throw new NotImplementedHttpError(`${sourceContentType} is not one of the enabled media types.`);
     }
-    if (this.options.disabledMediaRanges.some((type): boolean => matchesMediaType(sourceContentType, type))) {
+    if (!isContainer &&
+      this.options.disabledMediaRanges.some((type): boolean => matchesMediaType(sourceContentType, type))) {
       throw new NotImplementedHttpError(`${sourceContentType} is one of the disabled media types.`);
     }
   }

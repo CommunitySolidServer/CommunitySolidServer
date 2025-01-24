@@ -76,7 +76,7 @@ describe('A ConstantConverter', (): void => {
   it('does not support representations if their content-type is not enabled.', async(): Promise<void> => {
     const preferences = { type: { 'text/html': 1 }};
     const representation = { metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }) } as any;
-    const args = { identifier: { path: 'container/' }, representation, preferences };
+    const args = { identifier, representation, preferences };
 
     converter = new ConstantConverter('abc/def/index.html', 'text/html', { enabledMediaRanges: [ 'text/turtle' ]});
 
@@ -86,7 +86,7 @@ describe('A ConstantConverter', (): void => {
   it('does not support representations if their content-type is disabled.', async(): Promise<void> => {
     const preferences = { type: { 'text/html': 1 }};
     const representation = { metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }) } as any;
-    const args = { identifier: { path: 'container/' }, representation, preferences };
+    const args = { identifier, representation, preferences };
 
     converter = new ConstantConverter('abc/def/index.html', 'text/html', { disabledMediaRanges: [ 'text/*' ]});
 
