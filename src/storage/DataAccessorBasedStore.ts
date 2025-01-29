@@ -442,6 +442,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     const quads: Quad[] = await arrayifyStream(representation.data);
     metadata.addQuads(quads);
 
+    // Add date modified metadata
+    updateModifiedDate(metadata);
+
     // Remove the response metadata as this must not be stored
     this.removeResponseMetadata(metadata);
     await this.accessor.writeMetadata(subjectIdentifier, metadata);

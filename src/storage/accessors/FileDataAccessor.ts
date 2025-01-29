@@ -1,7 +1,6 @@
 import type { Readable } from 'node:stream';
 import type { Stats } from 'fs-extra';
 import { createReadStream, createWriteStream, ensureDir, lstat, opendir, remove, stat } from 'fs-extra';
-import type { Quad } from '@rdfjs/types';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -235,8 +234,7 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async getBaseMetadata(link: ResourceLink, stats: Stats, isContainer: boolean):
   Promise<RepresentationMetadata> {
-    const metadata = new RepresentationMetadata(link.identifier)
-      .addQuads(await this.getRawMetadata(link.identifier));
+    const metadata = await this.getRawMetadata(link.identifier);
     addResourceMetadata(metadata, isContainer);
     this.addPosixMetadata(metadata, stats);
     return metadata;
@@ -248,21 +246,31 @@ export class FileDataAccessor implements DataAccessor {
    *
    * @param identifier - Identifier of the resource (not the metadata!).
    */
-  private async getRawMetadata(identifier: ResourceIdentifier): Promise<Quad[]> {
+  private async getRawMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     try {
       const metadataLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
 
       // Check if the metadata file exists first
-      await lstat(metadataLink.filePath);
+      const stats = await lstat(metadataLink.filePath);
 
       const readMetadataStream = guardStream(createReadStream(metadataLink.filePath));
-      return await parseQuads(readMetadataStream, { format: metadataLink.contentType, baseIRI: identifier.path });
+      const quads = await parseQuads(
+        readMetadataStream,
+        { format: metadataLink.contentType, baseIRI: identifier.path },
+      );
+      const metadata = new RepresentationMetadata(identifier).addQuads(quads);
+
+      // Already add modified date of metadata.
+      // Final modified date should be max of data and metadata.
+      updateModifiedDate(metadata, stats.mtime);
+
+      return metadata;
     } catch (error: unknown) {
-      // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+      // Metadata file doesn't exist so return empty metadata.
       if (!isSystemError(error) || error.code !== 'ENOENT') {
         throw error;
       }
-      return [];
+      return new RepresentationMetadata(identifier);
     }
   }
 
@@ -327,7 +335,11 @@ export class FileDataAccessor implements DataAccessor {
    * @param stats - Stats of the file/directory corresponding to the resource.
    */
   private addPosixMetadata(metadata: RepresentationMetadata, stats: Stats): void {
-    updateModifiedDate(metadata, stats.mtime);
+    // Make sure the last modified date is the max of data and metadata modified date
+    const modified = new Date(metadata.get(DC.terms.modified)?.value ?? 0);
+    if (modified < stats.mtime) {
+      updateModifiedDate(metadata, stats.mtime);
+    }
     metadata.add(
       POSIX.terms.mtime,
       toLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer),

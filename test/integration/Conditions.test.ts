@@ -100,10 +100,10 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     });
     expect(response.status).toBe(412);
 
-    // PUT
+    // PATCH
     await patchResource(documentUrl, query, 'sparql');
 
-    // PUT with header now succeeds
+    // PATCH with header now succeeds
     const query2 = 'INSERT {<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>} WHERE {}';
     response = await fetch(documentUrl, {
       method: 'PATCH',
@@ -276,5 +276,37 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     // But not for the other representation
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'application/ld+json' }});
     expect(response.status).toBe(200);
+  });
+
+  it('updates the ETag if the metadata is changed.', async(): Promise<void> => {
+    let response = await getResource(baseUrl);
+    const originalETag = response.headers.get('ETag');
+    expect(typeof originalETag).toBe('string');
+    const linkHeaders = response.headers.get('link');
+    expect(typeof linkHeaders).toBe('string');
+    const regex = /<([^>]+)>; rel="describedby"/u.exec(linkHeaders!);
+    expect(regex).toBeDefined();
+    const metaUrl = regex![1];
+
+    // Timestamp accuracy is at second level so need to make sure it changed
+    await new Promise<void>((res): void => {
+      setTimeout((): void => {
+        res();
+      }, 1000);
+    });
+
+    // PATCH .meta
+    const query = 'INSERT {<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>} WHERE {}';
+    response = await fetch(metaUrl, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update' },
+      body: query,
+    });
+    expect(response.status).toBeLessThan(300);
+
+    // Check new eTag
+    response = await getResource(baseUrl);
+    const eTag = response.headers.get('ETag');
+    expect(eTag).not.toEqual(originalETag);
   });
 });
