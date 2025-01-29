@@ -9,6 +9,7 @@ import {
   getTestConfigPath,
   getTestFolder,
   instantiateFromConfig,
+  removeFolder,
 } from './Config';
 
 const { namedNode, quad } = DataFactory;
@@ -23,10 +24,10 @@ const stores: [string, any][] = [
     storeConfig: 'storage/backend/memory.json',
     teardown: jest.fn(),
   }],
-  // [ 'on-disk storage', {
-  //   storeConfig: 'storage/backend/file.json',
-  //   teardown: async(): Promise<void> => removeFolder(rootFilePath),
-  // }],
+  [ 'on-disk storage', {
+    storeConfig: 'storage/backend/file.json',
+    teardown: async(): Promise<void> => removeFolder(rootFilePath),
+  }],
 ];
 
 function extractHeadersObject(response: Response): Record<string, string> {
