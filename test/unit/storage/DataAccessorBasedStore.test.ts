@@ -3,7 +3,7 @@ import type { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory, Store } from 'n3';
 import type { Conditions } from '../../../src';
-import { CONTENT_TYPE_TERM } from '../../../src';
+import { CONTENT_TYPE_TERM, XSD } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
@@ -589,6 +589,11 @@ describe('A DataAccessorBasedStore', (): void => {
           namedNode(DC.description),
           literal('something'),
         ),
+        quad(
+          namedNode(resourceID.path),
+          DC.terms.modified,
+          literal(now.toISOString(), XSD.terms.dateTime),
+        ),
       ]);
     });
 
@@ -606,7 +611,14 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const result = await store.setRepresentation(metaResourceID, metaRepresentation);
       expect(result.get(resourceID)?.get(SOLID_AS.terms.activity)).toEqual(AS.terms.Update);
-      expect(accessor.data[resourceID.path].metadata.quads()).toBeRdfIsomorphic(quads);
+      expect(accessor.data[resourceID.path].metadata.quads()).toBeRdfIsomorphic([
+        ...quads,
+        quad(
+          namedNode(resourceID.path),
+          DC.terms.modified,
+          literal(now.toISOString(), XSD.terms.dateTime),
+        ),
+      ]);
     });
 
     it('can not write metadata when the corresponding resource does not exist.', async(): Promise<void> => {
