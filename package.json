@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "7.1.5",
+  "version": "7.1.6",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "license": "MIT",
   "homepage": "https://github.com/CommunitySolidServer/CommunitySolidServer#readme",

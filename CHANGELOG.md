@@ -3,6 +3,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.6](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.5...v7.1.6) (2025-01-30)
+
+### Fixes
+
+* Changing metadata updates a resource's modified time ([cbd04c4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cbd04c4f867c932d406d818ec39764002f68821b))
+* Do not check MediaRanges on container in ConstantConverter ([7baa9e6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7baa9e68ab83ef10bc565afb577b5a502003d670))
+
 ## [7.1.5](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.4...v7.1.5) (2025-01-23)
 
 ### Features
