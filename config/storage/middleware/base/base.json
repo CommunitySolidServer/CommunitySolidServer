@@ -22,7 +22,8 @@
       "comment": "Slices part of binary streams based on the range preferences.",
       "@id": "urn:solid-server:default:ResourceStore_BinarySlice",
       "@type": "BinarySliceResourceStore",
-      "source": { "@id": "urn:solid-server:default:ResourceStore_Index" }
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Index" },
+      "defaultSliceSize": 10000000
     },
     {
       "comment": "When a container with an index.html document is accessed, serve that HTML document instead of the container.",
