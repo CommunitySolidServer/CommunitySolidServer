@@ -17,9 +17,27 @@ until its configuration is changed.
 The problem is typically one of these:
 
 1. The server was started with **the wrong hostname.**
-    - Use the `--baseUrl` (or `-b`) option to set the base URL.  
+    - Use the `--baseUrl` (or `-b`) option to set the base URL.
       Example: `community-solid-server --baseUrl https://mydomain.example/`
 
 2. A **reverse proxy** running in front of the server passes the wrong headers.
     - Set up the [`Forwarded` header](https://solidproject.org/self-hosting/css/nginx)
       to pass the correct URL on to the server.
+
+## Circumventing this for development
+
+For development reasons, it can be easier to temporarily allow requests from multiple host locations.
+This can be done by adding the following lines to your server configuration,
+causing the server to always assume the value of the `host` header is defined 
+by the `--baseUrl` parameter.
+
+```json
+{
+  "@id": "urn:solid-server:default:TargetExtractor",
+  "OriginalUrlExtractor:_args_fixedBaseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+},
+{
+  "@id": "urn:solid-server:default:DPoPUrlExtractor",
+  "OriginalUrlExtractor:_args_fixedBaseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+}
+```

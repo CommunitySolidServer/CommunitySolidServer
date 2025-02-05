@@ -1,7 +1,7 @@
 import type { Readable } from 'node:stream';
 import type { NamedNode, Quad, Term } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
-import type { ParserOptions } from 'n3';
+import type { ParserOptions, Store } from 'n3';
 import { StreamParser, StreamWriter } from 'n3';
 import type { Guarded } from './GuardedStream';
 import { guardedStreamFrom, pipeSafely } from './StreamUtil';
@@ -78,4 +78,74 @@ export class FilterPattern {
     this.predicate = typeof predicate === 'string' ? toNamedTerm(predicate) : null;
     this.object = typeof object === 'string' ? toNamedTerm(object) : null;
   }
+}
+
+/**
+ * Represents a binding result from a SPARQL query.
+ * The keys are the values of the Variable objects,
+ * while the values are the terms mapped to those variables in a query result.
+ */
+export type SimpleBinding = Record<string, Term>;
+
+/**
+ * Finds the matching bindings in the given data set for the given BGP query.
+ *
+ * @param bgp - BGP to solve
+ * @param data - Dataset to query.
+ */
+export function solveBgp(bgp: Quad[], data: Store): SimpleBinding[] {
+  let result: SimpleBinding[] = [{}];
+  for (const pattern of bgp) {
+    const newResult: SimpleBinding[] = [];
+    for (const binding of result) {
+      newResult.push(...getAppliedBindings(pattern, binding, data));
+    }
+    result = newResult;
+  }
+  return result;
+}
+
+/**
+ * Queries a data store with a pattern to find all resulting bindings.
+ * Before matching the pattern with the store,
+ * the given binding is applied to the pattern first.
+ *
+ * The resulting binding includes the given binding.
+ *
+ * @param pattern - Pattern to match with the data store.
+ * @param binding - Pattern to first apply to the given pattern.
+ * @param data - Data store to query.
+ */
+export function getAppliedBindings(pattern: Quad, binding: SimpleBinding, data: Store): SimpleBinding[] {
+  const result: SimpleBinding[] = [];
+  const matches = data.getQuads(
+    pattern.subject.termType === 'Variable' ? binding[pattern.subject.value] : pattern.subject,
+    pattern.predicate.termType === 'Variable' ? binding[pattern.predicate.value] : pattern.predicate,
+    pattern.object.termType === 'Variable' ? binding[pattern.object.value] : pattern.object,
+    null,
+  );
+  for (const match of matches) {
+    result.push({
+      ...binding,
+      ...matchBinding(pattern, match),
+    });
+  }
+  return result;
+}
+
+/**
+ * Finds the binding necessary to match the given pattern to the given quad.
+ * This function assumes it has been verified that the pattern can match the quad.
+ *
+ * @param pattern - Pattern that can match the quad.
+ * @param match - A quad that can be matched by the given pattern.
+ */
+export function matchBinding(pattern: Quad, match: Quad): SimpleBinding {
+  const result: SimpleBinding = {};
+  for (const pos of [ 'subject', 'predicate', 'object' ] as const) {
+    if (pattern[pos].termType === 'Variable') {
+      result[pattern[pos].value] = match[pos];
+    }
+  }
+  return result;
 }

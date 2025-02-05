@@ -3,6 +3,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.6](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.5...v7.1.6) (2025-01-30)
+
+### Fixes
+
+* Changing metadata updates a resource's modified time ([cbd04c4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cbd04c4f867c932d406d818ec39764002f68821b))
+* Do not check MediaRanges on container in ConstantConverter ([7baa9e6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7baa9e68ab83ef10bc565afb577b5a502003d670))
+
+## [7.1.5](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.4...v7.1.5) (2025-01-23)
+
+### Features
+
+* Provide option to ignore host header when generating identifiers ([510cf97](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/510cf97933d0f9b664b52c4f4e7c41e0865ada10))
+* Add identifiers to authentication configuration ([fccf48a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fccf48a7473cb4bde800a39889aaabdc79dd60c9))
+
+### Fixes
+
+* Use the correct field when adding a pod owner ([4457ea7](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4457ea7b2c519feec3105eda25d19c66b471cae5))
+* Prevent server from crashing when a lock is compromised ([5f8febe](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5f8febedde60d831c8d6d7cfd3444abfce095ce6))
+* Handle error correctly if identifier could not be added to it ([6101130](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6101130bebe62a5f639f01dff0d8c98ccbd5ef7a))
+
+## [7.1.4](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.3...v7.1.4) (2025-01-13)
+
+### Fixes
+
+* Support patching data containing blank nodes ([e88349f](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e88349fda4f06bbc272117eceafc081feaff5249))
+* Keep headers for 304 responses ([7e1bdbe](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7e1bdbe599632b3878c8aef5da98550db17e55c1))
+
+### Documentation
+
+* Fix language ([faff932](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/faff93241b75eb7ce146f8de086fb766374f0b99))
+
+## [7.1.3](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.2...v7.1.3) (2024-10-14)
+
+### Fixes
+
+* Streaming video by adding a limit to streaming chunks ([b8bcec9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b8bcec90ccdea30b21b4095c38c6494a39a599cc))
+
+### Chores
+
+* Update @bergos/jsonparse to v1.4.2 ([7c31053](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7c310535f0f5fca1c1d2098b7a7b95bc8c2ac783))
+
 ## [7.1.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.1...v7.1.2) (2024-08-20)
 
 ### Fixes

@@ -19,10 +19,16 @@
           "handlers": [
             {
               "comment": "Redirects are created internally by throwing a specific error; this handler converts them to the correct response.",
+              "@id": "urn:solid-server:default:RedirectingErrorHandler",
               "@type": "RedirectingErrorHandler"
             },
             {
+              "@id": "urn:solid-server:default:EmptyErrorHandler",
+              "@type": "EmptyErrorHandler"
+            },
+            {
               "comment": "Converts an Error object into a representation for an HTTP response.",
+              "@id": "urn:solid-server:default:ConvertingErrorHandler",
               "@type": "ConvertingErrorHandler",
               "converter": { "@id": "urn:solid-server:default:UiEnabledConverter" },
               "preferenceParser": { "@id": "urn:solid-server:default:PreferenceParser" },

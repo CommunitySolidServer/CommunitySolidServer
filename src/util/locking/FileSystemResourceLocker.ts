@@ -44,6 +44,10 @@ interface FileSystemResourceLockerArgs {
   lockDirectory?: string;
   /** Custom settings concerning retrying locks */
   attemptSettings?: AttemptSettings;
+  /**
+   * Throws an error when a lock is compromised, instead of logging an error.
+   */
+  throwOnCompromise?: boolean;
 }
 
 function isCodedError(err: unknown): err is { code: string } & Error {
@@ -65,6 +69,7 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
   protected readonly logger = getLoggerFor(this);
   private readonly attemptSettings: Required<AttemptSettings>;
   private readonly lockOptions: LockOptions;
+  private readonly throwOnCompromise?: boolean;
   /** Folder that stores the locks */
   private readonly lockFolder: string;
   private finalized = false;
@@ -79,6 +84,7 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
     // Need to create lock options for this instance due to the custom `onCompromised`
     this.lockOptions = { ...defaultLockOptions, onCompromised: this.customOnCompromised.bind(this) };
     this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
+    this.throwOnCompromise = args.throwOnCompromise;
     this.lockFolder = joinFilePath(rootFilePath, lockDirectory ?? '/.internal/locks');
   }
 
@@ -196,9 +202,12 @@ export class FileSystemResourceLocker implements ResourceLocker, Initializable, 
    * This allows for a clean shutdown procedure.
    */
   private customOnCompromised(err: Error): void {
-    if (!this.finalized) {
+    if (this.finalized) {
+      this.logger.warn(`onCompromised was called with error: ${err.message}`);
+    } else if (this.throwOnCompromise) {
       throw err;
+    } else {
+      this.logger.error(`Lock was compromised: ${err.message}`);
     }
-    this.logger.warn(`onCompromised was called with error: ${err.message}`);
   }
 }

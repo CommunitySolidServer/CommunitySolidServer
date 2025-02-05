@@ -1,6 +1,6 @@
 import 'jest-rdf';
-import { DataFactory as DF } from 'n3';
-import { parseQuads, serializeQuads, termToInt, uniqueQuads } from '../../../src/util/QuadUtil';
+import { DataFactory as DF, Store } from 'n3';
+import { parseQuads, serializeQuads, solveBgp, termToInt, uniqueQuads } from '../../../src/util/QuadUtil';
 import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
 
 describe('QuadUtil', (): void => {
@@ -58,6 +58,36 @@ describe('QuadUtil', (): void => {
     it('converts the term to a number.', async(): Promise<void> => {
       expect(termToInt(DF.namedNode('5'))).toBe(5);
       expect(termToInt(DF.namedNode('0xF'), 16)).toBe(15);
+    });
+  });
+
+  describe('#solveBgp', (): void => {
+    it('finds all matching bindings.', async(): Promise<void> => {
+      const bgp = [
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.variable('v1')),
+        DF.quad(DF.variable('v1'), DF.namedNode('ex:p2'), DF.variable('v2')),
+        DF.quad(DF.variable('v1'), DF.variable('v3'), DF.variable('v2')),
+      ];
+      const data = new Store([
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+        DF.quad(DF.namedNode('ex:o1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o2')),
+        DF.quad(DF.namedNode('ex:o2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o3')),
+        DF.quad(DF.namedNode('ex:o4'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+      ]);
+      const bindings = solveBgp(bgp, data);
+      expect(bindings).toHaveLength(2);
+      expect(bindings[0]).toEqual({
+        v1: DF.namedNode('ex:o1'),
+        v2: DF.namedNode('ex:o2'),
+        v3: DF.namedNode('ex:p2'),
+      });
+      expect(bindings[1]).toEqual({
+        v1: DF.namedNode('ex:o2'),
+        v2: DF.namedNode('ex:o2'),
+        v3: DF.namedNode('ex:p2'),
+      });
     });
   });
 });

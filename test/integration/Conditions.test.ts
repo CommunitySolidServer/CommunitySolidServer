@@ -28,6 +28,15 @@ const stores: [string, any][] = [
   }],
 ];
 
+function extractHeadersObject(response: Response): Record<string, string> {
+  const result: Record<string, string> = {};
+  // eslint-disable-next-line unicorn/no-array-for-each
+  response.headers.forEach((value, key): void => {
+    result[key] = value;
+  });
+  return result;
+}
+
 describe.each(stores)('A server supporting conditions with %s', (name, { storeConfig, teardown }): void => {
   let app: App;
 
@@ -89,10 +98,10 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     });
     expect(response.status).toBe(412);
 
-    // PUT
+    // PATCH
     await patchResource(documentUrl, query, 'sparql');
 
-    // PUT with header now succeeds
+    // PATCH with header now succeeds
     const query2 = 'INSERT {<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>} WHERE {}';
     response = await fetch(documentUrl, {
       method: 'PATCH',
@@ -173,6 +182,7 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     // GET root ETag
     let response = await getResource(baseUrl);
     const eTag = response.headers.get('ETag');
+    const originalHeaders = extractHeadersObject(response);
     expect(typeof eTag).toBe('string');
 
     // GET fails because of header
@@ -182,6 +192,10 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     });
     expect(response.status).toBe(304);
     expect(response.headers.get('etag')).toBe(eTag);
+    const newGetHeaders = extractHeadersObject(response);
+    // Date field shouldn't be the same
+    delete newGetHeaders.date;
+    expect(expect.objectContaining(newGetHeaders)).toEqual(originalHeaders);
 
     // HEAD fails because of header
     response = await fetch(baseUrl, {
@@ -190,6 +204,10 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     });
     expect(response.status).toBe(304);
     expect(response.headers.get('etag')).toBe(eTag);
+    const newHeadHeaders = extractHeadersObject(response);
+    // Date field shouldn't be the same
+    delete newHeadHeaders.date;
+    expect(expect.objectContaining(newHeadHeaders)).toEqual(originalHeaders);
 
     // GET succeeds if the ETag header doesn't match
     response = await fetch(baseUrl, {
@@ -230,20 +248,63 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
   it('returns different ETags for different content-types.', async(): Promise<void> => {
     let response = await getResource(baseUrl, { accept: 'text/turtle' }, { contentType: 'text/turtle' });
     const eTagTurtle = response.headers.get('ETag');
+    const turtleHeaders = extractHeadersObject(response);
     response = await getResource(baseUrl, { accept: 'application/ld+json' }, { contentType: 'application/ld+json' });
     const eTagJson = response.headers.get('ETag');
+    const jsonHeaders = extractHeadersObject(response);
     expect(eTagTurtle).not.toEqual(eTagJson);
 
     // Both ETags can be used on the same resource
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'text/turtle' }});
     expect(response.status).toBe(304);
     expect(response.headers.get('etag')).toBe(eTagTurtle);
+    const newTurtleHeaders = extractHeadersObject(response);
+    // Date field shouldn't be the same
+    delete newTurtleHeaders.date;
+    expect(expect.objectContaining(newTurtleHeaders)).toEqual(turtleHeaders);
+
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagJson!, accept: 'application/ld+json' }});
     expect(response.status).toBe(304);
     expect(response.headers.get('etag')).toBe(eTagJson);
+    const newJsonHeaders = extractHeadersObject(response);
+    // Date field shouldn't be the same
+    delete newJsonHeaders.date;
+    expect(expect.objectContaining(newJsonHeaders)).toEqual(jsonHeaders);
 
     // But not for the other representation
     response = await fetch(baseUrl, { headers: { 'if-none-match': eTagTurtle!, accept: 'application/ld+json' }});
     expect(response.status).toBe(200);
+  });
+
+  it('updates the ETag if the metadata is changed.', async(): Promise<void> => {
+    let response = await getResource(baseUrl);
+    const originalETag = response.headers.get('ETag');
+    expect(typeof originalETag).toBe('string');
+    const linkHeaders = response.headers.get('link');
+    expect(typeof linkHeaders).toBe('string');
+    const regex = /<([^>]+)>; rel="describedby"/u.exec(linkHeaders!);
+    expect(regex).toBeDefined();
+    const metaUrl = regex![1];
+
+    // Timestamp accuracy is at second level so need to make sure it changed
+    await new Promise<void>((res): void => {
+      setTimeout((): void => {
+        res();
+      }, 1000);
+    });
+
+    // PATCH .meta
+    const query = 'INSERT {<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>} WHERE {}';
+    response = await fetch(metaUrl, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update' },
+      body: query,
+    });
+    expect(response.status).toBeLessThan(300);
+
+    // Check new eTag
+    response = await getResource(baseUrl);
+    const eTag = response.headers.get('ETag');
+    expect(eTag).not.toEqual(originalETag);
   });
 });

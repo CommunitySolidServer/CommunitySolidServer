@@ -91,7 +91,17 @@ export function assertReadConditions(body: Representation, eTagHandler: ETagHand
   const eTag = eTagHandler.getETag(body.metadata);
   if (conditions && !conditions.matchesMetadata(body.metadata, true)) {
     body.data.destroy();
-    throw new NotModifiedHttpError(eTag);
+    const error = new NotModifiedHttpError(eTag);
+
+    // From RFC 9111:
+    // > the cache MUST add each header field in the provided response to the stored response,
+    // > replacing field values that are already present
+    // So we need to make sure to send either no partial headers, or the exact same headers.
+    // By adding the metadata of the original resource here, we ensure we send the same headers.
+    error.metadata.identifier = body.metadata.identifier;
+    error.metadata.addQuads(body.metadata.quads());
+
+    throw error;
   }
   body.metadata.set(HH.terms.etag, eTag);
 }

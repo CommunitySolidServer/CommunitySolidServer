@@ -89,6 +89,7 @@ export * from './http/ldp/PutOperationHandler';
 
 // HTTP/Output/Error
 export * from './http/output/error/ConvertingErrorHandler';
+export * from './http/output/error/EmptyErrorHandler';
 export * from './http/output/error/ErrorHandler';
 export * from './http/output/error/RedirectingErrorHandler';
 export * from './http/output/error/SafeErrorHandler';

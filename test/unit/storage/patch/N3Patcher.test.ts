@@ -142,4 +142,19 @@ describe('An N3Patcher', (): void => {
       DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
     ]);
   });
+
+  it('can delete blank nodes.', async(): Promise<void> => {
+    patch.conditions = [ DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.variable('v')) ];
+    patch.deletes = [
+      DF.quad(DF.variable('v'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+    ];
+    input.representation?.dataset.addQuads([
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.blankNode('b0')),
+      DF.quad(DF.blankNode('b0'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+    ]);
+    const result = await patcher.handle(input);
+    expect(result.dataset).toBeRdfIsomorphic([
+      DF.quad(DF.namedNode('ex:s0'), DF.namedNode('ex:p0'), DF.blankNode('b0')),
+    ]);
+  });
 });

@@ -1,4 +1,5 @@
 import type { TLSSocket } from 'node:tls';
+import { getLoggerFor } from 'global-logger-factory';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { errorTermsToMetadata } from '../../../util/errors/HttpErrorUtil';
@@ -19,19 +20,37 @@ export interface OriginalUrlExtractorArgs {
    * Specify whether the OriginalUrlExtractor should include the request query string.
    */
   includeQueryString?: boolean;
+
+  /**
+   * Forces the server to always assume the host header to be the value of the defined base URL.
+   * Useful for debugging when you're trying to access the server both internally and externally.
+   */
+  fixedBaseUrl?: string;
 }
 
 /**
  * Reconstructs the original URL of an incoming {@link HttpRequest}.
  */
 export class OriginalUrlExtractor extends TargetExtractor {
-  private readonly identifierStrategy: IdentifierStrategy;
-  private readonly includeQueryString: boolean;
+  protected readonly logger = getLoggerFor(this);
+
+  protected readonly identifierStrategy: IdentifierStrategy;
+  protected readonly includeQueryString: boolean;
+  protected readonly fixedHost?: string;
 
   public constructor(args: OriginalUrlExtractorArgs) {
     super();
     this.identifierStrategy = args.identifierStrategy;
     this.includeQueryString = args.includeQueryString ?? true;
+    if (args.fixedBaseUrl) {
+      const url = new URL(args.fixedBaseUrl);
+      this.fixedHost = url.host;
+      this.logger.warn([
+        `The \`fixedBaseUrl\` parameter has been set `,
+        `so the host header will be ignored and always assumed to be ${this.fixedHost}.`,
+        `Don't use this in production.`,
+      ].join(' '));
+    }
   }
 
   public async handle({ request: { url, connection, headers }}: { request: HttpRequest }): Promise<ResourceIdentifier> {
@@ -50,6 +69,9 @@ export class OriginalUrlExtractor extends TargetExtractor {
     }
     if (forwarded.proto) {
       ({ proto: protocol } = forwarded);
+    }
+    if (this.fixedHost) {
+      host = this.fixedHost;
     }
 
     // Perform a sanity check on the host
