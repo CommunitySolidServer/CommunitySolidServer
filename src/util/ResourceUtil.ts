@@ -1,4 +1,3 @@
-import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
@@ -6,7 +5,7 @@ import { RepresentationMetadata } from '../http/representation/RepresentationMet
 import type { Conditions } from '../storage/conditions/Conditions';
 import type { ETagHandler } from '../storage/conditions/ETagHandler';
 import { NotModifiedHttpError } from './errors/NotModifiedHttpError';
-import { guardedStreamFrom } from './StreamUtil';
+import { arrayifyStream, guardedStreamFrom } from './StreamUtil';
 import { toLiteral } from './TermUtil';
 import { CONTENT_TYPE_TERM, DC, HH, LDP, RDF, SOLID_META, XSD } from './Vocabularies';
 

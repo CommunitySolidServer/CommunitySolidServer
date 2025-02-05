@@ -5,7 +5,7 @@ import { parse, toSeconds } from 'iso8601-duration';
 import { DataFactory } from 'n3';
 import type { Store } from 'n3';
 import type { NamedNode, Term } from '@rdfjs/types';
-import rdfParser from 'rdf-parse';
+import { rdfParser } from 'rdf-parse';
 import SHACLValidator from 'rdf-validate-shacl';
 import { v4 } from 'uuid';
 import type { Credentials } from '../../authentication/Credentials';

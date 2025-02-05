@@ -1,10 +1,9 @@
 import 'jest-rdf';
 import { Readable } from 'node:stream';
-import arrayifyStream from 'arrayify-stream';
 import fetch, { Headers } from 'cross-fetch';
 import { DataFactory } from 'n3';
-import rdfParser from 'rdf-parse';
-import { PREFERRED_PREFIX_TERM, SOLID_META } from '../../../../src';
+import { rdfParser } from 'rdf-parse';
+import { arrayifyStream, PREFERRED_PREFIX_TERM, SOLID_META } from '../../../../src';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';

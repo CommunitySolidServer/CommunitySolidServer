@@ -1,11 +1,11 @@
 import 'jest-rdf';
 import { PassThrough, Readable } from 'node:stream';
-import arrayifyStream from 'arrayify-stream';
 import { BlankNode, Literal, NamedNode, Quad, Store } from 'n3';
 import { getLoggerFor } from 'global-logger-factory';
 import type { Logger } from 'global-logger-factory';
 import { isHttpRequest } from '../../../src/server/HttpRequest';
 import {
+  arrayifyStream,
   getSingleItem,
   guardedStreamFrom,
   pipeSafely,
@@ -27,6 +27,13 @@ jest.mock('../../../src/server/HttpRequest', (): any => ({
 }));
 
 describe('StreamUtil', (): void => {
+  describe('#arrayifyStream', (): void => {
+    it('returns an array with the stream contents.', async(): Promise<void> => {
+      const stream = Readable.from([ 'a', 'b', 'c' ]);
+      await expect(arrayifyStream(stream)).resolves.toEqual([ 'a', 'b', 'c' ]);
+    });
+  });
+
   describe('#readableToString', (): void => {
     it('concatenates all elements of a Readable.', async(): Promise<void> => {
       const stream = Readable.from([ 'a', 'b', 'c' ]);

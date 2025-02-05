@@ -1,7 +1,8 @@
+import type { EventEmitter } from 'node:events';
 import type { DuplexOptions, ReadableOptions, Writable } from 'node:stream';
 import { Readable, Transform } from 'node:stream';
 import { promisify } from 'node:util';
-import arrayifyStream from 'arrayify-stream';
+import { on } from 'node:events';
 import eos from 'end-of-stream';
 import { Store } from 'n3';
 import pump from 'pump';
@@ -16,6 +17,26 @@ import type { PromiseOrValue } from './PromiseUtil';
 export const endOfStream = promisify(eos);
 
 const logger = getLoggerFor('StreamUtil');
+
+/**
+ * Converts the stream into an array.
+ *
+ * @param stream - Stream to convert.
+ *
+ * @returns Array containing the stream entries.
+ */
+export async function arrayifyStream<T = unknown>(stream: EventEmitter): Promise<T[]> {
+  const result: T[] = [];
+  const dataIt = on(stream, 'data');
+  // eslint-disable-next-line ts/no-misused-promises
+  stream.on('end', async(): Promise<void> => {
+    await dataIt.return!();
+  });
+  for await (const entry of dataIt) {
+    result.push(...entry as T[]);
+  }
+  return result;
+}
 
 /**
  * Joins all strings of a stream.
@@ -66,7 +87,7 @@ export async function getSingleItem(stream: Readable): Promise<unknown> {
   if (items.length !== 1) {
     throw new InternalServerError('Expected a stream with a single object.');
   }
-  return items[0] as unknown;
+  return items[0];
 }
 
 // These error messages usually indicate expected behaviour so should not give a warning.

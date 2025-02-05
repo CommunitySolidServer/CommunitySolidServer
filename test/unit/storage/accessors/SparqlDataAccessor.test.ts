@@ -1,6 +1,5 @@
 import 'jest-rdf';
 import { Readable } from 'node:stream';
-import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory as DF } from 'n3';
 import type { Quad } from '@rdfjs/types';
@@ -14,7 +13,7 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
-import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
+import { arrayifyStream, guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE_TERM, LDP, RDF } from '../../../../src/util/Vocabularies';
 
 jest.mock('fetch-sparql-endpoint');

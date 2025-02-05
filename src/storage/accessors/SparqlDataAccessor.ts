@@ -1,5 +1,4 @@
 import type { Readable } from 'node:stream';
-import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory as DF } from 'n3';
 import type { NamedNode, Quad } from '@rdfjs/types';
@@ -27,6 +26,7 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { isContainerIdentifier } from '../../util/PathUtil';
+import { arrayifyStream } from '../../util/StreamUtil';
 import { CONTENT_TYPE_TERM, LDP } from '../../util/Vocabularies';
 import type { DataAccessor } from './DataAccessor';
 

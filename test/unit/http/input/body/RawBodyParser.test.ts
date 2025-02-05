@@ -1,10 +1,9 @@
 import 'jest-rdf';
-import arrayifyStream from 'arrayify-stream';
 import type { BodyParserArgs } from '../../../../../src/http/input/body/BodyParser';
 import { RawBodyParser } from '../../../../../src/http/input/body/RawBodyParser';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
-import { guardedStreamFrom } from '../../../../../src/util/StreamUtil';
+import { arrayifyStream, guardedStreamFrom } from '../../../../../src/util/StreamUtil';
 
 describe('A RawBodyparser', (): void => {
   const bodyParser = new RawBodyParser();

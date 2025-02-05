@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import rdfSerializer from 'rdf-serialize';
+import { rdfSerializer } from 'rdf-serialize';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';

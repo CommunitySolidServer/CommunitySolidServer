@@ -1,10 +1,10 @@
 import type { Quad } from '@rdfjs/types';
-import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import { APPLICATION_LD_JSON, INTERNAL_QUADS } from '../../util/ContentTypes';
+import { arrayifyStream } from '../../util/StreamUtil';
 import { NOTIFY } from '../../util/Vocabularies';
 import { StorageDescriber } from '../description/StorageDescriber';
 import type { NotificationChannelType } from './NotificationChannelType';

@@ -1,7 +1,6 @@
 import type { Quad } from '@rdfjs/types';
-import arrayifyStream from 'arrayify-stream';
 import type { Response } from 'cross-fetch';
-import rdfDereferencer from 'rdf-dereference';
+import { rdfDereferencer } from 'rdf-dereference';
 import { getLoggerFor } from 'global-logger-factory';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
@@ -9,6 +8,7 @@ import type { RepresentationConverter } from '../storage/conversion/Representati
 import { INTERNAL_QUADS } from './ContentTypes';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
 import { createErrorMessage } from './errors/ErrorUtil';
+import { arrayifyStream } from './StreamUtil';
 
 const logger = getLoggerFor('FetchUtil');
 

@@ -1,7 +1,7 @@
 import type { Readable } from 'node:stream';
 import { DataFactory, StreamWriter } from 'n3';
 import type { Quad } from '@rdfjs/types';
-import rdfSerializer from 'rdf-serialize';
+import { rdfSerializer } from 'rdf-serialize';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';

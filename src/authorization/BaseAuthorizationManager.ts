@@ -1,12 +1,12 @@
 import type { DatasetCore, Quad } from '@rdfjs/types';
 import type { AuthorizationManager } from '@solidlab/policy-engine';
-import arrayifyStream from 'arrayify-stream';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
+import { arrayifyStream } from '../util/StreamUtil';
 
 /**
  * An {@link AuthorizationManager} that gets parent identifiers from an {@link IdentifierStrategy}

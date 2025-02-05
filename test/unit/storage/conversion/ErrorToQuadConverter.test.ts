@@ -1,9 +1,9 @@
 import 'jest-rdf';
-import arrayifyStream from 'arrayify-stream';
 import { DataFactory as DF } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ErrorToQuadConverter } from '../../../../src/storage/conversion/ErrorToQuadConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { arrayifyStream } from '../../../../src/util/StreamUtil';
 import { DC, SOLID_ERROR } from '../../../../src/util/Vocabularies';
 
 describe('An ErrorToQuadConverter', (): void => {
