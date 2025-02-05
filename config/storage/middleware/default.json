@@ -5,41 +5,6 @@
   ],
   "@graph": [
     {
-      "comment": "A cache to prevent duplicate existence checks on resources.",
-      "@id": "urn:solid-server:default:CachedResourceSet",
-      "@type": "CachedResourceSet",
-      "source": { "@id": "urn:solid-server:default:ResourceStore" }
-    },
-    {
-      "comment": "Sets up a stack of utility stores used by most instances.",
-      "@id": "urn:solid-server:default:ResourceStore",
-      "@type": "MonitoringStore",
-      "source": { "@id": "urn:solid-server:default:ResourceStore_BinarySlice" }
-    },
-    {
-      "comment": "Slices part of binary streams based on the range preferences.",
-      "@id": "urn:solid-server:default:ResourceStore_BinarySlice",
-      "@type": "BinarySliceResourceStore",
-      "source": { "@id": "urn:solid-server:default:ResourceStore_Index" },
-      "defaultSliceSize": 10000000
-    },
-    {
-      "comment": "When a container with an index.html document is accessed, serve that HTML document instead of the container.",
-      "@id": "urn:solid-server:default:ResourceStore_Index",
-      "@type": "IndexRepresentationStore",
-      "source": { "@id": "urn:solid-server:default:ResourceStore_Locking" }
-    },
-    {
-      "@id": "urn:solid-server:default:ResourceStore_Locking",
-      "@type": "LockingResourceStore",
-      "source": { "@id": "urn:solid-server:default:ResourceStore_Patching" }
-    },
-    {
-      "@id": "urn:solid-server:default:ResourceStore_Patching",
-      "@type": "PatchingStore",
-      "source": { "@id": "urn:solid-server:default:ResourceStore_Converting" }
-    },
-    {
       "@id": "urn:solid-server:default:ResourceStore_Converting",
       "@type": "RepresentationConvertingStore",
       "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" }
