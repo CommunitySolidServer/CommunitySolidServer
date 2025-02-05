@@ -1,9 +1,9 @@
 import 'jest-rdf';
 import type { Readable } from 'node:stream';
-import arrayifyStream from 'arrayify-stream';
+import type { Quad } from '@rdfjs/types';
 import { DataFactory as DF, Store } from 'n3';
 import type { Conditions } from '../../../src';
-import { CONTENT_TYPE_TERM, XSD } from '../../../src';
+import { arrayifyStream, CONTENT_TYPE_TERM, XSD } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
@@ -188,7 +188,7 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
 
       const result = await store.getRepresentation(metaResourceID);
-      const quads = await arrayifyStream(result.data);
+      const quads = await arrayifyStream<Quad>(result.data);
       expect(result).toMatchObject({ binary: false });
       expect(new Store(quads)).toBeRdfDatasetContaining(
         DF.quad(DF.namedNode(resourceID.path), CONTENT_TYPE_TERM, DF.literal('text/plain')),
@@ -204,7 +204,7 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
 
       const result = await store.getRepresentation(metaResourceID);
-      const quads = await arrayifyStream(result.data);
+      const quads = await arrayifyStream<Quad>(result.data);
       expect(new Store(quads)).toBeRdfDatasetContaining(
         DF.quad(
           DF.namedNode(root),

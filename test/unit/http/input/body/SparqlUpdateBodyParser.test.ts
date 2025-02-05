@@ -1,5 +1,4 @@
 import 'jest-rdf';
-import arrayifyStream from 'arrayify-stream';
 import { DataFactory as DF } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
 import * as algebra from 'sparqlalgebrajs';
@@ -10,7 +9,7 @@ import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { ContentType } from '../../../../../src/util/Header';
-import { guardedStreamFrom } from '../../../../../src/util/StreamUtil';
+import { arrayifyStream, guardedStreamFrom } from '../../../../../src/util/StreamUtil';
 
 describe('A SparqlUpdateBodyParser', (): void => {
   const bodyParser = new SparqlUpdateBodyParser();

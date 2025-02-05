@@ -1,6 +1,5 @@
 import { Readable } from 'node:stream';
-import arrayifyStream from 'arrayify-stream';
-import { BasicETagHandler, SingleRootIdentifierStrategy } from '../../src';
+import { arrayifyStream, BasicETagHandler, SingleRootIdentifierStrategy } from '../../src';
 import { BasicRequestParser } from '../../src/http/input/BasicRequestParser';
 import { RawBodyParser } from '../../src/http/input/body/RawBodyParser';
 import { BasicConditionsParser } from '../../src/http/input/conditions/BasicConditionsParser';

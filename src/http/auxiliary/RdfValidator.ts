@@ -1,7 +1,7 @@
-import arrayifyStream from 'arrayify-stream';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { cloneRepresentation } from '../../util/ResourceUtil';
+import { arrayifyStream } from '../../util/StreamUtil';
 import type { Representation } from '../representation/Representation';
 import type { ValidatorInput } from './Validator';
 import { Validator } from './Validator';

@@ -1,14 +1,15 @@
+import 'jest-rdf';
 import { Readable } from 'node:stream';
 import type { Quad } from '@rdfjs/types';
-import arrayifyStream from 'arrayify-stream';
 import type { Response } from 'cross-fetch';
 import { DataFactory as DF } from 'n3';
-import rdfDereferencer from 'rdf-dereference';
+import { rdfDereferencer } from 'rdf-dereference';
 import { RdfToQuadConverter } from '../../../src/storage/conversion/RdfToQuadConverter';
 import { fetchDataset, responseToDataset } from '../../../src/util/FetchUtil';
+import { arrayifyStream } from '../../../src/util/StreamUtil';
 
 jest.mock('rdf-dereference', (): any => ({
-  dereference: jest.fn<string, any>(),
+  rdfDereferencer: { dereference: jest.fn<string, any>() },
 }));
 
 describe('FetchUtil', (): void => {
@@ -61,7 +62,7 @@ describe('FetchUtil', (): void => {
       const response = mockResponse('<http://test.com/s> <http://test.com/p> <http://test.com/o>.', 'text/turtle');
       const body = await response.text();
       const representation = await responseToDataset(response, converter, body);
-      await expect(arrayifyStream(representation.data)).resolves.toEqual([
+      await expect(arrayifyStream(representation.data)).resolves.toBeRdfIsomorphic([
         DF.quad(DF.namedNode('http://test.com/s'), DF.namedNode('http://test.com/p'), DF.namedNode('http://test.com/o')),
       ]);
     });

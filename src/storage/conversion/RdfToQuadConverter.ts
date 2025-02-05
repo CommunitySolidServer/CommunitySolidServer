@@ -1,7 +1,7 @@
 import { PassThrough } from 'node:stream';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import type { NamedNode } from '@rdfjs/types';
-import rdfParser from 'rdf-parse';
+import { rdfParser } from 'rdf-parse';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';

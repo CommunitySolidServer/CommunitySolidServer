@@ -1,5 +1,4 @@
 import 'jest-rdf';
-import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { PreferenceParser } from '../../../../../src/http/input/preferences/PreferenceParser';
 import { ConvertingErrorHandler } from '../../../../../src/http/output/error/ConvertingErrorHandler';
@@ -13,6 +12,7 @@ import type {
 } from '../../../../../src/storage/conversion/RepresentationConverter';
 import type { HttpError } from '../../../../../src/util/errors/HttpError';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
+import { arrayifyStream } from '../../../../../src/util/StreamUtil';
 import { HTTP, XSD } from '../../../../../src/util/Vocabularies';
 
 const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
@@ -24,7 +24,7 @@ async function expectValidArgs(args: RepresentationConverterArgs, stack?: string
   expect(args.representation.metadata.contentType).toBe('internal/error');
 
   // Error contents
-  const errorArray = await arrayifyStream(args.representation.data);
+  const errorArray = await arrayifyStream<HttpError>(args.representation.data);
   expect(errorArray).toHaveLength(1);
   const resultError = errorArray[0];
   expect(resultError).toMatchObject({ name: 'NotFoundHttpError', message: 'not here' });

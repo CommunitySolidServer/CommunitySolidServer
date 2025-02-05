@@ -1,5 +1,4 @@
 import type { NamedNode, Quad, Term } from '@rdfjs/types';
-import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import { v4 as uuid } from 'uuid';
 import { getLoggerFor } from 'global-logger-factory';
@@ -29,6 +28,7 @@ import {
   trimTrailingSlashes,
 } from '../util/PathUtil';
 import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
+import { arrayifyStream } from '../util/StreamUtil';
 import {
   AS,
   CONTENT_TYPE_TERM,

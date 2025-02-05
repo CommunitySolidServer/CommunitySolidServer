@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import { DataFactory as DF } from 'n3';
 import type { Quad } from 'n3';
-import rdfDereferencer from 'rdf-dereference';
+import { rdfDereferencer } from 'rdf-dereference';
 import { v4 } from 'uuid';
 import { TokenOwnershipValidator } from '../../../../src/identity/ownership/TokenOwnershipValidator';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
@@ -11,7 +11,7 @@ import { SOLID } from '../../../../src/util/Vocabularies';
 
 jest.mock('uuid');
 jest.mock('rdf-dereference', (): any => ({
-  dereference: jest.fn(),
+  rdfDereferencer: { dereference: jest.fn() },
 }));
 
 function quadToString(qq: Quad): string {

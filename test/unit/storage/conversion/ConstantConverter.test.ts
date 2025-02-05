@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import fsExtra from 'fs-extra';
-import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ConstantConverterOptions } from '../../../../src/storage/conversion/ConstantConverter';
 import { ConstantConverter } from '../../../../src/storage/conversion/ConstantConverter';
+import { arrayifyStream } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, POSIX } from '../../../../src/util/Vocabularies';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream').mockReturnValue('file contents' as any);

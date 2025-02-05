@@ -1,5 +1,4 @@
 import type { Readable } from 'node:stream';
-import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { SingleThreaded } from '../../init/cluster/SingleThreaded';
@@ -7,7 +6,7 @@ import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
-import { guardedStreamFrom } from '../../util/StreamUtil';
+import { arrayifyStream, guardedStreamFrom } from '../../util/StreamUtil';
 import { POSIX } from '../../util/Vocabularies';
 import { isInternalContentType } from '../conversion/ConversionUtil';
 import type { DataAccessor } from './DataAccessor';
@@ -62,7 +61,7 @@ export class InMemoryDataAccessor implements DataAccessor, SingleThreaded {
   Promise<void> {
     const parent = this.getParentEntry(identifier);
     // Drain original stream and create copy
-    const dataArray = await arrayifyStream(data);
+    const dataArray = await arrayifyStream<Buffer>(data);
 
     // Only add the size for binary streams, which are all streams that do not have an internal type.
     if (metadata.contentType && !isInternalContentType(metadata.contentType)) {
