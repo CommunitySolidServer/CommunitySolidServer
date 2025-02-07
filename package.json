@@ -134,7 +134,7 @@
     "rdf-terms": "^2.0.0",
     "rdf-validate-shacl": "^0.4.5",
     "rdf-vocabulary": "^1.0.0",
-    "sparqlalgebrajs": "^4.3.0",
+    "sparqlalgebrajs": "^5.0.1",
     "sparqljs": "^3.7.1",
     "url-join": "^4.0.1",
     "uuid": "^10.0.0",
