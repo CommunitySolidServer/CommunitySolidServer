@@ -8,7 +8,7 @@ import {
 } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';
 
-jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
+jest.mock('node:crypto', (): any => ({ randomUUID: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 
 describe('A BaseAccountStore', (): void => {
   const id = 'id';

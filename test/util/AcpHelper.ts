@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import type { AccessControl, AccessControlResource, Matcher, Policy } from '@solidlab/policy-engine';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../src/http/representation/ResourceIdentifier';
@@ -35,7 +35,7 @@ export class AcpHelper {
 
   public createMatcher(input: CreateMatcherInput): Matcher {
     return {
-      iri: joinUrl(baseUrl, v4()),
+      iri: joinUrl(baseUrl, randomUUID()),
       // Prefixed URI as this will be inserted into turtle below
       agent: (input as any).publicAgent ? [ 'acp:PublicAgent' ] : [ (input as any).agent ],
       client: [],
@@ -46,7 +46,7 @@ export class AcpHelper {
 
   public createPolicy({ allow, deny, allOf, anyOf, noneOf }: CreatePolicyInput): Policy {
     return {
-      iri: joinUrl(baseUrl, v4()),
+      iri: joinUrl(baseUrl, randomUUID()),
       // Using the wrong identifiers so the turtle generated below uses the prefixed version
       allow: new Set(this.convertModes(allow ?? []) as any),
       deny: new Set(this.convertModes(deny ?? []) as any),
@@ -66,17 +66,17 @@ export class AcpHelper {
 
   public createAcr({ resource, policies, memberPolicies }: CreateAcrInput): AccessControlResource {
     return {
-      iri: joinUrl(baseUrl, v4()),
+      iri: joinUrl(baseUrl, randomUUID()),
       resource: [ (resource as ResourceIdentifier).path ?? resource ],
       accessControl: policies ?
           [{
-            iri: joinUrl(baseUrl, v4()),
+            iri: joinUrl(baseUrl, randomUUID()),
             policy: [ ...policies ],
           }] :
           [],
       memberAccessControl: memberPolicies ?
           [{
-            iri: joinUrl(baseUrl, v4()),
+            iri: joinUrl(baseUrl, randomUUID()),
             policy: [ ...memberPolicies ],
           }] :
           [],

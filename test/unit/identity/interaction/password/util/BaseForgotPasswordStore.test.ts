@@ -4,7 +4,7 @@ import {
 import type { ExpiringStorage } from '../../../../../../src/storage/keyvalue/ExpiringStorage';
 
 const record = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
-jest.mock('uuid', (): any => ({ v4: (): string => record }));
+jest.mock('node:crypto', (): any => ({ randomUUID: (): string => record }));
 
 describe('A BaseForgotPasswordStore', (): void => {
   const email = 'email@example.com';

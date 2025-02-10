@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import type { ExpiringStorage } from '../../../../storage/keyvalue/ExpiringStorage';
 import type { ForgotPasswordStore } from './ForgotPasswordStore';
 
@@ -15,7 +15,7 @@ export class BaseForgotPasswordStore implements ForgotPasswordStore {
   }
 
   public async generate(email: string): Promise<string> {
-    const recordId = v4();
+    const recordId = randomUUID();
     await this.storage.set(recordId, email, this.ttl);
     return recordId;
   }

@@ -12,7 +12,7 @@ import type { WebIdStore } from '../../../../../src/identity/interaction/webid/u
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 
 const uuid = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
-jest.mock('uuid', (): any => ({ v4: (): string => uuid }));
+jest.mock('node:crypto', (): any => ({ randomUUID: (): string => uuid }));
 
 describe('A CreateClientCredentialsHandler', (): void => {
   const webId = 'http://example.com/card#me';

@@ -1,15 +1,15 @@
+import { randomUUID } from 'node:crypto';
 import { Readable } from 'node:stream';
 import { DataFactory as DF } from 'n3';
 import type { Quad } from 'n3';
 import { rdfDereferencer } from 'rdf-dereference';
-import { v4 } from 'uuid';
 import { TokenOwnershipValidator } from '../../../../src/identity/ownership/TokenOwnershipValidator';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { SOLID } from '../../../../src/util/Vocabularies';
 
-jest.mock('uuid');
+jest.mock('node:crypto');
 jest.mock('rdf-dereference', (): any => ({
   rdfDereferencer: { dereference: jest.fn() },
 }));
@@ -25,7 +25,7 @@ function quadToString(qq: Quad): string {
 describe('A TokenOwnershipValidator', (): void => {
   const rdfDereferenceMock: jest.Mocked<typeof rdfDereferencer> = rdfDereferencer as any;
   const webId = 'http://alice.test.com/#me';
-  const token = 'randomlyGeneratedToken';
+  const token = '1-2-3-4-5';
   const tokenTriple = DF.quad(DF.namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, DF.literal(token));
   const tokenString = `${quadToString(tokenTriple)}.`;
   let storage: ExpiringStorage<string, string>;
@@ -41,7 +41,7 @@ describe('A TokenOwnershipValidator', (): void => {
   beforeEach(async(): Promise<void> => {
     const now = Date.now();
     jest.spyOn(Date, 'now').mockReturnValue(now);
-    jest.mocked(v4).mockReturnValue(token);
+    jest.mocked(randomUUID).mockReturnValue(token);
 
     const map = new Map<string, any>();
     storage = {
