@@ -137,7 +137,7 @@
     "sparqlalgebrajs": "^5.0.1",
     "sparqljs": "^3.7.1",
     "url-join": "^4.0.1",
-    "uuid": "^10.0.0",
+    "uuid": "^11.0.5",
     "winston": "^3.11.0",
     "winston-transport": "^4.5.0",
     "ws": "^8.14.2",
