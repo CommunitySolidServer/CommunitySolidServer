@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { getLoggerFor } from 'global-logger-factory';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
@@ -151,7 +151,7 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
   public async create<TType extends StringKey<T>>(type: TType, value: CreateTypeObject<T[TType]>):
   Promise<TypeObject<T[TType]>> {
     this.validateDefinition(type);
-    const id = v4();
+    const id = randomUUID();
     const newObj = { ...value, [INDEX_ID_KEY]: id } as unknown as VirtualObject;
     // Add the virtual keys
     for (const relation of this.getChildRelations(type)) {

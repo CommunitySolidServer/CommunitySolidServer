@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { object, string } from 'yup';
 import { getLoggerFor } from 'global-logger-factory';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
@@ -65,7 +65,7 @@ export class CreateClientCredentialsHandler extends JsonInteractionHandler<OutTy
     }
 
     const cleanedName = name ? sanitizeUrlPart(name.trim()) : '';
-    const label = `${cleanedName}_${v4()}`;
+    const label = `${cleanedName}_${randomUUID()}`;
 
     const { secret, id } = await this.clientCredentialsStore.create(label, webId, accountId);
     const resource = this.clientCredentialsRoute.getPath({ accountId, clientCredentialsId: id });

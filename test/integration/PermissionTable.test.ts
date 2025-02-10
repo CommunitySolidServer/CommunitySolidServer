@@ -1,5 +1,5 @@
+import { randomUUID } from 'node:crypto';
 import fetch from 'cross-fetch';
-import { v4 } from 'uuid';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
@@ -239,7 +239,7 @@ describe.each(stores)('A request on a server with %s authorization and %s', (
   describe.each(table)('%s %s with permissions C/: %s and C/R: %s', (...entry): void => {
     const [ method, target, cPerm, crPermTemp, body, contentType, existsCode, notExistsCode ] = entry;
     const crPerm = crPermTemp ?? cPerm;
-    const id = v4();
+    const id = randomUUID();
     const root = ensureTrailingSlash(joinUrl(baseUrl, id));
     const container = ensureTrailingSlash(joinUrl(root, 'container/'));
     const resource = joinUrl(container, 'resource');

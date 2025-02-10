@@ -10,7 +10,7 @@ import { UnprocessableEntityHttpError } from '../../../../src/util/errors/Unproc
 import { IdentifierSetMultiMap } from '../../../../src/util/map/IdentifierMap';
 import { NOTIFY, RDF, XSD } from '../../../../src/util/Vocabularies';
 
-jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
+jest.mock('node:crypto', (): any => ({ randomUUID: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 
 const dummyType = DF.namedNode('http://example.com/DummyType');
 class DummyChannelType extends BaseChannelType {

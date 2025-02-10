@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { Readable } from 'node:stream';
 import { PERMISSIONS } from '@solidlab/policy-engine';
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
@@ -7,7 +8,6 @@ import type { Store } from 'n3';
 import type { NamedNode, Term } from '@rdfjs/types';
 import { rdfParser } from 'rdf-parse';
 import SHACLValidator from 'rdf-validate-shacl';
-import { v4 } from 'uuid';
 import type { Credentials } from '../../authentication/Credentials';
 import type { AccessMap } from '../../authorization/permissions/Permissions';
 import type { InteractionRoute } from '../../identity/interaction/routing/InteractionRoute';
@@ -227,7 +227,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
     const type = data.getObjects(subject, RDF.terms.type, null)[0] as NamedNode;
 
     const channel: NotificationChannel = {
-      id: joinUrl(this.path, v4()),
+      id: joinUrl(this.path, randomUUID()),
       type: type.value,
       topic: topic.value,
     };

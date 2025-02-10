@@ -15,7 +15,7 @@ import {
 } from '../../../../../src/server/notifications/WebSocketChannel2023/WebSocketChannel2023Type';
 import { NOTIFY, RDF } from '../../../../../src/util/Vocabularies';
 
-jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
+jest.mock('node:crypto', (): any => ({ randomUUID: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 
 describe('A WebSocketChannel2023', (): void => {
   let data: Store;
