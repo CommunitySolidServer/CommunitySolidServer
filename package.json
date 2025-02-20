@@ -100,7 +100,7 @@
     "@types/yargs": "^17.0.28",
     "async-lock": "^1.4.0",
     "asynchronous-handlers": "^1.0.2",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.2",
     "componentsjs": "^6.3.0",
     "cookie": "^1.0.0",
     "cors": "^2.8.5",
