@@ -38,6 +38,7 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 * [How to automatically seed pods on startup](usage/seeding-pods.md)
 * [Receiving notifications when resources change](usage/notifications.md)
 * [Using the CSS as a development server in another project](usage/dev-configuration.md)
+* [Adding a new CLI parameter to the server](usage/new-cli-parameter.md)
 * [Which authorization method to pick](usage/authorization-methods.md)
 
 ## What the internals look like
