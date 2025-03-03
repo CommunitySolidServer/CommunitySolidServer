@@ -93,6 +93,7 @@ nav:
       - Seeding pods: usage/seeding-pods.md
       - Notifications: usage/notifications.md
       - Development server: usage/dev-configuration.md
+      - Adding a new CLI parameter: usage/new-cli-parameter.md
       - Authorization methods: usage/authorization-methods.md
   - Architecture:
       - Overview: architecture/overview.md
