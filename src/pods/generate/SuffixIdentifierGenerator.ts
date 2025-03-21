@@ -16,7 +16,7 @@ export class SuffixIdentifierGenerator implements IdentifierGenerator {
   }
 
   public generate(name: string): ResourceIdentifier {
-    const cleanName = sanitizeUrlPart(name);
+    const cleanName = sanitizeUrlPart(name).toLowerCase();
     return { path: ensureTrailingSlash(new URL(cleanName, this.base).href) };
   }
 
