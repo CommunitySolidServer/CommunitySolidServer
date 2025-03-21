@@ -19,7 +19,7 @@ export class SubdomainIdentifierGenerator implements IdentifierGenerator {
 
   public generate(name: string): ResourceIdentifier {
     // Using the punycode converter is a risk as it doesn't convert slashes for example
-    const cleanName = sanitizeUrlPart(name);
+    const cleanName = sanitizeUrlPart(name).toLowerCase();
     return { path: `${this.baseParts.scheme}${cleanName}.${this.baseParts.rest}` };
   }
 
