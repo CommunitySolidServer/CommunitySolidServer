@@ -188,7 +188,7 @@ fieldset ol ol {
 }
 fieldset ol li:not(.checkbox, .radio) {
   display: grid;
-  grid-template-columns: 10em auto;
+  grid-template-columns: minmax(10em, 1fr) minmax(200px, 2fr);
   grid-gap: 1em;
   align-items: center;
 }
@@ -208,6 +208,17 @@ fieldset li.radio > label > input {
 }
 fieldset li p {
   margin-top: .25em;
+}
+
+@media (max-width: 600px) {
+  fieldset ol li:not(.checkbox, .radio) {
+    grid-template-columns: 1fr;
+    grid-gap: 0.5em;
+  }
+  
+  fieldset ol li:not(.checkbox, .radio) label {
+    margin-bottom: 0.25em;
+  }
 }
 
 input {
