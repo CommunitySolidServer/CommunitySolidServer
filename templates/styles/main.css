@@ -236,6 +236,9 @@ fieldset li p {
 }
 
 @media (max-width: 600px) {
+  fieldset ol  {
+    padding: 0;
+  }
   fieldset ol li:not(.checkbox, .radio) {
     grid-template-columns: 1fr;
     grid-gap: 0.5em;
