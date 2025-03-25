@@ -269,12 +269,20 @@ p.error:empty {
 }
 
 p.actions {
-  margin: .5em 0 1em 11em;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: .5em 0 1em 0;
 }
-
+p.actions > button {
+  margin: .5em .5em;
+}
 ul.actions {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
   padding: 0;
-  margin: 0 0 1em 11em;
+  margin: 0 0 1em 0;
 }
 ul.actions > li {
   list-style-type: none;
