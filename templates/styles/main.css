@@ -70,6 +70,31 @@ header img {
   margin-bottom: -.5em;
 }
 
+@media (max-width: 600px) {
+  header {
+    grid-template-columns: [logo] 3.5em [title] auto;
+    grid-gap: 1em;
+    margin: 0.5em 0 1.5em;
+  }
+  header h1 {
+    font-size: 2em;
+  }
+}
+
+@media (max-width: 400px) {
+  header {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  header h1 {
+    display: none;
+  }
+  header img {
+    width: 3.5em;
+    margin: 0 auto;
+  }
+}
+
 main h1 {
   margin: 1em 0 0;
 
