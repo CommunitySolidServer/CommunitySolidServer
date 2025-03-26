@@ -357,5 +357,31 @@ describe('A WrappedIndexedStorage', (): void => {
       indexMap.delete(`child/name/${child.name}`);
       await expect(storage.delete('child', child.id)).resolves.toBeUndefined();
     });
+
+    it('can handle missing virtual keys.', async(): Promise<void> => {
+      // Remove child -> grandchild virtual key
+      delete valueMap.get(root.id)['**child**'][child2.id]['**grandchild**'];
+      await expect(storage.delete('child', child2.id)).resolves.toBeUndefined();
+
+      // Remove root -> child virtual key
+      delete valueMap.get(root.id)['**child**'];
+      await expect(storage.create('grandchild', { bool: false, parent: child.id, notIndexed: 1 }))
+        .rejects.toThrow('Could not find child ');
+      await storage.find('child', { parent: root.id });
+      const newChild = await storage.create('child', { name: 'name', parent: root.id, notIndexed: 1 });
+      await expect(storage.delete('child', child.id))
+        .rejects.toThrow('Could not find child ');
+      await expect(storage.has('child', child.id)).resolves.toBe(false);
+      await expect(storage.get('child', child.id)).resolves.toBeUndefined();
+      await expect(storage.setField('child', child.id, 'name', 'name'))
+        .rejects.toThrow('Could not find child ');
+      const entries: string[] = [];
+      for await (const entry of storage.entries('child')) {
+        entries.push(entry.id);
+      }
+      expect(entries).toHaveLength(2);
+      expect(entries).toContain(newChild.id);
+      expect(entries).toContain(child3.id);
+    });
   });
 });
