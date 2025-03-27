@@ -105,6 +105,10 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
           this.logger.error(`Type definition of ${type} has multiple references, only 1 is allowed.`);
           throw new InternalServerError(`Type definition of ${type} has multiple references, only 1 is allowed.`);
         }
+        if (desc.endsWith('[]')) {
+          this.logger.error(`Type definition of ${type} has array references, which is not allowed.`);
+          throw new InternalServerError(`Type definition of ${type} has array references, which is not allowed.`);
+        }
         if (desc.endsWith('?')) {
           this.logger.error(`Type definition of ${type} has optional references, which is not allowed.`);
           throw new InternalServerError(`Type definition of ${type} has optional references, which is not allowed.`);
