@@ -15,6 +15,7 @@
   "Error",
   "EventEmitter",
   "FetchDocumentLoader",
+  "GenericAccountSettings",
   "GenericEventEmitter",
   "HashMap",
   "HttpErrorOptions",
