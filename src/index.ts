@@ -156,6 +156,7 @@ export * from './identity/interaction/account/util/BaseAccountStore';
 export * from './identity/interaction/account/util/BaseCookieStore';
 export * from './identity/interaction/account/util/BaseLoginAccountStorage';
 export * from './identity/interaction/account/util/CookieStore';
+export * from './identity/interaction/account/util/GenericAccountStore';
 export * from './identity/interaction/account/util/LoginStorage';
 
 // Identity/Interaction/Account
