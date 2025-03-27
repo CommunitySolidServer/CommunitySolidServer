@@ -59,6 +59,10 @@ describe('A WrappedIndexedStorage', (): void => {
         .rejects.toThrow(InternalServerError);
     });
 
+    it('errors when defining types with array references.', async(): Promise<void> => {
+      await expect(storage.defineType('root', { ref: 'id:Type1[]' } as any)).rejects.toThrow(InternalServerError);
+    });
+
     it('errors when defining types with optional references.', async(): Promise<void> => {
       await expect(storage.defineType('root', { ref: 'id:Type1?' } as any)).rejects.toThrow(InternalServerError);
     });
