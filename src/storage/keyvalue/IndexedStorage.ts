@@ -8,18 +8,20 @@ export const INDEX_ID_KEY = 'id';
  * Valid values are `"string"`, `"boolean"`, `"number"` and `"id:TYPE"`,
  * with TYPE being one of the types in the definition.
  * In the latter case this means that key points to an identifier of the specified type.
+ * A `[]` can be appended to the type to indicate the value is an array.
  * A `?` can be appended to the type to indicate this key is optional.
  */
 export type ValueTypeDescription<TType = string> =
   `${('string' | 'boolean' | 'number' | (TType extends string ? `${typeof INDEX_ID_KEY}:${TType}` : never))}${
-  '?' | ''}`;
+  '[]' | ''}${'?' | ''}`;
 
 /**
  * Converts a {@link ValueTypeDescription} to the type it should be interpreted as.
  */
 export type ValueType<T extends ValueTypeDescription> =
-  (T extends 'boolean' | 'boolean?' ? boolean : T extends 'number' | 'number?' ? number : string) |
-  (T extends `${string}?` ? undefined : never);
+  (T extends `${infer E extends ValueTypeDescription}[]${string}` ? ValueType<E>[] :
+    T extends `boolean${string}` ? boolean : T extends `number${string}` ? number : string) |
+    (T extends `${string}?` ? undefined : never);
 
 /**
  * Used to filter on optional keys in a {@link IndexedStorage} definition.
