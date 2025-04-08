@@ -68,7 +68,7 @@ describe('A StaticAssetHandler', (): void => {
     await handler.handleSafe({ request, response } as any);
 
     expect(response.statusCode).toBe(200);
-    expect(response.getHeaders()).toHaveProperty('content-type', 'application/javascript');
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/javascript');
 
     await responseEnd;
     expect(response._getData()).toBe('');
