@@ -1,7 +1,34 @@
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD013 -->
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [8.0.0-alpha.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.7...v8.0.0-alpha.0) (2025-04-22)
+
+### Features
+
+* Use @solid/police-engine permissions internally ([cc8e355](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cc8e3554c46b3c342ed9651e08c0bc8d60c46119))
+* Use @solidlab/policy-engine for authorization ([2ebe094](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2ebe094ba2e14ceb6d707ec3f4ed8898f3ca2db8))
+* Add backend caching support ([71bec13](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/71bec13d83ae00d0b5a670e7407713d3eccdccbc))
+* Use rdf-vocabulary library ([6d5f56c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6d5f56cfe46a20ec1eb92f66706fd1b41165b8c3))
+* Use asynchandler library for handlers ([58574ee](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/58574eec0724e622f0e1d7e3ee4dd7218d44ded9))
+* Replace logging with external library ([dce39f6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/dce39f67e82091416d236e80dabfc26c1ee1b3eb))
+
+### Fixes
+
+* Prevent edge case issues with permissions ([2585fb6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2585fb661e3e832faa57946775ee771c8ffbf407))
+* Correctly handle read/delete permissions ([dd41c4b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/dd41c4be297feca2a997436f3d5d445b44b7c1e4))
+
+### Documentation
+
+* Update architecture documentation with new handlers ([ee2be94](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ee2be9409f4af95874a7ed26bccc197d6ff93941))
+* Mention exported libraries in release notes ([4bea9e3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4bea9e3061f02401f8624ccf5cb44511aac05b6d))
+
+### Refactors
+
+* Clean up authorization configurations ([6dd4913](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6dd4913a8aa176c36dc27d1291e004e143354d26))
+* Rename PermissionMap to MultiPermissionMap ([4d27ce0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4d27ce04aa925b7b31c145ef4c2c940160c266f3))
 
 ## [7.1.7](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.6...v7.1.7) (2025-04-01)
 
