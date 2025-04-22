@@ -1,6 +1,9 @@
+import fetch, { Headers } from 'cross-fetch';
+import * as fsExtra from 'fs-extra';
 import type { ValuePreferences } from '../../../../src/http/representation/RepresentationPreferences';
 import {
   cleanPreferences,
+  ContextDocumentLoader,
   getBestPreference,
   getConversionTarget,
   getTypeWeight,
@@ -12,7 +15,88 @@ import {
 } from '../../../../src/storage/conversion/ConversionUtil';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 
+jest.useFakeTimers();
+
+// All of this is necessary to not break the cross-fetch imports that happen in `rdf-parse`
+jest.mock('cross-fetch', (): any => {
+  const mock = jest.fn();
+  // Require the original module to not be mocked...
+  const originalFetch = jest.requireActual('cross-fetch');
+  return {
+    __esModule: true,
+    ...originalFetch,
+    fetch: mock,
+    default: mock,
+  };
+});
+
+jest.mock('fs-extra', (): any => ({
+  __esModule: true,
+  ...jest.requireActual('fs-extra'),
+}));
+
 describe('ConversionUtil', (): void => {
+  describe('ContextDocumentLoader', (): void => {
+    const fetchMock: jest.Mock = fetch as any;
+    const context1 = {
+      '@context': {
+        '@version': 1.1,
+        test: 'http://example.com/context1#',
+      },
+    };
+    const context2 = {
+      '@context': {
+        '@version': 1.1,
+        test: 'http://example.com/context2#',
+      },
+    };
+    const url = 'http://example.com/foo';
+
+    function mockOnce(context: unknown): void {
+      fetchMock.mockResolvedValueOnce({
+        json: (): any => context,
+        status: 200,
+        ok: true,
+        headers: new Headers({ 'content-type': 'application/ld+json' }),
+      });
+    }
+
+    it('fetches the context URL.', async(): Promise<void> => {
+      const loader = new ContextDocumentLoader({});
+
+      mockOnce(context1);
+
+      await expect(loader.load(url)).resolves.toEqual(context1);
+    });
+
+    it('returns the stored context if there is a match.', async(): Promise<void> => {
+      const mock = jest.spyOn(fsExtra, 'readJsonSync');
+      mock.mockReturnValueOnce(context2);
+
+      const loader = new ContextDocumentLoader({ [url]: 'path' });
+
+      mockOnce(context1);
+
+      await expect(loader.load(url)).resolves.toEqual(context2);
+    });
+
+    it('caches fetched results for the given amount of time.', async(): Promise<void> => {
+      const loader = new ContextDocumentLoader({}, 100);
+
+      mockOnce(context1);
+      mockOnce(context1);
+
+      await expect(loader.load(url)).resolves.toEqual(context1);
+      await expect(loader.load(url)).resolves.toEqual(context1);
+
+      jest.advanceTimersByTime(100);
+
+      await expect(loader.load(url)).resolves.toEqual(context1);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('#cleanPreferences', (): void => {
     it('supports all types for empty preferences.', async(): Promise<void> => {
       expect(cleanPreferences()).toEqual({ '*/*': 1, 'internal/*': 0 });

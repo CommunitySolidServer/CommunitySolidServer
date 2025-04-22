@@ -13,6 +13,10 @@ describe('A SuffixIdentifierGenerator', (): void => {
     expect(generator.generate('sàl/u㋡g')).toEqual({ path: `${base}s-l-u-g/` });
   });
 
+  it('converts the name to lowercase.', async(): Promise<void> => {
+    expect(generator.generate('Sàl/u㋡G')).toEqual({ path: `${base}s-l-u-g/` });
+  });
+
   it('can extract the pod from an identifier.', async(): Promise<void> => {
     const identifier = { path: 'http://example.com/foo/bar/baz' };
     expect(generator.extractPod(identifier)).toEqual({ path: 'http://example.com/foo/' });

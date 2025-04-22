@@ -36,6 +36,11 @@ describe('An IdInteractionRoute', (): void => {
       expect(route.matchPath('http://example.com/1234/')).toEqual({ base: 'base', id: '1234' });
     });
 
+    it('can match paths without trailing slash if ensureSlash is false.', async(): Promise<void> => {
+      route = new IdInteractionRoute<'base', 'id'>(base, idName, false);
+      expect(route.matchPath('http://example.com/1234')).toEqual({ base: 'base', id: '1234' });
+    });
+
     it('returns undefined if there is no match.', async(): Promise<void> => {
       expect(route.matchPath('http://example.com/1234')).toBeUndefined();
     });

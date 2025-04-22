@@ -3,6 +3,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.7](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.6...v7.1.7) (2025-04-01)
+
+### Features
+
+* Allow IndexedStorage to have array fields ([564a2fb](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/564a2fbf70be2f20291cb5eb5e2693bf8f7e0b41))
+* Cache JSON-LD contexts ([262cdee](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/262cdee72c5af492294159e8a4da142cb0793e5e))
+
+### Fixes
+
+* Make the WrappedIndexedStorage more robust for structure changes ([dc309a5](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/dc309a51de23e372c5478b564f398e8ccc33f2e3))
+* Force pod names to be lower case ([6ee84fe](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6ee84feaa7bb1b5582961b1f09d0684a9ad228d7))
+* Make template more responsive ([fe4a6fd](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fe4a6fd82199c61ee4b4322fb9270eaed412a630))
+* Correctly match IdInteractionRoutes without trailing slash ([0efef1c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0efef1cdacdbe476c343e9461a69988088e2cb2c))
+
+### Documentation
+
+* Explain the pod name will be converted to lower case ([ca86b93](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ca86b932847e5cadf818d08d3564ac5d9a506667))
+* Add tutorial on how to add a CLI parameter ([647d110](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/647d110bf115b8062ca34a889feacf82ffa92d7a))
+
+### Refactors
+
+* Add generics to AccountStore so it can be more easily extended ([616a238](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/616a238e6e7ff42d75069074667a5e5d4cfcb2d5))
+
 ## [7.1.6](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.5...v7.1.6) (2025-01-30)
 
 ### Fixes

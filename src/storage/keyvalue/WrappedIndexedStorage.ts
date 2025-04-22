@@ -105,12 +105,19 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
           this.logger.error(`Type definition of ${type} has multiple references, only 1 is allowed.`);
           throw new InternalServerError(`Type definition of ${type} has multiple references, only 1 is allowed.`);
         }
+        if (desc.endsWith('[]')) {
+          this.logger.error(`Type definition of ${type} has array references, which is not allowed.`);
+          throw new InternalServerError(`Type definition of ${type} has array references, which is not allowed.`);
+        }
         if (desc.endsWith('?')) {
           this.logger.error(`Type definition of ${type} has optional references, which is not allowed.`);
           throw new InternalServerError(`Type definition of ${type} has optional references, which is not allowed.`);
         }
         hasParentKey = true;
-        this.relations.push({ parent: { type: desc.slice(3), key: `**${type}**` }, child: { type, key }});
+        this.relations.push({
+          parent: { type: desc.slice(INDEX_ID_KEY.length + 1), key: `**${type}**` },
+          child: { type, key },
+        });
       }
     }
     this.indexes[type] = new Set([ INDEX_ID_KEY ]);
@@ -176,6 +183,10 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
     const parentObj = relation.parent.type === this.rootType ?
       root :
       this.getContainingRecord(root, relation.parent.type, parentId)[parentId];
+    // Parent relation key could be undefined if the index structure changed
+    if (!parentObj[relation.parent.key]) {
+      parentObj[relation.parent.key] = {};
+    }
     parentObj[relation.parent.key][id] = newObj;
 
     await this.valueStorage.set(root[INDEX_ID_KEY], root);
@@ -319,6 +330,10 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
    */
   protected getPathRecords(obj: VirtualObject, path: VirtualKey<string>[]): Record<string, VirtualObject>[] {
     const record = obj[path[0]];
+    if (!record) {
+      // Can occur if virtual keys are missing due to the index structure changing
+      return [];
+    }
     if (path.length === 1) {
       return [ record ];
     }
@@ -581,7 +596,8 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
         query[relation.child.key]) as IndexedQuery<T, typeof relation.parent.type>;
       // All objects by recursively calling this function on the parent object and extracting all children of this type
       objs = (await this.solveQuery(relation.parent.type, subQuery, indexedRoots))
-        .flatMap((parentObj): VirtualObject[] => Object.values(parentObj[relation.parent.key]));
+        // Parent key field can be undefined if the index structure changed
+        .flatMap((parentObj): VirtualObject[] => Object.values(parentObj[relation.parent.key] ?? {}));
     }
 
     // For all keys that were not handled recursively: make sure that it matches the found objects
@@ -616,7 +632,8 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
     promises.push(this.updateTypeIndex(type, rootId, oldObj, newObj));
 
     for (const { parent, child } of this.getChildRelations(type)) {
-      const oldRecord: Record<string, VirtualObject> = oldObj[parent.key];
+      // `oldRecord` can be undefined if the index structure changed
+      const oldRecord: Record<string, VirtualObject> = oldObj[parent.key] ?? {};
       const newRecord: Record<string, VirtualObject> = newObj?.[parent.key] ?? {};
       const uniqueKeys = new Set([ ...Object.keys(oldRecord), ...Object.keys(newRecord) ]);
       for (const key of uniqueKeys) {

@@ -9,11 +9,13 @@ export class IdInteractionRoute<TBase extends string, TId extends string> implem
   private readonly base: InteractionRoute<TBase>;
   private readonly idName: TId;
   private readonly ensureSlash: boolean;
+  private readonly matchRegex: RegExp;
 
   public constructor(base: InteractionRoute<TBase>, idName: TId, ensureSlash = true) {
     this.base = base;
     this.idName = idName;
     this.ensureSlash = ensureSlash;
+    this.matchRegex = ensureSlash ? /(.*\/)([^/]+)\/$/u : /(.*\/)([^/]+)$/u;
   }
 
   public getPath(parameters?: Record<TBase | TId, string>): string {
@@ -27,7 +29,7 @@ export class IdInteractionRoute<TBase extends string, TId extends string> implem
   }
 
   public matchPath(path: string): Record<TBase | TId, string> | undefined {
-    const match = /(.*\/)([^/]+)\/$/u.exec(path);
+    const match = this.matchRegex.exec(path);
 
     if (!match) {
       return;

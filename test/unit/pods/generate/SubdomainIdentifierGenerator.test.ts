@@ -13,6 +13,10 @@ describe('A SubdomainIdentifierGenerator', (): void => {
     expect(generator.generate('sàl/u㋡g')).toEqual({ path: 'http://s-l-u-g.example.com/' });
   });
 
+  it('converts the name to lowercase.', async(): Promise<void> => {
+    expect(generator.generate('Sàl/u㋡G')).toEqual({ path: 'http://s-l-u-g.example.com/' });
+  });
+
   it('can extract the pod from an identifier.', async(): Promise<void> => {
     const identifier = { path: 'http://foo.example.com/bar/baz' };
     expect(generator.extractPod(identifier)).toEqual({ path: 'http://foo.example.com/' });

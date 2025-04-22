@@ -1,3 +1,4 @@
+import TTLCache from '@isaacs/ttlcache';
 import fetch from 'cross-fetch';
 import { readJsonSync } from 'fs-extra';
 import type { IJsonLdContext } from 'jsonld-context-parser';
@@ -17,15 +18,23 @@ import { resolveAssetPath } from '../../util/PathUtil';
  * and this is the key that is used to define the document loader.
  * See https://github.com/rubensworks/rdf-parse.js/blob/master/lib/RdfParser.ts
  * and https://github.com/comunica/comunica/blob/master/packages/actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts
+ *
+ * The loader has an internal cache that stores fetched documents for 30 minutes by default.
+ * This is to prevent spamming a context URL in case there are many requests.
+ * This cache can be disabled by setting the `ttl` to 0.
  */
 export class ContextDocumentLoader extends FetchDocumentLoader {
   private readonly contexts: Record<string, IJsonLdContext>;
+  private readonly cache?: TTLCache<string, IJsonLdContext>;
 
-  public constructor(contexts: Record<string, string>) {
+  public constructor(contexts: Record<string, string>, ttl = 30 * 60 * 1000) {
     super(fetch);
     this.contexts = {};
     for (const [ key, path ] of Object.entries(contexts)) {
       this.contexts[key] = readJsonSync(resolveAssetPath(path)) as IJsonLdContext;
+    }
+    if (ttl > 0) {
+      this.cache = new TTLCache({ ttl, updateAgeOnGet: true });
     }
   }
 
@@ -33,7 +42,17 @@ export class ContextDocumentLoader extends FetchDocumentLoader {
     if (url in this.contexts) {
       return this.contexts[url];
     }
-    return super.load(url);
+    const cached = this.cache?.get(url);
+    if (cached) {
+      return cached;
+    }
+    const result = await super.load(url);
+
+    if (this.cache) {
+      this.cache.set(url, result);
+    }
+
+    return result;
   }
 }
 
@@ -44,7 +63,7 @@ export class ContextDocumentLoader extends FetchDocumentLoader {
  *
  * @param preferences - Preferences that need to be updated.
  *
- * @returns A copy of the the preferences with the necessary updates.
+ * @returns A copy of the preferences with the necessary updates.
  */
 export function cleanPreferences(preferences: ValuePreferences = {}): ValuePreferences {
   // No preference means anything is acceptable

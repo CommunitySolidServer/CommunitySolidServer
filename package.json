@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "7.1.6",
+  "version": "7.1.7",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "license": "MIT",
   "homepage": "https://github.com/CommunitySolidServer/CommunitySolidServer#readme",
@@ -74,6 +74,7 @@
   "dependencies": {
     "@comunica/context-entries": "^4.0.2",
     "@comunica/query-sparql": "^4.0.2",
+    "@isaacs/ttlcache": "^1.4.1",
     "@rdfjs/types": "^1.1.0",
     "@solid/access-token-verifier": "^2.1.0",
     "@solidlab/policy-engine": "^0.0.2",

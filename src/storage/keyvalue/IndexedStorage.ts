@@ -8,18 +8,20 @@ export const INDEX_ID_KEY = 'id';
  * Valid values are `"string"`, `"boolean"`, `"number"` and `"id:TYPE"`,
  * with TYPE being one of the types in the definition.
  * In the latter case this means that key points to an identifier of the specified type.
+ * A `[]` can be appended to the type to indicate the value is an array.
  * A `?` can be appended to the type to indicate this key is optional.
  */
 export type ValueTypeDescription<TType = string> =
   `${('string' | 'boolean' | 'number' | (TType extends string ? `${typeof INDEX_ID_KEY}:${TType}` : never))}${
-  '?' | ''}`;
+  '[]' | ''}${'?' | ''}`;
 
 /**
  * Converts a {@link ValueTypeDescription} to the type it should be interpreted as.
  */
 export type ValueType<T extends ValueTypeDescription> =
-  (T extends 'boolean' | 'boolean?' ? boolean : T extends 'number' | 'number?' ? number : string) |
-  (T extends `${string}?` ? undefined : never);
+  (T extends `${infer E extends ValueTypeDescription}[]${string}` ? ValueType<E>[] :
+    T extends `boolean${string}` ? boolean : T extends `number${string}` ? number : string) |
+    (T extends `${string}?` ? undefined : never);
 
 /**
  * Used to filter on optional keys in a {@link IndexedStorage} definition.
@@ -27,14 +29,23 @@ export type ValueType<T extends ValueTypeDescription> =
 export type OptionalKey<T> = {[K in keyof T ]: T[K] extends `${string}?` ? K : never }[keyof T];
 
 /**
- * Converts a {@link IndexedStorage} definition of a specific type
- * to the typing an object would have that is returned as an output on function calls.
+ * Converts a key/value object type description with {@link ValueTypeDescription} values
+ * to the corresponding JS type.
+ * E.g., { key: 'boolean?' } becomes { key?: boolean }.
  */
-export type TypeObject<TDesc extends Record<string, ValueTypeDescription>> = {
+export type IndexObject<TDesc extends Record<string, ValueTypeDescription>> = {
   -readonly [K in Exclude<keyof TDesc, OptionalKey<TDesc>>]: ValueType<TDesc[K]>;
 } & {
   -readonly [K in keyof TDesc]?: ValueType<TDesc[K]>;
-} & { [INDEX_ID_KEY]: string };
+};
+
+/**
+ * Converts a {@link IndexedStorage} definition of a specific type
+ * to the typing an object would have that is returned as an output on function calls.
+ * Makes sure the required `id` parameter is always present.
+ */
+export type TypeObject<TDesc extends Record<string, ValueTypeDescription>> =
+  IndexObject<TDesc> & { [INDEX_ID_KEY]: string };
 
 /**
  * Input expected for `create()` call in {@link IndexedStorage}.
