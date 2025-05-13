@@ -8,9 +8,9 @@
   This only works for servers running on a single thread.
 - Several parts of the codebase have been exported to external libraries.
     - Everything related to logging: [global-logger-factory](https://www.npmjs.com/package/global-logger-factory).
-    - `AsyncHandler` and utility handlers such as `WaterfallHandler`: [asynchronous-handlers`](https://www.npmjs.com/package/asynchronous-handlers).
+    - `AsyncHandler` and utility handlers such as `WaterfallHandler`: [asynchronous-handlers](https://www.npmjs.com/package/asynchronous-handlers).
     - Utilities for creating vocabularies: [rdf-vocabulary](https://www.npmjs.com/package/rdf-vocabulary).
-    - WAC/ACP authorization: [@solidlab/policy-engine]
+    - WAC/ACP authorization: [@solidlab/policy-engine](https://github.com/CommunitySolidServer/policy-engine).
 
 ### Data migration
 
