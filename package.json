@@ -86,7 +86,7 @@
     "@types/end-of-stream": "^1.4.2",
     "@types/fs-extra": "^11.0.2",
     "@types/lodash.orderby": "^4.6.7",
-    "@types/mime-types": "^2.1.2",
+    "@types/mime-types": "^3.0.0",
     "@types/n3": "^1.21.1",
     "@types/node": "^18.18.4",
     "@types/nodemailer": "^6.4.11",
