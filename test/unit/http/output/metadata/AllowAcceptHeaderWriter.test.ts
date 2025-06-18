@@ -1,6 +1,5 @@
 import { createResponse } from 'node-mocks-http';
 import { AllowAcceptHeaderWriter } from '../../../../../src/http/output/metadata/AllowAcceptHeaderWriter';
-import type { MetadataRecord } from '../../../../../src/http/representation/RepresentationMetadata';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 import { MethodNotAllowedHttpError } from '../../../../../src/util/errors/MethodNotAllowedHttpError';
@@ -22,8 +21,7 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     {
       [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ],
       [LDP.contains]: [ document.identifier ],
-      // Typescript doesn't find the correct constructor without the cast
-    } as MetadataRecord,
+    },
   );
   const storageContainer = new RepresentationMetadata(
     { path: 'http://example.com/foo/' },
@@ -149,5 +147,14 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
     expect(headers['accept-put']).toBe('*/*');
     expect(headers['accept-post']).toBe('*/*');
+  });
+
+  it('other errors do not return Accept- headers.', async(): Promise<void> => {
+    await expect(writer.handleSafe({ response, metadata: new RepresentationMetadata() })).resolves.toBeUndefined();
+    const headers = response.getHeaders();
+    expect(headers.allow).toBeUndefined();
+    expect(headers['accept-patch']).toBeUndefined();
+    expect(headers['accept-put']).toBeUndefined();
+    expect(headers['accept-post']).toBeUndefined();
   });
 });

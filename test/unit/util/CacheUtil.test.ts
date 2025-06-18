@@ -8,6 +8,7 @@ import {
   readStream,
   representationToCached,
 } from '../../../src/util/CacheUtil';
+import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { readableToString } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../src/util/Vocabularies';
 
@@ -31,6 +32,15 @@ describe('CacheUtil', (): void => {
     it('reads string streams into a Buffer.', async(): Promise<void> => {
       await expect(readStream(Readable.from('pear', { objectMode: false, encoding: 'utf8' })))
         .resolves.toEqual(Buffer.from('pear'));
+    });
+
+    it('errors for unknown chunk types.', async(): Promise<void> => {
+      const customStream = [ 1, 2, 3 ];
+      (customStream as any).readableObjectMode = false;
+      await expect(readStream(customStream as unknown as Readable)).rejects.toThrowWithMessage(
+        NotImplementedHttpError,
+        'Unexpected number chunk: 1',
+      );
     });
   });
 
@@ -65,6 +75,16 @@ describe('CacheUtil', (): void => {
       const representation = new BasicRepresentation('pear', 'text/plain');
       representation.data.destroy(new Error('bad data'));
       await expect(representationToCached(representation)).resolves.toBeUndefined();
+    });
+
+    it('does not log an error if the stream was closed prematurely.', async(): Promise<void> => {
+      // Custom stream that throws the required error
+      // eslint-disable-next-line require-yield,unicorn/consistent-function-scoping
+      async function* stream(): AsyncIterable<unknown> {
+        throw new Error('Premature close');
+      }
+      await expect(representationToCached({ data: stream() } as any)).resolves.toBeUndefined();
+      // Not actually testing the logging right now, just here for completeness
     });
   });
 

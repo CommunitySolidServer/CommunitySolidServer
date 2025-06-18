@@ -48,7 +48,6 @@ module.exports = {
     '^.+\\.ts$': [ 'ts-jest', {
       tsconfig: '<rootDir>/test/tsconfig.json',
       diagnostics: false,
-      isolatedModules: true,
     }],
     // This transformer converts ESM packages to CJS
     '^.+node_modules.+\\.js$': 'jest-esm-transformer-2',
@@ -63,7 +62,7 @@ module.exports = {
   testEnvironment: 'node',
   globalSetup: '<rootDir>/test/util/SetupTests.ts',
   globalTeardown: '<rootDir>/test/util/TeardownTests.ts',
-  setupFilesAfterEnv: [ 'jest-rdf' ],
+  setupFilesAfterEnv: [ 'jest-rdf', 'jest-extended/all' ],
   collectCoverage: false,
   // See https://github.com/matthieubosquet/ts-dpop/issues/13
   moduleNameMapper: {

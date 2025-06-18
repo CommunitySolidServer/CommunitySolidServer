@@ -25,12 +25,6 @@ describe('A ReadDeleteAuthorizer', (): void => {
     requestedModes = new IdentifierSetMultiMap();
     availablePermissions = new IdentifierMap();
 
-    input = {
-      requestedModes: new IdentifierSetMultiMap(),
-      availablePermissions: new IdentifierMap(),
-      credentials: {},
-    };
-
     resourceSet = {
       hasResource: jest.fn().mockResolvedValue(true),
     };
@@ -89,5 +83,12 @@ describe('A ReadDeleteAuthorizer', (): void => {
     await expect(authorizer.handle(input)).rejects.toThrow(InternalServerError);
     expect(source.handle.mock.calls[0][0].availablePermissions.get({ path: resource })?.[PERMISSIONS.Delete])
       .toBe(false);
+  });
+
+  it('does not change non-delete requests.', async(): Promise<void> => {
+    requestedModes.add({ path: resource }, PERMISSIONS.Read);
+
+    await expect(authorizer.handle(input)).rejects.toThrow(InternalServerError);
+    expect(source.handle.mock.calls[0][0].requestedModes.get({ path: resource })?.has(PERMISSIONS.Read)).toBe(true);
   });
 });
