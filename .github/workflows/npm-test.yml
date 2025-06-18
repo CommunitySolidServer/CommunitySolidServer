@@ -29,6 +29,8 @@ jobs:
           - 20.x
           - '22.1'
           - 22.x
+          - '24.0'
+          - 22.x
     timeout-minutes: 15
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
@@ -61,6 +63,7 @@ jobs:
           - 18.x
           - 20.x
           - 22.x
+          - 24.x
     env:
       TEST_DOCKER: true
     services:
@@ -96,6 +99,7 @@ jobs:
           - 18.x
           - 20.x
           - 22.x
+          - 24.x
     timeout-minutes: 20
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
