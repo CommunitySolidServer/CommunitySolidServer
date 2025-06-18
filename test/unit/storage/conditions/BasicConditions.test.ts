@@ -92,4 +92,9 @@ describe('A BasicConditions', (): void => {
     expect(new BasicConditions(eTagHandler, { matchesETag: [ '*' ]}).matchesMetadata()).toBe(false);
     expect(new BasicConditions(eTagHandler, {}).matchesMetadata()).toBe(true);
   });
+
+  it('returns true for empty metadata.', async(): Promise<void> => {
+    const conditions = new BasicConditions(eTagHandler, {});
+    expect(conditions.matchesMetadata(new RepresentationMetadata())).toBe(true);
+  });
 });

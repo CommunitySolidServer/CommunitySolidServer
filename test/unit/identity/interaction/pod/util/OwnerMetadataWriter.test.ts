@@ -12,6 +12,7 @@ describe('An OwnerMetadataWriter', (): void => {
   const accountId = 'accountId';
   const target = { path: 'http://example.com/pod/' };
   const webId = 'http://example.com/webId#me';
+  const webId2 = 'http://example.com/webId2#me';
   let metadata: RepresentationMetadata;
   let response: ServerResponse;
   let podStore: jest.Mocked<PodStore>;
@@ -25,7 +26,7 @@ describe('An OwnerMetadataWriter', (): void => {
 
     podStore = {
       findByBaseUrl: jest.fn().mockResolvedValue({ id, accountId }),
-      getOwners: jest.fn().mockResolvedValue([{ webId, visible: true }]),
+      getOwners: jest.fn().mockResolvedValue([{ webId, visible: true }, { webId: webId2, visible: false }]),
     } satisfies Partial<PodStore> as any;
 
     storageStrategy = {

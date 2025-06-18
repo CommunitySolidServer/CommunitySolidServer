@@ -275,6 +275,59 @@ describe('An IdentityProviderFactory', (): void => {
     expect(oAuthError.stack).toContain('Error: bad data - more info - more details');
   });
 
+  it('can handle errors without stack.', async(): Promise<void> => {
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+
+    const error = new Error('bad data') as errors.OIDCProviderError;
+    delete error.stack;
+
+    const oAuthError = new OAuthHttpError(error, error.name, 500, 'bad data');
+    delete oAuthError.stack;
+
+    await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error: oAuthError, request: ctx.req });
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
+    expect(oAuthError.message).toBe('bad data');
+    expect(oAuthError.stack).toBeUndefined();
+  });
+
+  it('does not provide additional information if showStackTrace is set to false.', async(): Promise<void> => {
+    factory = new IdentityProviderFactory(baseConfig, {
+      promptFactory,
+      adapterFactory,
+      baseUrl,
+      oidcPath,
+      interactionRoute,
+      storage,
+      jwkGenerator,
+      clientCredentialsStore,
+      showStackTrace: false,
+      errorHandler,
+      responseWriter,
+    });
+
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+
+    const error = new Error('bad data') as errors.OIDCProviderError;
+    error.error_description = 'more info';
+    error.error_detail = 'more details';
+
+    const oAuthError = new OAuthHttpError(error, error.name, 500, 'bad data');
+
+    await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe)
+      .toHaveBeenLastCalledWith({ error: oAuthError, request: ctx.req });
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
+    expect(oAuthError.message).toBe('bad data');
+    expect(oAuthError.stack).toContain('Error: bad data');
+  });
+
   it('throws a specific error for unknown clients.', async(): Promise<void> => {
     const provider = await factory.getProvider() as any;
     const { config } = provider as { config: Configuration };

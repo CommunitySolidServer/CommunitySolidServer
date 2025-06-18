@@ -48,4 +48,11 @@ describe('A BaseStateHandler', (): void => {
     expect(channel.state).toBe('123');
     expect(storage.update).toHaveBeenCalledTimes(0);
   });
+
+  it('does nothing if there is no state.', async(): Promise<void> => {
+    delete channel.state;
+    await expect(handler.handleSafe({ channel })).resolves.toBeUndefined();
+    expect(notificationHandler.handleSafe).toHaveBeenCalledTimes(0);
+    expect(storage.update).toHaveBeenCalledTimes(0);
+  });
 });
