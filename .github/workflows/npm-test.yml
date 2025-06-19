@@ -30,7 +30,7 @@ jobs:
           - '22.1'
           - 22.x
           - '24.0'
-          - 22.x
+          - 24.x
     timeout-minutes: 15
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
