@@ -2,7 +2,7 @@ import { v4 } from 'uuid';
 import { object, string } from 'yup';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import { sanitizeUrlPart } from '../../../util/StringUtil';
+import { ConflictHttpError } from '../../../util/errors/ConflictHttpError';
 import { assertAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
@@ -64,8 +64,13 @@ export class CreateClientCredentialsHandler extends JsonInteractionHandler<OutTy
       throw new BadRequestHttpError('WebID does not belong to this account.');
     }
 
-    const cleanedName = name ? sanitizeUrlPart(name.trim()) : '';
-    const label = `${cleanedName}_${v4()}`;
+    if (name && await this.clientCredentialsStore.findByLabel(name)) {
+      throw new ConflictHttpError('Token with this name already exists.');
+    }
+
+    // ?? will pass empty string through
+    // eslint-disable-next-line ts/prefer-nullish-coalescing
+    const label = name || v4();
 
     const { secret, id } = await this.clientCredentialsStore.create(label, webId, accountId);
     const resource = this.clientCredentialsRoute.getPath({ accountId, clientCredentialsId: id });
