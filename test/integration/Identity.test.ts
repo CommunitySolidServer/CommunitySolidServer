@@ -339,7 +339,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     });
   });
 
-  describe('using client_credentials', (): void => {
+  describe('using client_credentials - string', (): void => {
     const tokenUrl = joinUrl(baseUrl, '.oidc/token');
     let dpopKey: KeyPair;
     let id: string | undefined;
@@ -367,6 +367,67 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
         method: 'POST',
         headers: { cookie, 'content-type': 'application/json' },
         body: JSON.stringify({ name: 'token', webId }),
+      });
+
+      expect(res.status).toBe(200);
+      ({ id, secret } = await res.json());
+    });
+
+    it('can request an access token using the credentials.', async(): Promise<void> => {
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const authString = `${encodeURIComponent(id!)}:${encodeURIComponent(secret!)}`;
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          authorization: `Basic ${Buffer.from(authString).toString('base64')}`,
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: 'grant_type=client_credentials&scope=webid',
+      });
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      ({ access_token: accessToken } = json);
+      expect(typeof accessToken).toBe('string');
+    });
+
+    it('can use the generated access token to do an authenticated call.', async(): Promise<void> => {
+      const authFetch = await buildAuthenticatedFetch(accessToken!, { dpopKey });
+      let res = await fetch(container);
+      expect(res.status).toBe(401);
+      res = await authFetch(container);
+      expect(res.status).toBe(200);
+    });
+  });
+
+  describe('using client_credentials - url', (): void => {
+    const tokenUrl = joinUrl(baseUrl, '.oidc/token');
+    let dpopKey: KeyPair;
+    let id: string | undefined;
+    let secret: string | undefined;
+    let accessToken: string | undefined;
+
+    beforeAll(async(): Promise<void> => {
+      dpopKey = await generateDpopKeyPair();
+    });
+
+    it('can request a credentials token.', async(): Promise<void> => {
+      // Login and save cookie
+      const loginResponse = await fetch(controls.password.login, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
+      const cookie = `${cookies[0].name}=${cookies[0].value}`;
+
+      // Request token
+      const accountJson = await (await fetch(indexUrl, { headers: { cookie }})).json();
+      const credentialsUrl = accountJson.controls.account.clientCredentials;
+      const res = await fetch(credentialsUrl, {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ name: 'https://client.example/id.json', webId }),
       });
 
       expect(res.status).toBe(200);
