@@ -68,9 +68,7 @@ export class CreateClientCredentialsHandler extends JsonInteractionHandler<OutTy
       throw new ConflictHttpError('Token with this name already exists.');
     }
 
-    // ?? will pass empty string through
-    // eslint-disable-next-line ts/prefer-nullish-coalescing
-    const label = name || v4();
+    const label = name && name.length > 0 ? name : v4();
 
     const { secret, id } = await this.clientCredentialsStore.create(label, webId, accountId);
     const resource = this.clientCredentialsRoute.getPath({ accountId, clientCredentialsId: id });
