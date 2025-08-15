@@ -1,0 +1,27 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles JWT assertions. These can be used to automate clients. See documentation for more info.",
+      "@id": "urn:solid-server:default:AccountJwtAssertionsRouter",
+      "@type": "AuthorizedRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountJwtAssertionsRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:AccountIdRoute" },
+        "relativePath": "jwt-assertions/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:CreateJwtAssertionsHandler",
+          "@type": "CreateJwtAssertionsHandler",
+          "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
+          "jwtAssertionsStore": { "@id": "urn:solid-server:default:JwtAssertionsStore" },
+          "jwtAssertionsRoute": { "@id": "urn:solid-server:default:AccountJwtAssertionsIdRoute" },
+          "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" }
+        }
+      }
+    }
+  ]
+}

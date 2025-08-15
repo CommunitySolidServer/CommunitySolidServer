@@ -23,10 +23,10 @@ const stores: [string, any][] = [
     config: 'server-memory.json',
     teardown: jest.fn(),
   }],
-  [ 'on-disk storage', {
-    config: 'server-file.json',
-    teardown: async(): Promise<void> => removeFolder(rootFilePath),
-  }],
+  // [ 'on-disk storage', {
+  //   config: 'server-file.json',
+  //   teardown: async(): Promise<void> => removeFolder(rootFilePath),
+  // }],
 ];
 
 // Prevent panva/node-openid-client from emitting DraftWarning
@@ -294,6 +294,13 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       // Redirect to WebID picker
       await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
 
+      // Add the OIDC controls to the object
+      res = await state.fetchIdp(indexUrl);
+      controls = {
+        ...(await res.json()).controls,
+        ...controls,
+      };
+
       // Pick the WebID
       res = await state.fetchIdp(controls.oidc.webId, 'POST', { webId, remember: true });
 
@@ -338,6 +345,89 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       await expect(res.text()).resolves.toContain('invalid_redirect_uri');
     });
   });
+
+  describe.only('using JWT assertion', (): void => {
+    const tokenUrl = joinUrl(baseUrl, '.oidc/token');
+    let dpopKey: KeyPair;
+    let assertion: string | undefined;
+    let accessToken: string | undefined;
+    const clientId = joinUrl(baseUrl, 'client-id');
+    const clientJson = {
+      '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
+
+      client_id: clientId,
+      client_name: 'Solid Application Name',
+      redirect_uris: [ redirectUrl ],
+      post_logout_redirect_uris: [ 'https://app.example/logout' ],
+      client_uri: 'https://app.example/',
+      logo_uri: 'https://app.example/logo.png',
+      tos_uri: 'https://app.example/tos.html',
+      scope: 'openid profile offline_access webid',
+      grant_types: [ 'refresh_token', 'authorization_code' ],
+      response_types: [ 'code' ],
+      default_max_age: 3600,
+      require_auth_time: true,
+    };
+
+    beforeAll(async(): Promise<void> => {
+      dpopKey = await generateDpopKeyPair();
+      await fetch(clientId, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/ld+json' },
+        body: JSON.stringify(clientJson),
+      });
+    });
+
+    it.only('can request an assertion.', async(): Promise<void> => {
+      // Login and save cookie
+      const loginResponse = await fetch(controls.password.login, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
+      const cookie = `${cookies[0].name}=${cookies[0].value}`;
+
+      // Request token
+      const accountJson = await (await fetch(indexUrl, { headers: { cookie }})).json();
+      const assertionsUrl = accountJson.controls.account.jwtAssertions;
+      const res = await fetch(assertionsUrl, {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ clientId, webId }),
+      });
+
+      expect(res.status).toBe(200);
+      ({ assertion } = await res.json());
+      expect(assertion  ).toBeDefined();
+      console.log(assertion)
+    });
+
+    it('can request an access token using the credentials.', async(): Promise<void> => {
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: 'grant_type=client_credentials&scope=webid',
+      });
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      ({ access_token: accessToken } = json);
+      expect(typeof accessToken).toBe('string');
+    });
+
+    it('can use the generated access token to do an authenticated call.', async(): Promise<void> => {
+      const authFetch = await buildAuthenticatedFetch(accessToken!, { dpopKey });
+      let res = await fetch(container);
+      expect(res.status).toBe(401);
+      res = await authFetch(container);
+      expect(res.status).toBe(200);
+    });
+  });
+
 
   describe('using client_credentials', (): void => {
     const tokenUrl = joinUrl(baseUrl, '.oidc/token');

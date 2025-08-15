@@ -174,6 +174,17 @@ export * from './identity/interaction/client-credentials/ClientCredentialsDetail
 export * from './identity/interaction/client-credentials/CreateClientCredentialsHandler';
 export * from './identity/interaction/client-credentials/DeleteClientCredentialsHandler';
 
+// Identity/Interaction/JWT-Assertions/Util
+export * from './identity/interaction/jwt-assertions/util/BaseJwtAssertionsStore';
+export * from './identity/interaction/jwt-assertions/util/JwtAssertionsIdRoute';
+export * from './identity/interaction/jwt-assertions/util/JwtAssertionsStore';
+
+// Identity/Interaction/JWT-Assertions
+// export * from './identity/interaction/jwt-assertions/JwtAssertionsAdapterFactory';
+export * from './identity/interaction/jwt-assertions/JwtAssertionsDetailsHandler';
+export * from './identity/interaction/jwt-assertions/CreateJwtAssertionsHandler';
+export * from './identity/interaction/jwt-assertions/DeleteJwtAssertionsHandler';
+
 // Identity/Interaction/Login
 export * from './identity/interaction/login/LogoutHandler';
 export * from './identity/interaction/login/ResolveLoginHandler';

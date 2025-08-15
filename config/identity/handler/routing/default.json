@@ -4,6 +4,8 @@
     "css:config/identity/handler/routing/account/main.json",
     "css:config/identity/handler/routing/client-credentials/create.json",
     "css:config/identity/handler/routing/client-credentials/resource.json",
+    "css:config/identity/handler/routing/jwt-assertions/create.json",
+    "css:config/identity/handler/routing/jwt-assertions/resource.json",
     "css:config/identity/handler/routing/core/main.json",
     "css:config/identity/handler/routing/oidc/main.json",
     "css:config/identity/handler/routing/password/main.json",
