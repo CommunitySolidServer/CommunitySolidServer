@@ -180,10 +180,12 @@ export * from './identity/interaction/jwt-assertions/util/JwtAssertionsIdRoute';
 export * from './identity/interaction/jwt-assertions/util/JwtAssertionsStore';
 
 // Identity/Interaction/JWT-Assertions
-// export * from './identity/interaction/jwt-assertions/JwtAssertionsAdapterFactory';
 export * from './identity/interaction/jwt-assertions/JwtAssertionsDetailsHandler';
 export * from './identity/interaction/jwt-assertions/CreateJwtAssertionsHandler';
 export * from './identity/interaction/jwt-assertions/DeleteJwtAssertionsHandler';
+
+// Identity/Configuration/JWT-Assertions
+export * from './identity/configuration/JwtAssertionsGrantHandler';
 
 // Identity/Interaction/Login
 export * from './identity/interaction/login/LogoutHandler';

@@ -3,7 +3,6 @@ import { object, string } from 'yup';
 import { importJWK, SignJWT } from 'jose';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import { sanitizeUrlPart } from '../../../util/StringUtil';
 import { assertAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
 import { JsonInteractionHandler } from '../JsonInteractionHandler';
@@ -11,9 +10,9 @@ import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import type { JsonView } from '../JsonView';
 import type { WebIdStore } from '../webid/util/WebIdStore';
 import { parseSchema, validateWithError } from '../YupUtil';
+import type { JwkGenerator } from '../../../identity/configuration/JwkGenerator';
 import type { JwtAssertionsIdRoute } from './util/JwtAssertionsIdRoute';
 import type { JwtAssertionsStore } from './util/JwtAssertionsStore';
-import type { JwkGenerator } from '../../../identity/configuration/JwkGenerator';
 
 const inSchema = object({
   clientId: string().trim().required(),
@@ -82,12 +81,12 @@ export class CreateJwtAssertionsHandler extends JsonInteractionHandler<OutType> 
       agent: webId,
     }).setProtectedHeader({ alg: privateKey.alg })
       .setIssuedAt(time)
-      //.setExpirationTime(time + duration)
-      //.setAudience('token endpoint')
+      // .setExpirationTime(time + duration)
+      // .setAudience('token endpoint')
       .setJti(v4())
       .sign(privateKeyObject);
 
-    const { id } = await this.jwtAssertionsStore.create(clientId!, webId, accountId);
+    const { id } = await this.jwtAssertionsStore.create(clientId, webId, accountId);
 
     // Exposing the field as `id` as that is how we originally defined the client credentials API
     // and is more consistent with how the field names are explained in other places

@@ -29,6 +29,7 @@ import type { AdapterFactory } from '../storage/AdapterFactory';
 import type { AlgJwk, JwkGenerator } from './JwkGenerator';
 import type { PromptFactory } from './PromptFactory';
 import type { ProviderFactory } from './ProviderFactory';
+import type { JwtAssertionsGrantHandler } from './JwtAssertionsGrantHandler';
 
 export interface IdentityProviderFactoryArgs {
   /**
@@ -75,6 +76,11 @@ export interface IdentityProviderFactoryArgs {
    * Used to write out errors thrown by the OIDC library.
    */
   responseWriter: ResponseWriter;
+
+  /**
+   * Handles JWT Assertion Grant.
+   */
+  jwtAssertionsGrantHandler: JwtAssertionsGrantHandler;
 }
 
 const COOKIES_KEY = 'cookie-secret';
@@ -101,6 +107,7 @@ export class IdentityProviderFactory implements ProviderFactory {
   private readonly showStackTrace: boolean;
   private readonly errorHandler: ErrorHandler;
   private readonly responseWriter: ResponseWriter;
+  private readonly jwtAssertionsGrantHandler: JwtAssertionsGrantHandler;
 
   private provider?: Provider;
 
@@ -122,6 +129,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     this.showStackTrace = args.showStackTrace;
     this.errorHandler = args.errorHandler;
     this.responseWriter = args.responseWriter;
+    this.jwtAssertionsGrantHandler = args.jwtAssertionsGrantHandler;
   }
 
   public async getProvider(): Promise<Provider> {
@@ -161,6 +169,9 @@ export class IdentityProviderFactory implements ProviderFactory {
 
     // Allow provider to interpret reverse proxy headers.
     provider.proxy = true;
+
+    // Custom grant type with JWT assertions
+    provider.registerGrantType(this.jwtAssertionsGrantHandler.grantType, this.jwtAssertionsGrantHandler.handler.bind(this.jwtAssertionsGrantHandler), this.jwtAssertionsGrantHandler.parameters);
 
     this.captureErrorResponses(provider);
 
@@ -276,7 +287,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Some fields are still missing, see https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1154#issuecomment-1040233385
     config.findAccount = async(ctx: KoaContextWithOIDC, sub: string): Promise<Account> => ({
       accountId: sub,
-      async claims(): Promise<{ sub: string; [key: string]: unknown }> {
+      async claims(): Promise<{ sub: string;[key: string]: unknown }> {
         return { sub, webid: sub, azp: ctx.oidc.client?.clientId };
       },
     });
@@ -288,11 +299,20 @@ export class IdentityProviderFactory implements ProviderFactory {
       if (this.isAccessToken(token)) {
         return { webid: token.accountId };
       }
+
+      /*
+       * {@link JwtAssertionsGrantHandler} passes webid in extra
+       */
+      if (token.extra) {
+        return token.extra!;
+      }
+
       const clientId = token.client?.clientId;
       if (!clientId) {
         throw new BadRequestHttpError('Missing client ID from client credentials.');
       }
       const webId = (await this.clientCredentialsStore.findByLabel(clientId))?.webId;
+      // const webId = 'https://foo.bar'
       if (!webId) {
         throw new BadRequestHttpError(`Unknown client credentials token ${clientId}`);
       }

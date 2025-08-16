@@ -23,10 +23,10 @@ const stores: [string, any][] = [
     config: 'server-memory.json',
     teardown: jest.fn(),
   }],
-  // [ 'on-disk storage', {
-  //   config: 'server-file.json',
-  //   teardown: async(): Promise<void> => removeFolder(rootFilePath),
-  // }],
+  [ 'on-disk storage', {
+    config: 'server-file.json',
+    teardown: async(): Promise<void> => removeFolder(rootFilePath),
+  }],
 ];
 
 // Prevent panva/node-openid-client from emitting DraftWarning
@@ -346,8 +346,9 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     });
   });
 
-  describe.only('using JWT assertion', (): void => {
+  describe('using JWT assertion', (): void => {
     const tokenUrl = joinUrl(baseUrl, '.oidc/token');
+    const grantType = 'urn:ietf:params:oauth:grant-type:jwt-bearer';
     let dpopKey: KeyPair;
     let assertion: string | undefined;
     let accessToken: string | undefined;
@@ -357,16 +358,18 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
 
       client_id: clientId,
       client_name: 'Solid Application Name',
-      redirect_uris: [ redirectUrl ],
-      post_logout_redirect_uris: [ 'https://app.example/logout' ],
       client_uri: 'https://app.example/',
       logo_uri: 'https://app.example/logo.png',
       tos_uri: 'https://app.example/tos.html',
       scope: 'openid profile offline_access webid',
-      grant_types: [ 'refresh_token', 'authorization_code' ],
-      response_types: [ 'code' ],
       default_max_age: 3600,
       require_auth_time: true,
+      // TODO: remove authorization_code
+      grant_types: [ 'refresh_token', 'authorization_code', grantType ],
+      // TODO: remove below
+      redirect_uris: [ redirectUrl ],
+      post_logout_redirect_uris: [ 'https://app.example/logout' ],
+      response_types: [ 'code' ],
     };
 
     beforeAll(async(): Promise<void> => {
@@ -378,7 +381,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       });
     });
 
-    it.only('can request an assertion.', async(): Promise<void> => {
+    it('can request an assertion.', async(): Promise<void> => {
       // Login and save cookie
       const loginResponse = await fetch(controls.password.login, {
         method: 'POST',
@@ -399,8 +402,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
 
       expect(res.status).toBe(200);
       ({ assertion } = await res.json());
-      expect(assertion  ).toBeDefined();
-      console.log(assertion)
+      expect(assertion).toBeDefined();
     });
 
     it('can request an access token using the credentials.', async(): Promise<void> => {
@@ -411,10 +413,10 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
           'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
           dpop: dpopHeader,
         },
-        body: 'grant_type=client_credentials&scope=webid',
+        body: `grant_type=${grantType}&client_id=${clientId}&scope=webid&assertion=${assertion}`,
       });
-      expect(res.status).toBe(200);
       const json = await res.json();
+      expect(res.status).toBe(200);
       ({ access_token: accessToken } = json);
       expect(typeof accessToken).toBe('string');
     });
@@ -422,12 +424,18 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     it('can use the generated access token to do an authenticated call.', async(): Promise<void> => {
       const authFetch = await buildAuthenticatedFetch(accessToken!, { dpopKey });
       let res = await fetch(container);
+      const json = await res.json();
       expect(res.status).toBe(401);
       res = await authFetch(container);
       expect(res.status).toBe(200);
     });
+    it.skip('errors with invalid assertion.', async(): Promise<void> => {
+      const invalidAssertion = 'eyJhbGciOiJFUzI1NiJ9.eyJjbGllbnQiOiJodHRwOi8vbG9jYWxob3N0OjYwMDkvY2xpZW50LWlkIiwiYWdlbnQiOiJodHRwOi8vbG9jYWxob3N0OjYwMDkvdGVzdC9wcm9maWxlL2NhcmQjbWUiLCJpYXQiOjE3NTUzMTA1NDA3NDUsImp0aSI6ImIyNThkOTFkLWYyZTEtNDljOS1iMWE1LTg1NDVlN2FkNzUxOCJ9.ZDp7sFb1jLywqjF-m6mDKiSuiKOU9-3N8ki0z0c1qRGk-KB4W5habXxFHsS3yD3Wj2x69JaJTev_LuQuW8QHW';
+    });
+    it.skip('errors with invalid dpop.', async(): Promise<void> => {
+      const dpopHeader = await createDpopHeader(tokenUrl, 'GET', dpopKey);
+    });
   });
-
 
   describe('using client_credentials', (): void => {
     const tokenUrl = joinUrl(baseUrl, '.oidc/token');
