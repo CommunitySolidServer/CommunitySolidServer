@@ -71,7 +71,7 @@ export class BaseJwtAssertionsStore extends Initializer implements JwtAssertions
     return this.storage.find(JWT_ASSERTIONS_STORAGE_TYPE, { accountId });
   }
 
-  public async create(clientId: string, webId: string, accountId: string): Promise<string> {
+  public async create(clientId: string, webId: string, accountId: string): Promise<{ id: string; assertion: string }> {
     const privateKey = await this.jwkGenerator.getPrivateKey();
 
     const privateKeyObject = await importJWK(privateKey);
@@ -97,8 +97,8 @@ export class BaseJwtAssertionsStore extends Initializer implements JwtAssertions
       `Creating client credentials token with ClientID ${clientId} for WebID ${webId} and account ${accountId}`,
     );
 
-    await this.storage.create(JWT_ASSERTIONS_STORAGE_TYPE, { accountId, client: clientId, agent: webId, assertion });
-    return assertion;
+    const { id } = await this.storage.create(JWT_ASSERTIONS_STORAGE_TYPE, { accountId, client: clientId, agent: webId, assertion });
+    return { id, assertion };
   }
 
   public async delete(id: string): Promise<void> {

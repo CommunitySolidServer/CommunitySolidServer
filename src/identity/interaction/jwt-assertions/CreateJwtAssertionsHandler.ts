@@ -8,6 +8,7 @@ import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import type { JsonView } from '../JsonView';
 import type { WebIdStore } from '../webid/util/WebIdStore';
 import { parseSchema, validateWithError } from '../YupUtil';
+import { ConflictHttpError } from '../../../util/errors/ConflictHttpError';
 import type { JwtAssertionsIdRoute } from './util/JwtAssertionsIdRoute';
 import type { JwtAssertionsStore } from './util/JwtAssertionsStore';
 
@@ -17,6 +18,7 @@ const inSchema = object({
 });
 
 type OutType = {
+  id: string;
   clientId: string;
   assertion: string;
 };
@@ -48,6 +50,7 @@ export class CreateJwtAssertionsHandler extends JsonInteractionHandler<OutType> 
     for (const { id, client: label } of await this.jwtAssertionsStore.findByAccount(accountId)) {
       jwtAssertions[label] = this.jwtAssertionsRoute.getPath({ accountId, jwtAssertionsId: id });
     }
+    // DO NOT include the assertion!
     return { json: { ...parseSchema(inSchema), jwtAssertions }};
   }
 
@@ -61,10 +64,16 @@ export class CreateJwtAssertionsHandler extends JsonInteractionHandler<OutType> 
       throw new BadRequestHttpError('WebID does not belong to this account.');
     }
 
-    const assertion = await this.jwtAssertionsStore.create(clientId, webId, accountId);
+    const accountAssertions = await this.jwtAssertionsStore.findByAccount(accountId);
+    if (accountAssertions.find(a => a.client === clientId)) {
+      throw new ConflictHttpError(`Assertion for Client ID ${clientId} already exists.`);
+    }
+
+    const { id: uuid, assertion } = await this.jwtAssertionsStore.create(clientId, webId, accountId);
+    const id = this.jwtAssertionsRoute.getPath({ accountId, jwtAssertionsId: uuid });
 
     // Exposing the field as `id` as that is how we originally defined the client credentials API
     // and is more consistent with how the field names are explained in other places
-    return { json: { clientId, assertion }};
+    return { json: { id, clientId, assertion }};
   }
 }

@@ -13,7 +13,9 @@
     <ol id="webIdList">
     </ol>
   </fieldset>
-
+  <div class="hidden" id="response-error">
+    <p class="error"></p>
+  </div>
   <ul class="actions">
     <li><button type="submit" name="submit" disabled>Create assertion</button></li>
     <li><button type="button" id="account-link">Back</button></li>
@@ -66,11 +68,15 @@
     }
 
     addPostListener(async() => {
-      const { clientId, assertion } = await postJsonForm(controls.account.jwtAssertions);
-      updateElement('assertion-clientId', clientId, { innerText: true });
-      updateElement('assertion-jwt', assertion, { innerText: true });
-      setVisibility('response', true);
-      setVisibility('mainForm', false);
+      try {
+        const { clientId, assertion } = await postJsonForm(controls.account.jwtAssertions);
+        updateElement('assertion-clientId', clientId, { innerText: true });
+        updateElement('assertion-jwt', assertion, { innerText: true });
+        setVisibility('mainForm', false);
+        setVisibility('response', true);
+      } catch (err) {
+        setError(err.message, 'response-error')
+      }
     });
   })();
 </script>

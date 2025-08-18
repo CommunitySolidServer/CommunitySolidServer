@@ -38,7 +38,7 @@ export interface JwtAssertionsStore {
    * @param account - Account that is associated with this token.
    * @param assertion - JWT assertion
    */
-  create: (clientId: string, webId: string, accountId: string) => Promise<string>;
+  create: (clientId: string, webId: string, accountId: string) => Promise<{ id: string; assertion: string }>;
 
   /**
    * Deletes the token with the given ID.

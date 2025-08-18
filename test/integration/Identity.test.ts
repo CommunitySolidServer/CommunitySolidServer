@@ -381,7 +381,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       });
     });
 
-    it('can request an assertion.', async(): Promise<void> => {
+    it('can request an assertion given client id.', async(): Promise<void> => {
       // Login and save cookie
       const loginResponse = await fetch(controls.password.login, {
         method: 'POST',
@@ -391,7 +391,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
       const cookie = `${cookies[0].name}=${cookies[0].value}`;
 
-      // Request token
+      // Request assertion
       const accountJson = await (await fetch(indexUrl, { headers: { cookie }})).json();
       const assertionsUrl = accountJson.controls.account.jwtAssertions;
       const res = await fetch(assertionsUrl, {
@@ -403,6 +403,29 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       expect(res.status).toBe(200);
       ({ assertion } = await res.json());
       expect(assertion).toBeDefined();
+    });
+
+    it('can not request another assertion for the same client id.', async(): Promise<void> => {
+      // Login and save cookie
+      const loginResponse = await fetch(controls.password.login, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
+      const cookie = `${cookies[0].name}=${cookies[0].value}`;
+
+      // Request another for the same clientId
+      const accountJson = await (await fetch(indexUrl, { headers: { cookie }})).json();
+      const assertionsUrl = accountJson.controls.account.jwtAssertions;
+
+      const secondRes = await fetch(assertionsUrl, {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ clientId, webId }),
+      });
+
+      expect(secondRes.status).toBe(409);
     });
 
     it('can request an access token using the credentials.', async(): Promise<void> => {
