@@ -351,6 +351,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     const grantType = 'urn:ietf:params:oauth:grant-type:jwt-bearer';
     let dpopKey: KeyPair;
     let assertion: string | undefined;
+    let assertionId: string | undefined;
     let accessToken: string | undefined;
     const clientId = joinUrl(baseUrl, 'client-id');
     const clientJson = {
@@ -401,7 +402,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       });
 
       expect(res.status).toBe(200);
-      ({ assertion } = await res.json());
+      ({ id: assertionId, assertion } = await res.json());
       expect(assertion).toBeDefined();
     });
 
@@ -428,7 +429,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       expect(secondRes.status).toBe(409);
     });
 
-    it('can request an access token using the credentials.', async(): Promise<void> => {
+    it('can request an access token using the assertion.', async(): Promise<void> => {
       const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
       const res = await fetch(tokenUrl, {
         method: 'POST',
@@ -436,7 +437,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
           'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
           dpop: dpopHeader,
         },
-        body: `grant_type=${grantType}&client_id=${clientId}&scope=webid&assertion=${assertion}`,
+        body: `grant_type=${grantType}&assertion=${assertion}&client_id=${clientId}&scope=webid`,
       });
       const json = await res.json();
       expect(res.status).toBe(200);
@@ -447,16 +448,69 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     it('can use the generated access token to do an authenticated call.', async(): Promise<void> => {
       const authFetch = await buildAuthenticatedFetch(accessToken!, { dpopKey });
       let res = await fetch(container);
-      const json = await res.json();
       expect(res.status).toBe(401);
       res = await authFetch(container);
       expect(res.status).toBe(200);
     });
-    it.skip('errors with invalid assertion.', async(): Promise<void> => {
-      const invalidAssertion = 'eyJhbGciOiJFUzI1NiJ9.eyJjbGllbnQiOiJodHRwOi8vbG9jYWxob3N0OjYwMDkvY2xpZW50LWlkIiwiYWdlbnQiOiJodHRwOi8vbG9jYWxob3N0OjYwMDkvdGVzdC9wcm9maWxlL2NhcmQjbWUiLCJpYXQiOjE3NTUzMTA1NDA3NDUsImp0aSI6ImIyNThkOTFkLWYyZTEtNDljOS1iMWE1LTg1NDVlN2FkNzUxOCJ9.ZDp7sFb1jLywqjF-m6mDKiSuiKOU9-3N8ki0z0c1qRGk-KB4W5habXxFHsS3yD3Wj2x69JaJTev_LuQuW8QHW';
+
+    it('errors with assertion signed with some other key.', async(): Promise<void> => {
+      const untrustedAssertion = 'eyJhbGciOiJFUzI1NiJ9.eyJjbGllbnQiOiJodHRwOi8vbG9jYWxob3N0OjYwMDkvY2xpZW50LWlkIiwiYWdlbnQiOiJodHRwOi8vbG9jYWxob3N0OjYwMDkvdGVzdC9wcm9maWxlL2NhcmQjbWUiLCJpYXQiOjE3NTUzMTA1NDA3NDUsImp0aSI6ImIyNThkOTFkLWYyZTEtNDljOS1iMWE1LTg1NDVlN2FkNzUxOCJ9.ZDp7sFb1jLywqjF-m6mDKiSuiKOU9-3N8ki0z0c1qRGk-KB4W5habXxFHsS3yD3Wj2x69JaJTev_LuQuW8QHW';
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: `grant_type=${grantType}&assertion=${untrustedAssertion}&client_id=${clientId}&scope=webid`,
+      });
+      // TODO: adjust implementation for a proper error code
+      expect(res.status).toBe(500);
     });
-    it.skip('errors with invalid dpop.', async(): Promise<void> => {
+
+    it('errors with invalid dpop.', async(): Promise<void> => {
       const dpopHeader = await createDpopHeader(tokenUrl, 'GET', dpopKey);
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: `grant_type=${grantType}&assertion=${assertion}&client_id=${clientId}&scope=webid`,
+      });
+      // TODO: adjust implementation for a proper error code
+      expect(res.status).toBe(400);
+    });
+
+    it('can revoke assertion.', async(): Promise<void> => {
+      // Login and save cookie
+      const loginResponse = await fetch(controls.password.login, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
+      const cookie = `${cookies[0].name}=${cookies[0].value}`;
+
+      // Request delete assertion
+      const delRes = await fetch(assertionId as string, {
+        method: 'DELETE',
+        headers: { cookie },
+      });
+
+      expect(delRes.status).toBe(200);
+
+      // Can't get the token any more
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: `grant_type=${grantType}&assertion=${assertion}&client_id=${clientId}&scope=webid`,
+      });
+      expect(res.status).toBe(404);
     });
   });
 
