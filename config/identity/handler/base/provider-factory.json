@@ -29,7 +29,8 @@
       "jwtAssertionsGrantHandler": {
         "@id": "urn:solid-server:default:JwtAssertionsGrantHandler",
         "@type": "JwtAssertionsGrantHandler",
-        "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" }
+        "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" },
+        "jwtAssertionsStore": { "@id": "urn:solid-server:default:JwtAssertionsStore" }
       },
       "interactionRoute": { "@id": "urn:solid-server:default:IndexRoute" },
       "config": {

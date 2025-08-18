@@ -300,11 +300,9 @@ export class IdentityProviderFactory implements ProviderFactory {
         return { webid: token.accountId };
       }
 
-      /*
-       * {@link JwtAssertionsGrantHandler} passes webid in extra
-       */
+      // {@link JwtAssertionsGrantHandler} passes webid in extra
       if (token.extra) {
-        return token.extra!;
+        return token.extra;
       }
 
       const clientId = token.client?.clientId;
@@ -312,7 +310,6 @@ export class IdentityProviderFactory implements ProviderFactory {
         throw new BadRequestHttpError('Missing client ID from client credentials.');
       }
       const webId = (await this.clientCredentialsStore.findByLabel(clientId))?.webId;
-      // const webId = 'https://foo.bar'
       if (!webId) {
         throw new BadRequestHttpError(`Unknown client credentials token ${clientId}`);
       }

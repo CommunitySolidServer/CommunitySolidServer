@@ -18,8 +18,7 @@
           "@type": "CreateJwtAssertionsHandler",
           "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
           "jwtAssertionsStore": { "@id": "urn:solid-server:default:JwtAssertionsStore" },
-          "jwtAssertionsRoute": { "@id": "urn:solid-server:default:AccountJwtAssertionsIdRoute" },
-          "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" }
+          "jwtAssertionsRoute": { "@id": "urn:solid-server:default:AccountJwtAssertionsIdRoute" }
         }
       }
     }

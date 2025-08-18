@@ -39,7 +39,7 @@
     {
       "@id": "urn:solid-server:default:InteractionRouteHandler",
       "@type": "WaterfallHandler",
-      "handlers": [{ "@id": "urn:solid-server:default:AccountClientCredentialsIdRouter" }]
+      "handlers": [{ "@id": "urn:solid-server:default:AccountJwtAssertionsIdRouter" }]
     }
   ]
 }

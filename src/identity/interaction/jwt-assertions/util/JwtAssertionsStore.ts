@@ -10,18 +10,18 @@ export interface JwtAssertion {
  */
 export interface JwtAssertionsStore {
   /**
-   * Find the {@link JwtAssertions} with the given ID.
+   * Find the {@link JwtAssertion} with the given ID.
    *
    * @param id - ID of the token.
    */
   get: (id: string) => Promise<JwtAssertion | undefined>;
 
   /**
-   * Find the {@link JwtAssertions} with the given label.
+   * Find the {@link JwtAssertion} given its JWT representation.
    *
-   * @param label - Label of the token.
+   * @param id - ID of the token.
    */
-  findByLabel: (label: string) => Promise<JwtAssertion | undefined>;
+  findByJwt: (id: string) => Promise<JwtAssertion | undefined>;
 
   /**
    * Find all tokens created by the given account.
@@ -33,11 +33,12 @@ export interface JwtAssertionsStore {
   /**
    * Creates new token.
    *
-   * @param label - Identifier to use for the new token.
+   * @param clientId - Identifier to use for the new token.
    * @param webId - WebID to identify as when using this token.
    * @param account - Account that is associated with this token.
+   * @param assertion - JWT assertion
    */
-  create: (label: string, webId: string, accountId: string) => Promise<JwtAssertion>;
+  create: (clientId: string, webId: string, accountId: string) => Promise<string>;
 
   /**
    * Deletes the token with the given ID.

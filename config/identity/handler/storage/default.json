@@ -62,7 +62,8 @@
     {
       "@id": "urn:solid-server:default:JwtAssertionsStore",
       "@type": "BaseJwtAssertionsStore",
-      "storage": { "@id": "urn:solid-server:default:AccountStorage" }
+      "storage": { "@id": "urn:solid-server:default:AccountStorage" },
+      "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" }
     },
 
     {

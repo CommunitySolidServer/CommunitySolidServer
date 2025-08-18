@@ -1,6 +1,4 @@
-import { v4 } from 'uuid';
 import { object, string } from 'yup';
-import { importJWK, SignJWT } from 'jose';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { assertAccountId } from '../account/util/AccountUtil';
@@ -10,7 +8,6 @@ import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import type { JsonView } from '../JsonView';
 import type { WebIdStore } from '../webid/util/WebIdStore';
 import { parseSchema, validateWithError } from '../YupUtil';
-import type { JwkGenerator } from '../../../identity/configuration/JwkGenerator';
 import type { JwtAssertionsIdRoute } from './util/JwtAssertionsIdRoute';
 import type { JwtAssertionsStore } from './util/JwtAssertionsStore';
 
@@ -20,6 +17,7 @@ const inSchema = object({
 });
 
 type OutType = {
+  clientId: string;
   assertion: string;
 };
 
@@ -32,19 +30,16 @@ export class CreateJwtAssertionsHandler extends JsonInteractionHandler<OutType> 
   private readonly webIdStore: WebIdStore;
   private readonly jwtAssertionsStore: JwtAssertionsStore;
   private readonly jwtAssertionsRoute: JwtAssertionsIdRoute;
-  private readonly jwkGenerator: JwkGenerator;
 
   public constructor(
     webIdStore: WebIdStore,
     jwtAssertionsStore: JwtAssertionsStore,
     jwtAssertionsRoute: JwtAssertionsIdRoute,
-    jwkGenerator: JwkGenerator,
   ) {
     super();
     this.webIdStore = webIdStore;
     this.jwtAssertionsStore = jwtAssertionsStore;
     this.jwtAssertionsRoute = jwtAssertionsRoute;
-    this.jwkGenerator = jwkGenerator;
   }
 
   public async getView({ accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
@@ -66,30 +61,10 @@ export class CreateJwtAssertionsHandler extends JsonInteractionHandler<OutType> 
       throw new BadRequestHttpError('WebID does not belong to this account.');
     }
 
-    const privateKey = await this.jwkGenerator.getPrivateKey();
-
-    const privateKeyObject = await importJWK(privateKey);
-
-    // Make sure both header and proof have the same timestamp
-    const time = Date.now();
-
-    // Currently the spec does not define how the notification sender should identify.
-    // The format used here has been chosen to be similar
-    // to how ID tokens are described in the Solid-OIDC specification for consistency.
-    const assertion = await new SignJWT({
-      client: clientId,
-      agent: webId,
-    }).setProtectedHeader({ alg: privateKey.alg })
-      .setIssuedAt(time)
-      // .setExpirationTime(time + duration)
-      // .setAudience('token endpoint')
-      .setJti(v4())
-      .sign(privateKeyObject);
-
-    const { id } = await this.jwtAssertionsStore.create(clientId, webId, accountId);
+    const assertion = await this.jwtAssertionsStore.create(clientId, webId, accountId);
 
     // Exposing the field as `id` as that is how we originally defined the client credentials API
     // and is more consistent with how the field names are explained in other places
-    return { json: { assertion }};
+    return { json: { clientId, assertion }};
   }
 }

@@ -27,13 +27,19 @@
   <a id="createCredentials" href="" class="link">Create token</a>
   <ul id="clientCredentialsEntries"></ul>
 </div>
+<div id="jwtAssertions">
+  <h2>JWT Assertions</h2>
+  <p>The assertions created by this account.</p>
+  <a id="createAssertions" href="" class="link">Create assertion</a>
+  <ul id="jwtAssertionsEntries"></ul>
+</div>
 <p class="actions">
   <button class="hidden" type="button" id="oidc">Continue authentication</button>
   <button type="button" id="logout" name="logout">Log out</button>
 </p>
 
 <script>
-  const elements = getElements('passwordLoginEntries', 'podEntries', 'webIdEntries', 'clientCredentialsEntries', 'oidc', 'logout');
+  const elements = getElements('passwordLoginEntries', 'podEntries', 'webIdEntries', 'clientCredentialsEntries', 'jwtAssertionsEntries', 'oidc', 'logout');
 
   // Retrieve and display client information
   (async() => {
@@ -90,7 +96,20 @@
       showAccountInfo(elements.clientCredentialsEntries, clientCredentials, false, true,
         'Are you sure you want to delete this token? This will prevent this token from being used in the future.');
     }
+
+    // Update JWT Assertions entries
+    const { jwtAssertions } = controls.account.jwtAssertions ? await fetchJson(controls.account.jwtAssertions) : {};
+    if (!controls.html.account.createJwtAssertions && Object.keys(jwtAssertions ?? {}).length === 0) {
+      setVisibility('jwtAssertions', false);
+    } else {
+      // Initial boolean is so the create button gets hidden if the account has no WebIDs.
+      // Currently, this does not get updated if the last WebID gets deleted, until the page is refreshed.
+      updateElement('createAssertions', Object.keys(webIdLinks).length && controls.html.account.createJwtAssertions, { href: true });
+      showAccountInfo(elements.jwtAssertionsEntries, jwtAssertions, false, true,
+        'Are you sure you want to delete this assertion? This will prevent this assertion from being used in the future.');
+    }
   })();
+
 
   // Adds account info to the UI
   function showAccountInfo(rootElement, data, addUpdate, addDel, confirmMsg, finishMsg) {

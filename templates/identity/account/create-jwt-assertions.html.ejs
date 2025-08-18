@@ -1,13 +1,13 @@
-<h1>Create client credentials token</h1>
+<h1>Create JWT assertion</h1>
 <form method="post" id="mainForm">
   <p class="error" id="error"></p>
 
   <fieldset>
-    <p>Choose a name and which WebID to associate with the token</p>
+    <p>Choose a ClientID and which WebID to associate with the assertion</p>
     <ol>
       <li>
-        <label for="name">Name</label>
-        <input id="name" type="text" name="name" autofocus>
+        <label for="clientId">Client ID</label>
+        <input id="clientId" type="text" name="clientId" autofocus>
       </li>
     </ol>
     <ol id="webIdList">
@@ -15,7 +15,7 @@
   </fieldset>
 
   <ul class="actions">
-    <li><button type="submit" name="submit" disabled>Create token</button></li>
+    <li><button type="submit" name="submit" disabled>Create assertion</button></li>
     <li><button type="button" id="account-link">Back</button></li>
   </ul>
 </form>
@@ -25,13 +25,13 @@
 </div>
 <div class="hidden" id="response">
   <p>
-    Make sure to store the secret somewhere as there is no way to retrieve it afterwards!
+    Make sure to store the assertion somewhere as there is no way to retrieve it afterwards!
   </p>
   <p>
-    Token identifier: <strong id="token-id"></strong>
+    ClientID: <strong id="assertion-clientId"></strong>
   </p>
   <p>
-    Token secret: <strong style="word-wrap:break-word;" id="token-secret"></strong>
+    Assertion JWT: <strong style="word-wrap:break-word;" id="assertion-jwt"></strong>
   </p>
 
   <p class="actions"><button type="button" id="response-account-link">Back</button></p>
@@ -66,9 +66,9 @@
     }
 
     addPostListener(async() => {
-      const { id, secret } = await postJsonForm(controls.account.clientCredentials);
-      updateElement('token-id', id, { innerText: true });
-      updateElement('token-secret', secret, { innerText: true });
+      const { clientId, assertion } = await postJsonForm(controls.account.jwtAssertions);
+      updateElement('assertion-clientId', clientId, { innerText: true });
+      updateElement('assertion-jwt', assertion, { innerText: true });
       setVisibility('response', true);
       setVisibility('mainForm', false);
     });
