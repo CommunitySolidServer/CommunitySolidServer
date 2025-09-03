@@ -39,8 +39,6 @@ const routes = {
 };
 
 describe('An IdentityProviderFactory', (): void => {
-  let jestWorkerId: string | undefined;
-  let nodeEnv: string | undefined;
   let baseConfig: Configuration;
   const baseUrl = 'http://example.com/foo/';
   const oidcPath = '/oidc';
@@ -56,16 +54,6 @@ describe('An IdentityProviderFactory', (): void => {
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let factory: IdentityProviderFactory;
-
-  beforeAll(async(): Promise<void> => {
-    // We need to fool the IDP factory into thinking we are not in a test run,
-    // otherwise we can't mock the oidc-provider library,
-    // as the `importOidcProvider` utility function always calls `jest.requireActual`.
-    jestWorkerId = process.env.JEST_WORKER_ID;
-    nodeEnv = process.env.NODE_ENV;
-    delete process.env.JEST_WORKER_ID;
-    delete process.env.NODE_ENV;
-  });
 
   beforeEach(async(): Promise<void> => {
     // Disabling devInteractions to prevent warnings when testing the path
@@ -136,11 +124,6 @@ describe('An IdentityProviderFactory', (): void => {
       errorHandler,
       responseWriter,
     });
-  });
-
-  afterAll(async(): Promise<void> => {
-    process.env.JEST_WORKER_ID = jestWorkerId;
-    process.env.NODE_ENV = nodeEnv;
   });
 
   it('creates a correct configuration.', async(): Promise<void> => {
