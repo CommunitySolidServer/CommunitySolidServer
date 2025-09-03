@@ -1,8 +1,4 @@
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type { InteractionResults } from 'oidc-provider';
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type Provider from 'oidc-provider';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../../logging/LogUtil';

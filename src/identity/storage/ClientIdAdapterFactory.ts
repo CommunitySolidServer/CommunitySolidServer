@@ -1,8 +1,5 @@
-import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
 import type { Quad } from 'n3';
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';

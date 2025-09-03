@@ -1,8 +1,4 @@
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type { interactionPolicy, KoaContextWithOIDC } from 'oidc-provider';
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import * as oidc from 'oidc-provider';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';

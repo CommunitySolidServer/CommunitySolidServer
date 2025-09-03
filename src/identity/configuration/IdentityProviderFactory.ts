@@ -10,14 +10,8 @@ import type {
   KoaContextWithOIDC,
   ResourceServer,
   UnknownObject,
-  // eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-  // @ts-ignore
 } from 'oidc-provider';
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type Provider from 'oidc-provider';
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import * as oidc from 'oidc-provider';
 import { joinUrl } from '../../util/PathUtil';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';

@@ -1,6 +1,4 @@
 import { boolean, object, string } from 'yup';
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type { InteractionResults } from 'oidc-provider';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';

@@ -1,6 +1,4 @@
 import { boolean, object } from 'yup';
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type { InteractionResults, KoaContextWithOIDC, UnknownObject } from 'oidc-provider';
 import { FoundHttpError } from '../../../util/errors/FoundHttpError';
 import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';

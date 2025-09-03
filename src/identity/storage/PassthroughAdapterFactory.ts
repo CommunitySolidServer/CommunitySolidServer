@@ -1,5 +1,3 @@
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { AdapterFactory } from './AdapterFactory';
 

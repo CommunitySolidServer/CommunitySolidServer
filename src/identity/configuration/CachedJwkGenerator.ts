@@ -1,8 +1,6 @@
 import { createPublicKey } from 'node:crypto';
 import type { KeyObject } from 'node:crypto';
 import { exportJWK, generateKeyPair, importJWK } from 'jose';
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type { AsymmetricSigningAlgorithm, JWKS } from 'oidc-provider';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { AlgJwk, JwkGenerator } from './JwkGenerator';

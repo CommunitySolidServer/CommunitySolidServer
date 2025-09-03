@@ -2,8 +2,8 @@
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
     "incremental": true,
-    "lib": [ "es2021" ],
-    "module": "nodenext",
+    "lib": [ "es2023" ],
+    "module": "node20",
     "moduleResolution": "nodenext",
     "declaration": true,
     "inlineSources": true,

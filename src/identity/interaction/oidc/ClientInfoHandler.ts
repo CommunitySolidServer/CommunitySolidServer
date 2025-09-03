@@ -1,5 +1,3 @@
-// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
-// @ts-ignore
 import type { AllClientMetadata } from 'oidc-provider';
 import type { ArrayElement } from '../../../util/map/MapUtil';
 import type { ProviderFactory } from '../../configuration/ProviderFactory';
