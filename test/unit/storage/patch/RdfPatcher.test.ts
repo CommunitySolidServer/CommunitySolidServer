@@ -20,9 +20,9 @@ describe('An RdfPatcher,', (): void => {
   let patcher: jest.Mocked<RepresentationPatcher<RdfDatasetRepresentation>>;
   let startQuads: Quad[];
   let rdfPatcher: RdfPatcher;
-  let identifier: ResourceIdentifier;
+  const identifier: ResourceIdentifier = undefined as unknown as ResourceIdentifier;
   let representation: Representation;
-  let patch: Patch;
+  const patch: Patch = undefined as unknown as Patch;
 
   beforeEach((): void => {
     startQuads = [ quad(
