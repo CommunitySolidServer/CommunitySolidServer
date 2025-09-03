@@ -255,7 +255,6 @@ export * from './identity/storage/PassthroughAdapterFactory';
 // Identity
 export * from './identity/AccountInitializer';
 export * from './identity/IdentityProviderHttpHandler';
-export * from './identity/IdentityUtil';
 export * from './identity/OidcHttpHandler';
 
 // Init/Cluster
