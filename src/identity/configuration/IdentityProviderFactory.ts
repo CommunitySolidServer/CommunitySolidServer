@@ -11,8 +11,8 @@ import type {
   KoaContextWithOIDC,
   ResourceServer,
   UnknownObject,
-} from '../../../templates/types/oidc-provider';
-import type Provider from '../../../templates/types/oidc-provider';
+} from 'oidc-provider';
+import Provider, { interactionPolicy } from 'oidc-provider';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
@@ -22,7 +22,6 @@ import { errorTermsToMetadata } from '../../util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../util/errors/OAuthHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import { joinUrl } from '../../util/PathUtil';
-import { importOidcProvider } from '../IdentityUtil';
 import type { ClientCredentialsStore } from '../interaction/client-credentials/util/ClientCredentialsStore';
 import type { InteractionRoute } from '../interaction/routing/InteractionRoute';
 import type { AdapterFactory } from '../storage/AdapterFactory';
@@ -149,15 +148,12 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Render errors with our own error handler
     this.configureErrors(config);
 
-    const oidcImport = await importOidcProvider();
-
     // Adds new prompts
-    const policy = oidcImport.interactionPolicy.base();
+    const policy = interactionPolicy.base();
     await this.promptFactory.handleSafe(policy);
     config.interactions!.policy = policy;
 
-    // eslint-disable-next-line new-cap
-    const provider = new oidcImport.default(this.baseUrl, config);
+    const provider = new Provider(this.baseUrl, config);
 
     // Allow provider to interpret reverse proxy headers.
     provider.proxy = true;

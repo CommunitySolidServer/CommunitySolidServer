@@ -1,3 +1,4 @@
+import type Provider from 'oidc-provider';
 import type { Interaction } from '../../../../src/identity/interaction/InteractionHandler';
 import type { AccountInteractionResults } from '../../../../src/identity/interaction/InteractionUtil';
 import {
@@ -6,7 +7,6 @@ import {
   forgetWebId,
 } from '../../../../src/identity/interaction/InteractionUtil';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
-import type Provider from '../../../../templates/types/oidc-provider';
 
 jest.useFakeTimers();
 jest.setSystemTime();

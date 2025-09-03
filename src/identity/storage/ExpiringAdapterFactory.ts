@@ -1,5 +1,5 @@
 import { getLoggerFor } from 'global-logger-factory';
-import type { Adapter, AdapterPayload } from '../../../templates/types/oidc-provider';
+import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import type { AdapterFactory } from './AdapterFactory';
 
