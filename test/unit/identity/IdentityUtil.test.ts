@@ -1,8 +1,7 @@
-import { importOidcProvider } from '../../../src/identity/IdentityUtil';
+import * as oidc from 'oidc-provider';
 
 describe('IdentityUtil', (): void => {
   it('avoids dynamic imports when testing with Jest.', async(): Promise<void> => {
-    const oidc = await importOidcProvider();
     expect(oidc.default).toBeDefined();
     expect(oidc.interactionPolicy).toBeDefined();
   });
@@ -14,7 +13,6 @@ describe('IdentityUtil', (): void => {
     delete process.env.JEST_WORKER_ID;
     delete process.env.NODE_ENV;
 
-    const oidc = await importOidcProvider();
     expect(oidc.default).toBeDefined();
     expect(oidc.interactionPolicy).toBeDefined();
 

@@ -333,12 +333,4 @@ describe('An IdentityProviderFactory', (): void => {
     expect(oldAccept).toHaveBeenCalledTimes(1);
     expect(oldAccept).toHaveBeenLastCalledWith('something');
   });
-
-  it('avoids dynamic imports when testing with Jest.', async(): Promise<void> => {
-    // Reset the env variable, so we can test the path where the dynamic import is not used
-    process.env.JEST_WORKER_ID = jestWorkerId;
-    const provider = await factory.getProvider() as any;
-    // We don't define this in our mock
-    expect(provider.app).toBeDefined();
-  });
 });

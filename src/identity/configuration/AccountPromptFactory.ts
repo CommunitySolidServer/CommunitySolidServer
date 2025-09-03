@@ -1,9 +1,11 @@
 // eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
 // @ts-ignore
 import type { interactionPolicy, KoaContextWithOIDC } from 'oidc-provider';
+// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+// @ts-ignore
+import * as oidc from 'oidc-provider';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { importOidcProvider } from '../IdentityUtil';
 import type { CookieStore } from '../interaction/account/util/CookieStore';
 import { ACCOUNT_PROMPT } from '../interaction/InteractionUtil';
 import type { WebIdStore } from '../interaction/webid/util/WebIdStore';
@@ -34,7 +36,7 @@ export class AccountPromptFactory extends PromptFactory {
   }
 
   public async handle(policy: interactionPolicy.DefaultPolicy): Promise<void> {
-    const { interactionPolicy: ip } = await importOidcProvider();
+    const { interactionPolicy: ip } = oidc;
     this.addAccountPrompt(policy, ip);
     this.addWebIdVerificationPrompt(policy, ip);
   }

@@ -16,6 +16,10 @@ import type {
 // eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
 // @ts-ignore
 import type Provider from 'oidc-provider';
+// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+// @ts-ignore
+import * as oidc from 'oidc-provider';
+import { joinUrl } from '../../util/PathUtil';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
 import { getLoggerFor } from '../../logging/LogUtil';
@@ -25,8 +29,6 @@ import type { HttpError } from '../../util/errors/HttpError';
 import { errorTermsToMetadata } from '../../util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../util/errors/OAuthHttpError';
 import { guardStream } from '../../util/GuardedStream';
-import { joinUrl } from '../../util/PathUtil';
-import { importOidcProvider } from '../IdentityUtil';
 import type { ClientCredentialsStore } from '../interaction/client-credentials/util/ClientCredentialsStore';
 import type { InteractionRoute } from '../interaction/routing/InteractionRoute';
 import type { AdapterFactory } from '../storage/AdapterFactory';
@@ -153,15 +155,13 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Render errors with our own error handler
     this.configureErrors(config);
 
-    const oidcImport = await importOidcProvider();
-
     // Adds new prompts
-    const policy = oidcImport.interactionPolicy.base();
+    const policy = oidc.interactionPolicy.base();
     await this.promptFactory.handleSafe(policy);
     config.interactions!.policy = policy;
 
     // eslint-disable-next-line new-cap
-    const provider = new oidcImport.default(this.baseUrl, config);
+    const provider = new oidc.default(this.baseUrl, config);
 
     // Allow provider to interpret reverse proxy headers.
     provider.proxy = true;
