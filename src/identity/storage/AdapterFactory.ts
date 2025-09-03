@@ -1,4 +1,6 @@
-import type { Adapter } from '../../../templates/types/oidc-provider';
+// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+// @ts-ignore
+import type { Adapter } from 'oidc-provider';
 
 /**
  * A factory that generates an `Adapter` to be used by the IDP to persist information.

@@ -1,7 +1,7 @@
+import type Provider from 'oidc-provider';
 import type { ProviderFactory } from '../../../../../src/identity/configuration/ProviderFactory';
 import type { Interaction } from '../../../../../src/identity/interaction/InteractionHandler';
 import { ForgetWebIdHandler } from '../../../../../src/identity/interaction/oidc/ForgetWebIdHandler';
-import type Provider from '../../../../../templates/types/oidc-provider';
 
 describe('A ForgetWebIdHandler', (): void => {
   let oidcInteraction: Interaction;

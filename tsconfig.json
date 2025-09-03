@@ -1,9 +1,10 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
+  "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
     "incremental": true,
     "lib": [ "es2021" ],
-    "moduleResolution": "node16",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "inlineSources": true,
     "newLine": "lf",

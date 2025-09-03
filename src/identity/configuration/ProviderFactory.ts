@@ -1,4 +1,6 @@
-import type Provider from '../../../templates/types/oidc-provider';
+// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+// @ts-ignore
+import type Provider from 'oidc-provider';
 
 /**
  * Returns a Provider of OIDC interactions.

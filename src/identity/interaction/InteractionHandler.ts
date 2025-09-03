@@ -1,4 +1,6 @@
-import type { KoaContextWithOIDC } from '../../../templates/types/oidc-provider';
+// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+// @ts-ignore
+import type { KoaContextWithOIDC } from 'oidc-provider';
 import type { Operation } from '../../http/Operation';
 import type { Representation } from '../../http/representation/Representation';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';

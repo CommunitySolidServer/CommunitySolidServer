@@ -26,7 +26,7 @@
     "templates"
   ],
   "engines": {
-    "node": ">=18.0"
+    "node": ">=20.19"
   },
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "dist/components/components.jsonld",
@@ -147,7 +147,7 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@inrupt/solid-client-authn-core": "^2.0.0",
     "@inrupt/solid-client-authn-node": "^2.0.0",
-    "@tsconfig/node18": "^18.2.2",
+    "@tsconfig/node20": "^20.1.6",
     "@types/jest": "^29.5.12",
     "@types/set-cookie-parser": "^2.4.4",
     "@types/supertest": "^2.0.14",

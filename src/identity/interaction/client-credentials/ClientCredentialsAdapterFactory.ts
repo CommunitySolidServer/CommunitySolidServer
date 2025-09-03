@@ -1,4 +1,6 @@
-import type { Adapter, AdapterPayload } from '../../../../templates/types/oidc-provider';
+// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+// @ts-ignore
+import type { Adapter, AdapterPayload } from 'oidc-provider';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { AdapterFactory } from '../../storage/AdapterFactory';
 import { PassthroughAdapter, PassthroughAdapterFactory } from '../../storage/PassthroughAdapterFactory';

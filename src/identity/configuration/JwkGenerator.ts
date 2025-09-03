@@ -1,5 +1,7 @@
 import type { JWK } from 'jose';
-import type { AsymmetricSigningAlgorithm } from '../../../templates/types/oidc-provider';
+// eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+// @ts-ignore
+import type { AsymmetricSigningAlgorithm } from 'oidc-provider';
 
 /**
  * A {@link JWK} where the `alg` parameter is always defined.
