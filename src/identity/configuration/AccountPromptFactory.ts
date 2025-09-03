@@ -1,7 +1,7 @@
 import { getLoggerFor } from 'global-logger-factory';
-import type { interactionPolicy, KoaContextWithOIDC } from '../../../templates/types/oidc-provider';
+import type { KoaContextWithOIDC } from 'oidc-provider';
+import { interactionPolicy } from 'oidc-provider';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { importOidcProvider } from '../IdentityUtil';
 import type { CookieStore } from '../interaction/account/util/CookieStore';
 import { ACCOUNT_PROMPT } from '../interaction/InteractionUtil';
 import type { WebIdStore } from '../interaction/webid/util/WebIdStore';
@@ -32,9 +32,8 @@ export class AccountPromptFactory extends PromptFactory {
   }
 
   public async handle(policy: interactionPolicy.DefaultPolicy): Promise<void> {
-    const { interactionPolicy: ip } = await importOidcProvider();
-    this.addAccountPrompt(policy, ip);
-    this.addWebIdVerificationPrompt(policy, ip);
+    this.addAccountPrompt(policy, interactionPolicy);
+    this.addWebIdVerificationPrompt(policy, interactionPolicy);
   }
 
   private addAccountPrompt(policy: interactionPolicy.DefaultPolicy, ip: typeof interactionPolicy): void {

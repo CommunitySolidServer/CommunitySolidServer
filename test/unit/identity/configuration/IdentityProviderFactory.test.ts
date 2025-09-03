@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream';
 import { exportJWK, generateKeyPair } from 'jose';
+import type { Configuration, errors, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
@@ -14,7 +15,6 @@ import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFac
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
-import type { Configuration, errors, KoaContextWithOIDC } from '../../../../templates/types/oidc-provider';
 
 jest.mock('oidc-provider', (): any => {
   const fn = jest.fn((issuer: string, config: Configuration): any => ({ issuer, config, use: jest.fn() }));
@@ -332,13 +332,5 @@ describe('An IdentityProviderFactory', (): void => {
     expect(ctx.accepts('something')).toBe('type');
     expect(oldAccept).toHaveBeenCalledTimes(1);
     expect(oldAccept).toHaveBeenLastCalledWith('something');
-  });
-
-  it('avoids dynamic imports when testing with Jest.', async(): Promise<void> => {
-    // Reset the env variable, so we can test the path where the dynamic import is not used
-    process.env.JEST_WORKER_ID = jestWorkerId;
-    const provider = await factory.getProvider() as any;
-    // We don't define this in our mock
-    expect(provider.app).toBeDefined();
   });
 });
