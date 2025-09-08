@@ -1,5 +1,5 @@
-import type { InteractionResults } from '../../../templates/types/oidc-provider';
-import type Provider from '../../../templates/types/oidc-provider';
+import type { InteractionResults } from 'oidc-provider';
+import type Provider from 'oidc-provider';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';

@@ -1,4 +1,4 @@
-import type { AllClientMetadata } from '../../../../templates/types/oidc-provider';
+import type { AllClientMetadata } from 'oidc-provider';
 import type { ArrayElement } from '../../../util/map/MapUtil';
 import type { ProviderFactory } from '../../configuration/ProviderFactory';
 import type { JsonRepresentation } from '../InteractionUtil';

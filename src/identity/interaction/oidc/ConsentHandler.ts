@@ -1,5 +1,5 @@
 import { boolean, object } from 'yup';
-import type { InteractionResults, KoaContextWithOIDC, UnknownObject } from '../../../../templates/types/oidc-provider';
+import type { InteractionResults, KoaContextWithOIDC, UnknownObject } from 'oidc-provider';
 import { FoundHttpError } from '../../../util/errors/FoundHttpError';
 import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';
 import type { ProviderFactory } from '../../configuration/ProviderFactory';

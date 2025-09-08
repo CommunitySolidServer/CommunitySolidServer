@@ -1,4 +1,4 @@
-import type { Adapter, AdapterPayload } from '../../../../templates/types/oidc-provider';
+import type { Adapter, AdapterPayload } from 'oidc-provider';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { AdapterFactory } from '../../storage/AdapterFactory';
 import { PassthroughAdapter, PassthroughAdapterFactory } from '../../storage/PassthroughAdapterFactory';

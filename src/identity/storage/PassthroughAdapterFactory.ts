@@ -1,4 +1,4 @@
-import type { Adapter, AdapterPayload } from '../../../templates/types/oidc-provider';
+import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { AdapterFactory } from './AdapterFactory';
 
 /**

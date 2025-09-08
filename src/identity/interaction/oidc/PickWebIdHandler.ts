@@ -1,5 +1,5 @@
 import { boolean, object, string } from 'yup';
-import type { InteractionResults } from '../../../../templates/types/oidc-provider';
+import type { InteractionResults } from 'oidc-provider';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { FoundHttpError } from '../../../util/errors/FoundHttpError';

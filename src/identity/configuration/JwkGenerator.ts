@@ -1,5 +1,5 @@
 import type { JWK } from 'jose';
-import type { AsymmetricSigningAlgorithm } from '../../../templates/types/oidc-provider';
+import type { AsymmetricSigningAlgorithm } from 'oidc-provider';
 
 /**
  * A {@link JWK} where the `alg` parameter is always defined.

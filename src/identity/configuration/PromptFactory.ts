@@ -1,4 +1,4 @@
-import type { interactionPolicy } from '../../../templates/types/oidc-provider';
+import type { interactionPolicy } from 'oidc-provider';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 /**
