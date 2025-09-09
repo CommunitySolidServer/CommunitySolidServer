@@ -17,7 +17,7 @@ import {
 import { flushPromises } from '../../util/Util';
 
 jest.mock('global-logger-factory', (): any => {
-  const logger: Logger = { warn: jest.fn(), log: jest.fn() } as any;
+  const logger: Logger = { error: jest.fn(), warn: jest.fn(), log: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });
 const logger: jest.Mocked<Logger> = getLoggerFor('StreamUtil') as any;

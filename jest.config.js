@@ -49,7 +49,6 @@ module.exports = {
     '^.+\\.ts$': [ 'ts-jest', {
       tsconfig: '<rootDir>/test/tsconfig.json',
       diagnostics: false,
-      isolatedModules: true,
     }],
     // This transformer converts ESM packages to CJS
     '^.+node_modules.+\\.js$': 'jest-esm-transformer-2',

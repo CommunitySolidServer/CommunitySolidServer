@@ -36,6 +36,10 @@ jest.mock('fs-extra', (): any => ({
 }));
 
 describe('ConversionUtil', (): void => {
+  beforeEach(async(): Promise<void> => {
+    jest.clearAllMocks();
+  });
+
   describe('ContextDocumentLoader', (): void => {
     const fetchMock: jest.Mock = fetch as any;
     const context1 = {
@@ -80,6 +84,16 @@ describe('ConversionUtil', (): void => {
       await expect(loader.load(url)).resolves.toEqual(context2);
     });
 
+    it('fetches the context if not stored.', async(): Promise<void> => {
+      const loader = new ContextDocumentLoader({}, 0);
+
+      mockOnce(context1);
+
+      await expect(loader.load(url)).resolves.toEqual(context1);
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
     it('caches fetched results for the given amount of time.', async(): Promise<void> => {
       const loader = new ContextDocumentLoader({}, 100);
 
@@ -93,7 +107,7 @@ describe('ConversionUtil', (): void => {
 
       await expect(loader.load(url)).resolves.toEqual(context1);
 
-      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
     });
   });
 

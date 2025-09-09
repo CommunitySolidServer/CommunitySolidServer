@@ -14,7 +14,15 @@ import type { Guarded } from '../../../../src/util/GuardedStream';
 import { isContainerPath } from '../../../../src/util/PathUtil';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { toLiteral } from '../../../../src/util/TermUtil';
-import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
+import {
+  CONTENT_TYPE,
+  DC,
+  LDP,
+  POSIX,
+  RDF,
+  SOLID_META,
+  XSD,
+} from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('node:fs');
@@ -111,6 +119,23 @@ describe('A FileDataAccessor', (): void => {
       metadata = await accessor.getMetadata({ path: `${base}resource.ttl` });
       expect(metadata.identifier.value).toBe(`${base}resource.ttl`);
       expect(metadata.contentType).toBe('text/turtle');
+      expect(metadata.get(RDF.terms.type)?.value).toBe(LDP.Resource);
+      expect(metadata.get(POSIX.terms.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
+      expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.terms.mtime))
+        .toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
+      // `dc:modified` is in the default graph
+      expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(2);
+    });
+
+    it('uses the stored content-type for documents if there is one.', async(): Promise<void> => {
+      cache.data = {
+        'resource.ttl': 'data',
+        'resource.ttl.meta': `<resource.ttl> <${CONTENT_TYPE}> "application/trig".`,
+      };
+      metadata = await accessor.getMetadata({ path: `${base}resource.ttl` });
+      expect(metadata.identifier.value).toBe(`${base}resource.ttl`);
+      expect(metadata.contentType).toBe('application/trig');
       expect(metadata.get(RDF.terms.type)?.value).toBe(LDP.Resource);
       expect(metadata.get(POSIX.terms.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
       expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
@@ -432,6 +457,18 @@ describe('A FileDataAccessor', (): void => {
       const outputMetadata = await accessor.getMetadata(resourceIdentifier);
       expect(outputMetadata.quads(`${base}a`))
         .toStrictEqual([ DF.quad(DF.namedNode(`${base}a`), DF.namedNode(`${base}b`), DF.namedNode(`${base}c`)) ]);
+    });
+
+    it('writes the content-type to file if it is an unsupported type.', async(): Promise<void> => {
+      const resourceIdentifier = { path: `${base}resource` };
+      const inputMetadata = new RepresentationMetadata(resourceIdentifier, { [CONTENT_TYPE]: 'text/unknown' });
+      await accessor.writeDocument(resourceIdentifier, data, inputMetadata);
+
+      const extraMetadata = new RepresentationMetadata(resourceIdentifier, { [CONTENT_TYPE]: 'text/unknown' });
+      await expect(accessor.writeMetadata(resourceIdentifier, extraMetadata)).resolves.toBeUndefined();
+
+      const outputMetadata = await accessor.getMetadata(resourceIdentifier);
+      expect(outputMetadata.contentType).toBe('text/unknown');
     });
   });
 
