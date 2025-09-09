@@ -41,6 +41,7 @@ const esModules = [
   'mimic-response',
   'form-data-encoder',
   'cacheable-lookup',
+  'marked',
 ];
 
 module.exports = {
