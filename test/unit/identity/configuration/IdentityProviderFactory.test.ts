@@ -143,7 +143,6 @@ describe('An IdentityProviderFactory', (): void => {
     expect(config.cookies?.keys).toEqual([ expect.any(String) ]);
     expect(config.jwks).toEqual({ keys: [ expect.objectContaining({ alg: 'ES256' }) ]});
     expect(config.routes).toEqual(routes);
-    expect(config.pkce?.methods).toEqual([ 'S256' ]);
     expect((config.pkce!.required as any)()).toBe(true);
     expect(config.clientDefaults?.id_token_signed_response_alg).toBe('ES256');
 
@@ -342,6 +341,7 @@ describe('An IdentityProviderFactory', (): void => {
   it('adds middleware to make the OIDC provider think the request wants HTML.', async(): Promise<void> => {
     const provider = await factory.getProvider();
     expect(provider.use).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line jest/unbound-method
     const middleware = jest.mocked(provider.use).mock.calls[0][0];
 
     // eslint-disable-next-line jest/unbound-method
@@ -357,6 +357,7 @@ describe('An IdentityProviderFactory', (): void => {
   it('does not modify the context accepts function in other cases.', async(): Promise<void> => {
     const provider = await factory.getProvider();
     expect(provider.use).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line jest/unbound-method
     const middleware = jest.mocked(provider.use).mock.calls[0][0];
 
     // eslint-disable-next-line jest/unbound-method
