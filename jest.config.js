@@ -29,18 +29,8 @@ function jestGithubRunnerSpecs() {
 const esModules = [
   'oidc-provider',
   'nanoid',
-  'got',
   'quick-lru',
-  '@sindresorhus/is',
-  'p-cancelable',
-  '@szmarczak/http-timer',
-  'cacheable-request',
-  'normalize-url',
-  'responselike',
-  'lowercase-keys',
-  'mimic-response',
-  'form-data-encoder',
-  'cacheable-lookup',
+  'jose',
   'marked',
 ];
 
@@ -51,7 +41,7 @@ module.exports = {
       diagnostics: false,
     }],
     // This transformer converts ESM packages to CJS
-    '^.+node_modules.+\\.js$': 'jest-esm-transformer-2',
+    '^.+node_modules.+\\.js$': '@swc/jest',
   },
   // By default, node_modules are not transformed, but we want to transform the ESM packages
   transformIgnorePatterns: [ `/node_modules/(?!(${esModules.join('|')})/)` ],

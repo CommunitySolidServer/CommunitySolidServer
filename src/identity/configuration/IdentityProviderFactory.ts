@@ -226,7 +226,6 @@ export class IdentityProviderFactory implements ProviderFactory {
 
     // Solid OIDC requires pkce https://solid.github.io/solid-oidc/#concepts
     config.pkce = {
-      methods: [ 'S256' ],
       required: (): true => true,
     };
 
