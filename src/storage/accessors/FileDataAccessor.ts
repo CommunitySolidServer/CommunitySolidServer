@@ -203,7 +203,9 @@ export class FileDataAccessor implements DataAccessor {
     // When writing metadata for a document, only remove the content-type when dealing with a supported media type.
     // A media type is supported if the FileIdentifierMapper can correctly store it.
     // This allows restoring the appropriate content-type on data read (see getFileMetadata).
-    if (isContainerPath(link.filePath) || typeof link.contentType !== 'undefined') {
+    // The FileIdentifierMapper defaults to octet stream in case it can't determine the content-type,
+    // so we have to check if the link content-type is the same as the one in the metadata.
+    if (isContainerPath(link.filePath) || link.contentType === metadata.contentType) {
       metadata.removeAll(CONTENT_TYPE_TERM);
     }
     const quads = metadata.quads();

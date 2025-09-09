@@ -42,23 +42,23 @@ export class HashMap<TKey = unknown, TVal = unknown> implements Map<TKey, TVal> 
     this.hashMap.clear();
   }
 
-  public [Symbol.iterator](): IterableIterator<[TKey, TVal]> {
+  public [Symbol.iterator](): MapIterator<[TKey, TVal]> {
     return this.entries();
   }
 
-  public* entries(): IterableIterator<[TKey, TVal]> {
+  public* entries(): MapIterator<[TKey, TVal]> {
     for (const [ , { key, value }] of this.hashMap) {
       yield [ key, value ];
     }
   }
 
-  public* keys(): IterableIterator<TKey> {
+  public* keys(): MapIterator<TKey> {
     for (const [ , { key }] of this.hashMap) {
       yield key;
     }
   }
 
-  public* values(): IterableIterator<TVal> {
+  public* values(): MapIterator<TVal> {
     for (const [ , { value }] of this.hashMap) {
       yield value;
     }

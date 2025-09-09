@@ -31,27 +31,27 @@ export interface SetMultiMap<TKey, TVal> extends Map<TKey, TVal | ReadonlySet<TV
   /**
    * Iterates over all key/value bindings in this Map.
    */
-  [Symbol.iterator]: () => IterableIterator<[TKey, TVal]>;
+  [Symbol.iterator]: () => MapIterator<[TKey, TVal]>;
   /**
    * Iterates over all key/value bindings in this Map.
    */
-  entries: () => IterableIterator<[TKey, TVal]>;
+  entries: () => MapIterator<[TKey, TVal]>;
   /**
    * Iterates over all distinct keys in this Map, together with a {@link Set} of their values.
    */
-  entrySets: () => IterableIterator<[TKey, ReadonlySet<TVal>]>;
+  entrySets: () => MapIterator<[TKey, ReadonlySet<TVal>]>;
   /**
    * Iterates over all distinct keys in this Map.
    */
-  distinctKeys: () => IterableIterator<TKey>;
+  distinctKeys: () => MapIterator<TKey>;
   /**
    * Iterates over all values in this Map.
    */
-  values: () => IterableIterator<TVal>;
+  values: () => MapIterator<TVal>;
   /**
    * Iterates over all distinct keys and returns their {@link Set} of values.
    */
-  valueSets: () => IterableIterator<ReadonlySet<TVal>>;
+  valueSets: () => MapIterator<ReadonlySet<TVal>>;
   /**
    * Loops over all key/value bindings.
    */

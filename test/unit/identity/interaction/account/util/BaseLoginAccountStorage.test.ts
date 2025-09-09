@@ -126,6 +126,12 @@ describe('A BaseLoginAccountStorage', (): void => {
     expect(source.has).toHaveBeenLastCalledWith('dummy', 'id');
   });
 
+  it('can handle data not existing.', async(): Promise<void> => {
+    await expect(storage.get(ACCOUNT_TYPE, 'id')).resolves.toBeUndefined();
+    expect(source.get).toHaveBeenCalledTimes(1);
+    expect(source.get).toHaveBeenLastCalledWith(ACCOUNT_TYPE, 'id');
+  });
+
   it('removes the linkedLoginsCount field when getting values.', async(): Promise<void> => {
     source.get.mockResolvedValueOnce({ id: 'id', test: 'data', linkedLoginsCount: 1 });
     await expect(storage.get(ACCOUNT_TYPE, 'id')).resolves.toEqual({ id: 'id', test: 'data' });

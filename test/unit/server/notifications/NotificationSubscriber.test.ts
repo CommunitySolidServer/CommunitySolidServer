@@ -183,6 +183,22 @@ describe('A NotificationSubscriber', (): void => {
     jest.useRealTimers();
   });
 
+  it('does not set an expiration if max duration is 0.', async(): Promise<void> => {
+    subscriber = new NotificationSubscriber({
+      channelType,
+      converter,
+      credentialsExtractor,
+      permissionReader,
+      authorizer,
+      storage,
+      maxDuration: 0,
+    });
+
+    await subscriber.handle({ operation, request, response });
+    expect(storage.add).toHaveBeenCalledTimes(1);
+    expect(storage.add).toHaveBeenLastCalledWith(channel);
+  });
+
   it('calls the completeChannel function after sending the response.', async(): Promise<void> => {
     const description = await subscriber.handle({ operation, request, response });
 

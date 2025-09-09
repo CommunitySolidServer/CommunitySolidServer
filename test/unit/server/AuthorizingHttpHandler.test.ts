@@ -100,4 +100,16 @@ describe('An AuthorizingHttpHandler', (): void => {
     expect(modes).toContain(PERMISSIONS.Modify);
     expect(source.handleSafe).toHaveBeenCalledTimes(0);
   });
+
+  it('does not add access modes if the error is not an HTTP error.', async(): Promise<void> => {
+    authorizer.handleSafe.mockRejectedValueOnce(new Error('bad data'));
+    let handlerError: unknown;
+    try {
+      await handler.handle({ request, response, operation });
+    } catch (receivedError: unknown) {
+      handlerError = receivedError;
+    }
+    expect(typeof handlerError).toBe('object');
+    expect(handlerError && 'metadata' in (handlerError as object)).toBe(false);
+  });
 });
