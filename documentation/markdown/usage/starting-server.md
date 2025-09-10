@@ -2,7 +2,7 @@
 
 ## Quickly spinning up a server
 
-Use [Node.js](https://nodejs.org/en/) 18.0 or up and execute:
+Use [Node.js](https://nodejs.org/en/) 22.0 or up and execute:
 
 ```shell
 npx @solid/community-server

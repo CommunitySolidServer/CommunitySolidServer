@@ -31,7 +31,7 @@ And, of course, for many others who like to experience Solid.
 
 ## ⚡ Running the Community Solid Server
 
-Make sure you have [Node.js](https://nodejs.org/en/) 18.0 or higher.
+Make sure you have [Node.js](https://nodejs.org/en/) 22.0 or higher.
 If this is your first time using Node.js,
 you can find instructions on how to do this [here](https://nodejs.org/en/download/package-manager).
 
