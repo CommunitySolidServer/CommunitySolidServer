@@ -1,6 +1,7 @@
 import { FixedContentTypeMapper } from '../../../../src/storage/mapping/FixedContentTypeMapper';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { trimTrailingSlashes } from '../../../../src/util/PathUtil';
 
 jest.mock('node:fs');
@@ -66,11 +67,9 @@ describe('An FixedContentTypeMapper', (): void => {
         });
       });
 
-      it('throws 400 if the given content-type is not supported.', async(): Promise<void> => {
+      it('throws 501 if the given content-type is not supported.', async(): Promise<void> => {
         await expect(mapper.mapUrlToFilePath({ path: `${base}test.ttl` }, false, 'application/n-quads')).rejects
-          .toThrow(
-            new BadRequestHttpError(`Unsupported content type application/n-quads, only text/turtle is allowed`),
-          );
+          .toThrow(NotImplementedHttpError);
       });
     });
 
@@ -153,11 +152,9 @@ describe('An FixedContentTypeMapper', (): void => {
         });
       });
 
-      it('throws 400 if the given content-type is not supported.', async(): Promise<void> => {
+      it('throws 501 if the given content-type is not supported.', async(): Promise<void> => {
         await expect(mapper.mapUrlToFilePath({ path: `${base}test.ttl` }, false, 'application/n-quads')).rejects
-          .toThrow(
-            new BadRequestHttpError(`Unsupported content type application/n-quads, only text/turtle is allowed`),
-          );
+          .toThrow(NotImplementedHttpError);
       });
     });
 
@@ -239,11 +236,9 @@ describe('An FixedContentTypeMapper', (): void => {
           .toThrow(NotFoundHttpError);
       });
 
-      it('throws 400 if the given content-type is not supported.', async(): Promise<void> => {
+      it('throws 501 if the given content-type is not supported.', async(): Promise<void> => {
         await expect(mapper.mapUrlToFilePath({ path: `${base}test.ttl` }, false, 'application/n-quads')).rejects
-          .toThrow(
-            new BadRequestHttpError(`Unsupported content type application/n-quads, only text/turtle is allowed`),
-          );
+          .toThrow(NotImplementedHttpError);
       });
     });
 

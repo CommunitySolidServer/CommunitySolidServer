@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream';
 import { exportJWK, generateKeyPair } from 'jose';
+import type { Configuration, errors, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
@@ -14,7 +15,6 @@ import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFac
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
-import type { Configuration, errors, KoaContextWithOIDC } from '../../../../templates/types/oidc-provider';
 
 jest.mock('oidc-provider', (): any => {
   const fn = jest.fn((issuer: string, config: Configuration): any => ({ issuer, config, use: jest.fn() }));
@@ -39,8 +39,6 @@ const routes = {
 };
 
 describe('An IdentityProviderFactory', (): void => {
-  let jestWorkerId: string | undefined;
-  let nodeEnv: string | undefined;
   let baseConfig: Configuration;
   const baseUrl = 'http://example.com/foo/';
   const oidcPath = '/oidc';
@@ -56,16 +54,6 @@ describe('An IdentityProviderFactory', (): void => {
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let factory: IdentityProviderFactory;
-
-  beforeAll(async(): Promise<void> => {
-    // We need to fool the IDP factory into thinking we are not in a test run,
-    // otherwise we can't mock the oidc-provider library,
-    // as the `importOidcProvider` utility function always calls `jest.requireActual`.
-    jestWorkerId = process.env.JEST_WORKER_ID;
-    nodeEnv = process.env.NODE_ENV;
-    delete process.env.JEST_WORKER_ID;
-    delete process.env.NODE_ENV;
-  });
 
   beforeEach(async(): Promise<void> => {
     // Disabling devInteractions to prevent warnings when testing the path
@@ -138,11 +126,6 @@ describe('An IdentityProviderFactory', (): void => {
     });
   });
 
-  afterAll(async(): Promise<void> => {
-    process.env.JEST_WORKER_ID = jestWorkerId;
-    process.env.NODE_ENV = nodeEnv;
-  });
-
   it('creates a correct configuration.', async(): Promise<void> => {
     // This is the output of our mock function
     const provider = await factory.getProvider() as any;
@@ -160,7 +143,6 @@ describe('An IdentityProviderFactory', (): void => {
     expect(config.cookies?.keys).toEqual([ expect.any(String) ]);
     expect(config.jwks).toEqual({ keys: [ expect.objectContaining({ alg: 'ES256' }) ]});
     expect(config.routes).toEqual(routes);
-    expect(config.pkce?.methods).toEqual([ 'S256' ]);
     expect((config.pkce!.required as any)()).toBe(true);
     expect(config.clientDefaults?.id_token_signed_response_alg).toBe('ES256');
 
@@ -275,6 +257,59 @@ describe('An IdentityProviderFactory', (): void => {
     expect(oAuthError.stack).toContain('Error: bad data - more info - more details');
   });
 
+  it('can handle errors without stack.', async(): Promise<void> => {
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+
+    const error = new Error('bad data') as errors.OIDCProviderError;
+    delete error.stack;
+
+    const oAuthError = new OAuthHttpError(error, error.name, 500, 'bad data');
+    delete oAuthError.stack;
+
+    await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error: oAuthError, request: ctx.req });
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
+    expect(oAuthError.message).toBe('bad data');
+    expect(oAuthError.stack).toBeUndefined();
+  });
+
+  it('does not provide additional information if showStackTrace is set to false.', async(): Promise<void> => {
+    factory = new IdentityProviderFactory(baseConfig, {
+      promptFactory,
+      adapterFactory,
+      baseUrl,
+      oidcPath,
+      interactionRoute,
+      storage,
+      jwkGenerator,
+      clientCredentialsStore,
+      showStackTrace: false,
+      errorHandler,
+      responseWriter,
+    });
+
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+
+    const error = new Error('bad data') as errors.OIDCProviderError;
+    error.error_description = 'more info';
+    error.error_detail = 'more details';
+
+    const oAuthError = new OAuthHttpError(error, error.name, 500, 'bad data');
+
+    await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe)
+      .toHaveBeenLastCalledWith({ error: oAuthError, request: ctx.req });
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
+    expect(oAuthError.message).toBe('bad data');
+    expect(oAuthError.stack).toContain('Error: bad data');
+  });
+
   it('throws a specific error for unknown clients.', async(): Promise<void> => {
     const provider = await factory.getProvider() as any;
     const { config } = provider as { config: Configuration };
@@ -306,6 +341,7 @@ describe('An IdentityProviderFactory', (): void => {
   it('adds middleware to make the OIDC provider think the request wants HTML.', async(): Promise<void> => {
     const provider = await factory.getProvider();
     expect(provider.use).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line jest/unbound-method
     const middleware = jest.mocked(provider.use).mock.calls[0][0];
 
     // eslint-disable-next-line jest/unbound-method
@@ -321,6 +357,7 @@ describe('An IdentityProviderFactory', (): void => {
   it('does not modify the context accepts function in other cases.', async(): Promise<void> => {
     const provider = await factory.getProvider();
     expect(provider.use).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line jest/unbound-method
     const middleware = jest.mocked(provider.use).mock.calls[0][0];
 
     // eslint-disable-next-line jest/unbound-method
@@ -332,13 +369,5 @@ describe('An IdentityProviderFactory', (): void => {
     expect(ctx.accepts('something')).toBe('type');
     expect(oldAccept).toHaveBeenCalledTimes(1);
     expect(oldAccept).toHaveBeenLastCalledWith('something');
-  });
-
-  it('avoids dynamic imports when testing with Jest.', async(): Promise<void> => {
-    // Reset the env variable, so we can test the path where the dynamic import is not used
-    process.env.JEST_WORKER_ID = jestWorkerId;
-    const provider = await factory.getProvider() as any;
-    // We don't define this in our mock
-    expect(provider.app).toBeDefined();
   });
 });

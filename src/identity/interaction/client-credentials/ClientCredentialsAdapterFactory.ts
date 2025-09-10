@@ -1,5 +1,5 @@
 import { getLoggerFor } from 'global-logger-factory';
-import type { Adapter, AdapterPayload } from '../../../../templates/types/oidc-provider';
+import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { AdapterFactory } from '../../storage/AdapterFactory';
 import { PassthroughAdapter, PassthroughAdapterFactory } from '../../storage/PassthroughAdapterFactory';
 import type { WebIdStore } from '../webid/util/WebIdStore';

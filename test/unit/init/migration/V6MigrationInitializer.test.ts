@@ -39,6 +39,7 @@ jest.mock('node:readline', (): any => ({
 describe('A V6MigrationInitializer', (): void => {
   const webId = 'http://example.com/test/profile/card#me';
   const webId2 = 'http://example.com/test2/profile/card#me';
+  const webId3 = 'http://example.com/test3/profile/card#me';
   let settings: Record<string, Settings>;
   let accounts: Record<string, Account>;
   let clientCredentials: Record<string, ClientCredentials>;
@@ -55,10 +56,12 @@ describe('A V6MigrationInitializer', (): void => {
     settings = {
       [webId]: { useIdp: true, podBaseUrl: 'http://example.com/test/', clientCredentials: [ 'token' ]},
       [webId2]: { useIdp: true, podBaseUrl: 'http://example.com/test2/' },
+      [webId3]: { useIdp: false },
     };
     accounts = {
       account: { email: 'EMAIL@example.com', password: '123', webId, verified: true },
       account2: { email: 'email2@example.com', password: '1234', webId: webId2, verified: true },
+      account3: { email: 'email3@example.com', password: '1234', webId: webId3, verified: true },
     };
     clientCredentials = {
       token: { webId, secret: 'secret!' },
@@ -121,14 +124,17 @@ describe('A V6MigrationInitializer', (): void => {
     expect(setupStorage.get).toHaveBeenCalledTimes(1);
     expect(setupStorage.get).toHaveBeenLastCalledWith(versionKey);
 
-    expect(accountStorage.get).toHaveBeenCalledTimes(2);
+    expect(accountStorage.get).toHaveBeenCalledTimes(3);
     expect(accountStorage.get).toHaveBeenCalledWith(webId);
     expect(accountStorage.get).toHaveBeenCalledWith(webId2);
-    expect(accountStorage.delete).toHaveBeenCalledTimes(4);
+    expect(accountStorage.get).toHaveBeenCalledWith(webId3);
+    expect(accountStorage.delete).toHaveBeenCalledTimes(6);
     expect(accountStorage.delete).toHaveBeenCalledWith(webId);
     expect(accountStorage.delete).toHaveBeenCalledWith(webId2);
+    expect(accountStorage.delete).toHaveBeenCalledWith(webId3);
     expect(accountStorage.delete).toHaveBeenCalledWith('account');
     expect(accountStorage.delete).toHaveBeenCalledWith('account2');
+    expect(accountStorage.delete).toHaveBeenCalledWith('account3');
 
     expect(clientCredentialsStorage.delete).toHaveBeenCalledTimes(1);
     expect(clientCredentialsStorage.delete).toHaveBeenCalledWith('token');
@@ -136,7 +142,8 @@ describe('A V6MigrationInitializer', (): void => {
     expect(forgotPasswordStorage.delete).toHaveBeenCalledTimes(1);
     expect(forgotPasswordStorage.delete).toHaveBeenCalledWith('forgot');
 
-    expect(newAccountStorage.create).toHaveBeenCalledTimes(11);
+    expect(newAccountStorage.create).toHaveBeenCalledTimes(13);
+    // 3 times this
     expect(newAccountStorage.create).toHaveBeenCalledWith(ACCOUNT_TYPE, {});
     expect(newAccountStorage.create).toHaveBeenCalledWith(
       PASSWORD_STORAGE_TYPE,
@@ -145,6 +152,10 @@ describe('A V6MigrationInitializer', (): void => {
     expect(newAccountStorage.create).toHaveBeenCalledWith(
       PASSWORD_STORAGE_TYPE,
       { email: 'email2@example.com', password: '1234', verified: true, accountId: 'account-id' },
+    );
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      PASSWORD_STORAGE_TYPE,
+      { email: 'email3@example.com', password: '1234', verified: true, accountId: 'account-id' },
     );
     expect(newAccountStorage.create).toHaveBeenCalledWith(WEBID_STORAGE_TYPE, { webId, accountId: 'account-id' });
     expect(newAccountStorage.create).toHaveBeenCalledWith(
@@ -193,19 +204,27 @@ describe('A V6MigrationInitializer', (): void => {
     expect(setupStorage.get).toHaveBeenCalledTimes(1);
     expect(setupStorage.get).toHaveBeenLastCalledWith(versionKey);
 
-    expect(accountStorage.get).toHaveBeenCalledTimes(2);
+    expect(accountStorage.get).toHaveBeenCalledTimes(3);
     expect(accountStorage.get).toHaveBeenCalledWith(webId);
     expect(accountStorage.get).toHaveBeenCalledWith(webId2);
-    expect(accountStorage.delete).toHaveBeenCalledTimes(3);
+    expect(accountStorage.get).toHaveBeenCalledWith(webId3);
+    expect(accountStorage.delete).toHaveBeenCalledTimes(5);
     expect(accountStorage.delete).toHaveBeenCalledWith(webId2);
+    expect(accountStorage.delete).toHaveBeenCalledWith(webId3);
     expect(accountStorage.delete).toHaveBeenCalledWith('account');
     expect(accountStorage.delete).toHaveBeenCalledWith('account2');
+    expect(accountStorage.delete).toHaveBeenCalledWith('account3');
 
-    expect(newAccountStorage.create).toHaveBeenCalledTimes(5);
+    expect(newAccountStorage.create).toHaveBeenCalledTimes(7);
+    // 3 times this
     expect(newAccountStorage.create).toHaveBeenCalledWith(ACCOUNT_TYPE, {});
     expect(newAccountStorage.create).toHaveBeenCalledWith(
       PASSWORD_STORAGE_TYPE,
       { email: 'email2@example.com', password: '1234', verified: true, accountId: 'account-id' },
+    );
+    expect(newAccountStorage.create).toHaveBeenCalledWith(
+      PASSWORD_STORAGE_TYPE,
+      { email: 'email3@example.com', password: '1234', verified: true, accountId: 'account-id' },
     );
     expect(newAccountStorage.create).toHaveBeenCalledWith(
       WEBID_STORAGE_TYPE,
@@ -246,7 +265,7 @@ describe('A V6MigrationInitializer', (): void => {
       expect(questionMock.mock.invocationCallOrder[0])
         .toBeLessThan(newAccountStorage.create.mock.invocationCallOrder[0]);
 
-      expect(newAccountStorage.create).toHaveBeenCalledTimes(11);
+      expect(newAccountStorage.create).toHaveBeenCalledTimes(13);
     });
 
     it('throws an error to stop the server if no positive answer is received.', async(): Promise<void> => {

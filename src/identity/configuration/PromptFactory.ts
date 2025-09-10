@@ -1,5 +1,5 @@
 import { AsyncHandler } from 'asynchronous-handlers';
-import type { interactionPolicy } from '../../../templates/types/oidc-provider';
+import type { interactionPolicy } from 'oidc-provider';
 
 /**
  * Used to generate custom {@link interactionPolicy.Prompt}s.

@@ -411,12 +411,12 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     });
 
     it('should return correct error output.', async(): Promise<void> => {
-      const res = await fetch(`${baseUrl}.oidc/foo`, { headers: { accept: 'application/json' }});
-      expect(res.status).toBe(404);
+      const res = await fetch(`${baseUrl}.oidc/token`, { method: 'POST', headers: { accept: 'application/json' }});
+      expect(res.status).toBe(400);
       const json = await res.json();
       expect(json.name).toBe(`InvalidRequest`);
-      expect(json.message).toBe(`invalid_request - unrecognized route or not allowed method (GET on /.oidc/foo)`);
-      expect(json.statusCode).toBe(404);
+      expect(json.message).toBe(`invalid_request - no client authentication mechanism provided`);
+      expect(json.statusCode).toBe(400);
       expect(json.stack).toBeDefined();
       expect(json.error).toBe('invalid_request');
     });

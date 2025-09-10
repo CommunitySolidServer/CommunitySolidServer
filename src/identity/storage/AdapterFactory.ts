@@ -1,4 +1,4 @@
-import type { Adapter } from '../../../templates/types/oidc-provider';
+import type { Adapter } from 'oidc-provider';
 
 /**
  * A factory that generates an `Adapter` to be used by the IDP to persist information.

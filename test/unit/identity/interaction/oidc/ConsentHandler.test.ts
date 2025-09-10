@@ -1,9 +1,9 @@
+import type Provider from 'oidc-provider';
 import type { ProviderFactory } from '../../../../../src/identity/configuration/ProviderFactory';
 import type { Interaction } from '../../../../../src/identity/interaction/InteractionHandler';
 import { ConsentHandler } from '../../../../../src/identity/interaction/oidc/ConsentHandler';
 import { FoundHttpError } from '../../../../../src/util/errors/FoundHttpError';
 import { NotImplementedHttpError } from '../../../../../src/util/errors/NotImplementedHttpError';
-import type Provider from '../../../../../templates/types/oidc-provider';
 
 const newGrantId = 'newGrantId';
 class DummyGrant {

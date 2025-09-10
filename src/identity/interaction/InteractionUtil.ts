@@ -1,6 +1,6 @@
 import { getLoggerFor } from 'global-logger-factory';
-import type { InteractionResults } from '../../../templates/types/oidc-provider';
-import type Provider from '../../../templates/types/oidc-provider';
+import type { InteractionResults } from 'oidc-provider';
+import type Provider from 'oidc-provider';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import type { Json } from '../../util/Json';

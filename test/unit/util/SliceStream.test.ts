@@ -41,6 +41,16 @@ describe('A SliceStream', (): void => {
       Readable.from('0123456789', { objectMode: false }),
       { start: -3, size: 10, objectMode: false },
     ))).resolves.toBe('789');
+
+    await expect(readableToString(new SliceStream(
+      Readable.from('0123456789', { objectMode: false }),
+      { start: 10, end: 20, objectMode: false },
+    ))).resolves.toBe('');
+
+    await expect(readableToString(new SliceStream(
+      Readable.from('0123456789', { objectMode: false }),
+      { start: 0, end: 3, objectMode: false },
+    ))).resolves.toBe('0123');
   });
 
   it('can slice object streams.', async(): Promise<void> => {
@@ -64,5 +74,15 @@ describe('A SliceStream', (): void => {
       Readable.from(arr, { objectMode: true }),
       { start: -3, size: 10, objectMode: true },
     ))).resolves.toBe('789');
+
+    await expect(readableToString(new SliceStream(
+      Readable.from(arr, { objectMode: true }),
+      { start: 10, end: 20, objectMode: true },
+    ))).resolves.toBe('');
+
+    await expect(readableToString(new SliceStream(
+      Readable.from(arr, { objectMode: true }),
+      { start: 0, end: 3, objectMode: true },
+    ))).resolves.toBe('0123');
   });
 });

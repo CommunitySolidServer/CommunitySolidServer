@@ -18,9 +18,9 @@ describe('An RdfPatcher,', (): void => {
   let patcher: jest.Mocked<RepresentationPatcher<RdfDatasetRepresentation>>;
   let startQuads: Quad[];
   let rdfPatcher: RdfPatcher;
-  let identifier: ResourceIdentifier;
+  const identifier: ResourceIdentifier = { path: 'http://example.com/foo' };
   let representation: Representation;
-  let patch: Patch;
+  const patch: Patch = 'patch' as any;
 
   beforeEach((): void => {
     startQuads = [ DataFactory.quad(

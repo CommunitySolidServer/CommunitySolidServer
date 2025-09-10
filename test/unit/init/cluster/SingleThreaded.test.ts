@@ -14,17 +14,23 @@ const mockResource: Resource = {
   property: { type: { value: '#ViolatingClass' }},
 } as any;
 
-const myExpandTerm = jest.fn().mockImplementation((): any => 'http://myFullIRI');
+const singleThreaded: Resource = {
+  isA: jest.fn().mockReturnValue(true),
+  value: 'http://myFullIRI/#SingleThreaded',
+  property: { type: { value: 'http://myFullIRI/#SingleThreaded' }},
+} as any;
+
+const myExpandTerm = jest.fn().mockImplementation((name: string): any => `http://myFullIRI/#${name}`);
 
 function mockComponentsManagerFn(length: number): jest.Mocked<ComponentsManager<any>> {
-  const resources: Resource[] = Array.from<Resource>({ length }).fill(mockResource);
+  const resources: Resource[] = [ ...Array.from<Resource>({ length: length - 1 }).fill(mockResource), singleThreaded ];
   return { moduleState, getInstantiatedResources: jest.fn((): any => resources) } as any;
 }
 
 jest.mock('jsonld-context-parser/lib/ContextParser', (): any => ({
   ContextParser: jest.fn().mockImplementation((): any => ({
     parse: jest.fn(async(): Promise<any> => ({
-      expandTerm: jest.fn((): any => myExpandTerm()),
+      expandTerm: myExpandTerm,
     })),
   })),
 }));
@@ -40,12 +46,12 @@ jest.mock('componentsjs', (): any => ({
 
 describe('A SingleThreaded', (): void => {
   it('has a listSingleThreadedComponents that works with 1 resource.', async(): Promise<void> => {
-    const comp = await ComponentsManager.build({ length: 1 } as any);
+    const comp = await ComponentsManager.build({ length: 2 } as any);
     await expect(listSingleThreadedComponents(comp)).resolves.toEqual([ 'ViolatingClass' ]);
   });
 
   it('has a listSingleThreadedComponents that works with multiple resources.', async(): Promise<void> => {
-    const comp = await ComponentsManager.build({ length: 2 } as any);
+    const comp = await ComponentsManager.build({ length: 3 } as any);
     await expect(listSingleThreadedComponents(comp)).resolves.toEqual([ 'ViolatingClass', 'ViolatingClass' ]);
   });
 

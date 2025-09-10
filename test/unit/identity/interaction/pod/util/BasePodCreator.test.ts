@@ -108,4 +108,19 @@ describe('A BasePodCreator', (): void => {
     expect(webIdStore.delete).toHaveBeenCalledTimes(1);
     expect(webIdStore.delete).toHaveBeenLastCalledWith(webIdLink);
   });
+
+  it('can handle errors if no WebID is linked.', async(): Promise<void> => {
+    const error = new Error('bad data');
+    podStore.create.mockRejectedValueOnce(error);
+
+    await expect(creator.handle({ name, accountId, webId })).rejects.toBe(error);
+
+    expect(webIdStore.create).toHaveBeenCalledTimes(0);
+    expect(podStore.create).toHaveBeenCalledTimes(1);
+    expect(podStore.create).toHaveBeenLastCalledWith(accountId, {
+      base: { path: podUrl },
+      webId,
+    }, false);
+    expect(webIdStore.delete).toHaveBeenCalledTimes(0);
+  });
 });

@@ -662,6 +662,15 @@ describe('AppRunner', (): void => {
       expect(manager.instantiate).toHaveBeenNthCalledWith(2, 'urn:solid-server:default:App', { variables: {}});
     });
 
+    it('can run with a singlethreaded cluster manager.', async(): Promise<void> => {
+      clusterManager.isSingleThreaded.mockReturnValueOnce(true);
+      defaultParameters = {};
+      defaultVariables = {};
+
+      await expect(new AppRunner().runCli()).resolves.toBeUndefined();
+      expect(manager.instantiate).toHaveBeenNthCalledWith(2, 'urn:solid-server:default:App', { variables: {}});
+    });
+
     it('runs honouring package.json configuration.', async(): Promise<void> => {
       files = { '/var/cwd/package.json': packageJSON };
       defaultParameters = {};

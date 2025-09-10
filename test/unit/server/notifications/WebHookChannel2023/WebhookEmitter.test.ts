@@ -79,6 +79,8 @@ describe('A WebhookEmitter', (): void => {
       type: 'something else',
     };
     await expect(emitter.canHandle({ channel: badChannel, representation })).rejects.toThrow(NotImplementedHttpError);
+
+    await expect(emitter.canHandle({ channel, representation })).resolves.toBeUndefined();
   });
 
   it('sends out the necessary data and headers.', async(): Promise<void> => {

@@ -5,6 +5,7 @@ import { BasicRepresentation } from '../http/representation/BasicRepresentation'
 import type { Representation } from '../http/representation/Representation';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { createErrorMessage } from './errors/ErrorUtil';
+import { NotImplementedHttpError } from './errors/NotImplementedHttpError';
 import { guardedStreamFrom, pipeSafely } from './StreamUtil';
 
 const logger = getLoggerFor('CacheUtil');
@@ -52,6 +53,8 @@ export async function readStream(stream: Readable): Promise<Buffer | unknown[]> 
       chunks.push(Buffer.from(chunk));
     } else if (Buffer.isBuffer(chunk)) {
       chunks.push(chunk);
+    } else {
+      throw new NotImplementedHttpError(`Unexpected ${typeof chunk} chunk: ${chunk}`);
     }
   }
   return Buffer.concat(chunks);
@@ -98,7 +101,7 @@ Promise<CachedRepresentation | undefined> {
  * Generates 2 {@link Representation}s from a single one.
  * After this the input representation should not be used any more.
  *
- * @param representation - Representation do duplicate.
+ * @param representation - Representation to duplicate.
  */
 export function duplicateRepresentation(representation: Representation): [ Representation, Representation ] {
   const stream1 = pipeSafely(
