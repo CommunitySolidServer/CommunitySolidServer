@@ -1,8 +1,27 @@
 <!-- markdownlint-disable MD013 -->
-<!-- markdownlint-disable MD013 -->
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [8.0.0-alpha.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v8.0.0-alpha.0...v8.0.0-alpha.1) (2025-09-16)
+
+### Chores
+
+* Increase minimum node version to 22 ([6add30a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6add30ab706c65e856c14105b6b6113b49e8c5a8))
+* **deps:** bump oidc-provider dependencies to v9 ([fffdea7](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fffdea72c92287ad5084d744e9d3f00d5d4b5999))
+* **deps:** bump jest dependencies to v30 ([e919224](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e9192247cd42be88b6624e26ae4143809a3452e5))
+* **deps:** bump marked from 15.0.6 to 16.2.1 ([55ea72b](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/55ea72bb415fd3b35bcccebb0e4b896609c064e4))
+* **deps:** bump @types/mime-types from 2.1.2 to 3.0.0 ([ab96b65](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ab96b65e261035c62e0f0d771476961fd20063fa))
+* **deps:** bump nodemailer from 6.9.9 to 7.0.2 ([9abc429](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9abc42935021820bfc7e1aaeb28252214d570917))
+
+### Refactors
+
+* Remove IdentityUtil ([9b3bd23](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9b3bd23bdd013cbb1938ef6f1fe10145fba2a5b6))
+* Remove oidc-provider types shim ([825da02](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/825da020ac586c2d9eff1582b2f7eb4bcfca47b9))
+
+### Testing
+
+* Make sure variables are defined in test ([aecb9d1](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/aecb9d19dd8675ab25df8ee967ad825146294a95))
 
 ## [8.0.0-alpha.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.7...v8.0.0-alpha.0) (2025-04-22)
 
