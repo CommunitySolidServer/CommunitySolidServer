@@ -39,7 +39,7 @@ export class PassthroughDataAccessor implements DataAccessor {
     return this.accessor.getMetadata(identifier);
   }
 
-  public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void > {
+  public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
     return this.accessor.writeMetadata(identifier, metadata);
   }
 

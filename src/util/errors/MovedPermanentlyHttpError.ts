@@ -1,7 +1,7 @@
 import type { HttpErrorOptions } from './HttpError';
 import { generateRedirectHttpErrorClass } from './RedirectHttpError';
 
-// eslint-disable-next-line ts/naming-convention
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const BaseHttpError = generateRedirectHttpErrorClass(301, 'MovedPermanentlyHttpError');
 
 /**

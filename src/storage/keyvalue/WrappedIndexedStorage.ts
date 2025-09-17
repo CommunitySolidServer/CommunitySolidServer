@@ -694,8 +694,8 @@ export class WrappedIndexedStorage<T extends IndexTypeCollection<T>> implements 
     } else {
       const updatedValues = indexValues.filter((val): boolean => val !== rootId);
       await (updatedValues.length === 0 ?
-        this.indexStorage.delete(indexKey) :
-        this.indexStorage.set(indexKey, updatedValues));
+          this.indexStorage.delete(indexKey) :
+          this.indexStorage.set(indexKey, updatedValues));
     }
   }
 }

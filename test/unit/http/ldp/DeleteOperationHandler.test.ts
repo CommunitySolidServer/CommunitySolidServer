@@ -11,6 +11,7 @@ describe('A DeleteOperationHandler', (): void => {
   const body = new BasicRepresentation();
   let store: jest.Mocked<ResourceStore>;
   let handler: DeleteOperationHandler;
+
   beforeEach(async(): Promise<void> => {
     operation = { method: 'DELETE', target: { path: 'http://test.com/foo' }, preferences: {}, conditions, body };
     store = {

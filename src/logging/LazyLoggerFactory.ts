@@ -52,7 +52,7 @@ class TemporaryLoggerFactory implements LoggerFactory {
     }
     // Emit all buffered log messages
     for (const { logger, level, message } of this.buffer.splice(0, this.buffer.length)) {
-      logger.log(level, message, { isPrimary: cluster.isMaster, pid: process.pid });
+      logger.log(level, message, { isPrimary: cluster.isPrimary, pid: process.pid });
     }
   }
 }

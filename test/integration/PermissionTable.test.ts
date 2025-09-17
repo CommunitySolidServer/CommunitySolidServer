@@ -45,7 +45,7 @@ const allModes = [ AM.read, AM.append, AM.create, AM.write, AM.delete ];
 // Columns: method, target, C/ permissions, C/R permissions, body, content-type, target exists, target does not exist
 // `undefined` implies C/R inherits the permissions of C/
 // For PUT/PATCH/DELETE we return 205 instead of 200/204
-/* eslint-disable style/no-multi-spaces */
+/* eslint-disable @stylistic/no-multi-spaces */
 const table: [string, string, AM[], AM[] | undefined, string, string, number, number][] = [
   // No authorization headers are sent in an OPTIONS request making it impossible to grant permission.
   // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1246#issuecomment-1087325235
@@ -119,7 +119,7 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
   [ 'DELETE',  'C/',  [ AM.write ],           undefined,              '',     '',  401, 401 ],
   [ 'DELETE',  'C/',  [ AM.read, AM.write ],  undefined,              '',     '',  205, 404 ],
 ];
-/* eslint-enable style/no-multi-spaces */
+/* eslint-enable @stylistic/no-multi-spaces */
 
 function toPermission(modes: AM[]): AclPermissionSet {
   return Object.fromEntries(modes.map((mode): [AM, boolean] => [ mode, true ]));
@@ -165,8 +165,12 @@ async function setAcpPermissions(
 const port = getPort('PermissionTable');
 const baseUrl = `http://localhost:${port}/`;
 
-type AuthFunctionType = (store: ResourceStore, target: string,
-  permissions: AclPermissionSet, childPermissions: AclPermissionSet) => Promise<void>;
+type AuthFunctionType = (
+  store: ResourceStore,
+  target: string,
+  permissions: AclPermissionSet,
+  childPermissions: AclPermissionSet
+) => Promise<void>;
 
 const rootFilePath = getTestFolder('permissionTable');
 const stores: [string, string, { configs: string[]; authFunction: AuthFunctionType; teardown: () => Promise<void> }][] =

@@ -30,6 +30,8 @@ async function registerTestPods(baseUrl: string, pods: string[]): Promise<void> 
 }
 
 describe('A quota server', (): void => {
+  const podName1 = 'arthur';
+  const podName2 = 'abel';
   // The allowed quota depends on what filesystem/OS you are using.
   // For example: an empty folder is reported as
   //  - 0KB on NTFS (most of the time, mileage may vary)
@@ -37,6 +39,7 @@ describe('A quota server', (): void => {
   //  - 4O96KB on FAT
   // This is why we need to determine the size of a folder on the current system.
   let folderSizeTest: Stats;
+
   beforeAll(async(): Promise<void> => {
     // We want to use an empty folder as on APFS/Mac folder sizes vary a lot
     const tempFolder = getTestFolder('quota-temp');
@@ -44,8 +47,6 @@ describe('A quota server', (): void => {
     folderSizeTest = await stat(tempFolder);
     await removeFolder(tempFolder);
   });
-  const podName1 = 'arthur';
-  const podName2 = 'abel';
 
   /** Test the general functionality of the server using pod quota */
   describe('with pod quota enabled', (): void => {

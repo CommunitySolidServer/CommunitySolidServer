@@ -5,6 +5,4 @@ export enum AclMode {
 }
 
 // Adds a control field to the permissions to specify this WAC-specific value
-export type AclPermissionSet = PermissionSet & {
-  [mode in AclMode]?: boolean;
-};
+export type AclPermissionSet = PermissionSet & Partial<Record<AclMode, boolean>>;

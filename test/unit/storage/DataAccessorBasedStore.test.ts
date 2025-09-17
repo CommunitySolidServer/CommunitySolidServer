@@ -427,7 +427,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const mock = jest.spyOn(accessor, 'getMetadata');
 
-      const resourceID = { path: `${root}` };
+      const resourceID = { path: root };
       representation.metadata.removeAll(RDF.terms.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
@@ -556,7 +556,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('can write to root if it does not exist.', async(): Promise<void> => {
       delete accessor.data[root];
-      const resourceID = { path: `${root}` };
+      const resourceID = { path: root };
 
       // Generate based on URI
       representation.metadata.removeAll(RDF.terms.type);

@@ -144,7 +144,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       return { folder: cache, name: 'data' };
     }
 
-    const name = parts.at(-1) as string;
+    const name = parts.at(-1)!;
     parts = parts.slice(0, -1);
     let folder = cache.data;
     for (const part of parts) {
@@ -169,8 +169,8 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       const { folder, name } = getFolder(path);
       folder[name] = '';
       const stream = new PassThrough();
-      stream.on('data', (data): any => {
-        folder[name] += data;
+      stream.on('data', (data: string): any => {
+        folder[name] = folder[name] as string + data;
       });
       stream.on('end', (): any => stream.emit('finish'));
       return stream;

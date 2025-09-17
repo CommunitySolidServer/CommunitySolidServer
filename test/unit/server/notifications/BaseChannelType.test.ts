@@ -68,6 +68,7 @@ describe('A BaseChannelType', (): void => {
   describe('#initChannel', (): void => {
     let data: Store;
     const subject = blankNode();
+
     beforeEach(async(): Promise<void> => {
       data = new Store();
       data.addQuad(quad(subject, RDF.terms.type, dummyType));

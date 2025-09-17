@@ -305,7 +305,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (this.isRootStorage(parentMetadata)) {
         throw new MethodNotAllowedHttpError(
           [ 'DELETE' ],
-`Cannot delete ${identifier.path} from a root storage container.`,
+          `Cannot delete ${identifier.path} from a root storage container.`,
         );
       }
     }
@@ -515,8 +515,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     this.removeResponseMetadata(representation.metadata);
 
     await (isContainer ?
-      this.accessor.writeContainer(identifier, representation.metadata) :
-      this.accessor.writeDocument(identifier, representation.data, representation.metadata));
+        this.accessor.writeContainer(identifier, representation.metadata) :
+        this.accessor.writeDocument(identifier, representation.data, representation.metadata));
 
     this.addActivityMetadata(changes, identifier, exists ? AS.terms.Update : AS.terms.Create);
     return changes;
@@ -721,7 +721,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Create the container, starting with its parent
     const ancestors: ChangeMap = this.identifierStrategy.isRootContainer(container) ?
       new IdentifierMap() :
-      await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
+        await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
     const changes = await this.writeData(container, new BasicRepresentation([], container), true, false, false);
 
     return new IdentifierMap(concat([ changes, ancestors ]));

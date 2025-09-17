@@ -288,7 +288,7 @@ export class ChainedConverter extends RepresentationConverter {
     try {
       const identifier = { path: representation.metadata.identifier.value };
       // Internal types get ignored when trying to match everything, so they need to be specified to also match.
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       await converter.canHandle({ representation, identifier, preferences: { type: { '*/*': 1, 'internal/*': 1 }}});
     } catch {
       // Skip converters that fail the canHandle test

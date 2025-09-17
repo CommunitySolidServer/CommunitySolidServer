@@ -191,7 +191,11 @@ export interface IndexedStorage<T extends IndexTypeCollection<T>> {
    * @param value - The new value for the given key.
    */
   setField: <TType extends StringKey<T>, TKey extends StringKey<T[TType]>>(
-    type: TType, id: string, key: TKey, value: ValueType<T[TType][TKey]>) => Promise<void>;
+    type: TType,
+    id: string,
+    key: TKey,
+    value: ValueType<T[TType][TKey]>
+  ) => Promise<void>;
 
   /**
    * Deletes the given object.

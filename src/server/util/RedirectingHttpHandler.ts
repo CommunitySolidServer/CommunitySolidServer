@@ -14,7 +14,7 @@ import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
 import type { HttpRequest } from '../HttpRequest';
 
-/* eslint-disable ts/naming-convention */
+/* eslint-disable @typescript-eslint/naming-convention */
 const redirectErrorFactories: Record<301 | 302 | 303 | 307 | 308, (location: string) => RedirectHttpError> = {
   301: (location: string): RedirectHttpError => new MovedPermanentlyHttpError(location),
   302: (location: string): RedirectHttpError => new FoundHttpError(location),
@@ -22,7 +22,7 @@ const redirectErrorFactories: Record<301 | 302 | 303 | 307 | 308, (location: str
   307: (location: string): RedirectHttpError => new TemporaryRedirectHttpError(location),
   308: (location: string): RedirectHttpError => new PermanentRedirectHttpError(location),
 };
-/* eslint-enable ts/naming-convention */
+/* eslint-enable @typescript-eslint/naming-convention */
 
 /**
  * Handler that redirects paths matching given patterns

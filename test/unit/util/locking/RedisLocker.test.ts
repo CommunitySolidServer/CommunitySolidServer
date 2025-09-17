@@ -43,7 +43,7 @@ const store = {
     return 1;
   },
   releaseWriteLock(key: string): number | null {
-    if (!this.internal[key] || !this.internal[key].lock) {
+    if (!this.internal[key]?.lock) {
       return null;
     }
     this.internal[key].lock = false;
@@ -99,7 +99,7 @@ const redis: jest.Mocked<Redis & RedisResourceLock & RedisReadWriteLock> = {
 
 jest.mock('ioredis', (): any => jest.fn().mockImplementation((): Redis => redis));
 
-/* eslint-disable ts/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 describe('A RedisLocker', (): void => {
   it('will generate keys with the given namespacePrefix.', async(): Promise<void> => {
     const identifier = { path: 'http://test.com/resource' };

@@ -35,7 +35,7 @@ export type ModifyOptions<T extends SetMultiMap<unknown, unknown>> = {
  * @param map - Map to start from.
  * @param options - {@link ModifyOptions} describing the necessary changes.
  */
-// eslint-disable-next-line ts/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function modify<T extends SetMultiMap<any, any>>(map: T, options: ModifyOptions<T>): T {
   for (const key of options.remove ?? []) {
     map.delete(key);

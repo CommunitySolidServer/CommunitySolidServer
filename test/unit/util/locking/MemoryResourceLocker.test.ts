@@ -4,6 +4,7 @@ import { MemoryResourceLocker } from '../../../../src/util/locking/MemoryResourc
 describe('A MemoryResourceLocker', (): void => {
   let locker: MemoryResourceLocker;
   const identifier = { path: 'http://test.com/foo' };
+
   beforeEach(async(): Promise<void> => {
     locker = new MemoryResourceLocker();
   });

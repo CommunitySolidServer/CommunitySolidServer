@@ -103,7 +103,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
       // Check if port number or ip with port number
       // Definitely not perfect, but configuring this is only for experienced users
       const match = /^(?:([^:]+):)?(\d{4,5})$/u.exec(redisClientString);
-      if (!match || !match[2]) {
+      if (!match?.[2]) {
         // At least a port number should be provided
         throw new Error(`Invalid data provided to create a Redis client: ${redisClientString}\n
             Please provide a port number like '6379' or a host address and a port number like '127.0.0.1:6379'`);
@@ -221,7 +221,7 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Initializab
     this.finalized = true;
     try {
       // On controlled server shutdown: clean up all existing locks.
-      return await this.clearLocks();
+      await this.clearLocks();
     } finally {
       // Always quit the redis client
       await this.redis.quit();

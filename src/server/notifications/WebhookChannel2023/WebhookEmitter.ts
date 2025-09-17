@@ -88,7 +88,7 @@ export class WebhookEmitter extends NotificationEmitter {
     const response = await fetch(webhookChannel.sendTo, {
       method: 'POST',
       headers: {
-        // eslint-disable-next-line ts/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         'content-type': representation.metadata.contentType!,
         authorization: `DPoP ${dpopToken}`,
         dpop: dpopProof,

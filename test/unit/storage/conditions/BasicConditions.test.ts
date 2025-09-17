@@ -18,7 +18,7 @@ describe('A BasicConditions', (): void => {
       sameResourceState: jest.fn(),
     };
 
-    metadata = new RepresentationMetadata({ [DC.modified]: `${now.toISOString()}` });
+    metadata = new RepresentationMetadata({ [DC.modified]: now.toISOString() });
   });
 
   it('copies the input parameters.', async(): Promise<void> => {

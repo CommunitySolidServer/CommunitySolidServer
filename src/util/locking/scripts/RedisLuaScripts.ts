@@ -75,7 +75,7 @@ export const REDIS_LUA_SCRIPTS = {
     `,
 } as const;
 
-export type RedisAnswer = 0 | 1 | null | 'OK' | string;
+export type RedisAnswer = 0 | 1 | null | string;
 
 /**
  * Convert a RESP2 response to a boolean.
@@ -99,8 +99,8 @@ export async function fromResp2ToBool(result: Promise<RedisAnswer>): Promise<boo
     case null:
       throw new Error('Redis operation error detected (value was null).');
     default:
-      if (res.toString().startsWith('-ERR')) {
-        throw new InternalServerError(`Redis error: ${res.toString().slice(5)}`);
+      if (res.startsWith('-ERR')) {
+        throw new InternalServerError(`Redis error: ${res.slice(5)}`);
       } else {
         throw new InternalServerError(`Unexpected Redis answer received! (${res})`);
       }

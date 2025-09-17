@@ -86,7 +86,7 @@ export abstract class QuotaStrategy {
    */
   public async createQuotaGuard(identifier: ResourceIdentifier): Promise<Guarded<PassThrough>> {
     let total = 0;
-    // eslint-disable-next-line ts/no-this-alias
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     const { reporter } = this;
 

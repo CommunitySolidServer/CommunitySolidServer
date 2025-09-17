@@ -43,7 +43,7 @@ export class AddRemoveNotificationGenerator extends NotificationGenerator {
     }
 
     return {
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       '@context': [
         CONTEXT_ACTIVITYSTREAMS,
         CONTEXT_NOTIFICATION,
