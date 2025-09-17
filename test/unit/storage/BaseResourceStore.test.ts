@@ -5,6 +5,7 @@ const any: any = {};
 
 describe('A BaseResourceStore', (): void => {
   const store = new BaseResourceStore();
+
   it('errors on getRepresentation.', async(): Promise<void> => {
     await expect(store.getRepresentation(any, any)).rejects.toThrow(NotImplementedHttpError);
   });

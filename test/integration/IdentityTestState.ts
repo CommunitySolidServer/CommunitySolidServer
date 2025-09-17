@@ -34,7 +34,7 @@ export class IdentityTestState {
    * @param body - Body to send along. If this is not a string it will be JSONified.
    * @param contentType - Content-Type of the body. If not defined but there is a body, this will be set to JSON.
    */
-  public async fetchIdp(url: string, method = 'GET', body?: string | unknown, contentType?: string): Promise<Response> {
+  public async fetchIdp(url: string, method = 'GET', body?: unknown, contentType?: string): Promise<Response> {
     const options = { method, headers: { cookie: this.cookie }, body, redirect: 'manual' } as any;
     if (body && typeof body !== 'string') {
       options.body = JSON.stringify(body);

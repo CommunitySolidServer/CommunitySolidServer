@@ -34,6 +34,7 @@ describe('A RdfToQuadConverter', (): void => {
   const fetchMock: jest.Mock = fetch as any;
   const converter = new RdfToQuadConverter();
   const identifier: ResourceIdentifier = { path: 'http://example.com/resource' };
+
   it('supports serializing as quads.', async(): Promise<void> => {
     const types = await rdfParser.getContentTypesPrioritized();
     // JSON is not supported

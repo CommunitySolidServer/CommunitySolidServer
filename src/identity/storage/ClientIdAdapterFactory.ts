@@ -71,7 +71,7 @@ export class ClientIdAdapter extends PassthroughAdapter {
       }
 
       // `token_endpoint_auth_method: 'none'` prevents oidc-provider from requiring a client_secret
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       payload = { ...payload, token_endpoint_auth_method: 'none' };
     }
 
@@ -98,12 +98,12 @@ export class ClientIdAdapter extends PassthroughAdapter {
       }
     }
 
-    /* eslint-disable ts/naming-convention */
+    /* eslint-disable @typescript-eslint/naming-convention */
     return {
       client_id: id,
       redirect_uris: redirectUris,
     };
-    /* eslint-enable ts/naming-convention */
+    /* eslint-enable @typescript-eslint/naming-convention */
   }
 }
 

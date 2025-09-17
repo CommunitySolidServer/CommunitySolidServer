@@ -489,7 +489,6 @@ describe('AppRunner', (): void => {
     });
 
     it('throws an error if creating a ComponentsManager fails.', async(): Promise<void> => {
-      // eslint-disable-next-line jest/unbound-method
       jest.mocked(manager.configRegistry.register).mockRejectedValueOnce(new Error('Fatal'));
 
       let caughtError: Error = new Error('should disappear');
@@ -573,7 +572,6 @@ describe('AppRunner', (): void => {
     });
 
     it('throws an error if non-error objects get thrown.', async(): Promise<void> => {
-      // eslint-disable-next-line jest/unbound-method
       jest.mocked(manager.configRegistry.register).mockRejectedValueOnce('NotAnError');
 
       let caughtError: Error = new Error('should disappear');

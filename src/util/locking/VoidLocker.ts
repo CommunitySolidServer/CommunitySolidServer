@@ -9,7 +9,7 @@ import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';
  * Do not use this locker in combination with storages that doesn't handle concurrent read/writes gracefully
  */
 
-function noop(): void {}
+function noop(): void { /* Empty */ }
 
 export class VoidLocker implements ExpiringReadWriteLocker {
   protected readonly logger = getLoggerFor(this);

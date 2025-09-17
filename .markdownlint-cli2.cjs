@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  ignores: [ 'node_modules/', 'LICENSE.md', '.github/' ],
+  ignores: [ 'node_modules/', 'LICENSE.md' ],
 
   globs: [ '**/*.md' ],
 

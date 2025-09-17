@@ -4,6 +4,7 @@ import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 describe('An AcceptPreferenceParser', (): void => {
   const preferenceParser = new AcceptPreferenceParser();
   let request: HttpRequest;
+
   beforeEach(async(): Promise<void> => {
     request = { headers: {}} as HttpRequest;
   });

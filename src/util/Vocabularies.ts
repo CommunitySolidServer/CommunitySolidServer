@@ -95,8 +95,7 @@ string extends TLocal ? PartialVocabulary<TBase> : Vocabulary<TBase, TLocal> {
 export function extendVocabulary<TBase extends string, TLocal extends string, TNew extends string>(
   vocabulary: Vocabulary<TBase, TLocal>,
   ...newNames: TNew[]
-):
-  ReturnType<typeof createVocabulary<TBase, TLocal | TNew>> {
+): ReturnType<typeof createVocabulary<TBase, TLocal | TNew>> {
   const localNames = Object.keys(vocabulary)
     .filter((key): boolean => key !== 'terms' && key !== 'namespace') as TLocal[];
   const allNames = [ ...localNames, ...newNames ];

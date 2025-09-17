@@ -5,7 +5,7 @@ describe('PromiseUtil', (): void => {
     const resultTrue = Promise.resolve(true);
     const resultFalse = Promise.resolve(false);
     const resultError = Promise.reject(new Error('generic error'));
-    const resultInfinite = new Promise<boolean>((): void => {});
+    const resultInfinite = new Promise<boolean>((): void => { /* Empty */ });
 
     it('returns false if no promise is provided.', async(): Promise<void> => {
       await expect(promiseSome([])).resolves.toBe(false);

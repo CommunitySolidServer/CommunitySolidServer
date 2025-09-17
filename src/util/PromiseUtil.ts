@@ -25,7 +25,7 @@ PromiseOrValue<TOut> {
   return callback(object);
 }
 
-function noop(): void {}
+function noop(): void { /* Empty */ }
 
 /**
  * A function that simulates the Array.some behaviour but on an array of Promises.

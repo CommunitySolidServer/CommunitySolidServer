@@ -18,10 +18,10 @@ import { version } from '../package.json';
  * and then pushes commit and tag.
  */
 async function commitAndTag(): Promise<void> {
-  // eslint-disable-next-line ts/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   await simpleGit().commit([], 'CHANGELOG.md', { '--amend': null, '--no-edit': null, '--no-verify': null });
   await simpleGit().addAnnotatedTag(`v${version}`, `Release Version ${version}`);
-  // eslint-disable-next-line ts/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   await simpleGit().push({ '--follow-tags': null });
 }
 

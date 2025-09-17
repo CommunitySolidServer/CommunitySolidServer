@@ -19,7 +19,7 @@ export class DeleteNotificationGenerator extends NotificationGenerator {
 
   public async handle({ topic }: NotificationHandlerInput): Promise<Notification> {
     return {
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       '@context': [
         CONTEXT_ACTIVITYSTREAMS,
         CONTEXT_NOTIFICATION,

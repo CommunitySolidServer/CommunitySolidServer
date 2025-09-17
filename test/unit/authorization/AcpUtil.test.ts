@@ -45,6 +45,7 @@ describe('AcpUtil', (): void => {
         vc: [ `${baseUrl}vc` ],
       });
     });
+
     it('returns an empty matcher if no data is found.', async(): Promise<void> => {
       expect(getMatcher(data, namedNode(`${baseUrl}unknown`))).toEqual({
         iri: `${baseUrl}unknown`,
@@ -67,6 +68,7 @@ describe('AcpUtil', (): void => {
         noneOf: [ expect.objectContaining({ iri: `${baseUrl}matcher` }) ],
       });
     });
+
     it('returns an empty policy if no data is found.', async(): Promise<void> => {
       expect(getPolicy(data, namedNode(`${baseUrl}unknown`))).toEqual({
         iri: `${baseUrl}unknown`,
@@ -86,6 +88,7 @@ describe('AcpUtil', (): void => {
         policy: [ expect.objectContaining({ iri: `${baseUrl}policy` }) ],
       });
     });
+
     it('returns an empty access control if no data is found.', async(): Promise<void> => {
       expect(getAccessControl(data, namedNode(`${baseUrl}unknown`))).toEqual({
         iri: `${baseUrl}unknown`,
@@ -102,6 +105,7 @@ describe('AcpUtil', (): void => {
         memberAccessControl: [ expect.objectContaining({ iri: `${baseUrl}ac` }) ],
       });
     });
+
     it('returns an empty access control resource if no data is found.', async(): Promise<void> => {
       expect(getAccessControlResource(data, namedNode(`${baseUrl}unknown`))).toEqual({
         iri: `${baseUrl}unknown`,

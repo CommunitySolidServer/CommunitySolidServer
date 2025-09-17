@@ -99,7 +99,7 @@ export abstract class BaseLogger implements Logger {
 
   private readonly getMeta = (): LogMetadata => ({
     pid: process.pid,
-    isPrimary: cluster.isMaster,
+    isPrimary: cluster.isPrimary,
   });
 
   public error(message: string): Logger {

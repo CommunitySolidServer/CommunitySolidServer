@@ -163,7 +163,7 @@ describe('A BaseResourcesGenerator', (): void => {
     ]);
 
     const quads = await readableToQuads(result[0].representation.data);
-    const expQuads = quads.getQuads(`${location.path}`, 'pre:has', null, null);
+    const expQuads = quads.getQuads(location.path, 'pre:has', null, null);
     expect(expQuads).toHaveLength(1);
     expect(expQuads[0].object.value).toBe('metadata');
   });

@@ -95,7 +95,7 @@ export class ConstantConverter extends RepresentationConverter {
     }
 
     // Do not replace the representation if the preference weight is too low
-    // eslint-disable-next-line ts/naming-convention
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const quality = getTypeWeight(this.contentType, cleanPreferences({ ...preferences.type, '*/*': 0 }));
     if (quality === 0) {
       throw new NotImplementedHttpError(`No preference for ${this.contentType}`);

@@ -25,6 +25,7 @@ describe('MapUtil', (): void => {
       modify(map, { add, remove });
       compareMaps(map, expected);
     });
+
     it('defaults to empty add and delete Iterables.', async(): Promise<void> => {
       const map = new WrappedSetMultiMap(undefined, [
         [ key1, 123 ],

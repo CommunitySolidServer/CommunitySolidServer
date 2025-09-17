@@ -63,7 +63,7 @@ export class ParentContainerReader extends PermissionReader {
    * Determines which permissions are required on the parent container.
    */
   private getParentModes(modes: ReadonlySet<AccessMode>): Set<AccessMode> {
-    const containerModes: Set<AccessMode> = new Set();
+    const containerModes = new Set<AccessMode>();
     if (modes.has(AccessMode.create)) {
       containerModes.add(AccessMode.append);
     }

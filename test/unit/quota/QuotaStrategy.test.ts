@@ -51,6 +51,7 @@ describe('A QuotaStrategy', (): void => {
         expect.objectContaining({ unit: mockSize.unit, amount: 5 }),
       );
     });
+
     it('should return undefined when the reporter returns undefined.', async(): Promise<void> => {
       mockReporter.estimateSize.mockResolvedValueOnce(undefined);
       await expect(strategy.estimateSize(new RepresentationMetadata())).resolves.toBeUndefined();

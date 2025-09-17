@@ -2,7 +2,7 @@ import { SOLID_ERROR } from '../Vocabularies';
 import type { HttpErrorOptions } from './HttpError';
 import { generateHttpErrorClass } from './HttpError';
 
-// eslint-disable-next-line ts/naming-convention
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const BaseHttpError = generateHttpErrorClass(405, 'MethodNotAllowedHttpError');
 
 /**
@@ -11,7 +11,7 @@ const BaseHttpError = generateHttpErrorClass(405, 'MethodNotAllowedHttpError');
  */
 export class MethodNotAllowedHttpError extends BaseHttpError {
   // Components.js can't parse `readonly`
-  // eslint-disable-next-line ts/array-type
+  // eslint-disable-next-line @typescript-eslint/array-type
   public readonly methods: Readonly<string[]>;
 
   public constructor(methods: string[] = [], message?: string, options?: HttpErrorOptions) {

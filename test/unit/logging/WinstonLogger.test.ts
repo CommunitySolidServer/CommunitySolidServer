@@ -3,6 +3,7 @@ import { WinstonLogger } from '../../../src/logging/WinstonLogger';
 describe('WinstonLogger', (): void => {
   let innerLogger: any;
   let logger: WinstonLogger;
+
   beforeEach(async(): Promise<void> => {
     innerLogger = {
       log: jest.fn(),

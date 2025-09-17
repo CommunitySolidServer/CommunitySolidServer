@@ -118,7 +118,7 @@ describe('An ErrorToJsonConverter', (): void => {
   });
 
   it('ignores non-error causes that cannot be parsed.', async(): Promise<void> => {
-    const error = new BadRequestHttpError('error text', { cause: BigInt(5) });
+    const error = new BadRequestHttpError('error text', { cause: (): number => 5 });
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     await expect(prom).resolves.toBeDefined();

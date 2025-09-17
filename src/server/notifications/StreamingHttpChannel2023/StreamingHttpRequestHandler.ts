@@ -73,10 +73,12 @@ export class StreamingHttpRequestHandler extends OperationHttpHandler {
 
   private async authorize(credentials: Credentials, topic: string): Promise<void> {
     const requestedModes = new IdentifierSetMultiMap<AccessMode>([[{ path: topic }, AccessMode.read ]]);
-    this.logger.debug(`Retrieved required modes: ${[ ...requestedModes.entrySets() ].join(',')}`);
+    this.logger.debug(`Retrieved required modes: ${[ ...requestedModes.entrySets() ]
+      .map(([ id, set ]): string => `{ ${id.path}: ${[ ...set ].join(',')} }`).join(',')}`);
 
     const availablePermissions = await this.permissionReader.handleSafe({ credentials, requestedModes });
-    this.logger.debug(`Available permissions are ${[ ...availablePermissions.entries() ].join(',')}`);
+    this.logger.debug(`Available permissions are ${[ ...availablePermissions.entries() ]
+      .map(([ id, map ]): string => `{ ${id.path}: ${JSON.stringify(map)} }`).join(',')}`);
 
     await this.authorizer.handleSafe({ credentials, requestedModes, availablePermissions });
     this.logger.debug(`Authorization succeeded, creating notification channel`);

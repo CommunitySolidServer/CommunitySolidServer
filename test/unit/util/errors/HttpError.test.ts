@@ -99,7 +99,7 @@ describe('HttpError', (): void => {
       expect(instance.message).toBe('my message');
       expect(instance.cause).toBe(options.cause);
       expect(instance.errorCode).toBe(options.errorCode);
-      expect(new MethodNotAllowedHttpError([ 'GET' ]).errorCode).toBe(`H${405}`);
+      expect(new MethodNotAllowedHttpError([ 'GET' ]).errorCode).toBe(`H405`);
 
       expect(instance.metadata.get(SOLID_ERROR.terms.errorResponse)?.value)
         .toBe(`${SOLID_ERROR.namespace}H405`);
@@ -125,7 +125,7 @@ describe('HttpError', (): void => {
       expect(instance.message).toBe('my message');
       expect(instance.cause).toBe(options.cause);
       expect(instance.errorCode).toBe(options.errorCode);
-      expect(new NotModifiedHttpError().errorCode).toBe(`H${304}`);
+      expect(new NotModifiedHttpError().errorCode).toBe(`H304`);
 
       expect(instance.metadata.get(SOLID_ERROR.terms.errorResponse)?.value)
         .toBe(`${SOLID_ERROR.namespace}H304`);

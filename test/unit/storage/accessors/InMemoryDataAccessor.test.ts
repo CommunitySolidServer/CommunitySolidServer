@@ -33,7 +33,7 @@ describe('An InMemoryDataAccessor', (): void => {
     accessor = new InMemoryDataAccessor(new DummyStrategy());
 
     // Most tests depend on there already being a root container
-    await accessor.writeContainer({ path: `${base}` }, new RepresentationMetadata());
+    await accessor.writeContainer({ path: base }, new RepresentationMetadata());
 
     metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
 
@@ -178,7 +178,7 @@ describe('An InMemoryDataAccessor', (): void => {
       )).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
-      expect(metadata.identifier.value).toBe(`${base}`);
+      expect(metadata.identifier.value).toBe(base);
       const quads = metadata.quads();
       expect(quads).toHaveLength(1);
       expect(metadata.getAll(RDF.terms.type)).toHaveLength(1);
@@ -242,11 +242,11 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('can delete the root container and write to it again.', async(): Promise<void> => {
-      await expect(accessor.deleteResource({ path: `${base}` })).resolves.toBeUndefined();
-      await expect(accessor.getMetadata({ path: `${base}` })).rejects.toThrow(NotFoundHttpError);
+      await expect(accessor.deleteResource({ path: base })).resolves.toBeUndefined();
+      await expect(accessor.getMetadata({ path: base })).rejects.toThrow(NotFoundHttpError);
       await expect(accessor.getMetadata({ path: `${base}test/` })).rejects.toThrow(NotFoundHttpError);
-      await expect(accessor.writeContainer({ path: `${base}` }, metadata)).resolves.toBeUndefined();
-      const resultMetadata = await accessor.getMetadata({ path: `${base}` });
+      await expect(accessor.writeContainer({ path: base }, metadata)).resolves.toBeUndefined();
+      const resultMetadata = await accessor.getMetadata({ path: base });
       expect(resultMetadata.quads()).toBeRdfIsomorphic(metadata.quads());
     });
   });
@@ -255,7 +255,7 @@ describe('An InMemoryDataAccessor', (): void => {
     const base2 = 'http://test2.com/root/';
 
     beforeEach(async(): Promise<void> => {
-      await accessor.writeContainer({ path: `${base2}` }, new RepresentationMetadata());
+      await accessor.writeContainer({ path: base2 }, new RepresentationMetadata());
     });
 
     it('can write to different root containers.', async(): Promise<void> => {

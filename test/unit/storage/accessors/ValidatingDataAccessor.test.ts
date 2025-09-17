@@ -38,12 +38,14 @@ describe('ValidatingDataAccessor', (): void => {
         identifier: mockIdentifier,
       });
     });
+
     it('should call the accessors writeDocument() function.', async(): Promise<void> => {
       await validatingAccessor.writeDocument(mockIdentifier, mockData, mockMetadata);
       expect(childAccessor.writeDocument).toHaveBeenCalledTimes(1);
       expect(childAccessor.writeDocument).toHaveBeenCalledWith(mockIdentifier, mockData, mockMetadata);
     });
   });
+
   describe('writeContainer()', (): void => {
     it('should call the accessors writeContainer() function.', async(): Promise<void> => {
       await validatingAccessor.writeContainer(mockIdentifier, mockMetadata);

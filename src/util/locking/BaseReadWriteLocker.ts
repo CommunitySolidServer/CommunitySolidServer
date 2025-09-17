@@ -44,7 +44,7 @@ export abstract class BaseReadWriteLocker extends EqualReadWriteLocker {
    */
   private async acquireReadLock(identifier: ResourceIdentifier): Promise<void> {
     await this.withInternalCountLock(identifier, async(): Promise<void> => {
-      const count = await this.modifyCount(identifier, +1);
+      const count = await this.modifyCount(identifier, 1);
       if (count === 1) {
         await this.locker.acquire(identifier);
       }

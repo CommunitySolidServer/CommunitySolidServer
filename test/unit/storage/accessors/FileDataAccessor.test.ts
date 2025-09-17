@@ -415,8 +415,8 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('can write to the root container.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata({ path: `${base}` }, { likes: 'apples' });
-      await expect(accessor.writeContainer({ path: `${base}` }, metadata)).resolves.toBeUndefined();
+      metadata = new RepresentationMetadata({ path: base }, { likes: 'apples' });
+      await expect(accessor.writeContainer({ path: base }, metadata)).resolves.toBeUndefined();
       expect(cache.data).toEqual({ '.meta': expect.stringMatching(`<${base}> <likes> "apples".`) });
     });
   });
@@ -488,7 +488,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('can delete the root container.', async(): Promise<void> => {
       cache.data = {};
-      await expect(accessor.deleteResource({ path: `${base}` })).resolves.toBeUndefined();
+      await expect(accessor.deleteResource({ path: base })).resolves.toBeUndefined();
       expect(cache.data).toBeUndefined();
     });
   });

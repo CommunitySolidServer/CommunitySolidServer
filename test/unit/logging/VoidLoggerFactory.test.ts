@@ -3,6 +3,7 @@ import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 
 describe('VoidLoggerFactory', (): void => {
   let factory: VoidLoggerFactory;
+
   beforeEach(async(): Promise<void> => {
     factory = new VoidLoggerFactory();
   });

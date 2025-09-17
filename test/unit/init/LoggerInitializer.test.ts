@@ -8,6 +8,7 @@ describe('LoggerInitializer', (): void => {
   const loggerFactory = {} as LoggerFactory;
 
   let initializer: LoggerInitializer;
+
   beforeAll(async(): Promise<void> => {
     initializer = new LoggerInitializer(loggerFactory);
   });

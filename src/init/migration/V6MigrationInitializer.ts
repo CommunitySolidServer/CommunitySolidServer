@@ -1,22 +1,29 @@
 import { createInterface } from 'node:readline';
-import { ACCOUNT_STORAGE_DESCRIPTION } from '../../identity/interaction/account/util/BaseAccountStore';
+import type { ACCOUNT_STORAGE_DESCRIPTION } from '../../identity/interaction/account/util/BaseAccountStore';
 import type { AccountLoginStorage } from '../../identity/interaction/account/util/LoginStorage';
 import { ACCOUNT_TYPE } from '../../identity/interaction/account/util/LoginStorage';
-import {
+import type {
   CLIENT_CREDENTIALS_STORAGE_DESCRIPTION,
-  CLIENT_CREDENTIALS_STORAGE_TYPE,
 } from '../../identity/interaction/client-credentials/util/BaseClientCredentialsStore';
 import {
+  CLIENT_CREDENTIALS_STORAGE_TYPE,
+} from '../../identity/interaction/client-credentials/util/BaseClientCredentialsStore';
+import type {
   PASSWORD_STORAGE_DESCRIPTION,
-  PASSWORD_STORAGE_TYPE,
 } from '../../identity/interaction/password/util/BasePasswordStore';
 import {
+  PASSWORD_STORAGE_TYPE,
+} from '../../identity/interaction/password/util/BasePasswordStore';
+import type {
   OWNER_STORAGE_DESCRIPTION,
-  OWNER_STORAGE_TYPE,
   POD_STORAGE_DESCRIPTION,
+} from '../../identity/interaction/pod/util/BasePodStore';
+import {
+  OWNER_STORAGE_TYPE,
   POD_STORAGE_TYPE,
 } from '../../identity/interaction/pod/util/BasePodStore';
-import { WEBID_STORAGE_DESCRIPTION, WEBID_STORAGE_TYPE } from '../../identity/interaction/webid/util/BaseWebIdStore';
+import type { WEBID_STORAGE_DESCRIPTION } from '../../identity/interaction/webid/util/BaseWebIdStore';
+import { WEBID_STORAGE_TYPE } from '../../identity/interaction/webid/util/BaseWebIdStore';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { Initializer } from '../Initializer';
@@ -39,14 +46,14 @@ type ClientCredentials = {
   secret: string;
 };
 
-const STORAGE_DESCRIPTION = {
-  [ACCOUNT_TYPE]: ACCOUNT_STORAGE_DESCRIPTION,
-  [PASSWORD_STORAGE_TYPE]: PASSWORD_STORAGE_DESCRIPTION,
-  [WEBID_STORAGE_TYPE]: WEBID_STORAGE_DESCRIPTION,
-  [POD_STORAGE_TYPE]: POD_STORAGE_DESCRIPTION,
-  [OWNER_STORAGE_TYPE]: OWNER_STORAGE_DESCRIPTION,
-  [CLIENT_CREDENTIALS_STORAGE_TYPE]: CLIENT_CREDENTIALS_STORAGE_DESCRIPTION,
-} as const;
+type StorageDescription = {
+  [ACCOUNT_TYPE]: typeof ACCOUNT_STORAGE_DESCRIPTION;
+  [PASSWORD_STORAGE_TYPE]: typeof PASSWORD_STORAGE_DESCRIPTION;
+  [WEBID_STORAGE_TYPE]: typeof WEBID_STORAGE_DESCRIPTION;
+  [POD_STORAGE_TYPE]: typeof POD_STORAGE_DESCRIPTION;
+  [OWNER_STORAGE_TYPE]: typeof OWNER_STORAGE_DESCRIPTION;
+  [CLIENT_CREDENTIALS_STORAGE_TYPE]: typeof CLIENT_CREDENTIALS_STORAGE_DESCRIPTION;
+};
 
 export interface V6MigrationInitializerArgs {
   /**
@@ -68,7 +75,7 @@ export interface V6MigrationInitializerArgs {
   /**
    * Storages for which all entries need to be removed.
    */
-  // eslint-disable-next-line ts/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cleanupStorages: KeyValueStorage<string, any>[];
   /**
    * The storage that will contain the account data in the new format.
@@ -104,7 +111,7 @@ export class V6MigrationInitializer extends Initializer {
   private readonly clientCredentialsStorage: KeyValueStorage<string, ClientCredentials>;
   private readonly cleanupStorages: KeyValueStorage<string, unknown>[];
 
-  private readonly newAccountStorage: AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
+  private readonly newAccountStorage: AccountLoginStorage<StorageDescription>;
   private readonly newSetupStorage: KeyValueStorage<string, string>;
 
   public constructor(args: V6MigrationInitializerArgs) {
@@ -115,7 +122,7 @@ export class V6MigrationInitializer extends Initializer {
     this.accountStorage = args.accountStorage;
     this.clientCredentialsStorage = args.clientCredentialsStorage;
     this.cleanupStorages = args.cleanupStorages;
-    this.newAccountStorage = args.newAccountStorage as unknown as AccountLoginStorage<typeof STORAGE_DESCRIPTION>;
+    this.newAccountStorage = args.newAccountStorage as unknown as AccountLoginStorage<StorageDescription>;
     this.newSetupStorage = args.newSetupStorage;
   }
 

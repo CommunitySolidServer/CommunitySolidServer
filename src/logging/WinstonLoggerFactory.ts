@@ -35,7 +35,7 @@ export class WinstonLoggerFactory implements LoggerFactory {
         format.metadata({ fillExcept: [ 'level', 'timestamp', 'label', 'message' ]}),
         format.printf(
           ({ level: levelInner, message, label: labelInner, timestamp, metadata: meta }: TransformableInfo): string =>
-          `${timestamp} [${labelInner}] {${this.clusterInfo(meta as LogMetadata)}} ${levelInner}: ${message}`,
+            `${timestamp} [${labelInner}] {${this.clusterInfo(meta as LogMetadata)}} ${levelInner}: ${message}`,
         ),
       ),
       transports: this.createTransports(),

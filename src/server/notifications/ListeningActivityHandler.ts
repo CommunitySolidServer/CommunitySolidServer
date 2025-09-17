@@ -30,7 +30,7 @@ export class ListeningActivityHandler extends StaticHandler {
     this.handler = handler;
 
     emitter.on('changed', (topic, activity, metadata): void => {
-      this.emit(topic, activity, metadata).catch((error): void => {
+      this.emit(topic, activity, metadata).catch((error: unknown): void => {
         this.logger.error(`Something went wrong emitting notifications: ${createErrorMessage(error)}`);
       });
     });
@@ -70,7 +70,7 @@ export class ListeningActivityHandler extends StaticHandler {
             return this.storage.update(channel);
           }
         })
-        .catch((error): void => {
+        .catch((error: unknown): void => {
           this.logger.error(`Error trying to handle notification for ${id}: ${createErrorMessage(error)}`);
         });
     }

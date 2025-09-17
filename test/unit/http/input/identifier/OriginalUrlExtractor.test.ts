@@ -81,10 +81,10 @@ describe('A OriginalUrlExtractor', (): void => {
       .resolves.toEqual({ path: 'http://localhost:3000/url' });
   });
 
-  it('uses https protocol if the connection is secure.', async(): Promise<void> => {
+  it('uses https protocol if the socket is secure.', async(): Promise<void> => {
     const altExtractor = createExtractor({ baseUrl: 'https://test.com/' });
     await expect(altExtractor.handle(
-      { request: { url: 'url', headers: { host: 'test.com' }, connection: { encrypted: true } as any } as any },
+      { request: { url: 'url', headers: { host: 'test.com' }, socket: { encrypted: true } as any } as any },
     )).resolves.toEqual({ path: 'https://test.com/url' });
   });
 

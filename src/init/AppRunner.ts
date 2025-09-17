@@ -142,7 +142,7 @@ export class AppRunner {
    * @param argv.stderr - Stream that should be used to output errors before the logger is enabled.
    */
   public runCliSync({ argv, stderr = process.stderr }: { argv?: CliArgv; stderr?: WriteStream }): void {
-    this.runCli(argv).catch((error): never => {
+    this.runCli(argv).catch((error: unknown): never => {
       stderr.write(createErrorMessage(error));
       // eslint-disable-next-line unicorn/no-process-exit
       process.exit(1);

@@ -28,7 +28,7 @@ export class OidcHttpHandler extends HttpHandler {
     this.logger.debug(`Sending request to oidc-provider: ${request.url}`);
     // Even though the typings do not indicate this, this is a Promise that needs to be awaited.
     // Otherwise, the `BaseHttpServerFactory` will write a 404 before the OIDC library could handle the response.
-    // eslint-disable-next-line ts/await-thenable
+    // eslint-disable-next-line @typescript-eslint/await-thenable,@typescript-eslint/no-confusing-void-expression
     await provider.callback()(request, response);
   }
 }

@@ -20,7 +20,7 @@ export class JsonFileStorage implements KeyValueStorage<string, unknown> {
     this.lockIdentifier = { path: filePath };
   }
 
-  public async get(key: string): Promise<unknown | undefined> {
+  public async get(key: string): Promise<unknown> {
     const json = await this.getJsonSafely();
     return json[key];
   }

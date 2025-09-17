@@ -156,8 +156,7 @@ export function transformSafely<T = unknown>(
     flush = (): null => null,
     ...options
   }: AsyncTransformOptions<T> = {},
-):
-  Guarded<Transform> {
+): Guarded<Transform> {
   return pipeSafely(source, new Transform({
     ...options,
     async transform(data: T, encoding, callback): Promise<void> {
