@@ -49,7 +49,7 @@ export class ClientInfoHandler extends JsonInteractionHandler<OutType> {
     const jsonLd = Object.fromEntries(
       CLIENT_KEYS.filter((key): boolean => key in metadata)
         .map((key): [ KeyType, ValType ] => [ key, metadata[key] ]),
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
     ) as Record<KeyType, ValType> & { '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld' };
     jsonLd['@context'] = 'https://www.w3.org/ns/solid/oidc-context.jsonld';
 

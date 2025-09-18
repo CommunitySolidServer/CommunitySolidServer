@@ -31,7 +31,7 @@ export class StreamingHttpListeningActivityHandler extends StaticHandler {
     emitter.on('changed', (topic, activity, metadata): void => {
       if (this.streamMap.has(topic.path)) {
         this.emit(topic, activity, metadata).catch(
-          (error): void => {
+          (error: unknown): void => {
             this.logger.error(`Error trying to handle notification for ${topic.path}: ${createErrorMessage(error)}`);
           },
         );

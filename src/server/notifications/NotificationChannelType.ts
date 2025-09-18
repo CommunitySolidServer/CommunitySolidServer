@@ -9,7 +9,7 @@ import type { NotificationChannel } from './NotificationChannel';
  * https://solidproject.org/TR/2022/notifications-protocol-20221231#subscription-service-data-model
  */
 export interface SubscriptionService {
-  // eslint-disable-next-line ts/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   '@context': [ typeof CONTEXT_NOTIFICATION ];
   id: string;
   channelType: string;

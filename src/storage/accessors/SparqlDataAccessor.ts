@@ -355,7 +355,7 @@ export class SparqlDataAccessor implements DataAccessor {
     const query = this.generator.stringify(sparqlQuery);
     this.logger.info(`Sending SPARQL UPDATE query to ${this.endpoint}: ${query}`);
     try {
-      return await this.fetcher.fetchUpdate(this.endpoint, query);
+      await this.fetcher.fetchUpdate(this.endpoint, query);
     } catch (error: unknown) {
       this.logger.error(`SPARQL endpoint ${this.endpoint} error: ${createErrorMessage(error)}`);
       throw error;

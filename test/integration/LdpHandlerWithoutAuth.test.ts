@@ -213,6 +213,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(deleteResource(containerUrl)).resolves.toBeUndefined();
     await expect(deleteResource(baseUrl + slug)).resolves.toBeUndefined();
   });
+
   it('cannot remove a container when the container contains a document.', async(): Promise<void> => {
     // Create container
     const containerUrl = `${baseUrl}testfolder1/`;
@@ -723,7 +724,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
     const metadataResponse = await fetch(metaUrl);
     const metadata = await metadataResponse.text();
-    expect(metadata).toContain(`<${baseUrl}a> <${baseUrl}b> <${baseUrl}c>.`);
+    expect(metadata).toContain(`<a> <b> <c>.`);
 
     // DELETE
     await deleteResource(resourceUrl);

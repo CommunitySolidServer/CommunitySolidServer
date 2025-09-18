@@ -53,14 +53,14 @@ export class OriginalUrlExtractor extends TargetExtractor {
     }
   }
 
-  public async handle({ request: { url, connection, headers }}: { request: HttpRequest }): Promise<ResourceIdentifier> {
+  public async handle({ request: { url, socket, headers }}: { request: HttpRequest }): Promise<ResourceIdentifier> {
     if (!url) {
       throw new InternalServerError('Missing URL');
     }
 
     // Extract host and protocol (possibly overridden by the Forwarded/X-Forwarded-* header)
     let { host } = headers;
-    let protocol = (connection as TLSSocket)?.encrypted ? 'https' : 'http';
+    let protocol = (socket as TLSSocket)?.encrypted ? 'https' : 'http';
 
     // Check Forwarded/X-Forwarded-* headers
     const forwarded = parseForwarded(headers);

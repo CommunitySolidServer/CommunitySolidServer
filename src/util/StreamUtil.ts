@@ -28,7 +28,7 @@ const logger = getLoggerFor('StreamUtil');
 export async function arrayifyStream<T = unknown>(stream: EventEmitter): Promise<T[]> {
   const result: T[] = [];
   const dataIt = on(stream, 'data');
-  // eslint-disable-next-line ts/no-misused-promises
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   stream.on('end', async(): Promise<void> => {
     await dataIt.return!();
   });
@@ -58,6 +58,7 @@ export async function readableToString(stream: Readable): Promise<string> {
  */
 export async function readableToQuads(stream: Readable): Promise<Store> {
   const quads = new Store();
+  /* eslint-disable-next-line @typescript-eslint/no-floating-promises */
   quads.import(stream);
   await endOfStream(stream);
   return quads;
@@ -177,8 +178,7 @@ export function transformSafely<T = unknown>(
     flush = (): null => null,
     ...options
   }: AsyncTransformOptions<T> = {},
-):
-  Guarded<Transform> {
+): Guarded<Transform> {
   return pipeSafely(source, new Transform({
     ...options,
     async transform(data: T, encoding, callback): Promise<void> {

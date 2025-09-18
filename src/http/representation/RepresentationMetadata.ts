@@ -296,10 +296,12 @@ export class RepresentationMetadata {
     // This works with N3.js but at the time of writing the typings have not been updated yet.
     // If you see this line of code check if the typings are already correct and update this if so.
     return (this.store as unknown as {
-      has: (subject: Term,
+      has: (
+        subject: Term,
         predicate: Term | string | null,
         object: Term | string | null,
-        graph: Term | string | null) => boolean;
+        graph: Term | string | null
+      ) => boolean;
     }).has(this.id, predicate, object, graph);
   }
 

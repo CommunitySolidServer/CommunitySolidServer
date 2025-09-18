@@ -31,7 +31,7 @@ export class HandlerServerConfigurator extends ServerConfigurator {
   public async handle(server: Server): Promise<void> {
     server.on(
       'request',
-      // eslint-disable-next-line ts/no-misused-promises
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async(request: IncomingMessage, response: ServerResponse): Promise<void> => {
         try {
           this.logger.info(`Received ${request.method} request for ${request.url}`);

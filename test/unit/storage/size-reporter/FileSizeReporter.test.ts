@@ -121,6 +121,7 @@ describe('A FileSizeReporter', (): void => {
       metadata.contentLength = 100;
       await expect(fileSizeReporter.estimateSize(metadata)).resolves.toBe(100);
     });
+
     it(
       'should return undefined if no content-length is present in the metadata.',
       async(): Promise<void> => {

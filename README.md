@@ -74,9 +74,29 @@ the [📓 user documentation](https://communitysolidserver.github.io/CommunityS
 can help you find your way.
 There is also a repository of [📚 comprehensive tutorials](https://github.com/CommunitySolidServer/tutorials/)
 
+## 📑 Cite
+
+If the Community Solid Server played a role in your scientific publication,
+we would appreciate a citation of our
+[article](https://journals.sagepub.com/doi/abs/10.3233/SW-243726).
+
+```bibtex
+@article{CommunitySolidServer,
+  title   = {The Community Solid Server: Supporting research \& development in an evolving ecosystem},
+  author  = {Van Herwegen, Joachim and Verborgh, Ruben},
+  journal = {Semantic Web},
+  volume  = {15},
+  number  = {6},
+  pages   = {2597--2611},
+  year    = {2024},
+  doi     = {10.3233/SW-243726},
+  url     = {https://journals.sagepub.com/doi/abs/10.3233/SW-243726}
+}
+```
+
 ## 📜 License
 
-The Solid Community Server code
+The Community Solid Server code
 is copyrighted by [Inrupt Inc.](https://inrupt.com/)
 and [imec](https://www.imec-int.com/)
 and available under the [MIT License](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/LICENSE.md).

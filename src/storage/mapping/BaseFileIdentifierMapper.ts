@@ -53,8 +53,8 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
 
     const filePath = this.getAbsolutePath(path);
     return isContainerIdentifier(identifier) ?
-      this.mapUrlToContainerPath(identifier, filePath) :
-      this.mapUrlToDocumentPath(identifier, filePath, contentType);
+        this.mapUrlToContainerPath(identifier, filePath) :
+        this.mapUrlToDocumentPath(identifier, filePath, contentType);
   }
 
   /**

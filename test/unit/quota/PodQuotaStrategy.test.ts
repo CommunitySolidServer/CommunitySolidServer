@@ -53,11 +53,13 @@ describe('PodQuotaStrategy', (): void => {
       const result = strategy.getAvailableSpace({ path: `${base}file.txt` });
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: Number.MAX_SAFE_INTEGER }));
     });
+
     it('should ignore the size of the existing resource when writing inside a pod.', async(): Promise<void> => {
       const result = strategy.getAvailableSpace({ path: `${base}nested/nested2/file.txt` });
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: mockSize.amount }));
       expect(mockReporter.getSize).toHaveBeenCalledTimes(2);
     });
+
     it('should return a Size containing the available space when writing inside a pod.', async(): Promise<void> => {
       accessor.getMetadata.mockImplementationOnce((): any => {
         throw new NotFoundHttpError();
@@ -66,6 +68,7 @@ describe('PodQuotaStrategy', (): void => {
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: mockSize.amount }));
       expect(mockReporter.getSize).toHaveBeenCalledTimes(2);
     });
+
     it('should throw when looking for pim:Storage errors.', async(): Promise<void> => {
       accessor.getMetadata.mockImplementationOnce((): any => {
         throw new Error('error');

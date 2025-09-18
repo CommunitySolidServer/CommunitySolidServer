@@ -11,7 +11,7 @@ export default async function(): Promise<void> {
   // Also set the logger factory of transpiled JS modules
   // (which are instantiated by Components.js)
   try {
-    // eslint-disable-next-line global-require,ts/no-var-requires,ts/no-require-imports
+    // eslint-disable-next-line global-require,@typescript-eslint/no-require-imports
     const dist = require('../../dist/logging/LogUtil');
     dist.setGlobalLoggerFactory(loggerFactory);
   } catch {

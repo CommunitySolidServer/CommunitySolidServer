@@ -90,7 +90,7 @@ describe.each(stores)('A server supporting WebhookChannel2023 using %s', (name, 
   it('exposes metadata on how to subscribe in the storage description.', async(): Promise<void> => {
     const response = await fetch(storageDescriptionUrl, { headers: { accept: 'text/turtle' }});
     expect(response.status).toBe(200);
-    const quads = new Store(new Parser().parse(await response.text()));
+    const quads = new Store(new Parser({ baseIRI: storageDescriptionUrl }).parse(await response.text()));
 
     // Find the notification channel for websockets
     const subscriptions = quads.getObjects(null, NOTIFY.terms.subscription, null);

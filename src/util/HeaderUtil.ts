@@ -481,7 +481,7 @@ export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
 }
 
 // Map used as a simple cache in the helper function matchesAuthorizationScheme.
-const authSchemeRegexCache: Map<string, RegExp> = new Map();
+const authSchemeRegexCache = new Map<string, RegExp>();
 /**
  * Checks if the value of an HTTP Authorization header matches a specific scheme (e.g. Basic, Bearer, etc).
  *

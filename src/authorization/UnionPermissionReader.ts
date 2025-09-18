@@ -38,7 +38,7 @@ export class UnionPermissionReader extends StatusUnionHandler<PermissionReader> 
   protected mergePermissions(permissions: PermissionMap, result: PermissionMap): PermissionMap {
     for (const [ key, value ] of Object.entries(permissions)) {
       // Value can also be undefined
-      // eslint-disable-next-line ts/no-unnecessary-boolean-literal-compare
+      // eslint-disable-next-line  @typescript-eslint/no-unnecessary-boolean-literal-compare
       if (typeof value !== 'undefined' && result[key] !== false) {
         result[key] = value;
       }

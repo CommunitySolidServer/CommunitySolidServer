@@ -147,7 +147,7 @@ export class CachedResourceStore extends PassthroughStore implements SingleThrea
         this.cache.set(identifier.path, newCached);
         delete this.cacheProgress[identifier.path];
       }
-    }).catch((error): void => {
+    }).catch((error: unknown): void => {
       this.logger.warn(`Unable to cache ${identifier.path}: ${createErrorMessage(error)}`);
     });
 

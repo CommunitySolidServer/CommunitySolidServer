@@ -1,4 +1,4 @@
-/* eslint-disable ts/naming-convention */
+/* eslint-disable @typescript-eslint/naming-convention */
 import { randomBytes } from 'node:crypto';
 import { getLoggerFor } from 'global-logger-factory';
 import type {
@@ -208,6 +208,8 @@ export class IdentityProviderFactory implements ProviderFactory {
    */
   private async initConfig(key: AlgJwk): Promise<Configuration> {
     // Create a deep copy
+    // Not sure why the structuredClone call is causing issues with the library.
+    /* eslint-disable-next-line unicorn/prefer-structured-clone */
     const config = JSON.parse(JSON.stringify(this.config)) as Configuration;
 
     // Indicates which Adapter should be used for storing oidc data

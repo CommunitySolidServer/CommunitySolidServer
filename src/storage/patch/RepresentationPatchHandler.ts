@@ -31,7 +31,7 @@ export class RepresentationPatchHandler extends PatchHandler {
     let representation: Representation | undefined;
     try {
       // Internal types are converted unless specified otherwise like we do here
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       representation = await source.getRepresentation(identifier, { type: { '*/*': 1, [INTERNAL_ALL]: 1 }});
     } catch (error: unknown) {
       // Solid, §5.1: "When a successful PUT or PATCH request creates a resource,

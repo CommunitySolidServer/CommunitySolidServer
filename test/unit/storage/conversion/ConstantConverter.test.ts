@@ -129,7 +129,7 @@ describe('A ConstantConverter', (): void => {
 
     await expect(converter.canHandle(args)).resolves.toBeUndefined();
 
-    // eslint-disable-next-line ts/no-misused-promises
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     stat.mockImplementation(async(): Promise<never> => {
       throw new Error('file not found');
     });

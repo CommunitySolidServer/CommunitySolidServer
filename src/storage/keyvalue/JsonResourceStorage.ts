@@ -36,9 +36,9 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
   public async get(key: string): Promise<T | undefined> {
     try {
       const identifier = this.keyToIdentifier(key);
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const representation = await this.source.getRepresentation(identifier, { type: { 'application/json': 1 }});
-      // eslint-disable-next-line ts/no-unsafe-return
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return JSON.parse(await readableToString(representation.data));
     } catch (error: unknown) {
       if (!NotFoundHttpError.isInstance(error)) {
@@ -110,7 +110,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
   protected async safelyGetResource(identifier: ResourceIdentifier): Promise<Representation | undefined> {
     let representation: Representation | undefined;
     try {
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const preferences = isContainerIdentifier(identifier) ? {} : { type: { 'application/json': 1 }};
       representation = await this.source.getRepresentation(identifier, preferences);
     } catch (error: unknown) {

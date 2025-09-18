@@ -159,7 +159,7 @@ export function toCanonicalUriPath(path: string): string {
     encodeURIComponent(decodeURIComponent(part)));
 }
 
-/* eslint-disable ts/naming-convention */
+/* eslint-disable @typescript-eslint/naming-convention */
 // Characters not allowed in a Windows file path
 const forbiddenSymbols = {
   '<': '%3C',
@@ -171,7 +171,7 @@ const forbiddenSymbols = {
   // `*` does not get converted by `encodeUriComponent`
   '*': '%2A',
 } as const;
-/* eslint-enable ts/naming-convention */
+/* eslint-enable @typescript-eslint/naming-convention */
 const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`, 'gu');
 /**
  * This function is used when converting a URI to a file path. Decodes all components of a URI path,
@@ -186,7 +186,7 @@ const forbiddenRegex = new RegExp(`[${Object.keys(forbiddenSymbols).join('')}]`,
 export function decodeUriPathComponents(path: string): string {
   return transformPathComponents(path, (part): string => decodeURIComponent(part)
     // The characters replaced below result in illegal Windows file paths so need to be encoded
-    .replace(forbiddenRegex, (val): string => forbiddenSymbols[val as keyof typeof forbiddenSymbols]));
+    .replaceAll(forbiddenRegex, (val): string => forbiddenSymbols[val as keyof typeof forbiddenSymbols]));
 }
 
 /**

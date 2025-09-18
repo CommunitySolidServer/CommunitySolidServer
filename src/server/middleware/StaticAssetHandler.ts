@@ -99,7 +99,7 @@ export class StaticAssetHandler extends HttpHandler {
 
     return typeof document === 'string' ?
       this.mappings[document] :
-      joinFilePath(this.mappings[folder], decodeURIComponent(file));
+        joinFilePath(this.mappings[folder], decodeURIComponent(file));
   }
 
   public async canHandle({ request }: HttpHandlerInput): Promise<void> {
@@ -121,7 +121,7 @@ export class StaticAssetHandler extends HttpHandler {
       asset.once('readable', (): void => {
         const contentType = mime.lookup(filePath) || APPLICATION_OCTET_STREAM;
         response.writeHead(200, {
-          // eslint-disable-next-line ts/naming-convention
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           'content-type': contentType,
           ...this.getCacheHeaders(),
         });
@@ -159,7 +159,7 @@ export class StaticAssetHandler extends HttpHandler {
     return this.expires <= 0 ?
         {} :
         {
-          // eslint-disable-next-line ts/naming-convention
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           'cache-control': `max-age=${this.expires}`,
           expires: new Date(Date.now() + this.expires * 1000).toUTCString(),
         };

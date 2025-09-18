@@ -13,8 +13,7 @@ export type ActivityEmitter =
   GenericEventEmitter<
     'changed',
     (target: ResourceIdentifier, activity: VocabularyTerm<typeof AS>, metadata: RepresentationMetadata) => void
-  >
-  &
+  > &
   GenericEventEmitter<
     VocabularyValue<typeof AS>,
     (target: ResourceIdentifier, metadata: RepresentationMetadata) => void
@@ -23,5 +22,5 @@ export type ActivityEmitter =
 /**
  * A class implementation of {@link ActivityEmitter}.
  */
-// eslint-disable-next-line ts/naming-convention
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const BaseActivityEmitter = createGenericEventEmitterClass<ActivityEmitter>();

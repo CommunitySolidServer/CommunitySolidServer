@@ -78,7 +78,7 @@ export class SeededAccountInitializer extends Initializer {
 
     let accountCount = 0;
     let podCount = 0;
-    for await (const { email, password, pods } of configuration) {
+    for (const { email, password, pods } of configuration) {
       try {
         this.logger.info(`Creating account for ${email}`);
         const accountId = await this.accountStore.create();

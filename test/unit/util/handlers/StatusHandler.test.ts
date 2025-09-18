@@ -9,7 +9,7 @@ import { getError } from '../../../util/Util';
 
 describe('A StatusHandler', (): void => {
   it('converts non-HttpErrors to an HttpError.', async(): Promise<void> => {
-    const handler: AsyncHandler<string, void> = {
+    const handler: AsyncHandler<string> = {
       canHandle: jest.fn().mockRejectedValue(new Error('canHandle')),
       handle: jest.fn().mockRejectedValue(new Error('handle')),
       handleSafe: jest.fn().mockRejectedValue(new Error('handleSafe')),
@@ -30,7 +30,7 @@ describe('A StatusHandler', (): void => {
   });
 
   it('converts AggregateErrors to HttpErrors.', async(): Promise<void> => {
-    const handler: AsyncHandler<string, void> = {
+    const handler: AsyncHandler<string> = {
       canHandle: jest.fn().mockRejectedValue(new MethodNotAllowedHttpError()),
       handle: jest.fn().mockRejectedValue(new AggregateError([
         new MethodNotAllowedHttpError(),

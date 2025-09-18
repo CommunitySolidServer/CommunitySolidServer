@@ -101,7 +101,7 @@ export class LockingResourceStore implements AtomicResourceStore {
    */
   protected getLockIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) ?
-      this.auxiliaryStrategy.getSubjectIdentifier(identifier) :
+        this.auxiliaryStrategy.getSubjectIdentifier(identifier) :
       identifier;
   }
 
@@ -132,13 +132,13 @@ export class LockingResourceStore implements AtomicResourceStore {
 
         // Release the lock when an error occurs or the data finished streaming
         await this.waitForStreamToEnd(representation.data);
-      }).catch((error: Error): void => {
+      }).catch((error: unknown): void => {
         // Destroy the source stream in case the lock times out
-        representation?.data.destroy(error);
+        representation?.data.destroy(error as Error);
 
         // Let this function return an error in case something went wrong getting the data
         // or in case the timeout happens before `func` returned
-        reject(error);
+        reject(error as Error);
       });
     });
   }

@@ -51,7 +51,7 @@ class SimpleReadWriteLocker extends BaseReadWriteLocker {
   }
 }
 
-/* eslint-disable ts/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 describe('A BaseReadWriteLocker', (): void => {
   let resourceLocker: ResourceLocker;
   let countLocker: ResourceLocker;

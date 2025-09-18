@@ -41,7 +41,7 @@ const TXT = 'text/plain';
 // Columns: method, target, C/ permissions, C/R permissions, body, content-type, target exists, target does not exist
 // `undefined` implies C/R inherits the permissions of C/
 // For PUT/PATCH/DELETE we return 205 instead of 200/204
-/* eslint-disable style/no-multi-spaces */
+/* eslint-disable @stylistic/no-multi-spaces */
 type Perm = 'read' | 'append' | 'write' | 'control';
 const table: [string, string, Perm[], Perm[] | undefined, string, string, number, number][] = [
   // No authorization headers are sent in an OPTIONS request making it impossible to grant permission.
@@ -117,7 +117,7 @@ const table: [string, string, Perm[], Perm[] | undefined, string, string, number
   [ 'DELETE',  'C/',  [ 'write' ],            undefined,              '',     '',  401, 401 ],
   [ 'DELETE',  'C/',  [ 'read', 'write' ],    undefined,              '',     '',  205, 404 ],
 ];
-/* eslint-enable style/no-multi-spaces */
+/* eslint-enable @stylistic/no-multi-spaces */
 
 async function setWebAclPermissions(
   store: ResourceStore,
@@ -159,8 +159,12 @@ async function setAcpPermissions(
 const port = getPort('PermissionTable');
 const baseUrl = `http://localhost:${port}/`;
 
-type AuthFunctionType = (store: ResourceStore, target: string,
-  permissions: Perm[], childPermissions: Perm[]) => Promise<void>;
+type AuthFunctionType = (
+  store: ResourceStore,
+  target: string,
+  permissions: Perm[],
+  childPermissions: Perm[]
+) => Promise<void>;
 
 const rootFilePath = getTestFolder('permissionTable');
 const stores: [string, string, { configs: string[]; authFunction: AuthFunctionType; teardown: () => Promise<void> }][] =

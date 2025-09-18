@@ -249,6 +249,7 @@ describe('HeaderUtil', (): void => {
         charset: 'utf-8',
       },
     };
+
     it('handles single content-type parameter (with leading and trailing whitespaces).', (): void => {
       expect(parseContentType('text/turtle').value).toEqual(contentTypeTurtle);
       expect(parseContentType('text/turtle ').value).toEqual(contentTypeTurtle);
@@ -516,6 +517,7 @@ describe('HeaderUtil', (): void => {
       expect(hasScheme('wss://example.com', 'http', 'WSS')).toBeTruthy();
     });
   });
+
   describe('A ContentType instance', (): void => {
     it('can serialize to a correct header value string with parameters.', (): void => {
       const contentType: ContentType = new ContentType(

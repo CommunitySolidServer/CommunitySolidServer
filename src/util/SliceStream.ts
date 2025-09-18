@@ -56,7 +56,7 @@ export class SliceStream extends Transform {
     pipeSafely(source, this);
   }
 
-  // eslint-disable-next-line ts/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   public _transform(chunk: unknown, encoding: BufferEncoding, callback: TransformCallback): void {
     this.source.pause();
     if (this.writableObjectMode) {

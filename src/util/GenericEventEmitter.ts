@@ -9,7 +9,7 @@ import { EventEmitter } from 'node:events';
  * Use the {@link createGenericEventEmitterClass} function to generate an event emitter class with the correct typings
  * in case {@link EventEmitter} needs to be extended.
  */
-// eslint-disable-next-line ts/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface GenericEventEmitter<TEvent extends string | symbol, TFunc extends (...args: any[]) => void>
   extends EventEmitter {
   addListener: (event: TEvent, listener: TFunc) => this;
@@ -32,6 +32,6 @@ export interface GenericEventEmitter<TEvent extends string | symbol, TFunc exten
  * but with specific typings based on {@link GenericEventEmitter}.
  * Useful in case a class needs to extend {@link EventEmitter} and wants specific internal typings.
  */
-export function createGenericEventEmitterClass<T extends EventEmitter>(): (new() => T) {
+export function createGenericEventEmitterClass<T extends EventEmitter>(): new() => T {
   return EventEmitter as unknown as new() => T;
 }

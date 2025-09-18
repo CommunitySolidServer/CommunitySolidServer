@@ -36,6 +36,7 @@ describe('ValidatingDataAccessor', (): void => {
       expect(childAccessor.writeDocument).toHaveBeenCalledWith(mockIdentifier, mockData, mockMetadata);
     });
   });
+
   describe('canHandle()', (): void => {
     it('should call the accessors canHandle() function.', async(): Promise<void> => {
       await passthrough.canHandle(mockRepresentation);
@@ -43,6 +44,7 @@ describe('ValidatingDataAccessor', (): void => {
       expect(childAccessor.canHandle).toHaveBeenCalledWith(mockRepresentation);
     });
   });
+
   describe('getData()', (): void => {
     it('should call the accessors getData() function.', async(): Promise<void> => {
       await passthrough.getData(mockIdentifier);
@@ -50,6 +52,7 @@ describe('ValidatingDataAccessor', (): void => {
       expect(childAccessor.getData).toHaveBeenCalledWith(mockIdentifier);
     });
   });
+
   describe('getMetadata()', (): void => {
     it('should call the accessors getMetadata() function.', async(): Promise<void> => {
       await passthrough.getMetadata(mockIdentifier);
@@ -57,6 +60,7 @@ describe('ValidatingDataAccessor', (): void => {
       expect(childAccessor.getMetadata).toHaveBeenCalledWith(mockIdentifier);
     });
   });
+
   describe('writeMetadata()', (): void => {
     it('should call the accessors writeMetadata() function.', async(): Promise<void> => {
       await passthrough.writeMetadata(mockIdentifier, mockMetadata);
@@ -64,6 +68,7 @@ describe('ValidatingDataAccessor', (): void => {
       expect(childAccessor.writeMetadata).toHaveBeenCalledWith(mockIdentifier, mockMetadata);
     });
   });
+
   describe('getChildren()', (): void => {
     it('should call the accessors getChildren() function.', async(): Promise<void> => {
       passthrough.getChildren(mockIdentifier);
@@ -71,6 +76,7 @@ describe('ValidatingDataAccessor', (): void => {
       expect(childAccessor.getChildren).toHaveBeenCalledWith(mockIdentifier);
     });
   });
+
   describe('deleteResource()', (): void => {
     it('should call the accessors deleteResource() function.', async(): Promise<void> => {
       await passthrough.deleteResource(mockIdentifier);
@@ -78,6 +84,7 @@ describe('ValidatingDataAccessor', (): void => {
       expect(childAccessor.deleteResource).toHaveBeenCalledWith(mockIdentifier);
     });
   });
+
   describe('writeContainer()', (): void => {
     it('should call the accessors writeContainer() function.', async(): Promise<void> => {
       await passthrough.writeContainer(mockIdentifier, mockMetadata);

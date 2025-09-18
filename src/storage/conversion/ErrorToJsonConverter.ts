@@ -30,7 +30,7 @@ export class ErrorToJsonConverter extends BaseTypedRepresentationConverter {
     if (!isError(error)) {
       // Try to see if we can make valid JSON, empty object if there is an error.
       try {
-        return JSON.parse(JSON.stringify(error));
+        return structuredClone(error);
       } catch {
         return {};
       }

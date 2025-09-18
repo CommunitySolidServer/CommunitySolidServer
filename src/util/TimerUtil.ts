@@ -18,11 +18,12 @@ export function setSafeInterval<TArgs>(
     try {
       // We don't know if the callback is async or not so this way we make sure
       // the full function execution is done in the try block.
-      return await callback(...cbArgs);
+      // eslint-disable-next-line callback-return
+      await callback(...cbArgs);
     } catch (error: unknown) {
       logger.error(`Error during interval callback: ${message} - ${createErrorMessage(error)}`);
     }
   }
-  // eslint-disable-next-line ts/no-misused-promises
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   return setInterval(safeCallback, ms, ...args);
 }

@@ -86,7 +86,7 @@ export class TemplatedPodGenerator implements PodGenerator {
       await this.storeFactory.generate(
         variables[TEMPLATE_VARIABLE.templateConfig] as string,
         TEMPLATE.ResourceStore,
-        // eslint-disable-next-line ts/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         { ...variables, 'urn:solid-server:default:variable:baseUrl': this.baseUrl },
       );
     this.logger.debug(`Generating store ${identifier.path} with variables ${JSON.stringify(variables)}`);

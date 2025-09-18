@@ -53,9 +53,9 @@ const CONTEXT_SHACL = 'https://w3c.github.io/shacl/shacl-jsonld-context/shacl.co
  * The SHACL shape for the minimum requirements on a notification channel subscription request.
  */
 export const DEFAULT_SUBSCRIPTION_SHACL = {
-  // eslint-disable-next-line ts/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   '@context': [ CONTEXT_SHACL ],
-  // eslint-disable-next-line ts/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   '@type': 'sh:NodeShape',
   // Use the topic predicate to find the focus node
   targetSubjectsOf: NOTIFY.topic,
@@ -114,7 +114,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
       property: [
         ...DEFAULT_SUBSCRIPTION_SHACL.property,
         // Add type check
-        // eslint-disable-next-line ts/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         { path: RDF.type, hasValue: { '@id': type.value }},
         ...additionalShaclProperties,
       ],
@@ -123,7 +123,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
 
   public getDescription(): SubscriptionService {
     return {
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       '@context': [ CONTEXT_NOTIFICATION ],
       id: this.path,
       // At the time of writing, there is no base value for URIs in the notification context,
@@ -262,7 +262,7 @@ export abstract class BaseChannelType implements NotificationChannelType {
    */
   public async toJsonLd(channel: NotificationChannel): Promise<Record<string, unknown>> {
     const result: Record<string, unknown> = {
-      // eslint-disable-next-line ts/naming-convention
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       '@context': [
         CONTEXT_NOTIFICATION,
       ],

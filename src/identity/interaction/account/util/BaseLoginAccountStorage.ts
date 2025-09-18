@@ -153,7 +153,7 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
    * it doesn't have a login method when the timer runs out.
    */
   protected createAccountTimeout(id: string): void {
-    // eslint-disable-next-line ts/no-misused-promises
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     const timer = setTimeout(async(): Promise<void> => {
       const account = await this.storage.get(ACCOUNT_TYPE, id);
       if (account && account[LOGIN_COUNT] === 0) {

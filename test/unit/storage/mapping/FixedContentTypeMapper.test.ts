@@ -9,6 +9,7 @@ jest.mock('node:fs');
 describe('An FixedContentTypeMapper', (): void => {
   const base = 'http://test.com/';
   const rootFilepath = 'uploads/';
+
   describe('without suffixes', (): void => {
     const mapper = new FixedContentTypeMapper(base, rootFilepath, 'text/turtle');
 
@@ -183,7 +184,7 @@ describe('An FixedContentTypeMapper', (): void => {
 
       it('returns a generated file path for metadata regardless of the suffix.', async(): Promise<void> => {
         await expect(mapper.mapFilePathToUrl(`${rootFilepath}.meta`, false)).resolves.toEqual({
-          identifier: { path: `${base}` },
+          identifier: { path: base },
           filePath: `${rootFilepath}.meta`,
           contentType: 'text/turtle',
           isMetadata: true,

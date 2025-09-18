@@ -19,6 +19,7 @@ describe('HeaderUtil', (): void => {
       expect(splitCommaSeparated('this,is,a,comma-separated,string'))
         .toEqual([ 'this', 'is', 'a', 'comma-separated', 'string' ]);
     });
+
     it('handles strings without commas by returning an array containing solely the original string.', (): void => {
       const strVal = 'this string has no commas';
       expect(splitCommaSeparated(strVal)).toEqual([ strVal ]);
@@ -29,6 +30,7 @@ describe('HeaderUtil', (): void => {
     it('returns true if the provided file name is valid.', (): void => {
       expect(isValidFileName('valid-file.test')).toBeTruthy();
     });
+
     it('returns false if the provided file name is invalid.', (): void => {
       expect(isValidFileName('$%^*')).toBeFalsy();
     });
@@ -40,6 +42,7 @@ describe('HeaderUtil', (): void => {
       expect(isUrl('http://foo.localhost:3000/foo')).toBe(true);
       expect(isUrl('http://example.com/foo')).toBe(true);
     });
+
     it('returns false if the provided string is not a valid URL.', (): void => {
       expect(isUrl('not valid')).toBe(false);
     });

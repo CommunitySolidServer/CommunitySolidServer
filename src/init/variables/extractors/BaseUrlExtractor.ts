@@ -23,7 +23,7 @@ export class BaseUrlExtractor extends ShorthandExtractor {
     }
     const port = (args.port as string) ?? this.defaultPort;
     const url = new URL('http://localhost/');
-    url.port = `${port}`;
+    url.port = port;
     return url.href;
   }
 }

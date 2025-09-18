@@ -47,7 +47,7 @@ export class QuotaValidator extends Validator {
 
     // 4. Double check quota is not exceeded after write (concurrent writing possible)
     const afterWrite = new PassThrough({
-      // eslint-disable-next-line ts/no-misused-promises
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       flush: async(done): Promise<void> => {
         const availableSpace = (await this.strategy.getAvailableSpace(identifier)).amount;
         done(availableSpace < 0 ? new PayloadHttpError('Quota exceeded after write completed') : undefined);

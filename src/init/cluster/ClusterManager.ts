@@ -107,7 +107,7 @@ export class ClusterManager {
    * @returns True if primary
    */
   public isPrimary(): boolean {
-    return cluster.isMaster;
+    return cluster.isPrimary;
   }
 
   /**

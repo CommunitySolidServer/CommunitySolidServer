@@ -37,7 +37,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
 
   it('errors when receiving an unexpected error.', async(): Promise<void> => {
     const mock = jest.spyOn(algebra, 'translate').mockImplementationOnce((): any => {
-      // eslint-disable-next-line ts/no-throw-literal
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw 'apple';
     });
     input.request = guardedStreamFrom(
