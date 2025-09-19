@@ -147,7 +147,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
-    "@inrupt/solid-client-authn-core": "^2.0.0",
+    "@inrupt/solid-client-authn-core": "^3.1.0",
     "@inrupt/solid-client-authn-node": "^2.0.0",
     "@swc/jest": "^0.2.39",
     "@tsconfig/node20": "^20.1.6",
