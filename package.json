@@ -89,7 +89,7 @@
     "@types/mime-types": "^3.0.0",
     "@types/n3": "^1.21.1",
     "@types/node": "^20.19.13",
-    "@types/nodemailer": "^6.4.11",
+    "@types/nodemailer": "^7.0.1",
     "@types/oidc-provider": "^9.5.0",
     "@types/proper-lockfile": "^4.1.2",
     "@types/pump": "^1.1.1",
