@@ -392,7 +392,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     });
 
     it('can use the generated access token to do an authenticated call.', async(): Promise<void> => {
-      const authFetch = await buildAuthenticatedFetch(accessToken!, { dpopKey });
+      const authFetch = buildAuthenticatedFetch(accessToken!, { dpopKey });
       let res = await fetch(container);
       expect(res.status).toBe(401);
       res = await authFetch(container);
