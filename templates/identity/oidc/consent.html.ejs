@@ -4,7 +4,10 @@
   Do you trust this application
   to read and write data on your behalf?
 </p>
-<dl id="client"></dl>
+<div style="display: flex;">
+  <img id="client_logo" width="40" height="40" style="margin-top: 1em; padding-left: 2em; visibility: collapse;">
+  <dl id="client" style="text-wrap: nowrap;"></dl>
+</div>
 <form method="post" id="mainForm">
   <fieldset>
     <legend>Choose your WebID to authorize</legend>
@@ -58,6 +61,7 @@
     const { client } = await fetchJson(controls.oidc.consent);
     showClientInfo('Name', client.client_name);
     showClientInfo('ID', client.client_id);
+    showClientLogo(client.logo_uri, `[${client.client_name} Logo]`);
 
     addPostListener(() => consent(controls));
   })();
@@ -78,6 +82,17 @@
   function showClientInfo(label, value) {
     if (value) {
       elements.client.insertAdjacentHTML('beforeend', `<dt>${label}</dt><dd>${value}</dd>`);
+    }
+  }
+
+  // Attach client logo to placeholder img
+  function showClientLogo(src, alt) {
+    if (src) {
+      elements.client_logo.src = src
+      elements.client_logo.style.visibility = "visible"
+    }
+    if (alt) {
+      elements.client_logo.alt = alt
     }
   }
 
