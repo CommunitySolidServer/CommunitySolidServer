@@ -1,3 +1,4 @@
+import { ConflictHttpError } from '../../../../../src';
 import {
   CreateClientCredentialsHandler,
 } from '../../../../../src/identity/interaction/client-credentials/CreateClientCredentialsHandler';
@@ -22,7 +23,6 @@ describe('A CreateClientCredentialsHandler', (): void => {
   const secret = 'secret!';
   const token: ClientCredentials = { id, label, secret, accountId, webId };
   const resource = 'http://example.com/token';
-  const json = { webId, name: 'token' };
   let route: jest.Mocked<ClientCredentialsIdRoute>;
   let webIdStore: jest.Mocked<WebIdStore>;
   let clientCredentialsStore: jest.Mocked<ClientCredentialsStore>;
@@ -41,6 +41,7 @@ describe('A CreateClientCredentialsHandler', (): void => {
     clientCredentialsStore = {
       create: jest.fn().mockResolvedValue({ id, secret }),
       findByAccount: jest.fn().mockResolvedValue([ token ]),
+      findByLabel: jest.fn(),
     } satisfies Partial<ClientCredentialsStore> as any;
 
     handler = new CreateClientCredentialsHandler(webIdStore, clientCredentialsStore, route);
@@ -63,31 +64,56 @@ describe('A CreateClientCredentialsHandler', (): void => {
   });
 
   it('creates a new token based on the provided settings.', async(): Promise<void> => {
+    const json = { webId, name: 'token' };
     await expect(handler.handle({ accountId, json } as any)).resolves.toEqual({
-      json: { id: 'token_4c9b88c1-7502-4107-bb79-2a3a590c7aa3', secret, resource },
+      json: { id: json.name, secret, resource },
     });
     expect(webIdStore.isLinked).toHaveBeenCalledTimes(1);
     expect(webIdStore.isLinked).toHaveBeenLastCalledWith(webId, accountId);
     expect(clientCredentialsStore.create).toHaveBeenCalledTimes(1);
-    expect(clientCredentialsStore.create).toHaveBeenLastCalledWith(`${json.name}_${uuid}`, webId, accountId);
+    expect(clientCredentialsStore.create).toHaveBeenLastCalledWith(json.name, webId, accountId);
     expect(route.getPath).toHaveBeenCalledTimes(1);
     expect(route.getPath).toHaveBeenLastCalledWith({ accountId, clientCredentialsId: id });
   });
 
-  it('allows token names to be empty.', async(): Promise<void> => {
+  it('allows token names to be undefined.', async(): Promise<void> => {
     await expect(handler.handle({ accountId, json: { webId }} as any))
       .resolves.toEqual({
-        json: { id: '_4c9b88c1-7502-4107-bb79-2a3a590c7aa3', secret, resource },
+        json: { id: uuid, secret, resource },
       });
     expect(webIdStore.isLinked).toHaveBeenCalledTimes(1);
     expect(webIdStore.isLinked).toHaveBeenLastCalledWith(webId, accountId);
     expect(clientCredentialsStore.create).toHaveBeenCalledTimes(1);
-    expect(clientCredentialsStore.create).toHaveBeenLastCalledWith(`_${uuid}`, webId, accountId);
+    expect(clientCredentialsStore.create).toHaveBeenLastCalledWith(uuid, webId, accountId);
     expect(route.getPath).toHaveBeenCalledTimes(1);
     expect(route.getPath).toHaveBeenLastCalledWith({ accountId, clientCredentialsId: id });
   });
 
+  it('allows token names to be empty strings.', async(): Promise<void> => {
+    const json = { webId, name: '' };
+    await expect(handler.handle({ accountId, json } as any))
+      .resolves.toEqual({
+        json: { id: uuid, secret, resource },
+      });
+    expect(webIdStore.isLinked).toHaveBeenCalledTimes(1);
+    expect(webIdStore.isLinked).toHaveBeenLastCalledWith(webId, accountId);
+    expect(clientCredentialsStore.create).toHaveBeenCalledTimes(1);
+    expect(clientCredentialsStore.create).toHaveBeenLastCalledWith(uuid, webId, accountId);
+    expect(route.getPath).toHaveBeenCalledTimes(1);
+    expect(route.getPath).toHaveBeenLastCalledWith({ accountId, clientCredentialsId: id });
+  });
+
+  it('errors if token with name already exists.', async(): Promise<void> => {
+    const json = { webId, name: 'token_123' };
+    clientCredentialsStore.findByLabel.mockResolvedValueOnce(token);
+    await expect(handler.handle({ accountId, json } as any)).rejects.toThrow(ConflictHttpError);
+    expect(webIdStore.isLinked).toHaveBeenCalledTimes(1);
+    expect(webIdStore.isLinked).toHaveBeenLastCalledWith(webId, accountId);
+    expect(clientCredentialsStore.create).toHaveBeenCalledTimes(0);
+  });
+
   it('errors if the account is not the owner of the WebID.', async(): Promise<void> => {
+    const json = { webId, name: 'token' };
     webIdStore.isLinked.mockResolvedValueOnce(false);
     await expect(handler.handle({ accountId, json } as any)).rejects.toThrow(BadRequestHttpError);
     expect(webIdStore.isLinked).toHaveBeenCalledTimes(1);
