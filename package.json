@@ -120,7 +120,7 @@
     "jsonld-context-parser": "^3.0.0",
     "lodash.orderby": "^4.6.0",
     "lru-cache": "^11.0.2",
-    "marked": "^16.2.1",
+    "marked": "^17.0.0",
     "mime-types": "^3.0.1",
     "n3": "^1.23.1",
     "nodemailer": "^7.0.2",
