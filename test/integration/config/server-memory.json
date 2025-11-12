@@ -9,7 +9,6 @@
     "css:config/http/server-factory/http.json",
     "css:config/http/static/default.json",
     "css:config/identity/access/public.json",
-
     "css:config/identity/handler/default.json",
     "css:config/identity/oidc/default.json",
     "css:config/identity/ownership/token.json",
@@ -39,7 +38,15 @@
       "record": [
         {
           "RecordObject:_record_key": "app",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:App" }
+          "RecordObject:_record_value": {
+            "@id": "urn:solid-server:default:App"
+          }
+        },
+        {
+          "RecordObject:_record_key": "store",
+          "RecordObject:_record_value": {
+            "@id": "urn:solid-server:default:ResourceStore_Backend"
+          }
         }
       ]
     },

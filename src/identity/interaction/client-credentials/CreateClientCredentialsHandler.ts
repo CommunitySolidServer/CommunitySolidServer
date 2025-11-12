@@ -10,6 +10,8 @@ import type { JsonInteractionHandlerInput } from '../JsonInteractionHandler';
 import type { JsonView } from '../JsonView';
 import type { WebIdStore } from '../webid/util/WebIdStore';
 import { parseSchema, validateWithError } from '../YupUtil';
+import type { OwnershipValidator } from '../../ownership/OwnershipValidator';
+import { isUrl, sanitizeUrlPart } from '../../../util/StringUtil';
 import type { ClientCredentialsIdRoute } from './util/ClientCredentialsIdRoute';
 import type { ClientCredentialsStore } from './util/ClientCredentialsStore';
 
@@ -30,19 +32,13 @@ type OutType = {
 export class CreateClientCredentialsHandler extends JsonInteractionHandler<OutType> implements JsonView {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly webIdStore: WebIdStore;
-  private readonly clientCredentialsStore: ClientCredentialsStore;
-  private readonly clientCredentialsRoute: ClientCredentialsIdRoute;
-
   public constructor(
-    webIdStore: WebIdStore,
-    clientCredentialsStore: ClientCredentialsStore,
-    clientCredentialsRoute: ClientCredentialsIdRoute,
+    private readonly webIdStore: WebIdStore,
+    private readonly clientCredentialsStore: ClientCredentialsStore,
+    private readonly clientCredentialsRoute: ClientCredentialsIdRoute,
+    private readonly ownershipValidator: OwnershipValidator,
   ) {
     super();
-    this.webIdStore = webIdStore;
-    this.clientCredentialsStore = clientCredentialsStore;
-    this.clientCredentialsRoute = clientCredentialsRoute;
   }
 
   public async getView({ accountId }: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
@@ -64,11 +60,19 @@ export class CreateClientCredentialsHandler extends JsonInteractionHandler<OutTy
       throw new BadRequestHttpError('WebID does not belong to this account.');
     }
 
-    if (name && await this.clientCredentialsStore.findByLabel(name)) {
-      throw new ConflictHttpError('Token with this name already exists.');
-    }
+    let label: string;
 
-    const label = name && name.length > 0 ? name : v4();
+    if (name && isUrl(name)) {
+      // Validate owneship first not to leak existence of credentials!
+      await this.ownershipValidator.handleSafe({ webId: name });
+      if (await this.clientCredentialsStore.findByLabel(name)) {
+        throw new ConflictHttpError('Token for this ClientID already exists.');
+      }
+      label = name;
+    } else {
+      const cleanedName = name ? sanitizeUrlPart(name.trim()) : '';
+      label = `${cleanedName}_${v4()}`;
+    }
 
     const { secret, id } = await this.clientCredentialsStore.create(label, webId, accountId);
     const resource = this.clientCredentialsRoute.getPath({ accountId, clientCredentialsId: id });

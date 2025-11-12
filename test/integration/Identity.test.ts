@@ -7,6 +7,8 @@ import {
 import { fetch } from 'cross-fetch';
 import { parse, splitCookiesString } from 'set-cookie-parser';
 import type { App } from '../../src/init/App';
+import type { ResourceStore } from '../../src/storage/ResourceStore';
+import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinUrl } from '../../src/util/PathUtil';
 import { register } from '../util/AccountUtil';
@@ -38,6 +40,7 @@ jest.spyOn(process, 'emitWarning').mockImplementation();
 // We also need to parse the HTML in several steps since there is no API.
 describe.each(stores)('A Solid server with IDP using %s', (name, { config, teardown }): void => {
   let app: App;
+  let store: ResourceStore;
   const redirectUrl = 'http://mockedredirect/';
   const container = new URL('secret/', baseUrl).href;
   const oidcIssuer = baseUrl;
@@ -63,7 +66,7 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
         'urn:solid-server:default:variable:rootFilePath': rootFilePath,
       },
     ) as Record<string, any>;
-    ({ app } = instances);
+    ({ app, store } = instances);
     await app.start();
 
     // Create accounts
@@ -406,12 +409,37 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     let id: string | undefined;
     let secret: string | undefined;
     let accessToken: string | undefined;
+    const publicContainer = joinUrl(baseUrl, '/public/');
+    const clientId = joinUrl(publicContainer, 'client');
 
     beforeAll(async(): Promise<void> => {
       dpopKey = await generateDpopKeyPair();
     });
 
     it('can request a credentials token.', async(): Promise<void> => {
+      // Create a public container where we can write any data
+      await store.setRepresentation(
+        { path: joinUrl(publicContainer, '.acl') },
+        new BasicRepresentation(
+          `@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+          @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+          <#public>
+            a acl:Authorization;
+            acl:agentClass foaf:Agent;
+            acl:accessTo <./>;
+            acl:default <./>;
+            acl:mode acl:Read, acl:Write, acl:Control.`,
+          'text/turtle',
+        ),
+      );
+      // Create the ClientId
+      const createClientIdRes = await fetch(clientId, {
+        method: 'PUT',
+        headers: { 'content-type': 'text/turtle' },
+        body: '',
+      });
+      expect(createClientIdRes.status).toBe(201);
+
       // Login and save cookie
       const loginResponse = await fetch(controls.password.login, {
         method: 'POST',
@@ -421,17 +449,36 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
       const cookie = `${cookies[0].name}=${cookies[0].value}`;
 
-      // Request token
+      // Try to request token
       const accountJson = await (await fetch(indexUrl, { headers: { cookie }})).json();
       const credentialsUrl = accountJson.controls.account.clientCredentials;
-      const res = await fetch(credentialsUrl, {
+      const failedTokenRes = await fetch(credentialsUrl, {
         method: 'POST',
         headers: { cookie, 'content-type': 'application/json' },
-        body: JSON.stringify({ name: 'https://client.example/id.json', webId }),
+        body: JSON.stringify({ name: clientId, webId }),
       });
 
-      expect(res.status).toBe(200);
-      ({ id, secret } = await res.json());
+      // Verification token is missing
+      expect(failedTokenRes.status).toBe(400);
+      const json = await failedTokenRes.json();
+      expect(json.details?.quad).toBeDefined();
+      const { quad } = json.details;
+      // Update the WebID with the identifying quad
+      const updateClientIdRes = await fetch(clientId, {
+        method: 'PUT',
+        headers: { 'content-type': 'text/turtle' },
+        body: quad,
+      });
+      expect(updateClientIdRes.status).toBe(205);
+
+      // Try again to request token
+      const tokenRes = await fetch(credentialsUrl, {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ name: clientId, webId }),
+      });
+      expect(tokenRes.status).toBe(200);
+      ({ id, secret } = await tokenRes.json());
     });
 
     it('can request an access token using the credentials.', async(): Promise<void> => {
