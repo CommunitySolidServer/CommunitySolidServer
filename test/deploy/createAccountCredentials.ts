@@ -94,7 +94,7 @@ async function createCredentials(webId: string, authorization: string): Promise<
   res = await fetch(controls.account.clientCredentials, {
     method: 'POST',
     headers: { authorization, 'content-type': 'application/json' },
-    body: JSON.stringify({ webId }),
+    body: JSON.stringify({ name: 'token', webId }),
   });
   if (res.status !== 200) {
     throw new Error(`Token generation failed: ${await res.text()}`);
