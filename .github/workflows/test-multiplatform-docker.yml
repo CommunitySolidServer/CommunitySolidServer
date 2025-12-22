@@ -1,0 +1,47 @@
+name: Test Multi-Platform Docker Build
+
+on:
+  push:
+    branches:
+      - test/multi-platform-docker
+  pull_request:
+    branches:
+      - test/multi-platform-docker
+
+jobs:
+  test-docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+      
+      - name: Build multi-platform image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          platforms: linux/amd64,linux/arm64
+          tags: solidproject/community-server:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build and load amd64 image for testing
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          platforms: linux/amd64
+          tags: solidproject/community-server:test
+      
+      - name: Test the built image
+        run: docker run --rm solidproject/community-server:test --version
