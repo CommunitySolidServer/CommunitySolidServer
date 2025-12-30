@@ -74,7 +74,7 @@
   "dependencies": {
     "@comunica/context-entries": "^4.0.2",
     "@comunica/query-sparql": "^4.0.2",
-    "@isaacs/ttlcache": "^1.4.1",
+    "@isaacs/ttlcache": "^2.1.4",
     "@rdfjs/types": "^2.0.1",
     "@solid/access-token-verifier": "^2.1.0",
     "@solidlab/policy-engine": "^0.0.2",
