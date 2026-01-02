@@ -24,8 +24,6 @@ jest.mock('fs-extra');
 
 const rootFilePath = 'uploads';
 const now = new Date();
-// All relevant functions do not care about the milliseconds or remove them
-now.setMilliseconds(0);
 
 describe('A FileDataAccessor', (): void => {
   const base = 'http://test.com/';
