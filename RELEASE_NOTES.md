@@ -39,6 +39,10 @@ The following changes are relevant for v7 custom configs that replaced certain f
     - `BooleanHandler` -> `StatusBooleanHandler`
     - `UnionHandler` -> `StatusUnionHandler`
     - `WaterfallHandler` -> `StatusWaterfallHandler`
+- If you instantiate classes used by the new external libraries,
+  you will have to add their contexts to the relevant files.
+    - `asynchronous-handlers`: `"https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"`
+    - `@solidlab/policy-engine`: `"https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/policy-engine/^0.0.0/components/context.jsonld"`
 - Some contents of `storage/middleware/default.json` have moved to `storage/middleware/base/base.json`.
 - Due to the permission/authorization changes, configs in `ldp/authorization/*`,
   `ldp/handler/components/authorizer.json`, `ldp/modes/*`, and `util/auxiliary/*` have changed.
