@@ -196,6 +196,10 @@ describe('A DataAccessorBasedStore', (): void => {
         quad(namedNode(resourceID.path), CONTENT_TYPE_TERM, literal('text/plain')),
       );
       expect(result.metadata.contentType).toBe(INTERNAL_QUADS);
+      expect(result.metadata.getAll(RDF.terms.type)).toEqualRdfTermArray([
+        LDP.terms.Resource,
+        SOLID_META.terms.DescriptionResource,
+      ]);
     });
 
     it('will return the generated representation for container metadata resources.', async(): Promise<void> => {

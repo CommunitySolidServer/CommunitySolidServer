@@ -140,25 +140,22 @@ export class DataAccessorBasedStore implements ResourceStore {
           }
         }
         data = metadata.quads();
-
-        if (isMetadata) {
-          metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
-        }
       }
+
+      if (isMetadata) {
+        metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
+        addResourceMetadata(metadata, false);
+        metadata.add(RDF.terms.type, SOLID_META.terms.DescriptionResource);
+      }
+
       metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(POSIX.terms.namespace, PREFERRED_PREFIX_TERM, 'posix', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(XSD.terms.namespace, PREFERRED_PREFIX_TERM, 'xsd', SOLID_META.terms.ResponseMetadata);
     }
 
-    if (isContainer) {
+    if (isContainer || isMetadata) {
       representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
-    } else if (isMetadata) {
-      representation = new BasicRepresentation(
-        metadata.quads(),
-        this.metadataStrategy.getAuxiliaryIdentifier(identifier),
-        INTERNAL_QUADS,
-      );
     } else {
       representation = new BasicRepresentation(await this.accessor.getData(identifier), metadata);
     }
