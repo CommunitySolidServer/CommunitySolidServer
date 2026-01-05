@@ -2,7 +2,7 @@ import { createReadStream } from 'node:fs';
 import fetch from 'cross-fetch';
 import type { Quad } from 'n3';
 import { DataFactory, Parser, Store } from 'n3';
-import { joinFilePath, joinUrl, PIM, RDF } from '../../src/';
+import { joinFilePath, joinUrl, PIM, RDF, splitCommaSeparated } from '../../src/';
 import type { App } from '../../src/';
 import { LDP } from '../../src/util/Vocabularies';
 import {
@@ -699,6 +699,9 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   it('can read metadata.', async(): Promise<void> => {
     const response = await fetch(baseUrl + metaSuffix);
     expect(response.status).toBe(200);
+    const allows = splitCommaSeparated(response.headers.get('allow') ?? '');
+    expect(allows.sort()).toEqual([ 'GET', 'HEAD', 'OPTIONS', 'PATCH' ]);
+    expect(response.headers.get('accept-patch')).toBe('text/n3, application/sparql-update');
     await expectQuads(response, [ quad(namedNode(baseUrl), namedNode(RDF.type), namedNode(PIM.Storage)) ]);
   });
 

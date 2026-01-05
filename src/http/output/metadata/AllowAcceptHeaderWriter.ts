@@ -4,7 +4,7 @@ import { NotFoundHttpError } from '../../../util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../util/errors/UnsupportedMediaTypeHttpError';
 import { addHeader } from '../../../util/HeaderUtil';
 import { isContainerPath } from '../../../util/PathUtil';
-import { LDP, PIM, RDF, SOLID_ERROR } from '../../../util/Vocabularies';
+import { LDP, PIM, RDF, SOLID_ERROR, SOLID_META } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataWriter } from './MetadataWriter';
 
@@ -102,10 +102,11 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
   }
 
   /**
-   * PUT is not allowed on existing containers.
+   * PUT is not allowed on description resources or existing containers.
    */
   private isPutAllowed(metadata: RepresentationMetadata, resourceType: ResourceType): boolean {
-    return resourceType !== ResourceType.container || !metadata.has(RDF.terms.type, LDP.terms.Resource);
+    return !metadata.has(RDF.terms.type, SOLID_META.terms.DescriptionResource) &&
+      (resourceType !== ResourceType.container || !metadata.has(RDF.terms.type, LDP.terms.Resource));
   }
 
   /**
@@ -117,12 +118,15 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
 
   /**
    * DELETE is allowed if the target exists,
-   * is not a container,
+   * is not a container or description resource,
    * or is an empty container that isn't a storage.
    *
    * Note that the identifier value check only works if the metadata is not about an error.
    */
   private isDeleteAllowed(metadata: RepresentationMetadata, resourceType: ResourceType): boolean {
+    if (metadata.has(RDF.terms.type, SOLID_META.terms.DescriptionResource)) {
+      return false;
+    }
     if (resourceType !== ResourceType.container) {
       return true;
     }
