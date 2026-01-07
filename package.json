@@ -110,7 +110,7 @@
     "end-of-stream": "^1.4.4",
     "escape-string-regexp": "^4.0.0",
     "eslint": "^9.35.0",
-    "fetch-sparql-endpoint": "^6.0.0",
+    "fetch-sparql-endpoint": "^7.1.0",
     "fs-extra": "^11.1.1",
     "global-logger-factory": "^1.0.0",
     "handlebars": "^4.7.8",
