@@ -9,11 +9,11 @@ export interface ModerationRecord {
   userWebId?: string;
   userAgent?: string;
   clientIp?: string;
-  violations: Array<{
+  violations: {
     model: string;
     score: number;
     threshold: number;
-  }>;
+  }[];
   contentSize: number;
   contentHash?: string;
 }

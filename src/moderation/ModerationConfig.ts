@@ -3,14 +3,17 @@
  */
 export class ModerationConfig {
   public enabled: boolean;
+
   public auditLogging: {
     enabled: boolean;
     storePath: string;
   };
+
   public sightEngine: {
     apiUser: string;
     apiSecret: string;
   };
+
   public images: {
     enabled: boolean;
     thresholds: {
@@ -27,6 +30,7 @@ export class ModerationConfig {
       personalInfo: number;
     };
   };
+
   public text: {
     enabled: boolean;
     thresholds: {
@@ -39,6 +43,7 @@ export class ModerationConfig {
       personalInfo: number;
     };
   };
+
   public video: {
     enabled: boolean;
     thresholds: {
@@ -56,7 +61,9 @@ export class ModerationConfig {
   };
 
   /**
-   * @param config - Moderation configuration options. @range {json}
+   * Creates a new ModerationConfig instance.
+   *
+   * @param config - Moderation configuration options
    */
   public constructor(config?: {
     enabled?: boolean;
