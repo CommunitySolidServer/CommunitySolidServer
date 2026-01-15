@@ -24,7 +24,7 @@ describe('ResourceUtil', (): void => {
   });
 
   describe('#updateModifiedDate', (): void => {
-    it('adds the given date without milliseconds as last modified date.', async(): Promise<void> => {
+    it('adds the given date as last modified date.', async(): Promise<void> => {
       const date = new Date();
       date.setMilliseconds(500);
       const metadata = new RepresentationMetadata();
@@ -32,9 +32,8 @@ describe('ResourceUtil', (): void => {
       const lastModified = metadata.get(DC.terms.modified);
       expect(lastModified?.termType).toBe('Literal');
       const lastModifiedDate = new Date(lastModified!.value);
-      expect(date.getTime() - lastModifiedDate.getTime()).toBe(500);
+      expect(date.getTime()).toBe(lastModifiedDate.getTime());
 
-      date.setMilliseconds(0);
       expect(lastModified?.value).toBe(date.toISOString());
       expect((lastModified as Literal).datatype).toEqualRdfTerm(XSD.terms.dateTime);
     });

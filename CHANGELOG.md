@@ -3,6 +3,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.8](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.7...v7.1.8) (2026-01-14)
+
+### Features
+
+* Show logo_uri on oidc consent screen, fixes [#2082](https://github.com/CommunitySolidServer/CommunitySolidServer/issues/2082) ([d0353f8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d0353f8bde78ec42dd7caf4991489cdfe333a774))
+
+### Fixes
+
+* Return correct allow headers for description resources ([7a5cf74](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7a5cf7485925193265d3663aa4589b900f001cd8))
+* Correct condition for If-Modified-Since header ([fb3f583](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fb3f583372ca2cfe7d3c8b3ed0261ddd428cc744))
+* Use milliseconds in ETag ([46983db](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/46983dbedbcd13cab6bcb9899bd69a1ebea45cfe))
+
+### Documentation
+
+* Add citation code to readme ([e69da75](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e69da7520ce8be87499fc67d98e254554750ec84))
+
 ## [7.1.7](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.6...v7.1.7) (2025-04-01)
 
 ### Features

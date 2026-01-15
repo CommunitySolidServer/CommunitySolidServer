@@ -56,7 +56,10 @@ export class BasicConditions implements Conditions {
     const modified = metadata.get(DC.terms.modified);
     if (modified) {
       const modifiedDate = new Date(modified.value);
-      if (this.modifiedSince && modifiedDate < this.modifiedSince) {
+      // The If-Modified-Since and If-Unmodified-Since values do not include milliseconds
+      modifiedDate.setMilliseconds(0);
+
+      if (this.modifiedSince && modifiedDate <= this.modifiedSince) {
         return false;
       }
       if (this.unmodifiedSince && modifiedDate > this.unmodifiedSince) {

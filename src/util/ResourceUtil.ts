@@ -32,9 +32,7 @@ export function addResourceMetadata(metadata: RepresentationMetadata, isContaine
  * @param date - Last modified date. Defaults to current time.
  */
 export function updateModifiedDate(metadata: RepresentationMetadata, date = new Date()): void {
-  // Milliseconds get lost in some serializations, potentially causing mismatches
   const lastModified = new Date(date);
-  lastModified.setMilliseconds(0);
   metadata.set(DC.terms.modified, toLiteral(lastModified.toISOString(), XSD.terms.dateTime));
 }
 

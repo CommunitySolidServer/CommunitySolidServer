@@ -313,6 +313,8 @@ export const SOLID_META = createVocabulary(
   'urn:npm:solid:community-server:meta:',
   // This identifier is used as graph for all metadata that is generated on the fly and should not be stored
   'ResponseMetadata',
+  // Used to identify description resources, which are a specific kind of resource
+  'DescriptionResource',
   // This is used to identify templates that can be used for the representation of a resource
   'template',
   // This is used to store Content-Type Parameters

@@ -6,12 +6,16 @@ import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 import { MethodNotAllowedHttpError } from '../../../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { LDP, PIM, RDF, SOLID_ERROR } from '../../../../../src/util/Vocabularies';
+import { LDP, PIM, RDF, SOLID_ERROR, SOLID_META } from '../../../../../src/util/Vocabularies';
 
 describe('An AllowAcceptHeaderWriter', (): void => {
   const document = new RepresentationMetadata(
     { path: 'http://example.com/foo/bar' },
     { [RDF.type]: LDP.terms.Resource },
+  );
+  const descriptionResource = new RepresentationMetadata(
+    { path: 'http://example.com/foo/bar.meta' },
+    { [RDF.type]: [ LDP.terms.Resource, SOLID_META.terms.DescriptionResource ]},
   );
   const emptyContainer = new RepresentationMetadata(
     { path: 'http://example.com/foo/' },
@@ -62,6 +66,17 @@ describe('An AllowAcceptHeaderWriter', (): void => {
       .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'PUT', 'PATCH', 'DELETE' ]));
     expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
     expect(headers['accept-put']).toBe('*/*');
+    expect(headers['accept-post']).toBeUndefined();
+  });
+
+  it('returns all methods except POST, PUT, and DELETE for a description resource.', async(): Promise<void> => {
+    await expect(writer.handleSafe({ response, metadata: descriptionResource })).resolves.toBeUndefined();
+    const headers = response.getHeaders();
+    expect(typeof headers.allow).toBe('string');
+    expect(new Set(headers.allow!.split(', ')))
+      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'PATCH' ]));
+    expect(headers['accept-patch']).toBe('text/n3, application/sparql-update');
+    expect(headers['accept-put']).toBeUndefined();
     expect(headers['accept-post']).toBeUndefined();
   });
 
