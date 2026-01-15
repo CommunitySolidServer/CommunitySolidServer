@@ -7,3 +7,8 @@
 /docs
 /node_modules
 /test/tmp
+/feat-cms
+
+# Moderation config files (use .example templates)
+/config/moderation-enabled.json
+/config/moderation-settings.json

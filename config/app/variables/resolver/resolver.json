@@ -89,6 +89,22 @@
             "key": "confirmMigration",
             "defaultValue": false
           }
+        },
+        {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:moderationSightengineUser",
+          "CombinedShorthandResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "moderationSightengineUser",
+            "defaultValue": ""
+          }
+        },
+        {
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:moderationSightengineSecret",
+          "CombinedShorthandResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "moderationSightengineSecret",
+            "defaultValue": ""
+          }
         }
       ]
     }

@@ -37,6 +37,7 @@ export class HandlerServerConfigurator extends ServerConfigurator {
           this.logger.info(`Received ${request.method} request for ${request.url}`);
           const guardedRequest = guardStream(request);
           guardedRequest.on('error', this.errorLogger);
+          
           await this.handler.handleSafe({ request: guardedRequest, response });
         } catch (error: unknown) {
           const errMsg = this.createErrorMessage(error);

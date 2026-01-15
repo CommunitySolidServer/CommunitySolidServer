@@ -8,6 +8,8 @@ import type { ResponseDescription } from '../output/response/ResponseDescription
 import type { Patch } from '../representation/Patch';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
+import { ModerationMixin } from './ModerationMixin';
+import type { ModerationConfig } from '../../moderation/ModerationConfig';
 
 /**
  * Handles PATCH {@link Operation}s.
@@ -17,10 +19,12 @@ export class PatchOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
+  private readonly moderationMixin: ModerationMixin;
 
-  public constructor(store: ResourceStore) {
+  public constructor(store: ResourceStore, moderationConfig?: ModerationConfig) {
     super();
     this.store = store;
+    this.moderationMixin = new ModerationMixin(moderationConfig);
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -38,8 +42,12 @@ export class PatchOperationHandler extends OperationHandler {
       throw new BadRequestHttpError('PATCH requests require the Content-Type header to be set');
     }
 
-    // A more efficient approach would be to have the server return metadata indicating if a resource was new
-    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/632
+    // Content moderation for PATCH updates
+    if (operation.body.data) {
+      this.logger.info(`MODERATION: Intercepting PATCH update to ${operation.target.path}`);
+      await this.moderationMixin.moderateContent(operation);
+    }
+
     // RFC7231, §4.3.4: If the target resource does not have a current representation and the
     //   PUT successfully creates one, then the origin server MUST inform the
     //   user agent by sending a 201 (Created) response.

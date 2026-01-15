@@ -4,12 +4,15 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { ForbiddenHttpError } from '../../util/errors/ForbiddenHttpError';
 import { find } from '../../util/IterableUtil';
 import { AS, LDP, RDF, SOLID_AS } from '../../util/Vocabularies';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
+import { ModerationMixin } from './ModerationMixin';
+import type { ModerationConfig } from '../../moderation/ModerationConfig';
 
 /**
  * Handles POST {@link Operation}s.
@@ -19,10 +22,17 @@ export class PostOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
+  private readonly moderationMixin: ModerationMixin | null;
 
-  public constructor(store: ResourceStore) {
+  public constructor(store: ResourceStore, moderationConfig?: ModerationConfig) {
     super();
     this.store = store;
+    try {
+      this.moderationMixin = new ModerationMixin(moderationConfig);
+    } catch (error) {
+      this.logger.warn(`Failed to initialize moderation: ${(error as Error).message}`);
+      this.moderationMixin = null;
+    }
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -42,6 +52,18 @@ export class PostOperationHandler extends OperationHandler {
       this.logger.warn('POST requests require the Content-Type header to be set');
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
+
+    // Content moderation for POST uploads
+    if (!isContainerType && operation.body?.data && this.moderationMixin) {
+      this.logger.info(`MODERATION: Intercepting POST upload to ${operation.target.path}`);
+      try {
+        await this.moderationMixin.moderateContent(operation);
+      } catch (error) {
+        if (error instanceof ForbiddenHttpError) throw error;
+        this.logger.warn(`MODERATION: POST analysis failed: ${(error as Error).message}`);
+      }
+    }
+
     const changes = await this.store.addResource(operation.target, operation.body, operation.conditions);
     const createdIdentifier = find(changes.keys(), (identifier): boolean =>
       Boolean(changes.get(identifier)?.has(SOLID_AS.terms.activity, AS.terms.Create)));

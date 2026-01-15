@@ -1,0 +1,54 @@
+{
+  "enabled": true,
+  "auditLogging": {
+    "enabled": true,
+    "storePath": "./data/moderation-logs"
+  },
+  "sightEngine": {
+    "apiUser": "",
+    "apiSecret": ""
+  },
+  "images": {
+    "enabled": true,
+    "thresholds": {
+      "nudity": 0.1,
+      "violence": 0.1,
+      "gore": 0.1,
+      "weapon": 0.1,
+      "alcohol": 0.1,
+      "drugs": 0.1,
+      "offensive": 0.1,
+      "selfharm": 0.1,
+      "gambling": 0.1,
+      "profanity": 0.1,
+      "personalInfo": 0.1
+    }
+  },
+  "text": {
+    "enabled": true,
+    "thresholds": {
+      "sexual": 0.1,
+      "discriminatory": 0.1,
+      "insulting": 0.1,
+      "violent": 0.1,
+      "toxic": 0.1,
+      "selfharm": 0.1,
+      "personalInfo": 0.1
+    }
+  },
+  "video": {
+    "enabled": true,
+    "thresholds": {
+      "nudity": 0.1,
+      "violence": 0.1,
+      "gore": 0.1,
+      "weapon": 0.1,
+      "alcohol": 0.1,
+      "offensive": 0.1,
+      "selfharm": 0.1,
+      "gambling": 0.1,
+      "drugs": 0.1,
+      "tobacco": 0.1
+    }
+  }
+}

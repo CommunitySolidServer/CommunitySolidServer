@@ -95,6 +95,9 @@ export * from './http/ldp/PatchOperationHandler';
 export * from './http/ldp/PostOperationHandler';
 export * from './http/ldp/PutOperationHandler';
 
+// Moderation
+export * from './moderation/ModerationConfig';
+
 // HTTP/Output/Error
 export * from './http/output/error/ConvertingErrorHandler';
 export * from './http/output/error/EmptyErrorHandler';
