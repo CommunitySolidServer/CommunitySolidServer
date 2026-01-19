@@ -9,10 +9,10 @@ import { find } from '../../util/IterableUtil';
 import { AS, LDP, RDF, SOLID_AS } from '../../util/Vocabularies';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
+import type { ModerationConfig } from '../../moderation/ModerationConfig';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
 import { ModerationMixin } from './ModerationMixin';
-import type { ModerationConfig } from '../../moderation/ModerationConfig';
 
 /**
  * Handles POST {@link Operation}s.
@@ -59,7 +59,9 @@ export class PostOperationHandler extends OperationHandler {
       try {
         await this.moderationMixin.moderateContent(operation);
       } catch (error) {
-        if (error instanceof ForbiddenHttpError) throw error;
+        if (error instanceof ForbiddenHttpError) {
+          throw error;
+        }
         this.logger.warn(`MODERATION: POST analysis failed: ${(error as Error).message}`);
       }
     }

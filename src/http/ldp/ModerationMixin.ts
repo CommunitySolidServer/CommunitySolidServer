@@ -103,12 +103,12 @@ export class ModerationMixin {
         this.moderationConfig.sightEngine.apiUser,
         this.moderationConfig.sightEngine.apiSecret,
       );
-      
+
       this.logger.info(`MODERATION: Calling SightEngine API for ${path}`);
       const startTime = Date.now();
       const result = await client.analyzeImage(tempFile);
       const analysisTime = Date.now() - startTime;
-      
+
       this.logger.info(`MODERATION: API response received in ${analysisTime}ms for ${path}`);
       this.logger.info(
         `MODERATION: Scores - Nudity: ${result.nudity?.raw ?? 0}, Violence: ${result.violence}, ` +
@@ -121,10 +121,10 @@ export class ModerationMixin {
         result,
         this.moderationConfig.images.thresholds,
       );
-      
+
       if (violations.length > 0) {
         this.logger.warn(`MODERATION: CONTENT BLOCKED for ${path} - Violations: ${violations.join(', ')}`);
-        
+
         if (this.moderationStore) {
           await this.moderationStore.recordViolation({
             contentType: 'image',
@@ -140,7 +140,7 @@ export class ModerationMixin {
         }
         throw new ForbiddenHttpError('Upload blocked: Content violates community guidelines');
       }
-      
+
       this.logger.info(`MODERATION: Content approved for ${path} - all thresholds passed`);
     } catch (error: unknown) {
       if (error instanceof ForbiddenHttpError) {
@@ -173,11 +173,11 @@ export class ModerationMixin {
 
     const buffer = Buffer.concat(chunks);
     const text = buffer.toString('utf8');
-    
+
     if (!text?.trim()) {
       return;
     }
-    
+
     this.logger.info(`MODERATION: Text extracted - length: ${text.length} characters for ${path}`);
 
     operation.body.data = guardStream(Readable.from(buffer));
@@ -186,13 +186,13 @@ export class ModerationMixin {
       this.moderationConfig.sightEngine.apiUser,
       this.moderationConfig.sightEngine.apiSecret,
     );
-    
+
     try {
       this.logger.info(`MODERATION: Calling SightEngine Text API for ${path}`);
       const startTime = Date.now();
       const result = await client.analyzeText(text);
       const analysisTime = Date.now() - startTime;
-      
+
       this.logger.info(`MODERATION: Text API response received in ${analysisTime}ms for ${path}`);
       this.logger.info(
         `MODERATION: Text Scores - Sexual: ${result.sexual}, Discriminatory: ${result.discriminatory}, ` +
@@ -204,10 +204,10 @@ export class ModerationMixin {
         result,
         this.moderationConfig.text.thresholds,
       );
-      
+
       if (violations.length > 0) {
         this.logger.warn(`MODERATION: TEXT CONTENT BLOCKED for ${path} - Violations: ${violations.join(', ')}`);
-        
+
         if (this.moderationStore) {
           await this.moderationStore.recordViolation({
             contentType: 'text',
@@ -223,7 +223,7 @@ export class ModerationMixin {
         }
         throw new ForbiddenHttpError('Upload blocked: Content violates community guidelines');
       }
-      
+
       this.logger.info(`MODERATION: Text content approved for ${path} - all thresholds passed`);
     } catch (error: unknown) {
       if (error instanceof ForbiddenHttpError) {
@@ -260,12 +260,12 @@ export class ModerationMixin {
         this.moderationConfig.sightEngine.apiUser,
         this.moderationConfig.sightEngine.apiSecret,
       );
-      
+
       this.logger.info(`MODERATION: Calling SightEngine Video API for ${path}`);
       const startTime = Date.now();
       const result = await client.analyzeVideo(tempFile);
       const analysisTime = Date.now() - startTime;
-      
+
       this.logger.info(`MODERATION: Video API response received in ${analysisTime}ms for ${path}`);
       this.logger.info(
         `MODERATION: Video Results - Nudity: ${result.nudity?.raw ?? 0}, Violence: ${result.violence}, ` +
@@ -278,10 +278,10 @@ export class ModerationMixin {
         result,
         this.moderationConfig.video.thresholds,
       );
-      
+
       if (violations.length > 0) {
         this.logger.warn(`MODERATION: VIDEO CONTENT BLOCKED for ${path} - Violations: ${violations.join(', ')}`);
-        
+
         if (this.moderationStore) {
           await this.moderationStore.recordViolation({
             contentType: 'video',
@@ -297,7 +297,7 @@ export class ModerationMixin {
         }
         throw new ForbiddenHttpError('Upload blocked: Content violates community guidelines');
       }
-      
+
       this.logger.info(`MODERATION: Video content approved for ${path} - all thresholds passed`);
     } catch (error: unknown) {
       if (error instanceof ForbiddenHttpError) {

@@ -3,7 +3,6 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { ForbiddenHttpError } from '../../util/errors/ForbiddenHttpError';
 import { isContainerPath } from '../../util/PathUtil';
 import type { AuxiliaryStrategy } from '../auxiliary/AuxiliaryStrategy';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
@@ -52,7 +51,6 @@ export class PutOperationHandler extends OperationHandler {
       throw new BadRequestHttpError('PUT requests require the Content-Type header to be set');
     }
 
-    
     if (this.metadataStrategy.isAuxiliaryIdentifier(operation.target)) {
       throw new MethodNotAllowedHttpError(
         [ 'PUT' ],
@@ -60,7 +58,6 @@ export class PutOperationHandler extends OperationHandler {
       );
     }
 
-    
     const exists = await this.store.hasResource(operation.target);
     await this.store.setRepresentation(operation.target, operation.body, operation.conditions);
     if (exists) {

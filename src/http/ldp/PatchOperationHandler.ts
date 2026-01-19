@@ -6,10 +6,10 @@ import { CreatedResponseDescription } from '../output/response/CreatedResponseDe
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { Patch } from '../representation/Patch';
+import type { ModerationConfig } from '../../moderation/ModerationConfig';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
 import { ModerationMixin } from './ModerationMixin';
-import type { ModerationConfig } from '../../moderation/ModerationConfig';
 
 /**
  * Handles PATCH {@link Operation}s.
