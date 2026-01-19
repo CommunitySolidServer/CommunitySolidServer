@@ -101,8 +101,8 @@ export class SightEngineClient {
         }
 
         let data = '';
-        res.on('data', (chunk): void => {
-          data += chunk;
+        res.on('data', (chunk: Buffer): void => {
+          data += chunk.toString();
         });
         res.on('end', (): void => {
           const requestTime = Date.now() - startTime;
@@ -118,7 +118,7 @@ export class SightEngineClient {
           try {
             resolve(JSON.parse(data) as ApiResponse);
           } catch (parseErr) {
-            reject(parseErr);
+            reject(new Error(`Failed to parse response: ${String(parseErr)}`));
           }
         });
       });
@@ -299,8 +299,8 @@ export class SightEngineClient {
         }
 
         let data = '';
-        res.on('data', (chunk): void => {
-          data += chunk;
+        res.on('data', (chunk: Buffer): void => {
+          data += chunk.toString();
         });
         res.on('end', (): void => {
           const requestTime = Date.now() - startTime;
@@ -316,7 +316,7 @@ export class SightEngineClient {
           try {
             resolve(JSON.parse(data) as ApiResponse);
           } catch (parseErr) {
-            reject(parseErr);
+            reject(new Error(`Failed to parse response: ${String(parseErr)}`));
           }
         });
       });

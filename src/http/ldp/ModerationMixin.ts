@@ -38,21 +38,19 @@ export class ModerationMixin {
   }
 
   private processEnvironmentVariables(configData: string): string {
-    return configData.replaceAll(/\$\{([^}]+)\}/gu, (_match, varExpr: string): string => {
+    return configData.replaceAll(/\$\{([^}]+)\}/gu, (match, varExpr: string): string => {
       const [ varName, defaultValue ] = varExpr.split(':-');
-      return process.env[varName] ?? defaultValue ?? '';
+      return process.env[varName] ?? defaultValue ?? match;
     });
   }
 
   public async moderateContent(operation: Operation): Promise<void> {
     if (!this.moderationConfig.enabled) {
-      // Skip if no content body
       return;
     }
     if (!operation.body?.data) {
-      // Skip if no content body
       return;
-    } // Skip if no content body
+    }
 
     if (this.isImageUpload(operation)) {
       await this.moderateImageContent(operation);
@@ -81,13 +79,12 @@ export class ModerationMixin {
 
   private async moderateImageContent(operation: Operation): Promise<void> {
     if (!this.moderationConfig.images.enabled) {
-      // Skip if no content body
       return;
     }
 
     const chunks: Buffer[] = [];
     for await (const chunk of operation.body.data) {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array));
     }
 
     const buffer = Buffer.concat(chunks);
@@ -103,14 +100,21 @@ export class ModerationMixin {
       );
       const result = await client.analyzeImage(tempFile);
 
-      const violations = this.checkImageViolations(result, this.moderationConfig.images.thresholds);
+      const violations = this.checkImageViolations(
+        result,
+        this.moderationConfig.images.thresholds,
+      );
       if (violations.length > 0) {
         if (this.moderationStore) {
           await this.moderationStore.recordViolation({
             contentType: 'image',
             resourcePath: operation.target.path,
             userWebId: undefined,
-            violations: violations.map(v => ({ model: v.split('(')[0], score: Number.parseFloat(v.split('(')[1]), threshold: 0 })),
+            violations: violations.map((v): { model: string; score: number; threshold: number } => ({
+              model: v.split('(')[0],
+              score: Number.parseFloat(v.split('(')[1]),
+              threshold: 0,
+            })),
             contentSize: buffer.length,
           });
         }
@@ -127,19 +131,17 @@ export class ModerationMixin {
 
   private async moderateTextContent(operation: Operation): Promise<void> {
     if (!this.moderationConfig.text.enabled) {
-      // Skip if no content body
       return;
     }
 
     const chunks: Buffer[] = [];
     for await (const chunk of operation.body.data) {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array));
     }
 
     const buffer = Buffer.concat(chunks);
     const text = buffer.toString('utf8');
     if (!text?.trim()) {
-      // Skip if no content body
       return;
     }
 
@@ -151,14 +153,21 @@ export class ModerationMixin {
     );
     const result = await client.analyzeText(text);
 
-    const violations = this.checkTextViolations(result, this.moderationConfig.text.thresholds);
+    const violations = this.checkTextViolations(
+      result,
+      this.moderationConfig.text.thresholds,
+    );
     if (violations.length > 0) {
       if (this.moderationStore) {
         await this.moderationStore.recordViolation({
           contentType: 'text',
           resourcePath: operation.target.path,
           userWebId: undefined,
-          violations: violations.map(v => ({ model: v.split('(')[0], score: Number.parseFloat(v.split('(')[1]), threshold: 0 })),
+          violations: violations.map((v): { model: string; score: number; threshold: number } => ({
+            model: v.split('(')[0],
+            score: Number.parseFloat(v.split('(')[1]),
+            threshold: 0,
+          })),
           contentSize: buffer.length,
         });
       }
@@ -168,13 +177,12 @@ export class ModerationMixin {
 
   private async moderateVideoContent(operation: Operation): Promise<void> {
     if (!this.moderationConfig.video.enabled) {
-      // Skip if no content body
       return;
     }
 
     const chunks: Buffer[] = [];
     for await (const chunk of operation.body.data) {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array));
     }
 
     const buffer = Buffer.concat(chunks);
@@ -190,14 +198,21 @@ export class ModerationMixin {
       );
       const result = await client.analyzeVideo(tempFile);
 
-      const violations = this.checkVideoViolations(result, this.moderationConfig.video.thresholds);
+      const violations = this.checkVideoViolations(
+        result,
+        this.moderationConfig.video.thresholds,
+      );
       if (violations.length > 0) {
         if (this.moderationStore) {
           await this.moderationStore.recordViolation({
             contentType: 'video',
             resourcePath: operation.target.path,
             userWebId: undefined,
-            violations: violations.map(v => ({ model: v.split('(')[0], score: Number.parseFloat(v.split('(')[1]), threshold: 0 })),
+            violations: violations.map((v): { model: string; score: number; threshold: number } => ({
+              model: v.split('(')[0],
+              score: Number.parseFloat(v.split('(')[1]),
+              threshold: 0,
+            })),
             contentSize: buffer.length,
           });
         }
@@ -212,7 +227,9 @@ export class ModerationMixin {
     }
   }
 
-  private checkImageViolations(result: SightEngineResult, thresholds: ModerationConfig['images']['thresholds'],
+  private checkImageViolations(
+    result: SightEngineResult,
+    thresholds: ModerationConfig['images']['thresholds'],
   ): string[] {
     const violations = [];
     if (result.nudity?.raw && result.nudity.raw > thresholds.nudity) {
@@ -251,7 +268,9 @@ export class ModerationMixin {
     return violations;
   }
 
-  private checkTextViolations(result: SightEngineTextResult, thresholds: ModerationConfig['text']['thresholds'],
+  private checkTextViolations(
+    result: SightEngineTextResult,
+    thresholds: ModerationConfig['text']['thresholds'],
   ): string[] {
     const violations = [];
     if (result.sexual > thresholds.sexual) {
@@ -278,7 +297,9 @@ export class ModerationMixin {
     return violations;
   }
 
-  private checkVideoViolations(result: SightEngineVideoResult, thresholds: ModerationConfig['video']['thresholds'],
+  private checkVideoViolations(
+    result: SightEngineVideoResult,
+    thresholds: ModerationConfig['video']['thresholds'],
   ): string[] {
     const violations = [];
     if (result.nudity?.raw && result.nudity.raw > thresholds.nudity) {
