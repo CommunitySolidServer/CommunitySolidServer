@@ -93,23 +93,36 @@ export class SightEngineClient {
     this.logger.info(`SIGHTENGINE: Sending request to API for ${filePath}`);
     const startTime = Date.now();
 
-    const response = await fetch('https://api.sightengine.com/1.0/check.json', {
-      method: 'POST',
-      body: form as unknown as BodyInit,
-      headers: form.getHeaders(),
+    const result = await new Promise<ApiResponse>((resolve, reject): void => {
+      form.submit('https://api.sightengine.com/1.0/check.json', (err, res): void => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        let data = '';
+        res.on('data', (chunk): void => {
+          data += chunk;
+        });
+        res.on('end', (): void => {
+          const requestTime = Date.now() - startTime;
+          this.logger.info(`SIGHTENGINE: API response received in ${requestTime}ms for ${filePath}`);
+
+          if (res.statusCode !== 200) {
+            this.logger.error(`SIGHTENGINE: API error ${res.statusCode} ${data} for ${filePath}`);
+            reject(new Error(`SightEngine API error: ${res.statusCode} ${data}`));
+            return;
+          }
+
+          this.logger.info(`SIGHTENGINE: Parsing JSON response for ${filePath}`);
+          try {
+            resolve(JSON.parse(data) as ApiResponse);
+          } catch (parseErr) {
+            reject(parseErr);
+          }
+        });
+      });
     });
-
-    const requestTime = Date.now() - startTime;
-    this.logger.info(`SIGHTENGINE: API response received in ${requestTime}ms for ${filePath}`);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      this.logger.error(`SIGHTENGINE: API error ${response.status} ${errorText} for ${filePath}`);
-      throw new Error(`SightEngine API error: ${response.status} ${errorText}`);
-    }
-
-    this.logger.info(`SIGHTENGINE: Parsing JSON response for ${filePath}`);
-    const result = await response.json() as ApiResponse;
 
     const analysisResult = {
       nudity: result.nudity,
@@ -278,23 +291,36 @@ export class SightEngineClient {
     this.logger.info(`SIGHTENGINE: Sending video request to API for ${filePath}`);
     const startTime = Date.now();
 
-    const response = await fetch('https://api.sightengine.com/1.0/video/check.json', {
-      method: 'POST',
-      body: form as unknown as BodyInit,
-      headers: form.getHeaders(),
+    const result = await new Promise<ApiResponse>((resolve, reject): void => {
+      form.submit('https://api.sightengine.com/1.0/video/check.json', (err, res): void => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        let data = '';
+        res.on('data', (chunk): void => {
+          data += chunk;
+        });
+        res.on('end', (): void => {
+          const requestTime = Date.now() - startTime;
+          this.logger.info(`SIGHTENGINE: Video API response received in ${requestTime}ms for ${filePath}`);
+
+          if (res.statusCode !== 200) {
+            this.logger.error(`SIGHTENGINE: Video API error ${res.statusCode} ${data} for ${filePath}`);
+            reject(new Error(`SightEngine Video API error: ${res.statusCode} ${data}`));
+            return;
+          }
+
+          this.logger.info(`SIGHTENGINE: Parsing video JSON response for ${filePath}`);
+          try {
+            resolve(JSON.parse(data) as ApiResponse);
+          } catch (parseErr) {
+            reject(parseErr);
+          }
+        });
+      });
     });
-
-    const requestTime = Date.now() - startTime;
-    this.logger.info(`SIGHTENGINE: Video API response received in ${requestTime}ms for ${filePath}`);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      this.logger.error(`SIGHTENGINE: Video API error ${response.status} ${errorText} for ${filePath}`);
-      throw new Error(`SightEngine Video API error: ${response.status} ${errorText}`);
-    }
-
-    this.logger.info(`SIGHTENGINE: Parsing video JSON response for ${filePath}`);
-    const result = await response.json() as ApiResponse;
 
     const analysisResult = {
       nudity: result.nudity,
