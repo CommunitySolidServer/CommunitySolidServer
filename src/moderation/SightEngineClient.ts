@@ -79,10 +79,8 @@ export class SightEngineClient {
   public async analyzeImage(filePath: string): Promise<SightEngineResult> {
     this.logger.info(`SIGHTENGINE: Starting analysis for ${filePath}`);
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- Class name from external module
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- External module class name
     const FormData = (await import('form-data')).default;
-    // eslint-disable-next-line import/no-extraneous-dependencies -- Dynamic import for optional dependency
-    const fetch = (await import('node-fetch')).default;
 
     this.logger.info(`SIGHTENGINE: Creating form data for ${filePath}`);
 
@@ -97,7 +95,7 @@ export class SightEngineClient {
 
     const response = await fetch('https://api.sightengine.com/1.0/check.json', {
       method: 'POST',
-      body: form,
+      body: form as unknown as BodyInit,
       headers: form.getHeaders(),
     });
 
@@ -169,9 +167,6 @@ export class SightEngineClient {
         personalInfo: 0,
       };
     }
-
-    // eslint-disable-next-line import/no-extraneous-dependencies -- Dynamic import for optional dependency
-    const fetch = (await import('node-fetch')).default;
 
     const params = new URLSearchParams();
     params.append('text', text);
@@ -267,10 +262,8 @@ export class SightEngineClient {
   public async analyzeVideo(filePath: string): Promise<SightEngineVideoResult> {
     this.logger.info(`SIGHTENGINE: Starting video analysis for ${filePath}`);
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- Class name from external module
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- External module class name
     const FormData = (await import('form-data')).default;
-    // eslint-disable-next-line import/no-extraneous-dependencies -- Dynamic import for optional dependency
-    const fetch = (await import('node-fetch')).default;
 
     this.logger.info(`SIGHTENGINE: Creating form data for video ${filePath}`);
 
@@ -287,7 +280,7 @@ export class SightEngineClient {
 
     const response = await fetch('https://api.sightengine.com/1.0/video/check.json', {
       method: 'POST',
-      body: form,
+      body: form as unknown as BodyInit,
       headers: form.getHeaders(),
     });
 
