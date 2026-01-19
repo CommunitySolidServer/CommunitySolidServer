@@ -2396,3 +2396,239 @@
 2026-01-19T10:51:49.246Z [LinkRelMetadataWriter] {Primary} [34mdebug[39m: Available link relations: 2
 2026-01-19T10:51:49.246Z [StreamingHttpMetadataWriter] {Primary} [34mdebug[39m: Adding updatesViaStreamingHttp2023  to the Link header
 2026-01-19T10:51:49.246Z [OwnerMetadataWriter] {Primary} [34mdebug[39m: Skipping owner link headers as metadata identifier is a blank node.
+2026-01-19T10:54:28.572Z [HandlerServerConfigurator] {Primary} [32minfo[39m: Received OPTIONS request for /kwaku/public/4.jpeg
+2026-01-19T10:54:28.579Z [HandlerServerConfigurator] {Primary} [32minfo[39m: Received PUT request for /kwaku/public/4.jpeg
+2026-01-19T10:54:28.588Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.589Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.589Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.589Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.590Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.590Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.590Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.592Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.593Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.593Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.593Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.594Z [BasicConditionsParser] {Primary} [34mdebug[39m: Found the following conditions: {}
+2026-01-19T10:54:28.595Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.597Z [HandlerServerConfigurator] {Primary} [32minfo[39m: Received GET request for /kwaku/profile/card
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.598Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.599Z [BasicConditionsParser] {Primary} [34mdebug[39m: Found the following conditions: {}
+2026-01-19T10:54:28.599Z [RawBodyParser] {Primary} [34mdebug[39m: HTTP request does not have a body, or its empty body is missing a Content-Type header
+2026-01-19T10:54:28.599Z [AuthorizingHttpHandler] {Primary} [36mverbose[39m: Extracted credentials: {}
+2026-01-19T10:54:28.599Z [AuthorizingHttpHandler] {Primary} [36mverbose[39m: Retrieved required modes: { http://localhost:3009/kwaku/profile/card: read }
+2026-01-19T10:54:28.599Z [OwnerPermissionReader] {Primary} [34mdebug[39m: No authorization resources found that need an ownership check.
+2026-01-19T10:54:28.600Z [WebAclReader] {Primary} [34mdebug[39m: Retrieving permissions of an unknown agent
+2026-01-19T10:54:28.600Z [WebAclReader] {Primary} [34mdebug[39m: Searching ACL data for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.600Z [WebAclReader] {Primary} [34mdebug[39m: Trying to read the direct ACL document of http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.600Z [WebAclReader] {Primary} [34mdebug[39m: Determining existence of  http://localhost:3009/kwaku/profile/card.acl
+2026-01-19T10:54:28.600Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.600Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/profile/card. 1 locks active.
+2026-01-19T10:54:28.600Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.601Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/profile/card. 0 active locks remaining.
+2026-01-19T10:54:28.601Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card.acl is part of http://localhost:3009/
+2026-01-19T10:54:28.603Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/profile/card.acl is /Users/opendata/CommunitySolidServer/data/kwaku/profile/card.acl
+2026-01-19T10:54:28.604Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/profile/card.acl is /Users/opendata/CommunitySolidServer/data/kwaku/profile/card.acl.meta
+2026-01-19T10:54:28.604Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.604Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/profile/card. 1 locks active.
+2026-01-19T10:54:28.604Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.605Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/profile/card. 0 active locks remaining.
+2026-01-19T10:54:28.605Z [WebAclReader] {Primary} [32minfo[39m: Found applicable ACL document http://localhost:3009/kwaku/profile/card.acl
+2026-01-19T10:54:28.605Z [WebAclReader] {Primary} [34mdebug[39m: Trying to read the ACL document http://localhost:3009/kwaku/profile/card.acl
+2026-01-19T10:54:28.605Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.605Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/profile/card. 1 locks active.
+2026-01-19T10:54:28.605Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.605Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/profile/card. 0 active locks remaining.
+2026-01-19T10:54:28.605Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card.acl is part of http://localhost:3009/
+2026-01-19T10:54:28.606Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/profile/card.acl is /Users/opendata/CommunitySolidServer/data/kwaku/profile/card.acl
+2026-01-19T10:54:28.606Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/profile/card.acl is /Users/opendata/CommunitySolidServer/data/kwaku/profile/card.acl.meta
+2026-01-19T10:54:28.606Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/profile/card.acl is /Users/opendata/CommunitySolidServer/data/kwaku/profile/card.acl
+2026-01-19T10:54:28.607Z [ChainedConverter] {Primary} [34mdebug[39m: Converting text/turtle -> application/trig -> internal/quads.
+2026-01-19T10:54:28.609Z [WrappedExpiringReadWriteLocker] {Primary} [36mverbose[39m: Renewed expiring lock on http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.609Z [WrappedExpiringReadWriteLocker] {Primary} [36mverbose[39m: Renewed expiring lock on http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.612Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.612Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/profile/card. 1 locks active.
+2026-01-19T10:54:28.612Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.612Z [AuthorizingHttpHandler] {Primary} [36mverbose[39m: Available permissions are { http://localhost:3009/kwaku/profile/card: {"read":true} }
+2026-01-19T10:54:28.612Z [PermissionBasedAuthorizer] {Primary} [34mdebug[39m: Checking if {} has read permissions for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.613Z [PermissionBasedAuthorizer] {Primary} [34mdebug[39m: {} has read permissions for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.613Z [AuthorizingHttpHandler] {Primary} [36mverbose[39m: Authorization succeeded, calling source handler
+2026-01-19T10:54:28.613Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.613Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/profile/card. 0 active locks remaining.
+2026-01-19T10:54:28.613Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/profile/card. 1 locks active.
+2026-01-19T10:54:28.613Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.613Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/profile/card. 0 active locks remaining.
+2026-01-19T10:54:28.613Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/profile/card is part of http://localhost:3009/
+2026-01-19T10:54:28.613Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/profile/card is /Users/opendata/CommunitySolidServer/data/kwaku/profile/card$.ttl
+2026-01-19T10:54:28.614Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/profile/card is /Users/opendata/CommunitySolidServer/data/kwaku/profile/card.meta
+2026-01-19T10:54:28.614Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/profile/card is /Users/opendata/CommunitySolidServer/data/kwaku/profile/card$.ttl
+2026-01-19T10:54:28.615Z [ChainedConverter] {Primary} [34mdebug[39m: Converting text/turtle -> text/turtle.
+2026-01-19T10:54:28.615Z [WacAllowHttpHandler] {Primary} [34mdebug[39m: Determining available permissions.
+2026-01-19T10:54:28.615Z [WacAllowHttpHandler] {Primary} [34mdebug[39m: User is not authenticated so has public permissions
+2026-01-19T10:54:28.615Z [WacAllowHttpHandler] {Primary} [34mdebug[39m: Adding WAC-Allow metadata
+2026-01-19T10:54:28.615Z [ParsingHttpHandler] {Primary} [36mverbose[39m: Parsed GET operation on http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.616Z [LinkRelMetadataWriter] {Primary} [34mdebug[39m: Available link relations: 2
+2026-01-19T10:54:28.616Z [LinkRelMetadataWriter] {Primary} [34mdebug[39m: Adding Link header <http://www.w3.org/ns/ldp#Resource>; rel="type"
+2026-01-19T10:54:28.616Z [StreamingHttpMetadataWriter] {Primary} [34mdebug[39m: Adding updatesViaStreamingHttp2023  to the Link header
+2026-01-19T10:54:28.616Z [StorageDescriptionAdvertiser] {Primary} [34mdebug[39m: Found storage root http://localhost:3009/kwaku/
+2026-01-19T10:54:28.617Z [WrappedExpiringReadWriteLocker] {Primary} [36mverbose[39m: Renewed expiring lock on http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.617Z [WrappedExpiringReadWriteLocker] {Primary} [36mverbose[39m: Renewed expiring lock on http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.617Z [WrappedExpiringReadWriteLocker] {Primary} [36mverbose[39m: Renewed expiring lock on http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.621Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.621Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/profile/card. 1 locks active.
+2026-01-19T10:54:28.621Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/profile/card
+2026-01-19T10:54:28.622Z [HandlerServerConfigurator] {Primary} [32minfo[39m: Received GET request for /.well-known/openid-configuration
+2026-01-19T10:54:28.622Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/.well-known/openid-configuration is part of http://localhost:3009/
+2026-01-19T10:54:28.622Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/.well-known/openid-configuration is part of http://localhost:3009/
+2026-01-19T10:54:28.622Z [OidcHttpHandler] {Primary} [34mdebug[39m: Sending request to oidc-provider: /.well-known/openid-configuration
+2026-01-19T10:54:28.623Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/profile/card. 0 active locks remaining.
+2026-01-19T10:54:28.626Z [HandlerServerConfigurator] {Primary} [32minfo[39m: Received GET request for /.oidc/jwks
+2026-01-19T10:54:28.626Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/.oidc/jwks is part of http://localhost:3009/
+2026-01-19T10:54:28.626Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/.oidc/jwks is part of http://localhost:3009/
+2026-01-19T10:54:28.626Z [OidcHttpHandler] {Primary} [34mdebug[39m: Sending request to oidc-provider: /.oidc/jwks
+2026-01-19T10:54:28.629Z [DPoPWebIdExtractor] {Primary} [32minfo[39m: Verified WebID via DPoP-bound access token. WebID: http://localhost:3009/kwaku/profile/card#me, client ID: JWxZq8GiTwG-it9rNOVPy, issuer: http://localhost:3009/
+2026-01-19T10:54:28.629Z [AuthorizingHttpHandler] {Primary} [36mverbose[39m: Extracted credentials: {"agent":{"webId":"http://localhost:3009/kwaku/profile/card#me"},"issuer":{"url":"http://localhost:3009/"},"client":{"clientId":"JWxZq8GiTwG-it9rNOVPy"}}
+2026-01-19T10:54:28.629Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.629Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/4.jpeg. 1 locks active.
+2026-01-19T10:54:28.629Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.630Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/4.jpeg. 0 active locks remaining.
+2026-01-19T10:54:28.630Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.630Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/public/4.jpeg is /Users/opendata/CommunitySolidServer/data/kwaku/public/4.jpeg
+2026-01-19T10:54:28.631Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.631Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/4.jpeg. 1 locks active.
+2026-01-19T10:54:28.631Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.631Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/4.jpeg. 0 active locks remaining.
+2026-01-19T10:54:28.631Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.631Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.631Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/. 1 locks active.
+2026-01-19T10:54:28.631Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.632Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/. 0 active locks remaining.
+2026-01-19T10:54:28.632Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/ is part of http://localhost:3009/
+2026-01-19T10:54:28.632Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: URL http://localhost:3009/kwaku/public/ points to the container /Users/opendata/CommunitySolidServer/data/kwaku/public/
+2026-01-19T10:54:28.632Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: URL http://localhost:3009/kwaku/public/ points to the container /Users/opendata/CommunitySolidServer/data/kwaku/public/.meta
+2026-01-19T10:54:28.632Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.632Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/. 1 locks active.
+2026-01-19T10:54:28.632Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.634Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/. 0 active locks remaining.
+2026-01-19T10:54:28.635Z [AuthorizingHttpHandler] {Primary} [36mverbose[39m: Retrieved required modes: { http://localhost:3009/kwaku/public/4.jpeg: append,create }
+2026-01-19T10:54:28.635Z [OwnerPermissionReader] {Primary} [34mdebug[39m: No authorization resources found that need an ownership check.
+2026-01-19T10:54:28.635Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.635Z [WebAclReader] {Primary} [34mdebug[39m: Retrieving permissions of http://localhost:3009/kwaku/profile/card#me
+2026-01-19T10:54:28.635Z [WebAclReader] {Primary} [34mdebug[39m: Searching ACL data for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.635Z [WebAclReader] {Primary} [34mdebug[39m: Trying to read the direct ACL document of http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.635Z [WebAclReader] {Primary} [34mdebug[39m: Determining existence of  http://localhost:3009/kwaku/public/4.jpeg.acl
+2026-01-19T10:54:28.635Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.635Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/4.jpeg. 1 locks active.
+2026-01-19T10:54:28.635Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.635Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/4.jpeg. 0 active locks remaining.
+2026-01-19T10:54:28.635Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg.acl is part of http://localhost:3009/
+2026-01-19T10:54:28.636Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/public/4.jpeg.acl is /Users/opendata/CommunitySolidServer/data/kwaku/public/4.jpeg.acl
+2026-01-19T10:54:28.636Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.636Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/4.jpeg. 1 locks active.
+2026-01-19T10:54:28.636Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.636Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/4.jpeg. 0 active locks remaining.
+2026-01-19T10:54:28.637Z [WebAclReader] {Primary} [34mdebug[39m: No direct ACL document found for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.637Z [WebAclReader] {Primary} [34mdebug[39m: Traversing to the parent of http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.637Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:28.637Z [WebAclReader] {Primary} [34mdebug[39m: Trying to read the direct ACL document of http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.637Z [WebAclReader] {Primary} [34mdebug[39m: Determining existence of  http://localhost:3009/kwaku/public/.acl
+2026-01-19T10:54:28.637Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.637Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/. 1 locks active.
+2026-01-19T10:54:28.637Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.637Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/. 0 active locks remaining.
+2026-01-19T10:54:28.637Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/.acl is part of http://localhost:3009/
+2026-01-19T10:54:28.638Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/public/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/public/.acl
+2026-01-19T10:54:28.638Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.638Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/. 1 locks active.
+2026-01-19T10:54:28.638Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.638Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/. 0 active locks remaining.
+2026-01-19T10:54:28.638Z [WebAclReader] {Primary} [34mdebug[39m: No direct ACL document found for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.638Z [WebAclReader] {Primary} [34mdebug[39m: Traversing to the parent of http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.638Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/ is part of http://localhost:3009/
+2026-01-19T10:54:28.638Z [WebAclReader] {Primary} [34mdebug[39m: Trying to read the direct ACL document of http://localhost:3009/kwaku/
+2026-01-19T10:54:28.638Z [WebAclReader] {Primary} [34mdebug[39m: Determining existence of  http://localhost:3009/kwaku/.acl
+2026-01-19T10:54:28.638Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.638Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/. 1 locks active.
+2026-01-19T10:54:28.638Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.638Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/. 0 active locks remaining.
+2026-01-19T10:54:28.639Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/.acl is part of http://localhost:3009/
+2026-01-19T10:54:28.639Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/.acl
+2026-01-19T10:54:28.639Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/.acl.meta
+2026-01-19T10:54:28.640Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.640Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/. 1 locks active.
+2026-01-19T10:54:28.640Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.641Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/. 0 active locks remaining.
+2026-01-19T10:54:28.641Z [WebAclReader] {Primary} [32minfo[39m: Found applicable ACL document http://localhost:3009/kwaku/.acl
+2026-01-19T10:54:28.641Z [WebAclReader] {Primary} [34mdebug[39m: Searching ACL data for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.641Z [WebAclReader] {Primary} [34mdebug[39m: Trying to read the direct ACL document of http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.641Z [WebAclReader] {Primary} [34mdebug[39m: Determining existence of  http://localhost:3009/kwaku/public/.acl
+2026-01-19T10:54:28.641Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.641Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/. 1 locks active.
+2026-01-19T10:54:28.641Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.641Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/. 0 active locks remaining.
+2026-01-19T10:54:28.642Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/.acl is part of http://localhost:3009/
+2026-01-19T10:54:28.653Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/public/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/public/.acl
+2026-01-19T10:54:28.654Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.654Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/public/. 1 locks active.
+2026-01-19T10:54:28.654Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.654Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/public/. 0 active locks remaining.
+2026-01-19T10:54:28.654Z [WebAclReader] {Primary} [34mdebug[39m: No direct ACL document found for http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.654Z [WebAclReader] {Primary} [34mdebug[39m: Traversing to the parent of http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.654Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/ is part of http://localhost:3009/
+2026-01-19T10:54:28.654Z [WebAclReader] {Primary} [34mdebug[39m: Trying to read the direct ACL document of http://localhost:3009/kwaku/
+2026-01-19T10:54:28.654Z [WebAclReader] {Primary} [34mdebug[39m: Determining existence of  http://localhost:3009/kwaku/.acl
+2026-01-19T10:54:28.654Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.654Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/. 1 locks active.
+2026-01-19T10:54:28.654Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.655Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/. 0 active locks remaining.
+2026-01-19T10:54:28.655Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/.acl is part of http://localhost:3009/
+2026-01-19T10:54:28.656Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/.acl
+2026-01-19T10:54:28.656Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/.acl.meta
+2026-01-19T10:54:28.657Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.657Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/. 1 locks active.
+2026-01-19T10:54:28.657Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.657Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/. 0 active locks remaining.
+2026-01-19T10:54:28.657Z [WebAclReader] {Primary} [32minfo[39m: Found applicable ACL document http://localhost:3009/kwaku/.acl
+2026-01-19T10:54:28.657Z [WebAclReader] {Primary} [34mdebug[39m: Trying to read the ACL document http://localhost:3009/kwaku/.acl
+2026-01-19T10:54:28.657Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.657Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/. 1 locks active.
+2026-01-19T10:54:28.657Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.658Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/. 0 active locks remaining.
+2026-01-19T10:54:28.658Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/.acl is part of http://localhost:3009/
+2026-01-19T10:54:28.658Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/.acl
+2026-01-19T10:54:28.658Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/.acl.meta
+2026-01-19T10:54:28.659Z [ExtensionBasedMapper] {Primary} [34mdebug[39m: The path for http://localhost:3009/kwaku/.acl is /Users/opendata/CommunitySolidServer/data/kwaku/.acl
+2026-01-19T10:54:28.676Z [ChainedConverter] {Primary} [34mdebug[39m: Converting text/turtle -> application/trig -> internal/quads.
+2026-01-19T10:54:28.676Z [WrappedExpiringReadWriteLocker] {Primary} [36mverbose[39m: Renewed expiring lock on http://localhost:3009/kwaku/
+2026-01-19T10:54:28.676Z [WrappedExpiringReadWriteLocker] {Primary} [36mverbose[39m: Renewed expiring lock on http://localhost:3009/kwaku/
+2026-01-19T10:54:28.677Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquiring lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.677Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Acquired lock for http://localhost:3009/kwaku/. 1 locks active.
+2026-01-19T10:54:28.677Z [FileSystemResourceLocker] {Primary} [34mdebug[39m: Releasing lock for http://localhost:3009/kwaku/
+2026-01-19T10:54:28.678Z [ParentContainerReader] {Primary} [34mdebug[39m: Determining http://localhost:3009/kwaku/public/4.jpeg create and delete permissions based on http://localhost:3009/kwaku/public/
+2026-01-19T10:54:28.678Z [AuthorizingHttpHandler] {Primary} [36mverbose[39m: Available permissions are { http://localhost:3009/kwaku/public/4.jpeg: {"read":true,"append":true,"write":true,"control":true,"create":true,"delete":true} },{ http://localhost:3009/kwaku/public/: {"read":true,"append":true,"write":true,"control":true} }
+2026-01-19T10:54:28.678Z [PermissionBasedAuthorizer] {Primary} [34mdebug[39m: Checking if {"agent":{"webId":"http://localhost:3009/kwaku/profile/card#me"},"issuer":{"url":"http://localhost:3009/"},"client":{"clientId":"JWxZq8GiTwG-it9rNOVPy"}} has append,create permissions for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.678Z [PermissionBasedAuthorizer] {Primary} [34mdebug[39m: {"agent":{"webId":"http://localhost:3009/kwaku/profile/card#me"},"issuer":{"url":"http://localhost:3009/"},"client":{"clientId":"JWxZq8GiTwG-it9rNOVPy"}} has append,create permissions for http://localhost:3009/kwaku/public/4.jpeg
+2026-01-19T10:54:28.678Z [AuthorizingHttpHandler] {Primary} [36mverbose[39m: Authorization succeeded, calling source handler
+2026-01-19T10:54:28.679Z [MemoryResourceLocker] {Primary} [34mdebug[39m: Released lock for http://localhost:3009/kwaku/. 0 active locks remaining.
+2026-01-19T10:54:28.679Z [SightEngineClient] {Primary} [32minfo[39m: SIGHTENGINE: Starting analysis for /tmp/moderation_1768820068678.jpg
+2026-01-19T10:54:28.679Z [SightEngineClient] {Primary} [32minfo[39m: SIGHTENGINE: Creating form data for /tmp/moderation_1768820068678.jpg
+2026-01-19T10:54:28.680Z [SightEngineClient] {Primary} [32minfo[39m: SIGHTENGINE: Sending request to API for /tmp/moderation_1768820068678.jpg
+2026-01-19T10:54:29.038Z [SightEngineClient] {Primary} [32minfo[39m: SIGHTENGINE: API response received in 358ms for /tmp/moderation_1768820068678.jpg
+2026-01-19T10:54:29.038Z [SightEngineClient] {Primary} [32minfo[39m: SIGHTENGINE: Parsing JSON response for /tmp/moderation_1768820068678.jpg
+2026-01-19T10:54:29.039Z [SightEngineClient] {Primary} [32minfo[39m: SIGHTENGINE: Analysis complete for /tmp/moderation_1768820068678.jpg
+2026-01-19T10:54:29.039Z [SightEngineClient] {Primary} [32minfo[39m: SIGHTENGINE: Results - Nudity: 0, Violence: 0.001, Gore: 0.65, Weapon: 0, Alcohol: 0.001, Drugs: 0, Offensive: 0.001, Self-harm: 0.001, Gambling: 0.001, Profanity: 0, Personal Info: 0
+2026-01-19T10:54:29.041Z [SingleRootIdentifierStrategy] {Primary} [34mdebug[39m: Identifier http://localhost:3009/kwaku/public/4.jpeg is part of http://localhost:3009/
+2026-01-19T10:54:29.043Z [ChainedConverter] {Primary} [34mdebug[39m: Converting internal/error -> application/json.
+2026-01-19T10:54:29.043Z [LinkRelMetadataWriter] {Primary} [34mdebug[39m: Available link relations: 2
+2026-01-19T10:54:29.043Z [StreamingHttpMetadataWriter] {Primary} [34mdebug[39m: Adding updatesViaStreamingHttp2023  to the Link header
+2026-01-19T10:54:29.043Z [OwnerMetadataWriter] {Primary} [34mdebug[39m: Skipping owner link headers as metadata identifier is a blank node.

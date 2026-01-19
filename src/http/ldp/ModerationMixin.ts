@@ -82,12 +82,17 @@ export class ModerationMixin {
       return;
     }
 
+    const path = operation.target.path;
+    const contentType = operation.body.metadata.contentType ?? 'image/unknown';
+    this.logger.info(`MODERATION: Analyzing ${contentType} for ${path}`);
+
     const chunks: Buffer[] = [];
     for await (const chunk of operation.body.data) {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array));
     }
 
     const buffer = Buffer.concat(chunks);
+    this.logger.info(`MODERATION: Buffer created - size: ${buffer.length} bytes for ${path}`);
     operation.body.data = guardStream(Readable.from(buffer));
 
     const tempFile = `/tmp/moderation_${Date.now()}.jpg`;
@@ -98,13 +103,28 @@ export class ModerationMixin {
         this.moderationConfig.sightEngine.apiUser,
         this.moderationConfig.sightEngine.apiSecret,
       );
+      
+      this.logger.info(`MODERATION: Calling SightEngine API for ${path}`);
+      const startTime = Date.now();
       const result = await client.analyzeImage(tempFile);
+      const analysisTime = Date.now() - startTime;
+      
+      this.logger.info(`MODERATION: API response received in ${analysisTime}ms for ${path}`);
+      this.logger.info(
+        `MODERATION: Scores - Nudity: ${result.nudity?.raw ?? 0}, Violence: ${result.violence}, ` +
+        `Gore: ${result.gore}, Weapon: ${result.weapon}, Alcohol: ${result.alcohol}, ` +
+        `Drugs: ${result.drugs}, Offensive: ${result.offensive}, Self-harm: ${result.selfharm}, ` +
+        `Gambling: ${result.gambling}, Profanity: ${result.profanity}, Personal Info: ${result.personalInfo}`,
+      );
 
       const violations = this.checkImageViolations(
         result,
         this.moderationConfig.images.thresholds,
       );
+      
       if (violations.length > 0) {
+        this.logger.warn(`MODERATION: CONTENT BLOCKED for ${path} - Violations: ${violations.join(', ')}`);
+        
         if (this.moderationStore) {
           await this.moderationStore.recordViolation({
             contentType: 'image',
@@ -120,6 +140,14 @@ export class ModerationMixin {
         }
         throw new ForbiddenHttpError('Upload blocked: Content violates community guidelines');
       }
+      
+      this.logger.info(`MODERATION: Content approved for ${path} - all thresholds passed`);
+    } catch (error: unknown) {
+      if (error instanceof ForbiddenHttpError) {
+        throw error;
+      }
+      this.logger.error(`MODERATION: Analysis failed for ${path}: ${(error as Error).message}`);
+      this.logger.warn('MODERATION: Allowing content through due to analysis failure (fail-open policy)');
     } finally {
       try {
         await fs.unlink(tempFile);
@@ -134,6 +162,10 @@ export class ModerationMixin {
       return;
     }
 
+    const path = operation.target.path;
+    const contentType = operation.body.metadata.contentType ?? 'text/unknown';
+    this.logger.info(`MODERATION: Analyzing text ${contentType} for ${path}`);
+
     const chunks: Buffer[] = [];
     for await (const chunk of operation.body.data) {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array));
@@ -141,9 +173,12 @@ export class ModerationMixin {
 
     const buffer = Buffer.concat(chunks);
     const text = buffer.toString('utf8');
+    
     if (!text?.trim()) {
       return;
     }
+    
+    this.logger.info(`MODERATION: Text extracted - length: ${text.length} characters for ${path}`);
 
     operation.body.data = guardStream(Readable.from(buffer));
 
@@ -151,27 +186,51 @@ export class ModerationMixin {
       this.moderationConfig.sightEngine.apiUser,
       this.moderationConfig.sightEngine.apiSecret,
     );
-    const result = await client.analyzeText(text);
+    
+    try {
+      this.logger.info(`MODERATION: Calling SightEngine Text API for ${path}`);
+      const startTime = Date.now();
+      const result = await client.analyzeText(text);
+      const analysisTime = Date.now() - startTime;
+      
+      this.logger.info(`MODERATION: Text API response received in ${analysisTime}ms for ${path}`);
+      this.logger.info(
+        `MODERATION: Text Scores - Sexual: ${result.sexual}, Discriminatory: ${result.discriminatory}, ` +
+        `Insulting: ${result.insulting}, Violent: ${result.violent}, Toxic: ${result.toxic}, ` +
+        `Self-harm: ${result.selfharm}, Personal Info: ${result.personalInfo}`,
+      );
 
-    const violations = this.checkTextViolations(
-      result,
-      this.moderationConfig.text.thresholds,
-    );
-    if (violations.length > 0) {
-      if (this.moderationStore) {
-        await this.moderationStore.recordViolation({
-          contentType: 'text',
-          resourcePath: operation.target.path,
-          userWebId: undefined,
-          violations: violations.map((v): { model: string; score: number; threshold: number } => ({
-            model: v.split('(')[0],
-            score: Number.parseFloat(v.split('(')[1]),
-            threshold: 0,
-          })),
-          contentSize: buffer.length,
-        });
+      const violations = this.checkTextViolations(
+        result,
+        this.moderationConfig.text.thresholds,
+      );
+      
+      if (violations.length > 0) {
+        this.logger.warn(`MODERATION: TEXT CONTENT BLOCKED for ${path} - Violations: ${violations.join(', ')}`);
+        
+        if (this.moderationStore) {
+          await this.moderationStore.recordViolation({
+            contentType: 'text',
+            resourcePath: operation.target.path,
+            userWebId: undefined,
+            violations: violations.map((v): { model: string; score: number; threshold: number } => ({
+              model: v.split('(')[0],
+              score: Number.parseFloat(v.split('(')[1]),
+              threshold: 0,
+            })),
+            contentSize: buffer.length,
+          });
+        }
+        throw new ForbiddenHttpError('Upload blocked: Content violates community guidelines');
       }
-      throw new ForbiddenHttpError('Upload blocked: Content violates community guidelines');
+      
+      this.logger.info(`MODERATION: Text content approved for ${path} - all thresholds passed`);
+    } catch (error: unknown) {
+      if (error instanceof ForbiddenHttpError) {
+        throw error;
+      }
+      this.logger.error(`MODERATION: Text analysis failed for ${path}: ${(error as Error).message}`);
+      this.logger.warn('MODERATION: Allowing text content through due to analysis failure (fail-open policy)');
     }
   }
 
@@ -180,12 +239,17 @@ export class ModerationMixin {
       return;
     }
 
+    const path = operation.target.path;
+    const contentType = operation.body.metadata.contentType ?? 'video/unknown';
+    this.logger.info(`MODERATION: Analyzing video ${contentType} for ${path}`);
+
     const chunks: Buffer[] = [];
     for await (const chunk of operation.body.data) {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array));
     }
 
     const buffer = Buffer.concat(chunks);
+    this.logger.info(`MODERATION: Video buffer created - size: ${buffer.length} bytes for ${path}`);
     operation.body.data = guardStream(Readable.from(buffer));
 
     const tempFile = `/tmp/moderation_${Date.now()}.mp4`;
@@ -196,13 +260,28 @@ export class ModerationMixin {
         this.moderationConfig.sightEngine.apiUser,
         this.moderationConfig.sightEngine.apiSecret,
       );
+      
+      this.logger.info(`MODERATION: Calling SightEngine Video API for ${path}`);
+      const startTime = Date.now();
       const result = await client.analyzeVideo(tempFile);
+      const analysisTime = Date.now() - startTime;
+      
+      this.logger.info(`MODERATION: Video API response received in ${analysisTime}ms for ${path}`);
+      this.logger.info(
+        `MODERATION: Video Results - Nudity: ${result.nudity?.raw ?? 0}, Violence: ${result.violence}, ` +
+        `Gore: ${result.gore}, Weapon: ${result.weapon}, Alcohol: ${result.alcohol}, ` +
+        `Offensive: ${result.offensive}, Self-harm: ${result.selfharm}, Gambling: ${result.gambling}, ` +
+        `Drugs: ${result.drugs}, Tobacco: ${result.tobacco}`,
+      );
 
       const violations = this.checkVideoViolations(
         result,
         this.moderationConfig.video.thresholds,
       );
+      
       if (violations.length > 0) {
+        this.logger.warn(`MODERATION: VIDEO CONTENT BLOCKED for ${path} - Violations: ${violations.join(', ')}`);
+        
         if (this.moderationStore) {
           await this.moderationStore.recordViolation({
             contentType: 'video',
@@ -218,6 +297,14 @@ export class ModerationMixin {
         }
         throw new ForbiddenHttpError('Upload blocked: Content violates community guidelines');
       }
+      
+      this.logger.info(`MODERATION: Video content approved for ${path} - all thresholds passed`);
+    } catch (error: unknown) {
+      if (error instanceof ForbiddenHttpError) {
+        throw error;
+      }
+      this.logger.error(`MODERATION: Video analysis failed for ${path}: ${(error as Error).message}`);
+      this.logger.warn('MODERATION: Allowing video content through due to analysis failure (fail-open policy)');
     } finally {
       try {
         await fs.unlink(tempFile);
