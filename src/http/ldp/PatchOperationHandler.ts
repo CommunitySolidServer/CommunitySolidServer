@@ -6,10 +6,8 @@ import { CreatedResponseDescription } from '../output/response/CreatedResponseDe
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { Patch } from '../representation/Patch';
-import type { ModerationConfig } from '../../moderation/ModerationConfig';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
-import { ModerationMixin } from './ModerationMixin';
 
 /**
  * Handles PATCH {@link Operation}s.
@@ -19,12 +17,10 @@ export class PatchOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
-  private readonly moderationMixin: ModerationMixin;
 
-  public constructor(store: ResourceStore, moderationConfig?: ModerationConfig) {
+  public constructor(store: ResourceStore) {
     super();
     this.store = store;
-    this.moderationMixin = new ModerationMixin(moderationConfig);
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -40,12 +36,6 @@ export class PatchOperationHandler extends OperationHandler {
     if (!operation.body.metadata.contentType) {
       this.logger.warn('PATCH requests require the Content-Type header to be set');
       throw new BadRequestHttpError('PATCH requests require the Content-Type header to be set');
-    }
-
-    // Content moderation for PATCH updates
-    if (operation.body.data) {
-      this.logger.info(`MODERATION: Intercepting PATCH update to ${operation.target.path}`);
-      await this.moderationMixin.moderateContent(operation);
     }
 
     // RFC7231, §4.3.4: If the target resource does not have a current representation and the

@@ -90,6 +90,7 @@ export * from './http/input/RequestParser';
 export * from './http/ldp/DeleteOperationHandler';
 export * from './http/ldp/GetOperationHandler';
 export * from './http/ldp/HeadOperationHandler';
+export * from './http/ldp/ModerationOperationHandler';
 export * from './http/ldp/OperationHandler';
 export * from './http/ldp/PatchOperationHandler';
 export * from './http/ldp/PostOperationHandler';

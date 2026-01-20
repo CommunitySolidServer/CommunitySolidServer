@@ -12,3 +12,4 @@
 # Moderation config files (use .example templates)
 /config/moderation-enabled.json
 /config/moderation-settings.json
+moderation.log

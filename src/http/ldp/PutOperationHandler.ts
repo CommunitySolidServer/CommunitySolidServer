@@ -8,8 +8,6 @@ import type { AuxiliaryStrategy } from '../auxiliary/AuxiliaryStrategy';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
-import type { ModerationConfig } from '../../moderation/ModerationConfig';
-import { ModerationMixin } from './ModerationMixin';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
 
@@ -22,13 +20,11 @@ export class PutOperationHandler extends OperationHandler {
 
   private readonly store: ResourceStore;
   private readonly metadataStrategy: AuxiliaryStrategy;
-  private readonly moderationMixin: ModerationMixin;
 
-  public constructor(store: ResourceStore, metadataStrategy: AuxiliaryStrategy, moderationConfig?: ModerationConfig) {
+  public constructor(store: ResourceStore, metadataStrategy: AuxiliaryStrategy) {
     super();
     this.store = store;
     this.metadataStrategy = metadataStrategy;
-    this.moderationMixin = new ModerationMixin(moderationConfig);
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -38,8 +34,6 @@ export class PutOperationHandler extends OperationHandler {
   }
 
   public async handle({ operation }: OperationHandlerInput): Promise<ResponseDescription> {
-    await this.moderationMixin.moderateContent(operation);
-
     const targetIsContainer = isContainerPath(operation.target.path);
 
     // Solid, §2.1: "A Solid server MUST reject PUT, POST and PATCH requests

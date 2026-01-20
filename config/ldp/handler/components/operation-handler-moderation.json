@@ -1,0 +1,52 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Wraps PUT, POST, and PATCH handlers with content moderation",
+      "@id": "urn:solid-server:default:OperationHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        {
+          "@type": "GetOperationHandler",
+          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "eTagHandler": { "@id": "urn:solid-server:default:ETagHandler" }
+        },
+        {
+          "@type": "ModerationOperationHandler",
+          "source": {
+            "@type": "PostOperationHandler",
+            "store": { "@id": "urn:solid-server:default:ResourceStore" }
+          }
+        },
+        {
+          "@type": "ModerationOperationHandler",
+          "source": {
+            "@type": "PutOperationHandler",
+            "store": { "@id": "urn:solid-server:default:ResourceStore" },
+            "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
+          }
+        },
+        {
+          "@type": "DeleteOperationHandler",
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
+        },
+        {
+          "@type": "HeadOperationHandler",
+          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "eTagHandler": { "@id": "urn:solid-server:default:ETagHandler" }
+        },
+        {
+          "@type": "ModerationOperationHandler",
+          "source": {
+            "@type": "PatchOperationHandler",
+            "store": { "@id": "urn:solid-server:default:ResourceStore" }
+          }
+        },
+        {
+          "@type": "StaticThrowHandler",
+          "error": { "@type": "MethodNotAllowedHttpError" }
+        }
+      ]
+    }
+  ]
+}
