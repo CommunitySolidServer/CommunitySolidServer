@@ -1,8 +1,8 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ModerationConfig } from '../../moderation/ModerationConfig';
+import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
-import type { ResponseDescription } from '../output/response/ResponseDescription';
 import { ModerationMixin } from './ModerationMixin';
 
 /**
@@ -26,9 +26,9 @@ export class ModerationOperationHandler extends OperationHandler {
 
   public async handle(input: OperationHandlerInput): Promise<ResponseDescription> {
     const { operation } = input;
-    
+
     // Only moderate operations with body data
-    if (operation.body?.data && ['PUT', 'POST', 'PATCH'].includes(operation.method)) {
+    if (operation.body?.data && [ 'PUT', 'POST', 'PATCH' ].includes(operation.method)) {
       await this.moderationMixin.moderateContent(operation);
     }
 

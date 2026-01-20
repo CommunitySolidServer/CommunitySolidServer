@@ -4,7 +4,6 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { ForbiddenHttpError } from '../../util/errors/ForbiddenHttpError';
 import { find } from '../../util/IterableUtil';
 import { AS, LDP, RDF, SOLID_AS } from '../../util/Vocabularies';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
