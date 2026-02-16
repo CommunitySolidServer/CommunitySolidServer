@@ -1009,9 +1009,72 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Generating a token">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#via-the-account-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via the account page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#via-the-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via the API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
+  <a href="#using-the-token-to-authenticate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the token to authenticate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using the token to authenticate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-using-inruptsolid-client-authn-node-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A: Using @inrupt/solid-client-authn-node (recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-manual-token-negotiation-with-inruptsolid-client-authn-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B: Manual token negotiation with @inrupt/solid-client-authn-core
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option B: Manual token negotiation with @inrupt/solid-client-authn-core">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#requesting-an-access-token" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1021,8 +1084,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#using-the-access-token-to-make-an-authenticated-request" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1030,6 +1093,16 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2076,9 +2149,72 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Generating a token">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#via-the-account-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via the account page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#via-the-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via the API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
+  <a href="#using-the-token-to-authenticate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the token to authenticate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using the token to authenticate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-using-inruptsolid-client-authn-node-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A: Using @inrupt/solid-client-authn-node (recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-manual-token-negotiation-with-inruptsolid-client-authn-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B: Manual token negotiation with @inrupt/solid-client-authn-core
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option B: Manual token negotiation with @inrupt/solid-client-authn-core">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#requesting-an-access-token" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2088,8 +2224,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#using-the-access-token-to-make-an-authenticated-request" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2097,6 +2233,16 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2143,11 +2289,17 @@ It makes use of several utility functions from the
 Note that the code below uses top-level <code>await</code>, which not all JavaScript engines support,
 so this should all be contained in an <code>async</code> function.</p>
 <h2 id="generating-a-token">Generating a token<a class="headerlink" href="#generating-a-token" title="Permanent link">&para;</a></h2>
-<p>A token can be created either on your account page, by default <code>http://localhost:3000/.account/</code>,
-or by calling the relevant <a href="../account/json-api/#controlsaccountclientcredentials">API</a>.</p>
-<p>Below is an example of how to call the API to generate such a token.</p>
-<p>The code below generates a token linked to your account and WebID.
-This only needs to be done once, afterwards this token can be used for all future requests.</p>
+<p>A token can be created either through the account page UI or programmatically via the API.
+This only needs to be done once — afterwards the token can be used for all future requests.</p>
+<h3 id="via-the-account-page">Via the account page<a class="headerlink" href="#via-the-account-page" title="Permanent link">&para;</a></h3>
+<p>Navigate to your account page, by default at <code>http://localhost:3000/.account/</code>.
+From there you can create a new client credentials token by providing a name and selecting
+the WebID you want to associate with it.
+The page will display the generated <code>id</code> and <code>secret</code>.
+Store the secret somewhere safe as there is no way to request it again from the server!</p>
+<h3 id="via-the-api">Via the API<a class="headerlink" href="#via-the-api" title="Permanent link">&para;</a></h3>
+<p>You can also generate a token programmatically by calling the
+<a href="../account/json-api/#controlsaccountclientcredentials">client credentials API</a>.</p>
 <p>Before doing the step below,
 you already need to have an <a href="../account/json-api/#authorization">authorization value</a>
 that you get after logging in to your account.</p>
@@ -2194,7 +2346,40 @@ from the default server configurations.</p>
 </code></pre></div>
 <p>In case something goes wrong the status code will be 400/500
 and the response body will contain a description of the problem.</p>
-<h2 id="requesting-an-access-token">Requesting an Access token<a class="headerlink" href="#requesting-an-access-token" title="Permanent link">&para;</a></h2>
+<h2 id="using-the-token-to-authenticate">Using the token to authenticate<a class="headerlink" href="#using-the-token-to-authenticate" title="Permanent link">&para;</a></h2>
+<p>Once you have the <code>id</code> and <code>secret</code> from the previous step,
+there are two ways to use them to make authenticated requests.</p>
+<h3 id="option-a-using-inruptsolid-client-authn-node-recommended">Option A: Using <code>@inrupt/solid-client-authn-node</code> (recommended)<a class="headerlink" href="#option-a-using-inruptsolid-client-authn-node-recommended" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://www.npmjs.com/package/@inrupt/solid-client-authn-node"><code>@inrupt/solid-client-authn-node</code></a> library
+provides a <code>Session</code> class that handles the access token negotiation for you.
+This is the simplest approach and is recommended for most use cases.</p>
+<div class="highlight"><pre><span></span><code>npm<span class="w"> </span>install<span class="w"> </span>@inrupt/solid-client-authn-node
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Session</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@inrupt/solid-client-authn-node&#39;</span><span class="p">;</span>
+
+<span class="c1">// These are the ID and secret generated in the previous step.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Session</span><span class="p">();</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">session</span><span class="p">.</span><span class="nx">login</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">clientId</span><span class="o">:</span><span class="w"> </span><span class="kt">id</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">clientSecret</span><span class="o">:</span><span class="w"> </span><span class="kt">secret</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">oidcIssuer</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;http://localhost:3000/&#39;</span><span class="p">,</span>
+<span class="p">});</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">info</span><span class="p">.</span><span class="nx">isLoggedIn</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// session.fetch is a standard fetch function that authenticates as your WebID.</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">session</span><span class="p">.</span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000/private&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// When done, log out to clean up the session.</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">session</span><span class="p">.</span><span class="nx">logout</span><span class="p">();</span>
+</code></pre></div>
+<p>By default the session is periodically refreshed in the background.
+You can disable this by passing <code>keepAlive: false</code> to the <code>Session</code> constructor.</p>
+<h3 id="option-b-manual-token-negotiation-with-inruptsolid-client-authn-core">Option B: Manual token negotiation with <code>@inrupt/solid-client-authn-core</code><a class="headerlink" href="#option-b-manual-token-negotiation-with-inruptsolid-client-authn-core" title="Permanent link">&para;</a></h3>
+<p>If you prefer to manage access tokens yourself,
+you can use the lower-level utilities from
+<a href="https://www.npmjs.com/package/@inrupt/solid-client-authn-core"><code>@inrupt/solid-client-authn-core</code></a>.</p>
+<h4 id="requesting-an-access-token">Requesting an Access token<a class="headerlink" href="#requesting-an-access-token" title="Permanent link">&para;</a></h4>
 <p>The ID and secret combination generated above can be used to request an Access Token from the server.
 This Access Token is only valid for a certain amount of time, after which a new one needs to be requested.</p>
 <div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">createDpopHeader</span><span class="p">,</span><span class="w"> </span><span class="nx">generateDpopKeyPair</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@inrupt/solid-client-authn-core&#39;</span><span class="p">;</span>
@@ -2226,7 +2411,7 @@ This Access Token is only valid for a certain amount of time, after which a new 
 <span class="c1">// which you can use to know when you need request a new Access token.</span>
 <span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">access_token</span><span class="o">:</span><span class="w"> </span><span class="kt">accessToken</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
 </code></pre></div>
-<h2 id="using-the-access-token-to-make-an-authenticated-request">Using the Access token to make an authenticated request<a class="headerlink" href="#using-the-access-token-to-make-an-authenticated-request" title="Permanent link">&para;</a></h2>
+<h4 id="using-the-access-token-to-make-an-authenticated-request">Using the Access token to make an authenticated request<a class="headerlink" href="#using-the-access-token-to-make-an-authenticated-request" title="Permanent link">&para;</a></h4>
 <p>Once you have an Access token, you can use it for authenticated requests until it expires.</p>
 <div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">buildAuthenticatedFetch</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@inrupt/solid-client-authn-core&#39;</span><span class="p">;</span>
 
