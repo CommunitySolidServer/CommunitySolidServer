@@ -1,0 +1,82 @@
+<h1>Create JWT assertion</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Choose a ClientID and which WebID to associate with the assertion</p>
+    <ol>
+      <li>
+        <label for="clientId">Client ID</label>
+        <input id="clientId" type="text" name="clientId" autofocus>
+      </li>
+    </ol>
+    <ol id="webIdList">
+    </ol>
+  </fieldset>
+  <div class="hidden" id="response-error">
+    <p class="error"></p>
+  </div>
+  <ul class="actions">
+    <li><button type="submit" name="submit" disabled>Create assertion</button></li>
+    <li><button type="button" id="account-link">Back</button></li>
+  </ul>
+</form>
+<div class="hidden" id="no-webId">
+  <p class="error">There are no WebIDs linked to this account.</p>
+  <p class="actions"><button type="button" id="error-account-link">Back</button></p>
+</div>
+<div class="hidden" id="response">
+  <p>
+    Make sure to store the assertion somewhere as there is no way to retrieve it afterwards!
+  </p>
+  <p>
+    ClientID: <strong id="assertion-clientId"></strong>
+  </p>
+  <p>
+    Assertion JWT: <strong style="word-wrap:break-word;" id="assertion-jwt"></strong>
+  </p>
+
+  <p class="actions"><button type="button" id="response-account-link">Back</button></p>
+</div>
+
+
+<script>
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+    const { webIdLinks } = await fetchJson(controls.account.webId, '<%= idpIndex %>');
+
+    setRedirectClick('account-link', controls.html.account.account);
+    setRedirectClick('error-account-link', controls.html.account.account);
+    setRedirectClick('response-account-link', controls.html.account.account);
+
+    const webIds = Object.keys(webIdLinks);
+    if (webIds.length === 0) {
+      setVisibility('no-webId', true);
+      setVisibility('mainForm', false);
+      return;
+    }
+
+    const { webIdList } = getElements('webIdList');
+    for (const webId of webIds) {
+      webIdList.insertAdjacentHTML('beforeend', `
+        <li class="radio">
+          <label for="${webId}">
+            <input id="${webId}" type="radio" name="webId" value="${webId}" ${webIds.length === 1 ? 'checked' : ''}>
+            ${webId}
+          </label>
+        </li>`);
+    }
+
+    addPostListener(async() => {
+      try {
+        const { clientId, assertion } = await postJsonForm(controls.account.jwtAssertions);
+        updateElement('assertion-clientId', clientId, { innerText: true });
+        updateElement('assertion-jwt', assertion, { innerText: true });
+        setVisibility('mainForm', false);
+        setVisibility('response', true);
+      } catch (err) {
+        setError(err.message, 'response-error')
+      }
+    });
+  })();
+</script>
