@@ -227,7 +227,7 @@ describe('A StaticAssetHandler', (): void => {
   });
 
   it('caches responses when the expires option is set.', async(): Promise<void> => {
-    jest.spyOn(Date, 'now').mockReturnValue(0);
+    const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(0);
     const cachedHandler = new StaticAssetHandler(
       [ new StaticAssetEntry('/foo/bar/style', '/assets/styles/bar.css') ],
       'http://localhost:3000',
@@ -236,10 +236,85 @@ describe('A StaticAssetHandler', (): void => {
     const request = { method: 'GET', url: '/foo/bar/style' };
     const response = createResponse();
     await cachedHandler.handleSafe({ request, response } as any);
-    jest.restoreAllMocks();
+    dateNowSpy.mockRestore();
 
     expect(response.statusCode).toBe(200);
     expect(response.getHeaders()).toHaveProperty('cache-control', 'max-age=86400');
     expect(response.getHeaders()).toHaveProperty('expires', 'Fri, 02 Jan 1970 00:00:00 GMT');
+  });
+
+  it('automatically expands root folder mappings to explicit files.', async(): Promise<void> => {
+    createReadStream.mockImplementationOnce((): any => Readable.from([ 'file contents' ]));
+    const readdirSpy = jest.spyOn(fs, 'readdirSync').mockReturnValue([
+      {
+        name: 'app.js',
+        isFile: (): boolean => true,
+        isDirectory: (): boolean => false,
+        isSymbolicLink: (): boolean => false,
+      },
+      {
+        name: 'index.js',
+        isFile: (): boolean => false,
+        isDirectory: (): boolean => false,
+        isSymbolicLink: (): boolean => true,
+      },
+      {
+        name: 'subdir',
+        isFile: (): boolean => false,
+        isDirectory: (): boolean => true,
+        isSymbolicLink: (): boolean => false,
+      },
+    ] as any);
+
+    const expandedHandler = new StaticAssetHandler(
+      [ new StaticAssetEntry('/', '/assets/static/') ],
+      'http://localhost:3000',
+    );
+
+    const request = { method: 'GET', url: '/app.js' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await expandedHandler.handleSafe({ request, response } as any);
+
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith('/assets/static/app.js');
+
+    const badRequest = { method: 'GET', url: '/subdir/app.js' };
+    await expect(expandedHandler.canHandle({ request: badRequest } as any))
+      .rejects.toThrow('No static resource configured at /subdir/app.js');
+
+    readdirSpy.mockRestore();
+  });
+
+  it('keeps catch-all behavior for non-root folder mappings.', async(): Promise<void> => {
+    createReadStream.mockImplementationOnce((): any => Readable.from([ 'dynamic file' ]));
+    const readdirSpy = jest.spyOn(fs, 'readdirSync');
+
+    const catchAllHandler = new StaticAssetHandler(
+      [ new StaticAssetEntry('assets/', '/static/assets/') ],
+      'http://localhost:3000',
+    );
+
+    // Should not have called readdirSync since non-root folders aren't expanded
+    expect(readdirSpy).not.toHaveBeenCalled();
+
+    const request = { method: 'GET', url: '/assets/dynamic.js' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await catchAllHandler.handleSafe({ request, response } as any);
+
+    expect(createReadStream).toHaveBeenCalledWith('/static/assets/dynamic.js');
+    readdirSpy.mockRestore();
+  });
+
+  it('throws error when folder expansion fails.', async(): Promise<void> => {
+    const readdirSpy = jest.spyOn(fs, 'readdirSync').mockImplementation((): any => {
+      throw new Error('Permission denied');
+    });
+
+    expect((): StaticAssetHandler => new StaticAssetHandler(
+      [ new StaticAssetEntry('/', '/nonexistent/folder/') ],
+      'http://localhost:3000',
+    )).toThrow('Error expanding static assets from /nonexistent/folder/: Permission denied');
+
+    readdirSpy.mockRestore();
   });
 });
