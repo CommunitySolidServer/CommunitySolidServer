@@ -1,4 +1,5 @@
-import { createReadStream } from 'node:fs';
+import { createReadStream, readdirSync } from 'node:fs';
+import { posix as pathPosix } from 'node:path';
 import escapeStringRegexp from 'escape-string-regexp';
 import * as mime from 'mime-types';
 import { getLoggerFor } from '../../logging/LogUtil';
@@ -24,6 +25,52 @@ export class StaticAssetEntry {
   ) {}
 }
 
+function expandFolderAssets(assets: StaticAssetEntry[]): StaticAssetEntry[] {
+  const expanded: StaticAssetEntry[] = [];
+
+  for (const asset of assets) {
+    // Only expand root folder mappings to explicit files for safety
+    // Non-root folders keep catch-all behavior for dynamic file serving
+    const isRootFolder = asset.filePath.endsWith('/') && asset.relativeUrl === '/';
+
+    if (!isRootFolder) {
+      expanded.push(asset);
+      continue;
+    }
+
+    const basePath = ensureTrailingSlash(resolveAssetPath(asset.filePath));
+    const urlPrefix = ensureTrailingSlash(asset.relativeUrl);
+    for (const entry of collectFolderFiles(basePath)) {
+      const relativeUrl = pathPosix.join(urlPrefix, entry.relativePath);
+      expanded.push(new StaticAssetEntry(relativeUrl, entry.absolutePath));
+    }
+  }
+
+  return expanded;
+}
+
+function collectFolderFiles(basePath: string): { relativePath: string; absolutePath: string }[] {
+  try {
+    const entries = readdirSync(basePath, { withFileTypes: true });
+    const files: { relativePath: string; absolutePath: string }[] = [];
+
+    for (const entry of entries) {
+      const absolutePath = joinFilePath(basePath, entry.name);
+      if (entry.isDirectory()) {
+        continue;
+      }
+
+      if (entry.isFile() || entry.isSymbolicLink()) {
+        files.push({ relativePath: entry.name, absolutePath });
+      }
+    }
+
+    return files;
+  } catch (error: unknown) {
+    throw new InternalServerError(`Error expanding static assets from ${basePath}: ${(error as Error).message}`);
+  }
+}
+
 /**
  * Handler that serves static resources on specific paths.
  * Relative file paths are assumed to be relative to the current working directory.
@@ -39,18 +86,26 @@ export class StaticAssetHandler extends HttpHandler {
 
   /**
    * Creates a handler for the provided static resources.
+   * Root folder mappings are automatically expanded to explicit file mappings for safety.
+   * Non-root folder mappings use dynamic matching to serve files at runtime.
    *
    * @param assets - A list of {@link StaticAssetEntry}.
    * @param baseUrl - The base URL of the server.
    * @param options - Specific options.
    * @param options.expires - Cache expiration time in seconds.
    */
-  public constructor(assets: StaticAssetEntry[], baseUrl: string, options: { expires?: number } = {}) {
+  public constructor(
+    assets: StaticAssetEntry[],
+    baseUrl: string,
+    options: { expires?: number } = {},
+  ) {
     super();
     this.mappings = {};
     const rootPath = ensureTrailingSlash(new URL(baseUrl).pathname);
 
-    for (const { relativeUrl, filePath } of assets) {
+    const expandedAssets = expandFolderAssets(assets);
+
+    for (const { relativeUrl, filePath } of expandedAssets) {
       this.mappings[trimLeadingSlashes(relativeUrl)] = resolveAssetPath(filePath);
     }
     this.pathMatcher = this.createPathMatcher(rootPath);
@@ -71,7 +126,7 @@ export class StaticAssetHandler extends HttpHandler {
     const folders = [ '.^' ];
     for (const path of paths) {
       const filePath = this.mappings[path];
-      if (filePath.endsWith('/') && !path.endsWith('/')) {
+      if (filePath.endsWith('/') && (path.length > 0 && !path.endsWith('/'))) {
         throw new InternalServerError(
           `Server is misconfigured: StaticAssetHandler can not ` +
           `have a file path ending on a slash if the URL does not, but received ${path} and ${filePath}`,
