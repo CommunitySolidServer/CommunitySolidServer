@@ -103,6 +103,24 @@ describe('A SparqlDataAccessor', (): void => {
     ));
   });
 
+  it('returns the corresponding metadata with original content-type.', async(): Promise<void> => {
+    triples = [
+      DF.quad(DF.namedNode('this'), DF.namedNode('a'), DF.namedNode('triple')),
+      DF.quad(DF.namedNode('http://identifier'), CONTENT_TYPE_TERM, DF.literal('image/png')),
+    ];
+    metadata = await accessor.getMetadata({ path: 'http://identifier' });
+    expect(metadata.quads()).toBeRdfIsomorphic([
+      DF.quad(DF.namedNode('this'), DF.namedNode('a'), DF.namedNode('triple')),
+      DF.quad(DF.namedNode('http://identifier'), CONTENT_TYPE_TERM, DF.literal('image/png')),
+    ]);
+
+    expect(fetchTriples).toHaveBeenCalledTimes(1);
+    expect(fetchTriples.mock.calls[0][0]).toBe(endpoint);
+    expect(simplifyQuery(fetchTriples.mock.calls[0][1])).toBe(simplifyQuery(
+      'CONSTRUCT { ?s ?p ?o. } WHERE { GRAPH <meta:http://identifier> { ?s ?p ?o. } }',
+    ));
+  });
+
   it('does not set the content-type for container metadata.', async(): Promise<void> => {
     metadata = await accessor.getMetadata({ path: 'http://container/' });
     expect(metadata.quads()).toBeRdfIsomorphic([
