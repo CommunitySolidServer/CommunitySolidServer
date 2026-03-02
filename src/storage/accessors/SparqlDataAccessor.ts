@@ -89,7 +89,7 @@ export class SparqlDataAccessor implements DataAccessor {
     }
 
     const metadata = new RepresentationMetadata(identifier).addQuads(quads);
-    if (!isContainerIdentifier(identifier)) {
+    if (!isContainerIdentifier(identifier) && !metadata.contentType) {
       metadata.contentType = INTERNAL_QUADS;
     }
 
