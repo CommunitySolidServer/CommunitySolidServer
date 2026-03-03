@@ -75,6 +75,9 @@ describe('A BasicConditions', (): void => {
     metadata.set(DC.terms.modified, yesterday.toISOString());
     expect(conditions.matchesMetadata(metadata)).toBe(false);
 
+    metadata.set(DC.terms.modified, now.toISOString());
+    expect(conditions.matchesMetadata(metadata)).toBe(false);
+
     metadata.set(DC.terms.modified, tomorrow.toISOString());
     expect(conditions.matchesMetadata(metadata)).toBe(true);
   });
@@ -82,6 +85,9 @@ describe('A BasicConditions', (): void => {
   it('requires lastModified to be before unmodifiedSince.', async(): Promise<void> => {
     const conditions = new BasicConditions(eTagHandler, { unmodifiedSince: now });
     metadata.set(DC.terms.modified, yesterday.toISOString());
+    expect(conditions.matchesMetadata(metadata)).toBe(true);
+
+    metadata.set(DC.terms.modified, now.toISOString());
     expect(conditions.matchesMetadata(metadata)).toBe(true);
 
     metadata.set(DC.terms.modified, tomorrow.toISOString());

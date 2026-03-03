@@ -18,13 +18,21 @@ so this should all be contained in an `async` function.
 
 ## Generating a token
 
-A token can be created either on your account page, by default `http://localhost:3000/.account/`,
-or by calling the relevant [API](account/json-api.md#controlsaccountclientcredentials).
+A token can be created either through the account page UI or programmatically via the API.
+This only needs to be done once — afterwards the token can be used for all future requests.
 
-Below is an example of how to call the API to generate such a token.
+### Via the account page
 
-The code below generates a token linked to your account and WebID.
-This only needs to be done once, afterwards this token can be used for all future requests.
+Navigate to your account page, by default at `http://localhost:3000/.account/`.
+From there you can create a new client credentials token by providing a name and selecting
+the WebID you want to associate with it.
+The page will display the generated `id` and `secret`.
+Store the secret somewhere safe as there is no way to request it again from the server!
+
+### Via the API
+
+You can also generate a token programmatically by calling the
+[client credentials API](account/json-api.md#controlsaccountclientcredentials).
 
 Before doing the step below,
 you already need to have an [authorization value](account/json-api.md#authorization)
@@ -80,7 +88,51 @@ const { id, secret, resource } = await response.json();
 In case something goes wrong the status code will be 400/500
 and the response body will contain a description of the problem.
 
-## Requesting an Access token
+## Using the token to authenticate
+
+Once you have the `id` and `secret` from the previous step,
+there are two ways to use them to make authenticated requests.
+
+### Option A: Using `@inrupt/solid-client-authn-node` (recommended)
+
+The [`@inrupt/solid-client-authn-node`](https://www.npmjs.com/package/@inrupt/solid-client-authn-node) library
+provides a `Session` class that handles the access token negotiation for you.
+This is the simplest approach and is recommended for most use cases.
+
+```bash
+npm install @inrupt/solid-client-authn-node
+```
+
+```ts
+import { Session } from '@inrupt/solid-client-authn-node';
+
+// These are the ID and secret generated in the previous step.
+const session = new Session();
+await session.login({
+  clientId: id,
+  clientSecret: secret,
+  oidcIssuer: 'http://localhost:3000/',
+});
+
+if (session.info.isLoggedIn) {
+  // session.fetch is a standard fetch function that authenticates as your WebID.
+  const response = await session.fetch('http://localhost:3000/private');
+}
+
+// When done, log out to clean up the session.
+await session.logout();
+```
+
+By default the session is periodically refreshed in the background.
+You can disable this by passing `keepAlive: false` to the `Session` constructor.
+
+### Option B: Manual token negotiation with `@inrupt/solid-client-authn-core`
+
+If you prefer to manage access tokens yourself,
+you can use the lower-level utilities from
+[`@inrupt/solid-client-authn-core`](https://www.npmjs.com/package/@inrupt/solid-client-authn-core).
+
+#### Requesting an Access token
 
 The ID and secret combination generated above can be used to request an Access Token from the server.
 This Access Token is only valid for a certain amount of time, after which a new one needs to be requested.
@@ -116,7 +168,7 @@ const response = await fetch(tokenUrl, {
 const { access_token: accessToken } = await response.json();
 ```
 
-## Using the Access token to make an authenticated request
+#### Using the Access token to make an authenticated request
 
 Once you have an Access token, you can use it for authenticated requests until it expires.
 

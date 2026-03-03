@@ -49,6 +49,32 @@ All notable changes to this project will be documented in this file.
 * Clean up authorization configurations ([6dd4913](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6dd4913a8aa176c36dc27d1291e004e143354d26))
 * Rename PermissionMap to MultiPermissionMap ([4d27ce0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4d27ce04aa925b7b31c145ef4c2c940160c266f3))
 
+## [7.1.9](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.8...v7.1.9) (2026-03-03)
+
+### Features
+
+* Support Static Asset folder expansion at root ([b48edf8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b48edf847c98c38bdb75904ca49c95fa23cfb8c1))
+
+### Chores
+
+* Improve documentation of client crdential authentication options ([feffe45](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/feffe4572b004e6ca143ac87821f297a33a538cc))
+
+## [7.1.8](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.7...v7.1.8) (2026-01-14)
+
+### Features
+
+* Show logo_uri on oidc consent screen, fixes [#2082](https://github.com/CommunitySolidServer/CommunitySolidServer/issues/2082) ([d0353f8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d0353f8bde78ec42dd7caf4991489cdfe333a774))
+
+### Fixes
+
+* Return correct allow headers for description resources ([7a5cf74](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7a5cf7485925193265d3663aa4589b900f001cd8))
+* Correct condition for If-Modified-Since header ([fb3f583](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fb3f583372ca2cfe7d3c8b3ed0261ddd428cc744))
+* Use milliseconds in ETag ([46983db](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/46983dbedbcd13cab6bcb9899bd69a1ebea45cfe))
+
+### Documentation
+
+* Add citation code to readme ([e69da75](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e69da7520ce8be87499fc67d98e254554750ec84))
+
 ## [7.1.7](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.6...v7.1.7) (2025-04-01)
 
 ### Features
