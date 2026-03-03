@@ -3,6 +3,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.9](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.8...v7.1.9) (2026-03-03)
+
+### Features
+
+* Support Static Asset folder expansion at root ([b48edf8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b48edf847c98c38bdb75904ca49c95fa23cfb8c1))
+
+### Chores
+
+* Improve documentation of client crdential authentication options ([feffe45](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/feffe4572b004e6ca143ac87821f297a33a538cc))
+
 ## [7.1.8](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.7...v7.1.8) (2026-01-14)
 
 ### Features
