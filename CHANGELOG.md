@@ -3,6 +3,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.0.0-alpha.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.9...v8.0.0-alpha.2) (2026-03-03)
+
+### Fixes
+
+* Preserve content-type when present in SPARQL accessor ([8575af4](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/8575af4684c00ed3f8709b77f364af0433b76c51))
+
+### Chores
+
+* Added integration tests for SPARQL endpoint ([199f786](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/199f7860a0c045f3b518a14a41bedd4edb7f75da))
+
+### Documentation
+
+* Mention new contexts in release notes ([207bc5c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/207bc5cef1ec563551af9b185e2a287ecea766bc))
+
 ## [8.0.0-alpha.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v8.0.0-alpha.0...v8.0.0-alpha.1) (2025-09-16)
 
 ### Chores
