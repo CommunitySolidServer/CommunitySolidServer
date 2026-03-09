@@ -18,7 +18,8 @@
           "@type": "CreateClientCredentialsHandler",
           "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
           "clientCredentialsStore": { "@id": "urn:solid-server:default:ClientCredentialsStore" },
-          "clientCredentialsRoute": { "@id": "urn:solid-server:default:AccountClientCredentialsIdRoute" }
+          "clientCredentialsRoute": { "@id": "urn:solid-server:default:AccountClientCredentialsIdRoute" },
+          "ownershipValidator": { "@id": "urn:solid-server:default:OwnershipValidator" }
         }
       }
     }
