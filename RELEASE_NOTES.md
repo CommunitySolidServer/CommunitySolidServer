@@ -345,7 +345,8 @@ These changes are relevant if you wrote custom modules for the server that depen
 - Extended the initialization/finalization system:
     - Introduced `Initializable` interface and `InitializableHandler` wrapper class.
     - Introduced `Finalizer` abstract class and `FinalizableHandler` wrapper class.
-    - Changed type for `finalizer` attribute in `App` from `Finalizable` to `Finalizer` and updated the calling code in `App.stop()`.
+    - Changed type for `finalizer` attribute in `App` from `Finalizable` to `Finalizer`
+      and updated the calling code in `App.stop()`.
     - Removed the now obsolete `ParallelFinalizer` util class.
 - Added a lock cleanup on initialize for lock implementations `RedisLocker` and `FileSystemResourceLocker`.
 - `ResourceStore` functions that change a resource now return metadata for every changed resource.
