@@ -30,5 +30,8 @@ module.exports = {
 
     // Allow inline HTML
     MD033: false,
+
+    // Not bad but requires several files to be changed
+    MD059: false,
   },
 };
