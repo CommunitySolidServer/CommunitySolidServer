@@ -3,6 +3,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.0.0-alpha.3](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v8.0.0-alpha.2...v8.0.0-alpha.3) (2026-03-13)
+
+### Chores
+
+* Update dependencies ([55a2748](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/55a2748a44c0efbe35f8a8a25b18a3d622770770))
+
 ## [8.0.0-alpha.2](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.9...v8.0.0-alpha.2) (2026-03-03)
 
 ### Fixes
