@@ -163,7 +163,7 @@
     "node-mocks-http": "^1.13.0",
     "nodemon": "^3.0.1",
     "opinionated-eslint-config": "0.2.0",
-    "set-cookie-parser": "^2.6.0",
+    "set-cookie-parser": "^3.0.1",
     "simple-git": "^3.33.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.4.1",
