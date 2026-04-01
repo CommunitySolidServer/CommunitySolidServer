@@ -242,6 +242,7 @@ export const OIDC = createVocabulary(
 export const PIM = createVocabulary(
   'http://www.w3.org/ns/pim/space#',
   'Storage',
+  'storage',
 );
 
 export const POSIX = createVocabulary(
