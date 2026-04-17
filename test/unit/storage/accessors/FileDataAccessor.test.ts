@@ -99,6 +99,15 @@ describe('A FileDataAccessor', (): void => {
       await expect(accessor.getMetadata({ path: base })).rejects.toThrow('error');
     });
 
+    it('throws a 404 if stat returns ENOTDIR (container path over an existing file).', async(): Promise<void> => {
+      cache.data = { resource: 'data' };
+      const enotdir = Object.assign(new Error('ENOTDIR: not a directory, stat'), { code: 'ENOTDIR', syscall: 'stat' });
+      jest.requireMock('fs-extra').stat = (): never => {
+        throw enotdir;
+      };
+      await expect(accessor.getMetadata({ path: `${base}resource/` })).rejects.toThrow(NotFoundHttpError);
+    });
+
     it('throws a 404 if the trailing slash does not match its type.', async(): Promise<void> => {
       cache.data = { resource: 'data' };
       await expect(accessor.getMetadata({ path: `${base}resource/` })).rejects.toThrow(NotFoundHttpError);

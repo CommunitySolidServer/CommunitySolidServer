@@ -150,6 +150,34 @@ describe('A server with a file backend storage', (): void => {
   );
 
   it(
+    'returns 201 (not 500) when POSTing with the same Slug twice to a file-backend container.',
+    async(): Promise<void> => {
+      const slug = 'duplicate-slug-test.json';
+      const postOptions = {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          slug,
+        },
+        body: '{}',
+      };
+
+      // First POST with the slug — should create the resource.
+      const res1 = await fetch(baseUrl, postOptions);
+      expect(res1.status).toBe(201);
+      const location1 = res1.headers.get('location');
+      expect(location1).toBe(`${baseUrl}${slug}`);
+
+      // Second POST with the same slug — must NOT return 500.
+      // The server should fall back to a UUID-based name instead.
+      const res2 = await fetch(baseUrl, postOptions);
+      expect(res2.status).toBe(201);
+      const location2 = res2.headers.get('location');
+      expect(location2).not.toBe(location1);
+    },
+  );
+
+  it(
     'supports content types for which no extension mapping can be found (and falls back to using .unknown).',
     async(): Promise<void> => {
       const url = `${baseUrl}test`;
