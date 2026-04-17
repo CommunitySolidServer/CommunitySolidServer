@@ -148,7 +148,7 @@ export class FileDataAccessor implements DataAccessor {
     try {
       return await stat(path);
     } catch (error: unknown) {
-      if (isSystemError(error) && error.code === 'ENOENT') {
+      if (isSystemError(error) && (error.code === 'ENOENT' || error.code === 'ENOTDIR')) {
         throw new NotFoundHttpError('', { cause: error });
       }
       throw error;
