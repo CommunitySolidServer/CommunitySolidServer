@@ -1,10 +1,12 @@
 import fetch from 'cross-fetch';
+import { Parser } from 'n3';
 import { parse, splitCookiesString } from 'set-cookie-parser';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinUrl } from '../../src/util/PathUtil';
+import { PIM } from '../../src/util/Vocabularies';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
@@ -270,6 +272,22 @@ describe.each(stores)('A server with account management using %s', (name, { conf
     res = await fetch(controls.account.webId, { headers: { cookie }});
     expect(res.status).toBe(200);
     expect((await res.json()).webIdLinks[webId]).toBeDefined();
+  });
+
+  it('includes pim:storage triple in the WebID profile.', async(): Promise<void> => {
+    // Fetch the WebID profile document
+    const profileUrl = webId.split('#')[0];
+    const res = await fetch(profileUrl, { headers: { accept: 'text/turtle' }});
+    expect(res.status).toBe(200);
+
+    // Parse and verify the pim:storage triple points to the pod root
+    const parser = new Parser({ baseIRI: profileUrl });
+    const quads = parser.parse(await res.text());
+    const storageQuads = quads.filter((q): boolean =>
+      q.subject.value === webId &&
+      q.predicate.value === PIM.storage &&
+      q.object.value === pod);
+    expect(storageQuads).toHaveLength(1);
   });
 
   it('can not remove the last owner of a pod.', async(): Promise<void> => {
