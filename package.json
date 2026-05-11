@@ -146,7 +146,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.0",
-    "@commitlint/config-conventional": "^20.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
     "@inrupt/solid-client-authn-core": "^4.0.0",
     "@inrupt/solid-client-authn-node": "^4.0.0",
     "@swc/jest": "^0.2.39",
