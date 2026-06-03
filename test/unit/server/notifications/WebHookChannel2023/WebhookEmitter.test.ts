@@ -83,6 +83,7 @@ describe('A WebhookEmitter', (): void => {
 
   it('sends out the necessary data and headers.', async(): Promise<void> => {
     const now = Date.now();
+    const nowInSeconds = Math.floor(now / 1000);
     jest.useFakeTimers();
     jest.setSystemTime(now);
     await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
@@ -97,6 +98,7 @@ describe('A WebhookEmitter', (): void => {
     const encodedDpopToken = authorization.slice('DPoP '.length);
 
     const publicObject = await importJWK(publicJwk);
+    const keyThumbprint = await calculateJwkThumbprint(publicJwk, 'sha256');
 
     // Check all the DPoP token fields
     const decodedDpopToken = await jwtVerify(encodedDpopToken, publicObject, { issuer: trimTrailingSlashes(baseUrl) });
@@ -104,14 +106,15 @@ describe('A WebhookEmitter', (): void => {
       webid: serverWebId,
       azp: serverWebId,
       sub: serverWebId,
-      cnf: { jkt: await calculateJwkThumbprint(publicJwk, 'sha256') },
-      iat: now,
-      exp: now + (20 * 60 * 1000),
+      cnf: { jkt: keyThumbprint },
+      iat: nowInSeconds,
+      exp: nowInSeconds + (20 * 60),
       aud: [ serverWebId, 'solid' ],
       jti: expect.stringContaining('-'),
     });
     expect(decodedDpopToken.protectedHeader).toMatchObject({
       alg: 'ES256',
+      kid: keyThumbprint,
     });
 
     // CHeck the DPoP proof
@@ -119,7 +122,7 @@ describe('A WebhookEmitter', (): void => {
     expect(decodedDpopProof.payload).toMatchObject({
       htu: channel.sendTo,
       htm: 'POST',
-      iat: now,
+      iat: nowInSeconds,
       jti: expect.stringContaining('-'),
     });
     expect(decodedDpopProof.protectedHeader).toMatchObject({
@@ -133,6 +136,7 @@ describe('A WebhookEmitter', (): void => {
 
   it('logs an error if the fetch request receives an invalid status code.', async(): Promise<void> => {
     const logger = getLoggerFor('mock');
+    representation = new BasicRepresentation(JSON.stringify(notification), {});
 
     fetchMock.mockResolvedValue({ status: 400, text: async(): Promise<string> => 'invalid request' });
     await expect(emitter.handle({ channel, representation })).resolves.toBeUndefined();
