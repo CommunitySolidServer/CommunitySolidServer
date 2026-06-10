@@ -1,5 +1,6 @@
 import type { Readable } from 'node:stream';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { SingleThreaded } from '../../init/cluster/SingleThreaded';
@@ -53,8 +54,11 @@ export class InMemoryDataAccessor implements DataAccessor, SingleThreaded {
   public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
     const entry = this.getEntry(identifier);
     if (!this.isDataEntry(entry)) {
-      const childNames = Object.keys(entry.entries);
-      yield* childNames.map((name): RepresentationMetadata => new RepresentationMetadata({ path: name }));
+      yield* Object.entries(entry.entries).map(([ path, child ]): RepresentationMetadata => {
+        const metadata = new RepresentationMetadata(DataFactory.namedNode(path));
+        metadata.addQuads(child.metadata.quads());
+        return metadata;
+      });
     }
   }
 

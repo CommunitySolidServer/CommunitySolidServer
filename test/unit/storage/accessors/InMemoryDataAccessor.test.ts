@@ -9,7 +9,8 @@ import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIdentifierStrategy';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
-import { CONTENT_TYPE, LDP, POSIX, RDF } from '../../../../src/util/Vocabularies';
+import { toLiteral } from '../../../../src/util/TermUtil';
+import { CONTENT_TYPE, DC, LDP, POSIX, RDF, XSD } from '../../../../src/util/Vocabularies';
 
 const { namedNode } = DataFactory;
 
@@ -101,6 +102,29 @@ describe('An InMemoryDataAccessor', (): void => {
       expect(children).toHaveLength(2);
       expect(children[0].identifier.value).toBe(`${base}container/resource`);
       expect(children[1].identifier.value).toBe(`${base}container/container2/`);
+    });
+
+    it('generates metadata for container child resources.', async(): Promise<void> => {
+      const now = new Date();
+      await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
+      await expect(accessor.writeDocument({ path: `${base}container/resource` }, data, new RepresentationMetadata(
+        { path: `${base}container/resource` },
+        {
+          [RDF.type]: LDP.terms.Resource,
+          [DC.modified]: toLiteral(now.toISOString(), XSD.terms.dateTime),
+          [CONTENT_TYPE]: 'text/turtle',
+        },
+      ))).resolves.toBeUndefined();
+
+      const children = [];
+      for await (const child of accessor.getChildren({ path: `${base}container/` })) {
+        children.push(child);
+      }
+      expect(children).toHaveLength(1);
+      expect(children[0].identifier.value).toBe(`${base}container/resource`);
+      expect(children[0].get(DC.terms.modified))
+        .toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(children[0].get(RDF.terms.type)).toEqual(LDP.terms.Resource);
     });
 
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
