@@ -42,7 +42,7 @@ describe('FetchUtil', (): void => {
 
     it('errors if the URL does not exist.', async(): Promise<void> => {
       mockDereference();
-      await expect(fetchDataset(url)).rejects.toThrow(`Could not parse resource at URL (${url})!`);
+      await expect(fetchDataset(url)).rejects.toThrow(`Could not retrieve or parse the WebID document at ${url}.`);
       expect(rdfDereferenceMock.dereference).toHaveBeenCalledWith(url);
     });
 
