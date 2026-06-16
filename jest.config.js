@@ -27,6 +27,8 @@ function jestGithubRunnerSpecs() {
 
 // ESM libraries that need to be transformed so Jest can handle them
 const esModules = [
+  '@inrupt/solid-client-authn-core',
+  '@inrupt/solid-client-authn-node',
   'oidc-provider',
   'nanoid',
   'quick-lru',
@@ -41,10 +43,10 @@ module.exports = {
       diagnostics: false,
     }],
     // This transformer converts ESM packages to CJS
-    '^.+node_modules.+\\.js$': '@swc/jest',
+    '^.+node_modules.+\\.m?js$': '@swc/jest',
   },
   // By default, node_modules are not transformed, but we want to transform the ESM packages
-  transformIgnorePatterns: [ `/node_modules/(?!(${esModules.join('|')})/)` ],
+  transformIgnorePatterns: [ `<rootDir>/node_modules/(?!(${esModules.join('|')})/)` ],
   testRegex: '/test/(unit|integration)/.*\\.test\\.ts$',
   moduleFileExtensions: [
     'ts',
