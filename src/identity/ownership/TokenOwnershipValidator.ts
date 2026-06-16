@@ -20,15 +20,22 @@ export class TokenOwnershipValidator extends OwnershipValidator {
 
   private readonly storage: ExpiringStorage<string, string>;
   private readonly expiration: number;
+  private readonly blockedWebIdPatterns: RegExp[];
 
-  public constructor(storage: ExpiringStorage<string, string>, expiration = 30) {
+  public constructor(storage: ExpiringStorage<string, string>, expiration = 30, blockedWebIdPatterns: string[] = [], ) {
     super();
     this.storage = storage;
     // Convert minutes to milliseconds
     this.expiration = expiration * 60 * 1000;
+    // Convert strings to RegExp (same pattern as BaseRouterHandler)
+    this.blockedWebIdPatterns = blockedWebIdPatterns.map((p): RegExp => new RegExp(p, 'u'));
   }
 
   public async handle({ webId }: { webId: string }): Promise<void> {
+    // Check operator-configured block list before generating or storing any token.
+    // This runs before any HTTP request is made, preventing SSRF via early exit.
+    this.assertWebIdAllowed(webId);
+    
     const key = this.getTokenKey(webId);
     let token = await this.storage.get(key);
 
@@ -45,6 +52,19 @@ export class TokenOwnershipValidator extends OwnershipValidator {
     }
     this.logger.debug(`Verified ownership of ${webId}`);
     await this.storage.delete(key);
+  }
+
+  /**
+   * Rejects the WebID if it matches any operator-configured pattern.
+   * Each pattern is a RegExp compiled from the string provided in the config.
+   */
+  private assertWebIdAllowed(webId: string): void {
+    for (const pattern of this.blockedWebIdPatterns) {
+      if (pattern.test(webId)) {
+        this.logger.warn(`Blocked WebID URL matching pattern ${pattern.source}: ${webId}`);
+        throw new BadRequestHttpError('The provided WebID is not accepted by this server.');
+      }
+    }
   }
 
   /**
