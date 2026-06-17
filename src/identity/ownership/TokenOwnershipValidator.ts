@@ -22,7 +22,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
   private readonly expiration: number;
   private readonly blockedWebIdPatterns: RegExp[];
 
-  public constructor(storage: ExpiringStorage<string, string>, expiration = 30, blockedWebIdPatterns: string[] = [], ) {
+  public constructor(storage: ExpiringStorage<string, string>, expiration = 30, blockedWebIdPatterns: string[] = []) {
     super();
     this.storage = storage;
     // Convert minutes to milliseconds
@@ -35,7 +35,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
     // Check operator-configured block list before generating or storing any token.
     // This runs before any HTTP request is made, preventing SSRF via early exit.
     this.assertWebIdAllowed(webId);
-    
+
     const key = this.getTokenKey(webId);
     let token = await this.storage.get(key);
 

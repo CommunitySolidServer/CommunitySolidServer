@@ -98,7 +98,7 @@ describe('A TokenOwnershipValidator', (): void => {
     // Second call will fail since it has the wrong verification triple
     await expect(validator.handle({ webId })).rejects.toThrow(tokenString);
   });
- 
+
   describe('with blockedWebIdPatterns configured', (): void => {
     const blockedPatterns = [
       '^https?://169\\.254\\.',
@@ -107,12 +107,12 @@ describe('A TokenOwnershipValidator', (): void => {
       '^https?://10\\.',
       '^https?://192\\.168\\.',
     ];
- 
+
     beforeEach((): void => {
       jest.clearAllMocks();
       validator = new TokenOwnershipValidator(storage, 30, blockedPatterns);
     });
- 
+
     it('rejects a WebID matching a blocked pattern before generating a token.', async(): Promise<void> => {
       const blockedWebId = 'http://169.254.169.254/latest/meta-data/';
       await expect(validator.handle({ webId: blockedWebId }))
@@ -121,37 +121,37 @@ describe('A TokenOwnershipValidator', (): void => {
       expect(storage.set).not.toHaveBeenCalled();
       expect(rdfDereferenceMock.dereference).not.toHaveBeenCalled();
     });
- 
+
     it('rejects a localhost WebID.', async(): Promise<void> => {
       await expect(validator.handle({ webId: 'http://localhost:6379/' }))
         .rejects.toThrow('The provided WebID is not accepted by this server.');
       expect(rdfDereferenceMock.dereference).not.toHaveBeenCalled();
     });
- 
+
     it('rejects a private IP range WebID.', async(): Promise<void> => {
       await expect(validator.handle({ webId: 'http://192.168.1.100/profile' }))
         .rejects.toThrow('The provided WebID is not accepted by this server.');
       expect(rdfDereferenceMock.dereference).not.toHaveBeenCalled();
     });
- 
+
     it('rejects a 10.x.x.x WebID.', async(): Promise<void> => {
       await expect(validator.handle({ webId: 'http://10.0.0.1/profile' }))
         .rejects.toThrow('The provided WebID is not accepted by this server.');
       expect(rdfDereferenceMock.dereference).not.toHaveBeenCalled();
     });
- 
+
     it('allows a public WebID that does not match any blocked pattern.', async(): Promise<void> => {
       mockDereference(tokenTriple);
       // First call stores token, second call verifies
       await expect(validator.handle({ webId })).rejects.toThrow(tokenString);
       await expect(validator.handle({ webId })).resolves.toBeUndefined();
     });
- 
+
     it('has no blocked patterns by default (empty array).', async(): Promise<void> => {
       const defaultValidator = new TokenOwnershipValidator(storage);
       mockDereference(tokenTriple);
       await expect(defaultValidator.handle({ webId })).rejects.toThrow(tokenString);
       await expect(defaultValidator.handle({ webId })).resolves.toBeUndefined();
     });
-  });  
+  });
 });
