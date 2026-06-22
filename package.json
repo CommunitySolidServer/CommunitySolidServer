@@ -164,7 +164,7 @@
     "opinionated-eslint-config": "0.2.0",
     "set-cookie-parser": "^2.6.0",
     "simple-git": "^3.20.0",
-    "supertest": "^6.3.3",
+    "supertest": "^7.2.2",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "typedoc": "^0.26.4",
