@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { DataFactory, Store } from 'n3';
 import type { Credentials } from '../../../../src/authentication/Credentials';
 import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
@@ -13,8 +14,6 @@ import namedNode = DataFactory.namedNode;
 import quad = DataFactory.quad;
 import blankNode = DataFactory.blankNode;
 import literal = DataFactory.literal;
-
-jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
 
 const dummyType = namedNode('http://example.com/DummyType');
 class DummyChannelType extends BaseChannelType {
@@ -32,6 +31,10 @@ describe('A BaseChannelType', (): void => {
   const id = 'http://example.com/DummyType/4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
   const credentials: Credentials = {};
   const channelType = new DummyChannelType();
+
+  beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue('4c9b88c1-7502-4107-bb79-2a3a590c7aa3');
+  });
 
   it('can provide a description of the subscription service.', async(): Promise<void> => {
     expect(channelType.getDescription()).toEqual({

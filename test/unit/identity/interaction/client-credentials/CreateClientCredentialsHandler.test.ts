@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import {
   CreateClientCredentialsHandler,
 } from '../../../../../src/identity/interaction/client-credentials/CreateClientCredentialsHandler';
@@ -12,7 +13,6 @@ import type { WebIdStore } from '../../../../../src/identity/interaction/webid/u
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 
 const uuid = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
-jest.mock('uuid', (): any => ({ v4: (): string => uuid }));
 
 describe('A CreateClientCredentialsHandler', (): void => {
   const webId = 'http://example.com/card#me';
@@ -29,6 +29,7 @@ describe('A CreateClientCredentialsHandler', (): void => {
   let handler: CreateClientCredentialsHandler;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(uuid);
     route = {
       getPath: jest.fn().mockReturnValue(resource),
       matchPath: jest.fn().mockReturnValue({ accountId, clientCredentialsId: id }),

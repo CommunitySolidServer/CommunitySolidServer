@@ -1,10 +1,10 @@
+import crypto from 'node:crypto';
 import {
   BaseForgotPasswordStore,
 } from '../../../../../../src/identity/interaction/password/util/BaseForgotPasswordStore';
 import type { ExpiringStorage } from '../../../../../../src/storage/keyvalue/ExpiringStorage';
 
 const record = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
-jest.mock('uuid', (): any => ({ v4: (): string => record }));
 
 describe('A BaseForgotPasswordStore', (): void => {
   const email = 'email@example.com';
@@ -12,6 +12,8 @@ describe('A BaseForgotPasswordStore', (): void => {
   let store: BaseForgotPasswordStore;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(record);
+
     storage = {
       get: jest.fn().mockResolvedValue(email),
       set: jest.fn(),

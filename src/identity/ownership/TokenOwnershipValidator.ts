@@ -1,6 +1,6 @@
+import { randomUUID } from 'node:crypto';
 import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
-import { v4 } from 'uuid';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
@@ -78,7 +78,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
    * Generates a random verification token;
    */
   private generateToken(): string {
-    return v4();
+    return randomUUID();
   }
 
   /**

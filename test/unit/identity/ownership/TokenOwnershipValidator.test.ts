@@ -1,8 +1,8 @@
+import crypto from 'node:crypto';
 import { Readable } from 'node:stream';
 import { DataFactory } from 'n3';
 import type { Quad } from 'n3';
 import rdfDereferencer from 'rdf-dereference';
-import { v4 } from 'uuid';
 import { TokenOwnershipValidator } from '../../../../src/identity/ownership/TokenOwnershipValidator';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
@@ -11,7 +11,6 @@ import { SOLID } from '../../../../src/util/Vocabularies';
 
 const { literal, namedNode, quad } = DataFactory;
 
-jest.mock('uuid');
 jest.mock('rdf-dereference', (): any => ({
   dereference: jest.fn(),
 }));
@@ -43,7 +42,7 @@ describe('A TokenOwnershipValidator', (): void => {
   beforeEach(async(): Promise<void> => {
     const now = Date.now();
     jest.spyOn(Date, 'now').mockReturnValue(now);
-    jest.mocked(v4).mockReturnValue(token);
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(token as any);
 
     const map = new Map<string, any>();
     storage = {

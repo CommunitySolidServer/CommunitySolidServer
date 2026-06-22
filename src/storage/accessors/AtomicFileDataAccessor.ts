@@ -1,6 +1,6 @@
+import { randomUUID } from 'node:crypto';
 import type { Readable } from 'node:stream';
 import { ensureDirSync, rename, unlink } from 'fs-extra';
-import { v4 } from 'uuid';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
@@ -35,7 +35,7 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false, metadata.contentType);
 
     // Generate temporary file name
-    const tempFilePath = joinFilePath(this.tempFilePath, `temp-${v4()}.txt`);
+    const tempFilePath = joinFilePath(this.tempFilePath, `temp-${randomUUID()}.txt`);
 
     try {
       await this.writeDataFile(tempFilePath, data);

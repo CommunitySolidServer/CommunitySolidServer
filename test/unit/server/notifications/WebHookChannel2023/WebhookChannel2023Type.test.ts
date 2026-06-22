@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { DataFactory, Store } from 'n3';
 import {
   AbsolutePathInteractionRoute,
@@ -28,8 +29,6 @@ jest.mock('../../../../../src/logging/LogUtil', (): any => {
   return { getLoggerFor: (): Logger => logger };
 });
 
-jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
-
 describe('A WebhookChannel2023Type', (): void => {
   const sendTo = 'http://example.org/somewhere-else';
   const topic = 'https://storage.example/resource';
@@ -42,6 +41,8 @@ describe('A WebhookChannel2023Type', (): void => {
   let channelType: WebhookChannel2023Type;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue('4c9b88c1-7502-4107-bb79-2a3a590c7aa3');
+
     data = new Store();
     data.addQuad(quad(subject, RDF.terms.type, NOTIFY.terms.WebhookChannel2023));
     data.addQuad(quad(subject, NOTIFY.terms.topic, namedNode(topic)));

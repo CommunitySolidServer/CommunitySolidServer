@@ -1,8 +1,8 @@
+import crypto from 'node:crypto';
 import { BaseCookieStore } from '../../../../../../src/identity/interaction/account/util/BaseCookieStore';
 import type { ExpiringStorage } from '../../../../../../src/storage/keyvalue/ExpiringStorage';
 
 const cookie = '4c9b88c1-7502-4107-bb79-2a3a590c7aa3';
-jest.mock('uuid', (): any => ({ v4: (): string => cookie }));
 
 const now = new Date();
 jest.useFakeTimers();
@@ -14,6 +14,8 @@ describe('A BaseCookieStore', (): void => {
   let store: BaseCookieStore;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(cookie);
+
     storage = {
       get: jest.fn().mockResolvedValue(accountId),
       set: jest.fn(),

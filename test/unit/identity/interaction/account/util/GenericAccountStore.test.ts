@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import {
   ACCOUNT_SETTINGS_REMEMBER_LOGIN,
   type MinimalAccountSettings,
@@ -11,14 +12,14 @@ import {
 } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import { InternalServerError } from '../../../../../../src/util/errors/InternalServerError';
 
-jest.mock('uuid', (): any => ({ v4: (): string => '4c9b88c1-7502-4107-bb79-2a3a590c7aa3' }));
-
 describe('A GenericAccountStore', (): void => {
   const id = 'id';
   let storage: jest.Mocked<AccountLoginStorage<any>>;
   let store: GenericAccountStore<MinimalAccountSettings>;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue('4c9b88c1-7502-4107-bb79-2a3a590c7aa3');
+
     storage = {
       defineType: jest.fn().mockResolvedValue({}),
       create: jest.fn().mockResolvedValue({ id }),
