@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import type { ExpiringStorage } from '../../../../storage/keyvalue/ExpiringStorage';
 import type { CookieStore } from './CookieStore';
 
@@ -17,7 +17,7 @@ export class BaseCookieStore implements CookieStore {
   }
 
   public async generate(accountId: string): Promise<string> {
-    const cookie = v4();
+    const cookie = randomUUID();
     await this.storage.set(cookie, accountId, this.ttl);
     return cookie;
   }

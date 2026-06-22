@@ -1,6 +1,6 @@
+import { randomUUID } from 'node:crypto';
 import fetch from 'cross-fetch';
 import { calculateJwkThumbprint, importJWK, SignJWT } from 'jose';
-import { v4 } from 'uuid';
 import type { JwkGenerator } from '../../../identity/configuration/JwkGenerator';
 import type { InteractionRoute } from '../../../identity/interaction/routing/InteractionRoute';
 import { getLoggerFor } from '../../../logging/LogUtil';
@@ -74,7 +74,7 @@ export class WebhookEmitter extends NotificationEmitter {
       .setExpirationTime(time + this.expiration)
       .setAudience([ this.webId, 'solid' ])
       .setIssuer(this.issuer)
-      .setJti(v4())
+      .setJti(randomUUID())
       .sign(privateKeyObject);
 
     // https://datatracker.ietf.org/doc/html/draft-ietf-oauth-dpop#section-4.2
@@ -83,7 +83,7 @@ export class WebhookEmitter extends NotificationEmitter {
       htm: 'POST',
     }).setProtectedHeader({ alg: privateKey.alg, jwk: publicKey, typ: 'dpop+jwt' })
       .setIssuedAt(time)
-      .setJti(v4())
+      .setJti(randomUUID())
       .sign(privateKeyObject);
 
     const contentType = representation.metadata.contentType;
