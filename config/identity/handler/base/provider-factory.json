@@ -26,6 +26,12 @@
       "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
       "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "jwtAssertionsGrantHandler": {
+        "@id": "urn:solid-server:default:JwtAssertionsGrantHandler",
+        "@type": "JwtAssertionsGrantHandler",
+        "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" },
+        "jwtAssertionsStore": { "@id": "urn:solid-server:default:JwtAssertionsStore" }
+      },
       "interactionRoute": { "@id": "urn:solid-server:default:IndexRoute" },
       "config": {
         "claims": {
