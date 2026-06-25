@@ -234,7 +234,8 @@ describe('A WebAclReader', (): void => {
           return true;
         }
         const agents = store.getObjects(rule, `${acl}agent`, null).map((term): string => term.value);
-        return Boolean(credentials.agent?.webId) && agents.includes(credentials.agent.webId);
+        const webId = credentials.agent?.webId;
+        return webId !== undefined && agents.includes(webId);
       });
 
       // Authorization decision + WAC-Allow user-permission pass: authenticated agent.
@@ -265,7 +266,7 @@ describe('A WebAclReader', (): void => {
 
       // A separate request always produces a new `requestedModes` `AccessMap` object,
       // so it cannot hit the request-scoped cache of an earlier request.
-      const secondAccessMap = new IdentifierSetMultiMap<ResourceIdentifier>([[ identifier, AccessMode.read ]]);
+      const secondAccessMap = new IdentifierSetMultiMap<AccessMode>([[ identifier, AccessMode.read ]]);
 
       await reader.handle({ credentials, requestedModes: accessMap });
       await reader.handle({ credentials, requestedModes: secondAccessMap });
