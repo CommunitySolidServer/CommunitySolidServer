@@ -46,26 +46,11 @@ export class WebAclReader extends PermissionReader {
   private readonly accessChecker: AccessChecker;
 
   /**
-   * Memoizes the credential-independent part of ACL resolution (the effective-ACL existence walk
-   * and the read + parse of the relevant authorization statements) for the duration of a single request.
-   *
-   * A single authenticated `GET`/`HEAD` invokes this reader multiple times with the same
-   * `requestedModes` but different `credentials`: once for the authorization decision (and, sharing
-   * the same `(credentials, requestedModes)` object pair, the `WAC-Allow` user-permission pass), and
-   * a separate time for the `WAC-Allow` public-permission pass (with an empty `credentials` literal,
-   * which is a cache miss for the surrounding {@link CachedHandler}). The resulting effective ACL is
-   * identical for all of these, so without memoization it is read and parsed once per distinct
-   * credential set rather than once per request.
-   *
-   * The map is keyed by the `requestedModes` {@link AccessMap} object, which the (cached)
-   * `ModesExtractor` produces exactly once per request and shares across all of the above passes,
-   * so the memoized value is request-scoped by construction: it is reused only within a single
-   * request and becomes eligible for garbage collection once that request's `AccessMap` is
-   * unreachable. As a `WeakMap`, it can therefore never serve a stale ACL to a later request.
-   * This mirrors the request-scoping approach already used by {@link CachedResourceSet}.
-   *
-   * Only the credential-independent resolution is shared; the per-credential evaluation of which
-   * permissions are granted still runs for every call, so the returned permissions are unchanged.
+   * Memoizes the credential-independent part of ACL resolution (existence walk + read + parse)
+   * for the duration of a single request, so the multiple credential-specific passes of one request
+   * (authorization decision and the WAC-Allow user/public passes) share a single ACL read.
+   * Keyed by the `requestedModes` object, which the cached `ModesExtractor` produces once per request:
+   * a different request always has a different key, so this `WeakMap` can never serve a stale ACL.
    */
   private readonly statementCache: WeakMap<AccessMap, Promise<Map<Store, ResourceIdentifier[]>>>;
 
@@ -98,11 +83,8 @@ export class WebAclReader extends PermissionReader {
 
   /**
    * Finds the relevant authorization statements for the targets in the given access map,
-   * reusing a request-scoped result if one was already computed for this exact `requestedModes` object.
-   *
-   * The resolution (effective-ACL existence walk + read + parse) does not depend on the credentials,
-   * so it is safe to share between the multiple credential-specific calls of a single request.
-   * See {@link statementCache} for the request-scoping and staleness guarantees.
+   * reusing the result if it was already resolved for this `requestedModes` object.
+   * See {@link statementCache} for the request-scoping guarantee.
    *
    * @param requestedModes - The requested modes whose target resources need authorization statements.
    */
@@ -111,8 +93,7 @@ export class WebAclReader extends PermissionReader {
     if (cached) {
       return cached;
     }
-    // Cache the promise (not the resolved value) so concurrent passes within the same request
-    // share a single in-flight resolution instead of racing to read the ACL.
+    // Caching the promise lets concurrent passes share one in-flight read instead of racing.
     const promise = (async(): Promise<Map<Store, ResourceIdentifier[]>> => {
       const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
       return this.findAuthorizationStatements(aclMap);
@@ -121,7 +102,7 @@ export class WebAclReader extends PermissionReader {
     try {
       return await promise;
     } catch (error: unknown) {
-      // Do not memoize failures: a transient read error must not be served to later passes/requests.
+      // Do not memoize failures so a transient read error is not served to a later pass.
       this.statementCache.delete(requestedModes);
       throw error;
     }
