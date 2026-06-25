@@ -18,7 +18,7 @@ import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import type { AclPermissionSet } from './permissions/AclPermissionSet';
 import { AclMode } from './permissions/AclPermissionSet';
-import type { PermissionMap } from './permissions/Permissions';
+import type { AccessMap, PermissionMap } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 // Maps WebACL-specific modes to generic access modes.
@@ -45,6 +45,30 @@ export class WebAclReader extends PermissionReader {
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly accessChecker: AccessChecker;
 
+  /**
+   * Memoizes the credential-independent part of ACL resolution (the effective-ACL existence walk
+   * and the read + parse of the relevant authorization statements) for the duration of a single request.
+   *
+   * A single authenticated `GET`/`HEAD` invokes this reader multiple times with the same
+   * `requestedModes` but different `credentials`: once for the authorization decision (and, sharing
+   * the same `(credentials, requestedModes)` object pair, the `WAC-Allow` user-permission pass), and
+   * a separate time for the `WAC-Allow` public-permission pass (with an empty `credentials` literal,
+   * which is a cache miss for the surrounding {@link CachedHandler}). The resulting effective ACL is
+   * identical for all of these, so without memoization it is read and parsed once per distinct
+   * credential set rather than once per request.
+   *
+   * The map is keyed by the `requestedModes` {@link AccessMap} object, which the (cached)
+   * `ModesExtractor` produces exactly once per request and shares across all of the above passes,
+   * so the memoized value is request-scoped by construction: it is reused only within a single
+   * request and becomes eligible for garbage collection once that request's `AccessMap` is
+   * unreachable. As a `WeakMap`, it can therefore never serve a stale ACL to a later request.
+   * This mirrors the request-scoping approach already used by {@link CachedResourceSet}.
+   *
+   * Only the credential-independent resolution is shared; the per-credential evaluation of which
+   * permissions are granted still runs for every call, so the returned permissions are unchanged.
+   */
+  private readonly statementCache: WeakMap<AccessMap, Promise<Map<Store, ResourceIdentifier[]>>>;
+
   public constructor(
     aclStrategy: AuxiliaryIdentifierStrategy,
     resourceSet: ResourceSet,
@@ -58,6 +82,7 @@ export class WebAclReader extends PermissionReader {
     this.aclStore = aclStore;
     this.identifierStrategy = identifierStrategy;
     this.accessChecker = accessChecker;
+    this.statementCache = new WeakMap();
   }
 
   /**
@@ -67,9 +92,39 @@ export class WebAclReader extends PermissionReader {
   public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
     // Determine the required access modes
     this.logger.debug(`Retrieving permissions of ${credentials.agent?.webId ?? 'an unknown agent'}`);
-    const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
-    const storeMap = await this.findAuthorizationStatements(aclMap);
+    const storeMap = await this.getAuthorizationStatements(requestedModes);
     return this.findPermissions(storeMap, credentials);
+  }
+
+  /**
+   * Finds the relevant authorization statements for the targets in the given access map,
+   * reusing a request-scoped result if one was already computed for this exact `requestedModes` object.
+   *
+   * The resolution (effective-ACL existence walk + read + parse) does not depend on the credentials,
+   * so it is safe to share between the multiple credential-specific calls of a single request.
+   * See {@link statementCache} for the request-scoping and staleness guarantees.
+   *
+   * @param requestedModes - The requested modes whose target resources need authorization statements.
+   */
+  private async getAuthorizationStatements(requestedModes: AccessMap): Promise<Map<Store, ResourceIdentifier[]>> {
+    const cached = this.statementCache.get(requestedModes);
+    if (cached) {
+      return cached;
+    }
+    // Cache the promise (not the resolved value) so concurrent passes within the same request
+    // share a single in-flight resolution instead of racing to read the ACL.
+    const promise = (async(): Promise<Map<Store, ResourceIdentifier[]>> => {
+      const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
+      return this.findAuthorizationStatements(aclMap);
+    })();
+    this.statementCache.set(requestedModes, promise);
+    try {
+      return await promise;
+    } catch (error: unknown) {
+      // Do not memoize failures: a transient read error must not be served to later passes/requests.
+      this.statementCache.delete(requestedModes);
+      throw error;
+    }
   }
 
   /**

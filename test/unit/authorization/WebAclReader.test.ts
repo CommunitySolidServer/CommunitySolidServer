@@ -208,4 +208,89 @@ describe('A WebAclReader', (): void => {
     // http://example.com/.acl and http://example.com/bar/.acl
     expect(store.getRepresentation).toHaveBeenCalledTimes(2);
   });
+
+  describe('reusing the effective ACL within a single request', (): void => {
+    // The same effective ACL gets resolved several times during a single request:
+    // once for the authorization decision (and the WAC-Allow user-permission pass, which shares the
+    // same `(credentials, requestedModes)` object pair), and a separate time for the WAC-Allow
+    // public-permission pass (empty credentials). All these calls share the same `requestedModes`
+    // `AccessMap` object as it is produced once per request by the (cached) `ModesExtractor`.
+    it('resolves the effective ACL once when reused for different credentials.', async(): Promise<void> => {
+      // Return a fresh representation on each call as the underlying data stream is consumed once.
+      store.getRepresentation.mockImplementation(async(): Promise<Representation> => new BasicRepresentation([
+        quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+        quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+        quad(nn('auth'), nn(`${acl}agent`), nn('http://test.com/user')),
+        quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+        quad(nn('pub'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+        quad(nn('pub'), nn(`${acl}accessTo`), nn(identifier.path)),
+        quad(nn('pub'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+        quad(nn('pub'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      ], INTERNAL_QUADS));
+      // The access checker only grants the rule for the matching agent or for the public class.
+      accessChecker.handleSafe.mockImplementation(async({ acl: store, rule, credentials }): Promise<boolean> => {
+        const classes = store.getObjects(rule, `${acl}agentClass`, null).map((term): string => term.value);
+        if (classes.includes('http://xmlns.com/foaf/0.1/Agent')) {
+          return true;
+        }
+        const agents = store.getObjects(rule, `${acl}agent`, null).map((term): string => term.value);
+        return Boolean(credentials.agent?.webId) && agents.includes(credentials.agent.webId);
+      });
+
+      // Authorization decision + WAC-Allow user-permission pass: authenticated agent.
+      const userInput: PermissionReaderInput = {
+        credentials: { agent: { webId: 'http://test.com/user' }},
+        requestedModes: accessMap,
+      };
+      // WAC-Allow public-permission pass: same `requestedModes`, empty credentials object.
+      const publicInput: PermissionReaderInput = { credentials: {}, requestedModes: accessMap };
+
+      compareMaps(await reader.handle(userInput), new IdentifierMap([[ identifier, { read: true }]]));
+      compareMaps(await reader.handle(publicInput), new IdentifierMap([[ identifier, { read: true }]]));
+
+      // The effective ACL must be read and resolved exactly once for the whole request,
+      // even though the permissions are evaluated separately for each credential set.
+      expect(store.getRepresentation).toHaveBeenCalledTimes(1);
+      expect(resourceSet.hasResource).toHaveBeenCalledTimes(1);
+    });
+
+    it('re-resolves the effective ACL for a different request (no stale cache).', async(): Promise<void> => {
+      // Return a fresh representation on each call as the underlying data stream is consumed once.
+      store.getRepresentation.mockImplementation(async(): Promise<Representation> => new BasicRepresentation([
+        quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+        quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+        quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+        quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      ], INTERNAL_QUADS));
+
+      // A separate request always produces a new `requestedModes` `AccessMap` object,
+      // so it cannot hit the request-scoped cache of an earlier request.
+      const secondAccessMap = new IdentifierSetMultiMap<ResourceIdentifier>([[ identifier, AccessMode.read ]]);
+
+      await reader.handle({ credentials, requestedModes: accessMap });
+      await reader.handle({ credentials, requestedModes: secondAccessMap });
+
+      expect(store.getRepresentation).toHaveBeenCalledTimes(2);
+      expect(resourceSet.hasResource).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not memoize a failed ACL read.', async(): Promise<void> => {
+      store.getRepresentation
+        .mockRejectedValueOnce(new Error('TEST!'))
+        .mockImplementation(async(): Promise<Representation> => new BasicRepresentation([
+          quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+          quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+          quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+          quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+        ], INTERNAL_QUADS));
+
+      // First call fails while reading the ACL; the failure must not be cached for the retry.
+      await expect(reader.handle({ credentials, requestedModes: accessMap })).rejects.toThrow(InternalServerError);
+      compareMaps(
+        await reader.handle({ credentials, requestedModes: accessMap }),
+        new IdentifierMap([[ identifier, { read: true }]]),
+      );
+      expect(store.getRepresentation).toHaveBeenCalledTimes(2);
+    });
+  });
 });
