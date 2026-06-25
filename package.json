@@ -103,7 +103,7 @@
     "asynchronous-handlers": "^1.0.2",
     "bcryptjs": "^3.0.2",
     "componentsjs": "^6.4.0",
-    "cookie": "^1.0.0",
+    "cookie": "^2.0.0",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
     "ejs": "^6.0.1",
