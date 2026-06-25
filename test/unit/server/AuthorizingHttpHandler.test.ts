@@ -71,11 +71,29 @@ describe('An AuthorizingHttpHandler', (): void => {
     expect(modesExtractor.handleSafe).toHaveBeenCalledTimes(1);
     expect(modesExtractor.handleSafe).toHaveBeenLastCalledWith(operation);
     expect(permissionReader.handleSafe).toHaveBeenCalledTimes(1);
+    // Unauthenticated request (default credentials `{}`): no comparison credentials are requested.
     expect(permissionReader.handleSafe).toHaveBeenLastCalledWith({ credentials, requestedModes });
+    expect(permissionReader.handleSafe.mock.calls[0][0].credentialsToCompare).toBeUndefined();
     expect(authorizer.handleSafe).toHaveBeenCalledTimes(1);
     expect(authorizer.handleSafe).toHaveBeenLastCalledWith({ credentials, requestedModes, availablePermissions });
     expect(source.handleSafe).toHaveBeenCalledTimes(1);
     expect(source.handleSafe).toHaveBeenLastCalledWith({ request, response, operation });
+  });
+
+  it('requests the public permissions as a comparison for authenticated requests.', async(): Promise<void> => {
+    credentialsExtractor.handleSafe.mockResolvedValue({ agent: { webId: 'http://example.com/#me' }});
+    await expect(handler.handle({ request, response, operation })).resolves.toBeUndefined();
+    expect(permissionReader.handleSafe).toHaveBeenCalledTimes(1);
+    const readerInput = permissionReader.handleSafe.mock.calls[0][0];
+    // The public ({}) credentials are passed via `credentialsToCompare` so the nested WacAllowHttpHandler
+    // can build the `public` part of the WAC-Allow header without re-resolving the effective ACL.
+    expect(readerInput.credentialsToCompare).toEqual([{}]);
+    // The authorization decision still uses the same `availablePermissions` (the symbol carrier is invisible).
+    expect(authorizer.handleSafe).toHaveBeenLastCalledWith({
+      credentials: { agent: { webId: 'http://example.com/#me' }},
+      requestedModes,
+      availablePermissions,
+    });
   });
 
   it('errors with added access modes if authorization fails.', async(): Promise<void> => {

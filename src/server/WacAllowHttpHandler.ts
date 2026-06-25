@@ -3,8 +3,11 @@ import type { CredentialsExtractor } from '../authentication/CredentialsExtracto
 import type { PermissionReader } from '../authorization/PermissionReader';
 import type { AclPermissionSet } from '../authorization/permissions/AclPermissionSet';
 import { AclMode } from '../authorization/permissions/AclPermissionSet';
+import { getComparisonPermissions } from '../authorization/permissions/ComparisonPermissions';
 import type { ModesExtractor } from '../authorization/permissions/ModesExtractor';
+import type { AccessMap } from '../authorization/permissions/Permissions';
 import { AccessMode } from '../authorization/permissions/Permissions';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -15,6 +18,12 @@ import { OperationHttpHandler } from './OperationHttpHandler';
 
 const VALID_METHODS = new Set([ 'HEAD', 'GET' ]);
 const VALID_ACL_MODES = new Set([ AccessMode.read, AccessMode.write, AccessMode.append, AclMode.control ]);
+
+/**
+ * Index in the `credentialsToCompare`/comparison-permissions array of the public (`{}`) credential set.
+ * Single-sourced with the `PUBLIC_COMPARISON` array attached by the {@link AuthorizingHttpHandler}.
+ */
+const PUBLIC_COMPARISON_INDEX = 0;
 
 export interface WacAllowHttpHandlerArgs {
   credentialsExtractor: CredentialsExtractor;
@@ -75,19 +84,12 @@ export class WacAllowHttpHandler extends OperationHttpHandler {
     const permissionSet = availablePermissions.get(operation.target);
     if (permissionSet) {
       const user: AclPermissionSet = permissionSet;
-      let everyone: AclPermissionSet;
-      if (credentials.agent?.webId) {
-        // Need to determine public permissions
-        this.logger.debug('Determining public permissions');
-        // Note that this call can potentially create a new lock on a resource that is already locked,
-        // so a locker that allows multiple read locks on the same resource is required.
-        const permissionMap = await this.permissionReader.handleSafe({ credentials: {}, requestedModes });
-        everyone = permissionMap.get(operation.target) ?? {};
-      } else {
-        // User is not authenticated so public permissions are the same as agent permissions
-        this.logger.debug('User is not authenticated so has public permissions');
-        everyone = user;
-      }
+      const everyone = await this.determinePublicPermissions(
+        operation.target,
+        permissionSet,
+        credentials,
+        requestedModes,
+      );
 
       this.logger.debug('Adding WAC-Allow metadata');
       this.addWacAllowMetadata(metadata, everyone, user);
@@ -98,6 +100,51 @@ export class WacAllowHttpHandler extends OperationHttpHandler {
     }
 
     return response;
+  }
+
+  /**
+   * Determines the public (unauthenticated) permissions needed for the `WAC-Allow` `public="..."` value.
+   *
+   * For an unauthenticated request, the public permissions are identical to the agent's permissions,
+   * so no extra work is needed.
+   *
+   * For an authenticated request, the public permissions are those of the empty credential set `{}`.
+   * These are normally already available on the user permission set as a comparison result attached by
+   * the {@link AuthorizingHttpHandler} (which requests them via `credentialsToCompare`), so the effective
+   * ACL does not have to be resolved a second time. If they are not present (for instance because the
+   * configured permission reader does not support `credentialsToCompare`), this falls back to the original
+   * behaviour of making a separate reader call with empty credentials.
+   *
+   * @param target - The resource the `WAC-Allow` header is being generated for.
+   * @param userPermissions - The permission set found for the requesting agent on the target.
+   * @param credentials - The requesting agent's credentials.
+   * @param requestedModes - The modes that were requested.
+   */
+  private async determinePublicPermissions(
+    target: ResourceIdentifier,
+    userPermissions: AclPermissionSet,
+    credentials: Credentials,
+    requestedModes: AccessMap,
+  ): Promise<AclPermissionSet> {
+    if (!credentials.agent?.webId) {
+      // User is not authenticated so public permissions are the same as agent permissions
+      this.logger.debug('User is not authenticated so has public permissions');
+      return userPermissions;
+    }
+
+    // Reuse the public permissions computed against the already-resolved ACL during the user pass, if present.
+    const comparisons = getComparisonPermissions(userPermissions);
+    if (comparisons) {
+      this.logger.debug('Reusing public permissions resolved alongside the user permissions');
+      return comparisons[PUBLIC_COMPARISON_INDEX] ?? {};
+    }
+
+    // Fallback: the reader did not provide comparison permissions, so determine them separately.
+    // Note that this call can potentially create a new lock on a resource that is already locked,
+    // so a locker that allows multiple read locks on the same resource is required.
+    this.logger.debug('Determining public permissions separately');
+    const permissionMap = await this.permissionReader.handleSafe({ credentials: {}, requestedModes });
+    return permissionMap.get(target) ?? {};
   }
 
   /**

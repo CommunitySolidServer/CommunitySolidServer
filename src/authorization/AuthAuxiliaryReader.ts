@@ -8,6 +8,8 @@ import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import { AclMode } from './permissions/AclPermissionSet';
 import type { AclPermissionSet } from './permissions/AclPermissionSet';
+import type { PermissionSetWithComparisons } from './permissions/ComparisonPermissions';
+import { COMPARISON_PERMISSIONS } from './permissions/ComparisonPermissions';
 import type { AccessMap, AccessMode, PermissionMap, PermissionSet } from './permissions/Permissions';
 
 /**
@@ -30,7 +32,8 @@ export class AuthAuxiliaryReader extends PermissionReader {
     this.authStrategy = authStrategy;
   }
 
-  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<PermissionMap> {
+  public async handle({ requestedModes, credentials, credentialsToCompare }: PermissionReaderInput):
+  Promise<PermissionMap> {
     // Finds all the ACL identifiers
     const authMap = new Map(this.findAuth(requestedModes));
 
@@ -39,12 +42,21 @@ export class AuthAuxiliaryReader extends PermissionReader {
       new IdentifierSetMultiMap(requestedModes),
       { add: authMap.values(), remove: authMap.keys() },
     );
-    const result = await this.reader.handleSafe({ requestedModes: updatedMap, credentials });
+    const result = await this.reader.handleSafe({ requestedModes: updatedMap, credentials, credentialsToCompare });
 
     // Extracts the permissions based on the subject control permissions
     for (const [ identifier, [ subject ]] of authMap) {
       this.logger.debug(`Mapping ${subject.path} control permission to all permissions for ${identifier.path}`);
-      result.set(identifier, this.interpretControl(identifier, result.get(subject)));
+      const subjectSet = result.get(subject);
+      const authSet = this.interpretControl(identifier, subjectSet);
+      // Apply the same control->read/write interpretation to each comparison credential set,
+      // using that comparison's own subject permissions, so the comparison result matches a full pass.
+      const subjectComparisons = (subjectSet as PermissionSetWithComparisons | undefined)?.[COMPARISON_PERMISSIONS];
+      if (subjectComparisons) {
+        (authSet as PermissionSetWithComparisons)[COMPARISON_PERMISSIONS] = subjectComparisons
+          .map((set): PermissionSet => this.interpretControl(identifier, set));
+      }
+      result.set(identifier, authSet);
     }
     return result;
   }

@@ -3,6 +3,7 @@ import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
 import type { PermissionReader } from '../authorization/PermissionReader';
+import { PUBLIC_COMPARISON } from '../authorization/permissions/ComparisonPermissions';
 import type { ModesExtractor } from '../authorization/permissions/ModesExtractor';
 import type { AccessMap } from '../authorization/permissions/Permissions';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
@@ -76,7 +77,18 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
         .map(([ id, set ]): string => `{ ${id.path}: ${[ ...set ].join(',')} }`).join(',')
     }`);
 
-    const availablePermissions = await this.permissionReader.handleSafe({ credentials, requestedModes });
+    // When the request is authenticated, also resolve the public (`{}`) permissions in this single call
+    // (via `credentialsToCompare`), so the nested WacAllowHttpHandler can build the `WAC-Allow` `public`
+    // value from the cached result without resolving the effective ACL a second time.
+    // The comparison permissions are attached on a non-enumerable symbol key, so the `availablePermissions`
+    // passed to the authorizer below are byte-for-byte identical to a call without `credentialsToCompare`
+    // and the authorization decision is unaffected.
+    const credentialsToCompare = credentials.agent?.webId ? PUBLIC_COMPARISON as Credentials[] : undefined;
+    const availablePermissions = await this.permissionReader.handleSafe({
+      credentials,
+      requestedModes,
+      credentialsToCompare,
+    });
     this.logger.verbose(`Available permissions are ${
       [ ...availablePermissions.entries() ]
         .map(([ id, map ]): string => `{ ${id.path}: ${JSON.stringify(map)} }`).join(',')

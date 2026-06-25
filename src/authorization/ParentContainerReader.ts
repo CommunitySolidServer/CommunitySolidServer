@@ -6,6 +6,8 @@ import type { MapEntry } from '../util/map/MapUtil';
 import { modify } from '../util/map/MapUtil';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
+import type { PermissionSetWithComparisons } from './permissions/ComparisonPermissions';
+import { COMPARISON_PERMISSIONS } from './permissions/ComparisonPermissions';
 import type { AccessMap, PermissionMap, PermissionSet } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
@@ -28,20 +30,49 @@ export class ParentContainerReader extends PermissionReader {
     this.identifierStrategy = identifierStrategy;
   }
 
-  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<PermissionMap> {
+  public async handle({ requestedModes, credentials, credentialsToCompare }: PermissionReaderInput):
+  Promise<PermissionMap> {
     // Finds the entries for which we require parent container permissions
     const containerMap = this.findParents(requestedModes);
 
     // Merges the necessary parent container modes with the already requested modes
     const combinedModes = modify(new IdentifierSetMultiMap(requestedModes), { add: containerMap.values() });
-    const result = await this.reader.handleSafe({ requestedModes: combinedModes, credentials });
+    const result = await this.reader.handleSafe({ requestedModes: combinedModes, credentials, credentialsToCompare });
 
     // Updates the create/delete permissions based on the parent container permissions
     for (const [ identifier, [ container ]] of containerMap) {
       this.logger.debug(`Determining ${identifier.path} create and delete permissions based on ${container.path}`);
-      result.set(identifier, this.addContainerPermissions(result.get(identifier), result.get(container)));
+      const resourceSet = result.get(identifier);
+      const containerSet = result.get(container);
+      const merged = this.addContainerPermissions(resourceSet, containerSet);
+      // Apply the same create/delete derivation to each comparison credential set, using that comparison's
+      // own resource + container permissions, so the comparison result matches a full separate pass.
+      this.addComparisonContainerPermissions(merged, resourceSet, containerSet);
+      result.set(identifier, merged);
     }
     return result;
+  }
+
+  /**
+   * Derives the comparison create/delete permissions (those carried for `credentialsToCompare`)
+   * from the comparison resource and container permission sets, mirroring the primary derivation.
+   */
+  private addComparisonContainerPermissions(
+    merged: PermissionSet,
+    resourceSet?: PermissionSet,
+    containerSet?: PermissionSet,
+  ): void {
+    const resourceComparisons = (resourceSet as PermissionSetWithComparisons | undefined)?.[COMPARISON_PERMISSIONS];
+    const containerComparisons = (containerSet as PermissionSetWithComparisons | undefined)?.[COMPARISON_PERMISSIONS];
+    if (!resourceComparisons && !containerComparisons) {
+      return;
+    }
+    const length = Math.max(resourceComparisons?.length ?? 0, containerComparisons?.length ?? 0);
+    const mergedComparisons: PermissionSet[] = [];
+    for (let i = 0; i < length; i++) {
+      mergedComparisons.push(this.addContainerPermissions(resourceComparisons?.[i], containerComparisons?.[i]));
+    }
+    (merged as PermissionSetWithComparisons)[COMPARISON_PERMISSIONS] = mergedComparisons;
   }
 
   /**

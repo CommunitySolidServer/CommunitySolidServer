@@ -1,6 +1,7 @@
 import type { Credentials } from '../../../src/authentication/Credentials';
 import { OwnerPermissionReader } from '../../../src/authorization/OwnerPermissionReader';
 import { AclMode } from '../../../src/authorization/permissions/AclPermissionSet';
+import { getComparisonPermissions } from '../../../src/authorization/permissions/ComparisonPermissions';
 import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
@@ -86,5 +87,25 @@ describe('An OwnerPermissionReader', (): void => {
         control: true,
       },
     ]]));
+  });
+
+  it('attaches an empty comparison set for a non-owner comparison credential.', async(): Promise<void> => {
+    // Owner is the primary; the public ({}) comparison is not an owner so its set is empty.
+    const result = await reader.handle({ credentials, requestedModes, credentialsToCompare: [{}]});
+    const set = result.get(identifier);
+    expect(set).toMatchObject({ control: true });
+    expect(getComparisonPermissions(set)).toEqual([{}]);
+  });
+
+  it('grants a comparison credential owner permissions when the primary is not an owner.', async(): Promise<void> => {
+    credentials = { agent: { webId: 'http://example.com/otherWebId' }};
+    const ownerCompare = [{ agent: { webId: owner }}];
+    const result = await reader.handle({ credentials, requestedModes, credentialsToCompare: ownerCompare });
+    const set = result.get(identifier);
+    // Primary (non-owner) gets an empty primary set, but the comparison (the owner) gets full control.
+    expect(set).toBeDefined();
+    // No enumerable (string-keyed) primary permissions were granted to the non-owner.
+    expect(Object.keys(set!)).toHaveLength(0);
+    expect(getComparisonPermissions(set)![0]).toMatchObject({ control: true });
   });
 });

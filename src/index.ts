@@ -16,6 +16,7 @@ export * from './authorization/access/AgentGroupAccessChecker';
 
 // Authorization/Permissions
 export * from './authorization/permissions/AclPermissionSet';
+export * from './authorization/permissions/ComparisonPermissions';
 export * from './authorization/permissions/CreateModesExtractor';
 export * from './authorization/permissions/DeleteParentExtractor';
 export * from './authorization/permissions/IntermediateCreateExtractor';

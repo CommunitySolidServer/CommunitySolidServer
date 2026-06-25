@@ -23,7 +23,8 @@ export class AuxiliaryReader extends PermissionReader {
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
-  public async handle({ requestedModes, credentials }: PermissionReaderInput): Promise<PermissionMap> {
+  public async handle({ requestedModes, credentials, credentialsToCompare }: PermissionReaderInput):
+  Promise<PermissionMap> {
     // Finds all the dependent auxiliary identifiers
     const auxiliaries = this.findAuxiliaries(requestedModes);
 
@@ -32,9 +33,11 @@ export class AuxiliaryReader extends PermissionReader {
       new IdentifierSetMultiMap(requestedModes),
       { add: auxiliaries.values(), remove: auxiliaries.keys() },
     );
-    const result = await this.reader.handleSafe({ requestedModes: updatedMap, credentials });
+    const result = await this.reader.handleSafe({ requestedModes: updatedMap, credentials, credentialsToCompare });
 
-    // Extracts the auxiliary permissions based on the subject permissions
+    // Extracts the auxiliary permissions based on the subject permissions.
+    // The subject permission set is copied by reference, so any comparison permissions attached to it
+    // (under the COMPARISON_PERMISSIONS symbol) are carried over to the auxiliary identifier unchanged.
     for (const [ identifier, [ subject ]] of auxiliaries) {
       this.logger.debug(`Mapping ${subject.path} permissions to ${identifier.path}`);
       result.set(identifier, result.get(subject) ?? {});

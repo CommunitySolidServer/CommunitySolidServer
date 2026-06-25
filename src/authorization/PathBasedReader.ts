@@ -32,7 +32,14 @@ export class PathBasedReader extends PermissionReader {
   public async handle(input: PermissionReaderInput): Promise<PermissionMap> {
     const results: PermissionMap[] = [];
     for (const [ reader, readerModes ] of this.matchReaders(input.requestedModes)) {
-      results.push(await reader.handleSafe({ credentials: input.credentials, requestedModes: readerModes }));
+      // Forwarding `credentialsToCompare` is sufficient here: this reader only routes by identifier
+      // and never transforms permission sets, so any comparison sets attached by the sub-reader pass
+      // through unchanged.
+      results.push(await reader.handleSafe({
+        credentials: input.credentials,
+        requestedModes: readerModes,
+        credentialsToCompare: input.credentialsToCompare,
+      }));
     }
     return new IdentifierMap(concat(results));
   }

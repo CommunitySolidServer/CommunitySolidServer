@@ -16,6 +16,7 @@ import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import { getComparisonPermissions } from '../../../src/authorization/permissions/ComparisonPermissions';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
 import { compareMaps } from '../../util/Util';
@@ -207,5 +208,53 @@ describe('A WebAclReader', (): void => {
     ]));
     // http://example.com/.acl and http://example.com/bar/.acl
     expect(store.getRepresentation).toHaveBeenCalledTimes(2);
+  });
+
+  it('evaluates credentialsToCompare against the same ACL without re-resolving it.', async(): Promise<void> => {
+    // The ACL grants Read to a specific agent and Append to everyone (foaf:Agent).
+    store.getRepresentation.mockResolvedValue(new BasicRepresentation([
+      quad(nn('user'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      quad(nn('user'), nn(`${acl}accessTo`), nn(identifier.path)),
+      quad(nn('user'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('public'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      quad(nn('public'), nn(`${acl}accessTo`), nn(identifier.path)),
+      quad(nn('public'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+      quad(nn('public'), nn(`${acl}mode`), nn(`${acl}Append`)),
+    ], INTERNAL_QUADS));
+    // Authenticated agent matches the `user` rule; the empty comparison only matches the `public` rule.
+    accessChecker.handleSafe.mockImplementation(async({ rule, credentials: creds }): Promise<boolean> => {
+      if (rule.value === 'public') {
+        return true;
+      }
+      return Boolean(creds.agent?.webId);
+    });
+
+    input.credentialsToCompare = [{}];
+    const result = await reader.handle(input);
+
+    // Primary result is the authenticated agent's permissions: Read (+ Append from the public rule).
+    const userSet = result.get(identifier)!;
+    expect(userSet.read).toBe(true);
+    expect(userSet.append).toBe(true);
+
+    // The public comparison is attached and contains ONLY the public (Append) permission, no Read.
+    const comparisons = getComparisonPermissions(userSet);
+    expect(comparisons).toBeDefined();
+    expect(comparisons).toHaveLength(1);
+    expect(comparisons![0]).toEqual({ append: true });
+
+    // The effective ACL was read exactly once even though two credential sets were evaluated.
+    expect(store.getRepresentation).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not attach comparison data when credentialsToCompare is absent.', async(): Promise<void> => {
+    credentials.agent = { webId: 'http://test.com/user' };
+    store.getRepresentation.mockResolvedValue(new BasicRepresentation([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+    ], INTERNAL_QUADS));
+    const result = await reader.handle(input);
+    expect(getComparisonPermissions(result.get(identifier))).toBeUndefined();
   });
 });
