@@ -10,5 +10,5 @@
 <{{webId}}>
     {{#if name}}foaf:name "{{name}}";{{/if}}
     {{#if oidcIssuer}}solid:oidcIssuer <{{oidcIssuer}}>;{{/if}}
-    pim:storage <{{base.path}}>;
+    {{#if linkStorage}}pim:storage <{{base.path}}>;{{/if}}
     a foaf:Person.
