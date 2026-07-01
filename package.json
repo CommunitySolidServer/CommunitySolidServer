@@ -122,7 +122,7 @@
     "mime-types": "^2.1.35",
     "n3": "^1.17.1",
     "nodemailer": "^9.0.1",
-    "oidc-provider": "^8.4.0",
+    "oidc-provider": "^9.8.5",
     "proper-lockfile": "^4.1.2",
     "pump": "^3.0.0",
     "punycode": "^2.3.0",
