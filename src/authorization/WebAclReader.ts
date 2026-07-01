@@ -18,7 +18,7 @@ import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import type { AclPermissionSet } from './permissions/AclPermissionSet';
 import { AclMode } from './permissions/AclPermissionSet';
-import type { PermissionMap } from './permissions/Permissions';
+import type { AccessMap, PermissionMap } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
 // Maps WebACL-specific modes to generic access modes.
@@ -45,6 +45,15 @@ export class WebAclReader extends PermissionReader {
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly accessChecker: AccessChecker;
 
+  /**
+   * Memoizes the credential-independent part of ACL resolution (existence walk + read + parse)
+   * for the duration of a single request, so the multiple credential-specific passes of one request
+   * (authorization decision and the WAC-Allow user/public passes) share a single ACL read.
+   * Keyed by the `requestedModes` object, which the cached `ModesExtractor` produces once per request:
+   * a different request always has a different key, so this `WeakMap` can never serve a stale ACL.
+   */
+  private readonly statementCache: WeakMap<AccessMap, Promise<Map<Store, ResourceIdentifier[]>>>;
+
   public constructor(
     aclStrategy: AuxiliaryIdentifierStrategy,
     resourceSet: ResourceSet,
@@ -58,6 +67,7 @@ export class WebAclReader extends PermissionReader {
     this.aclStore = aclStore;
     this.identifierStrategy = identifierStrategy;
     this.accessChecker = accessChecker;
+    this.statementCache = new WeakMap();
   }
 
   /**
@@ -67,9 +77,35 @@ export class WebAclReader extends PermissionReader {
   public async handle({ credentials, requestedModes }: PermissionReaderInput): Promise<PermissionMap> {
     // Determine the required access modes
     this.logger.debug(`Retrieving permissions of ${credentials.agent?.webId ?? 'an unknown agent'}`);
-    const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
-    const storeMap = await this.findAuthorizationStatements(aclMap);
+    const storeMap = await this.getAuthorizationStatements(requestedModes);
     return this.findPermissions(storeMap, credentials);
+  }
+
+  /**
+   * Finds the relevant authorization statements for the targets in the given access map,
+   * reusing the result if it was already resolved for this `requestedModes` object.
+   * See {@link statementCache} for the request-scoping guarantee.
+   *
+   * @param requestedModes - The requested modes whose target resources need authorization statements.
+   */
+  private async getAuthorizationStatements(requestedModes: AccessMap): Promise<Map<Store, ResourceIdentifier[]>> {
+    const cached = this.statementCache.get(requestedModes);
+    if (cached) {
+      return cached;
+    }
+    // Caching the promise lets concurrent passes share one in-flight read instead of racing.
+    const promise = (async(): Promise<Map<Store, ResourceIdentifier[]>> => {
+      const aclMap = await this.getAclMatches(requestedModes.distinctKeys());
+      return this.findAuthorizationStatements(aclMap);
+    })();
+    this.statementCache.set(requestedModes, promise);
+    try {
+      return await promise;
+    } catch (error: unknown) {
+      // Do not memoize failures so a transient read error is not served to a later pass.
+      this.statementCache.delete(requestedModes);
+      throw error;
+    }
   }
 
   /**
