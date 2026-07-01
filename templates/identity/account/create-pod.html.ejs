@@ -17,6 +17,15 @@
           <input type="radio" id="internalWebIdOn" name="internalWebId" value="on" checked>
           Use the WebID in the Pod and register it to your account.
         </label>
+        <ol id="linkStorageForm">
+          <li class="checkbox">
+            <label>
+              <input type="checkbox" id="linkStorage" name="linkStorage">
+              Link this storage to my WebID. This adds a <code>pim:storage</code> triple to the WebID document,
+              which can be useful for applications trying to discover your storage location.
+            </label>
+          </li>
+        </ol>
       </li>
       <li class="radio">
         <label>
@@ -61,7 +70,7 @@
 
 
 <script>
-  const { mainForm } = getElements('mainForm');
+  const { mainForm, internalWebIdOn, linkStorageCheckbox } = getElements('mainForm', 'internalWebIdOn', 'linkStorageCheckbox');
 
   (async() => {
     let res = await fetch('<%= idpIndex %>', { headers: { accept: 'application/json' } });
@@ -70,6 +79,19 @@
     setRedirectClick('account-link', controls.html.account.account);
     setRedirectClick('response-account-link', controls.html.account.account);
 
+    // Toggle visibility of the "link storage" checkbox based on which WebID option is chosen
+    function updateLinkStorageVisibility() {
+      setVisibility('linkStorageForm', internalWebIdOn.checked);
+      if (!internalWebIdOn.checked) {
+        linkStorageCheckbox.checked = false;
+      }
+    }
+    mainForm.addEventListener('change', (event) => {
+      if (event.target.name === 'internalWebId') {
+        updateLinkStorageVisibility();
+      }
+    });
+
     addPostListener(async() => {
       const formData = new FormData(mainForm);
       const json = {
@@ -77,6 +99,8 @@
       }
       if (formData.get('internalWebId') === '') {
         json.settings = { webId: formData.get('webId') };
+      } else if (formData.get('linkStorage') === 'on') {
+        json.settings = { linkStorage: true };
       }
 
       const res = await postJson(controls.account.pod, json);
