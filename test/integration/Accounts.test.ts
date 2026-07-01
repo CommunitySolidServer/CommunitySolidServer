@@ -274,19 +274,29 @@ describe.each(stores)('A server with account management using %s', (name, { conf
     expect((await res.json()).webIdLinks[webId]).toBeDefined();
   });
 
-  it('includes pim:storage triple in the WebID profile.', async(): Promise<void> => {
+  it('can create a pod with a pim:storage triple.', async(): Promise<void> => {
+    let res = await fetch(controls.account.pod, {
+      method: 'POST',
+      headers: { cookie, 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'pim', settings: { linkStorage: true }}),
+    });
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.pod).toBeDefined();
+    expect(json.webId).toBeDefined();
+
     // Fetch the WebID profile document
-    const profileUrl = webId.split('#')[0];
-    const res = await fetch(profileUrl, { headers: { accept: 'text/turtle' }});
+    const profileUrl = json.webId.split('#')[0];
+    res = await fetch(profileUrl, { headers: { accept: 'text/turtle' }});
     expect(res.status).toBe(200);
 
     // Parse and verify the pim:storage triple points to the pod root
     const parser = new Parser({ baseIRI: profileUrl });
     const quads = parser.parse(await res.text());
     const storageQuads = quads.filter((q): boolean =>
-      q.subject.value === webId &&
+      q.subject.value === json.webId &&
       q.predicate.value === PIM.storage &&
-      q.object.value === pod);
+      q.object.value === json.pod);
     expect(storageQuads).toHaveLength(1);
   });
 
