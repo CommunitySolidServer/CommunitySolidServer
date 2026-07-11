@@ -19,13 +19,9 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
   /**
    * @param locker - Instance of ResourceLocker to use for acquiring a lock.
    * @param expiration - Time in ms after which the lock expires due to inactivity.
-   * @param maxHoldDuration - Absolute time in ms a lock may be held in total, counted from acquisition and
-   *                          independent of activity renewals. Once exceeded the lock expires even if it is
-   *                          still being renewed, which prevents a stream of trickle-readers from holding a
-   *                          read lock forever and starving a waiting writer. A value of `0` (the default)
-   *                          disables the cap, keeping the renewal behaviour unlimited. Because activity
-   *                          renewals now also keep write locks alive during slow uploads/downloads, this
-   *                          value must sit well above any realistic single-resource transfer.
+   * @param maxHoldDuration - Maximum total time in ms a lock can be held, independent of activity renewals,
+   *                          to prevent continually renewed locks from blocking a resource forever.
+   *                          `0`, the default, disables the cap.
    */
   public constructor(locker: ReadWriteLocker, expiration: number, maxHoldDuration = 0) {
     this.locker = locker;
@@ -70,8 +66,7 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
 
       timer = createTimeout();
 
-      // Absolute deadline on the total hold time, independent of the renewable idle timer above.
-      // Never renewed, so a stream of renewals can not extend the lock past this cap.
+      // Absolute deadline on the total hold time, which renewals do not extend
       if (this.maxHoldDuration > 0) {
         maxTimer = setTimeout((): void => {
           this.logger.warn(`Lock reached its maximum hold duration of ${this.maxHoldDuration}ms on ${identifier.path}`);
@@ -82,7 +77,7 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
       }
     });
 
-    // Restarts the idle timer, but never affects the absolute maximum-hold deadline
+    // Restarts the timer
     const renewTimer = (): void => {
       this.logger.verbose(`Renewed expiring lock on ${identifier.path}`);
       clearTimeout(timer);

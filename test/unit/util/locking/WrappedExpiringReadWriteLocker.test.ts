@@ -90,7 +90,6 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
   });
 
   it('does not cap the total hold time when maxHoldDuration defaults to 0.', async(): Promise<void> => {
-    // Renews the idle timer repeatedly and resolves well past the idle expiration.
     async function refreshCb(maintainLock: () => void): Promise<string> {
       return new Promise((resolve): any => {
         setTimeout(maintainLock, 750);
@@ -99,7 +98,6 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
         setTimeout((): void => resolve('refresh'), 2900);
       });
     }
-    // Default locker (no maxHoldDuration argument) must behave exactly as before: renewals are unlimited.
     const prom = locker.withReadLock(identifier, refreshCb);
     jest.advanceTimersByTime(2900);
     await expect(prom).resolves.toBe('refresh');
@@ -124,7 +122,6 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
   Promise<void> => {
     const maxHoldDuration = 2000;
     locker = new WrappedExpiringReadWriteLocker(wrappedLocker, expiration, maxHoldDuration);
-    // Keeps renewing the idle timer so it never expires, but never resolves before the cap.
     async function trickleCb(maintainLock: () => void): Promise<void> {
       return new Promise((resolve): any => {
         setTimeout(maintainLock, 750);

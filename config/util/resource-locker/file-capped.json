@@ -3,11 +3,8 @@
   "@graph": [
     {
       "comment": [
-        "Production/perf variant of resource-locker/file.json.",
-        "Identical to the file locker but adds an absolute maxHoldDuration cap of 1 hour (3600000ms).",
-        "This prevents a stream of trickle-readers from renewing a read lock forever and starving a waiting writer.",
-        "1 hour sits far above any realistic single-resource transfer, so it never aborts a legitimate slow",
-        "upload/download (activity renewals also keep write locks alive during slow uploads)."
+        "Allows multiple simultaneous read operations. Locks are stored on filesystem. This locker is threadsafe.",
+        "Locks expire after inactivity, or 1 hour after acquisition, so continually renewed locks can not block a resource forever."
       ],
       "@id": "urn:solid-server:default:ResourceLocker",
       "@type": "WrappedExpiringReadWriteLocker",
