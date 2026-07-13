@@ -16,3 +16,19 @@ export function importOidcProvider(): CanBePromise<typeof import('../../template
   }
   return import('oidc-provider');
 }
+
+export function importDpopValidate(): CanBePromise<any> {
+  if (process.env.JEST_WORKER_ID ?? process.env.NODE_ENV === 'test') {
+    return jest.requireActual('oidc-provider/lib/helpers/validate_dpop.js');
+  }
+  // @ts-expect-error
+  return import('oidc-provider/lib/helpers/validate_dpop.js');
+}
+
+export function importCheckResource(): CanBePromise<any> {
+  if (process.env.JEST_WORKER_ID ?? process.env.NODE_ENV === 'test') {
+    return jest.requireActual('oidc-provider/lib/shared/check_resource.js');
+  }
+  // @ts-expect-error
+  return import('oidc-provider/lib/shared/check_resource.js');
+}
