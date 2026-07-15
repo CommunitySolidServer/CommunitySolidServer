@@ -3,7 +3,7 @@ import { joinFilePath } from '../../src/';
 import type { App } from '../../src/';
 import { putResource } from '../util/FetchUtil';
 import { describeIf, getPort } from '../util/Util';
-import { getDefaultVariables, getPresetConfigPath, getTestConfigPath, instantiateFromConfig } from './Config';
+import { getDefaultVariables, getPresetConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('SparqlStorage');
 const baseUrl = `http://localhost:${port}/`;
@@ -19,15 +19,11 @@ describeIf('docker')('A server with a SPARQL endpoint as storage', (): void => {
     };
 
     // Create and start the server
-    const instances = await instantiateFromConfig(
-      'urn:solid-server:test:Instances',
-      [
-        getPresetConfigPath('storage/backend/sparql.json'),
-        getTestConfigPath('ldp-with-auth.json'),
-      ],
+    app = await instantiateFromConfig(
+      'urn:solid-server:default:App',
+      getPresetConfigPath('sparql-endpoint-root.json'),
       variables,
-    ) as Record<string, any>;
-    ({ app } = instances);
+    ) as App;
 
     await app.start();
   });

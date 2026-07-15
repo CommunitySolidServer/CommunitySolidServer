@@ -778,4 +778,15 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     response = await fetch(resourceUrl, { headers: { range: 'bytes=5-15' }});
     expect(response.status).toBe(416);
   });
+
+  it('denies access to internal resources with both single and repeated leading slashes.', async(): Promise<void> => {
+    const internalPath = '.internal/setup/';
+
+    const singleSlash = await fetch(`${baseUrl}${internalPath}`);
+    const doubleSlash = await fetch(`${baseUrl}/${internalPath}`);
+
+    // Both should be blocked by internal path protection.
+    expect(singleSlash.status).toBe(401);
+    expect(doubleSlash.status).toBe(401);
+  });
 });

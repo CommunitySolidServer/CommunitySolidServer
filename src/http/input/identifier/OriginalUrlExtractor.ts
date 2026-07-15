@@ -6,7 +6,7 @@ import { errorTermsToMetadata } from '../../../util/errors/HttpErrorUtil';
 import { InternalServerError } from '../../../util/errors/InternalServerError';
 import { parseForwarded } from '../../../util/HeaderUtil';
 import type { IdentifierStrategy } from '../../../util/identifiers/IdentifierStrategy';
-import { toCanonicalUriPath } from '../../../util/PathUtil';
+import { normalizeUriPathSlashes, toCanonicalUriPath } from '../../../util/PathUtil';
 import type { ResourceIdentifier } from '../../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
 
@@ -85,7 +85,7 @@ export class OriginalUrlExtractor extends TargetExtractor {
     // URL object applies punycode encoding to domain
     const originalUrl = new URL(`${protocol}://${host}`);
     const [ , pathname, search ] = /^([^?]*)(.*)/u.exec(toCanonicalUriPath(url))!;
-    originalUrl.pathname = pathname;
+    originalUrl.pathname = normalizeUriPathSlashes(pathname);
     if (this.includeQueryString && search) {
       originalUrl.search = search;
     }
