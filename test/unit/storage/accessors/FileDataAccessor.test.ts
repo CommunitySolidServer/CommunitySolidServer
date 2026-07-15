@@ -87,6 +87,24 @@ describe('A FileDataAccessor', (): void => {
       await expect(accessor.getMetadata({ path: `${base}container/` })).rejects.toThrow(NotFoundHttpError);
     });
 
+    it('cleans up orphaned auxiliary metadata files for missing document bodies.', async(): Promise<void> => {
+      cache.data = { 'resource.ttl.meta': '<http://this> <http://is> <http://metadata>.' };
+
+      await expect(accessor.getMetadata({ path: `${base}resource.ttl` })).rejects.toThrow(NotFoundHttpError);
+      expect(cache.data['resource.ttl.meta']).toBeUndefined();
+    });
+
+    it('logs cleanup errors when removing orphaned auxiliary metadata files.', async(): Promise<void> => {
+      cache.data = { 'resource.ttl.meta': '<http://this> <http://is> <http://metadata>.' };
+      jest.requireMock('fs-extra').remove = (): never => {
+        throw new Error('cleanup failed');
+      };
+      const logSpy = jest.spyOn((accessor as any).logger, 'error');
+
+      await expect(accessor.getMetadata({ path: `${base}resource.ttl` })).rejects.toThrow(NotFoundHttpError);
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to remove dangling metadata'));
+    });
+
     it('throws a 404 if it matches something that is no file or directory.', async(): Promise<void> => {
       cache.data = { resource: 5 };
       await expect(accessor.getMetadata({ path: `${base}resource` })).rejects.toThrow(NotFoundHttpError);

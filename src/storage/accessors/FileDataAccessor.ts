@@ -5,6 +5,7 @@ import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
@@ -61,7 +62,18 @@ export class FileDataAccessor implements DataAccessor {
    */
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false);
-    const stats = await this.getStats(link.filePath);
+
+    let stats: Stats;
+    try {
+      stats = await this.getStats(link.filePath);
+    } catch (error: unknown) {
+      if (NotFoundHttpError.isInstance(error) && !isContainerIdentifier(identifier)) {
+        // If the document file vanished out-of-band, remove a potentially orphaned metadata file.
+        await this.cleanupDanglingMetadata(identifier);
+      }
+      throw error;
+    }
+
     if (!isContainerIdentifier(identifier) && stats.isFile()) {
       return this.getFileMetadata(link, stats);
     }
@@ -383,5 +395,17 @@ export class FileDataAccessor implements DataAccessor {
       writeStream.on('error', reject);
       writeStream.on('finish', resolve);
     });
+  }
+
+  /**
+   * Best-effort cleanup for orphaned metadata files when document bodies are missing.
+   */
+  protected async cleanupDanglingMetadata(identifier: ResourceIdentifier): Promise<void> {
+    try {
+      const metadataLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
+      await remove(metadataLink.filePath);
+    } catch (error: unknown) {
+      this.logger.error(`Failed to remove dangling metadata for ${identifier.path}: ${createErrorMessage(error)}`);
+    }
   }
 }
