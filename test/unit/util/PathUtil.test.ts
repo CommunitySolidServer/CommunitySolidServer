@@ -21,6 +21,7 @@ import {
   joinUrl,
   modulePath,
   normalizeFilePath,
+  normalizeUriPathSlashes,
   resolveAssetPath,
   resolveModulePath,
   toCanonicalUriPath,
@@ -103,6 +104,16 @@ describe('PathUtil', (): void => {
 
     it('leaves the query string untouched.', (): void => {
       expect(toCanonicalUriPath('/a%20path&/name?abc=def&xyz')).toBe('/a%20path%26/name?abc=def&xyz');
+    });
+  });
+
+  describe('#normalizeUriPathSlashes', (): void => {
+    it('collapses repeated slashes in the path.', (): void => {
+      expect(normalizeUriPathSlashes('///a//b///c')).toBe('/a/b/c');
+    });
+
+    it('preserves the query string.', (): void => {
+      expect(normalizeUriPathSlashes('//a///b?x=//y')).toBe('/a/b?x=//y');
     });
   });
 
