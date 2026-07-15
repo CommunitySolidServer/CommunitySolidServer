@@ -9,6 +9,7 @@ const portNames = [
   'AcpServer',
   'Conditions',
   'ContentNegotiation',
+  'DataCorruption',
   'DynamicPods',
   'ExpiringDataCleanup',
   'FileBackend',
