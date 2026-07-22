@@ -9,6 +9,9 @@ module.exports = {
     // Re-use the base config
     ...options.config,
 
+    // Templates start at higher heading increment levels
+    MD001: false,
+
     // Disable line length due to requirements for issue templates
     MD013: false,
 
