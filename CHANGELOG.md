@@ -3,6 +3,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.9...v7.2.0) (2026-07-22)
+
+### Features
+
+* Handle data corruption issues ([8e454a9](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/8e454a9af776ccdd09bfcf2ce984bb31b3cd4413))
+* Make pim:storage conditional based on checkbox ([d4fcf76](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d4fcf766e81721398bf5a22798db13bb339e18bc))
+* Include pim:storage triple in WebID profile template by default ([f795265](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f795265b27c77108539eb09a9bc40b6af30e8ba6))
+
+### Fixes
+
+* Prevent inconsistencies with repeated slashes in identifiers ([8ecae4c](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/8ecae4ca9f8bffd1ae7005b227acaa474f99726c))
+* Add blockedPatterns to TokenOwnershipValidator to prevent SSRF ([b66e241](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/b66e241896a4b07e4982e76bc43765c0a31961c6))
+* Make sure WebhookEmitter tokens are valid ([6a5b8b3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6a5b8b334fb3a4cbe0360bdd9f9c937ae62ff2f3))
+* Handle ENOTDIR in FileDataAccessor.getStats to prevent 500 on duplicate slug ([31794f3](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/31794f32830467536f8810f4e6739eacb6dc9b1a))
+
+### Documentation
+
+* Add security considerations about HTML resources ([d3008f0](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d3008f0082adcca0c8f8951ba6968fd886d2f2f3))
+* Add security considerations about token ownership checks ([d139fe8](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d139fe8e5f82985a43f37c60d82ae3bf5af3168f))
+
+### Testing
+
+* Add integration test for pim:storage triple in WebID profile ([388da6a](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/388da6aae4bc9ef18687bb2013f83970449f8601))
+* Add tests to check SSRF ([69d1b25](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/69d1b255d286869aca3825bc8204fbfd55b9fc57))
+
 ## [7.1.9](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v7.1.8...v7.1.9) (2026-03-03)
 
 ### Features
