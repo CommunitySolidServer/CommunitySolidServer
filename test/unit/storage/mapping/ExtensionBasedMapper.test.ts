@@ -159,6 +159,49 @@ describe('An ExtensionBasedMapper', (): void => {
           isMetadata: false,
         });
     });
+
+    it('resolves a common extension via a stat fast-path without scanning the directory.',
+      async(): Promise<void> => {
+        fsPromises.stat = jest.fn().mockImplementation(async(path: string): Promise<void> => {
+          if (path !== `${rootFilepath}test$.ttl`) {
+            throw new Error('ENOENT');
+          }
+        });
+        fsPromises.readdir.mockRejectedValue(new Error('readdir should not be called on the fast path'));
+        await expect(mapper.mapUrlToFilePath({ path: `${base}test` }, false)).resolves.toEqual({
+          identifier: { path: `${base}test` },
+          filePath: `${rootFilepath}test$.ttl`,
+          contentType: 'text/turtle',
+          isMetadata: false,
+        });
+        expect(fsPromises.readdir).not.toHaveBeenCalled();
+      });
+
+    it('does not scan the directory for a missing resource in the reserved /.internal/ storage.',
+      async(): Promise<void> => {
+        fsPromises.stat = jest.fn().mockRejectedValue(new Error('ENOENT'));
+        fsPromises.readdir.mockRejectedValue(new Error('readdir should not be called for internal storage'));
+        const result = await mapper.mapUrlToFilePath({ path: `${base}.internal/accounts/index/missing` }, false);
+        expect(result).toMatchObject({
+          identifier: { path: `${base}.internal/accounts/index/missing` },
+          filePath: `${rootFilepath}.internal/accounts/index/missing`,
+          isMetadata: false,
+        });
+        expect(fsPromises.readdir).not.toHaveBeenCalled();
+      });
+
+    it('falls back to a directory scan for a pod resource with an uncommon extension.',
+      async(): Promise<void> => {
+        fsPromises.stat = jest.fn().mockRejectedValue(new Error('ENOENT'));
+        fsPromises.readdir.mockReturnValue([ 'pic$.weird' ]);
+        const result = await mapper.mapUrlToFilePath({ path: `${base}pod/pic` }, false);
+        expect(result).toMatchObject({
+          identifier: { path: `${base}pod/pic` },
+          filePath: `${rootFilepath}pod/pic$.weird`,
+          isMetadata: false,
+        });
+        expect(fsPromises.readdir).toHaveBeenCalledTimes(1);
+      });
   });
 
   describe('mapFilePathToUrl', (): void => {
