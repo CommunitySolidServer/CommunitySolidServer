@@ -17,14 +17,7 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
   private readonly customTypes: Record<string, string>;
   private readonly customExtensions: Record<string, string>;
 
-  /**
-   * Extensions probed directly (via `stat`) before falling back to a directory scan
-   * when resolving a document whose content-type is not known ahead of time.
-   * Ordered most-common-first. Any resource stored with an extension not in this list
-   * still resolves correctly through the `readdir` fallback in {@link mapUrlToDocumentPath};
-   * this list only exists to avoid an O(folder size) scan on the common case, which is
-   * pathological for large internal index directories (tens of thousands of entries).
-   */
+  /** Extensions probed before falling back to a directory scan, ordered by expected frequency. */
   private static readonly commonExtensions = [
     'json', 'ttl', 'nq', 'nt', 'jsonld', 'trig', 'n3', 'rdf', 'html', 'txt',
   ];
@@ -62,16 +55,8 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
       // Find a matching file
       const [ , folder, documentName ] = /^(.*\/)([^/]*)$/u.exec(filePath)!;
       let fileName: string | undefined;
-      // Fast path: probe the exact file and the common `$.<ext>` variants directly with
-      // `stat` (O(1) each). This avoids a full `readdir` of `folder`, which is O(folder size)
-      // and becomes a severe bottleneck for large internal index directories where every
-      // lookup would otherwise scan tens of thousands of unrelated entries.
-      // The fixed candidate order below is safe even though it differs from the (arbitrary)
-      // `readdir` iteration order: a resource can only ever have a single stored representation,
-      // because `FileDataAccessor.verifyExistingExtension` removes any previously-stored file
-      // with a different extension on every write. So at most one candidate can match.
-      // Guard against an empty document name (a path ending in `/`): a `stat` of the folder
-      // itself would spuriously match. Such paths fall through to the `readdir` fallback below.
+      // Probe common forms before scanning the directory.
+      // An empty document name would cause `stat` to match the folder itself.
       if (documentName) {
         const candidates = [ documentName, ...ExtensionBasedMapper.commonExtensions.map(
           (extension): string => `${documentName}$.${extension}`,
@@ -82,18 +67,11 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
             fileName = candidate;
             break;
           } catch {
-            // Candidate does not exist; try the next one.
+            // Try the next candidate.
           }
         }
       }
-      // Fallback: resource stored with a less common extension (or an unusual name).
-      // Scan the folder exactly as before, preserving correctness for pod resources (which may
-      // use arbitrary extensions). Skipped for the reserved root-level internal storage
-      // (`/.internal/`), whose resources are always JSON and whose index directories can hold
-      // tens of thousands of entries — a scan there is unnecessary and pathological, and is the
-      // dominant cost of negative index lookups (e.g. a login for a non-existent email). The
-      // check anchors on the request path's first segment, so a nested `.internal` container
-      // (which could legitimately hold arbitrary extensions) still uses the readdir fallback.
+      // Internal resources use known extensions, so their potentially large directories need no fallback scan.
       const isInternalStorage = new URL(identifier.path).pathname.startsWith('/.internal/');
       if (!fileName && !isInternalStorage) {
         try {
