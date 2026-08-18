@@ -17,20 +17,6 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
   private readonly customTypes: Record<string, string>;
   private readonly customExtensions: Record<string, string>;
 
-  /** Extensions probed before falling back to a directory scan, ordered by expected frequency. */
-  private static readonly commonExtensions = [
-    'json',
-    'ttl',
-    'nq',
-    'nt',
-    'jsonld',
-    'trig',
-    'n3',
-    'rdf',
-    'html',
-    'txt',
-  ];
-
   public constructor(
     base: string,
     rootFilepath: string,
@@ -64,32 +50,12 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
       // Find a matching file
       const [ , folder, documentName ] = /^(.*\/)([^/]*)$/u.exec(filePath)!;
       let fileName: string | undefined;
-      // Probe common forms before scanning the directory.
-      // An empty document name would cause `stat` to match the folder itself.
-      if (documentName) {
-        const candidates = [ documentName, ...ExtensionBasedMapper.commonExtensions.map(
-          (extension): string => `${documentName}$.${extension}`,
-        ) ];
-        for (const candidate of candidates) {
-          try {
-            await fsPromises.stat(joinFilePath(folder, candidate));
-            fileName = candidate;
-            break;
-          } catch {
-            // Try the next candidate.
-          }
-        }
-      }
-      // Internal resources use known extensions, so their potentially large directories need no fallback scan.
-      const isInternalStorage = new URL(identifier.path).pathname.startsWith('/.internal/');
-      if (!fileName && !isInternalStorage) {
-        try {
-          const files = await fsPromises.readdir(folder);
-          fileName = files.find((file): boolean =>
-            file.startsWith(documentName) && /^(?:\$\..+)?$/u.test(file.slice(documentName.length)));
-        } catch {
-          // Parent folder does not exist (or is not a folder)
-        }
+      try {
+        const files = await fsPromises.readdir(folder);
+        fileName = files.find((file): boolean =>
+          file.startsWith(documentName) && /^(?:\$\..+)?$/u.test(file.slice(documentName.length)));
+      } catch {
+        // Parent folder does not exist (or is not a folder)
       }
       if (fileName) {
         filePath = joinFilePath(folder, fileName);

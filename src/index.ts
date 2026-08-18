@@ -492,6 +492,7 @@ export * from './storage/keyvalue/WrappedIndexedStorage';
 
 // Storage/Mapping
 export * from './storage/mapping/BaseFileIdentifierMapper';
+export * from './storage/mapping/ContainerContentTypeMapper';
 export * from './storage/mapping/ExtensionBasedMapper';
 export * from './storage/mapping/FileIdentifierMapper';
 export * from './storage/mapping/FixedContentTypeMapper';

@@ -20,7 +20,6 @@ describe('An ExtensionBasedMapper', (): void => {
     jest.clearAllMocks();
     fs.promises = {
       readdir: jest.fn(),
-      stat: jest.fn().mockRejectedValue(new Error('ENOENT')),
     } as any;
     fsPromises = fs.promises as any;
   });
@@ -159,46 +158,6 @@ describe('An ExtensionBasedMapper', (): void => {
           contentType: 'text/custom',
           isMetadata: false,
         });
-    });
-
-    it('resolves a common extension via a stat fast-path without scanning the directory.', async(): Promise<void> => {
-      fsPromises.stat.mockImplementation(async(path: string): Promise<void> => {
-        if (path !== `${rootFilepath}test$.ttl`) {
-          throw new Error('ENOENT');
-        }
-      });
-      fsPromises.readdir.mockRejectedValue(new Error('readdir should not be called on the fast path'));
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test` }, false)).resolves.toEqual({
-        identifier: { path: `${base}test` },
-        filePath: `${rootFilepath}test$.ttl`,
-        contentType: 'text/turtle',
-        isMetadata: false,
-      });
-      expect(fsPromises.readdir).not.toHaveBeenCalled();
-    });
-
-    it('does not scan internal storage for a missing resource.', async(): Promise<void> => {
-      fsPromises.stat.mockRejectedValue(new Error('ENOENT'));
-      fsPromises.readdir.mockRejectedValue(new Error('readdir should not be called for internal storage'));
-      const result = await mapper.mapUrlToFilePath({ path: `${base}.internal/accounts/index/missing` }, false);
-      expect(result).toMatchObject({
-        identifier: { path: `${base}.internal/accounts/index/missing` },
-        filePath: `${rootFilepath}.internal/accounts/index/missing`,
-        isMetadata: false,
-      });
-      expect(fsPromises.readdir).not.toHaveBeenCalled();
-    });
-
-    it('falls back to a directory scan for a pod resource with an uncommon extension.', async(): Promise<void> => {
-      fsPromises.stat.mockRejectedValue(new Error('ENOENT'));
-      fsPromises.readdir.mockReturnValue([ 'pic$.weird' ]);
-      const result = await mapper.mapUrlToFilePath({ path: `${base}pod/pic` }, false);
-      expect(result).toMatchObject({
-        identifier: { path: `${base}pod/pic` },
-        filePath: `${rootFilepath}pod/pic$.weird`,
-        isMetadata: false,
-      });
-      expect(fsPromises.readdir).toHaveBeenCalledTimes(1);
     });
   });
 

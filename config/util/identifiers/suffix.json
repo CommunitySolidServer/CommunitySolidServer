@@ -16,9 +16,16 @@
     {
       "comment": "Only required when using a file-based backend.",
       "@id": "urn:solid-server:default:FileIdentifierMapper",
-      "@type": "ExtensionBasedMapper",
-      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "rootFilepath": { "@id": "urn:solid-server:default:variable:rootFilePath" }
+      "@type": "ContainerContentTypeMapper",
+      "source": {
+        "@type": "ExtensionBasedMapper",
+        "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "rootFilepath": { "@id": "urn:solid-server:default:variable:rootFilePath" }
+      },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/",
+      "documentContentType": "application/json",
+      "metadataContentType": "text/turtle"
     }
   ]
 }
