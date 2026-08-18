@@ -19,7 +19,16 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
 
   /** Extensions probed before falling back to a directory scan, ordered by expected frequency. */
   private static readonly commonExtensions = [
-    'json', 'ttl', 'nq', 'nt', 'jsonld', 'trig', 'n3', 'rdf', 'html', 'txt',
+    'json',
+    'ttl',
+    'nq',
+    'nt',
+    'jsonld',
+    'trig',
+    'n3',
+    'rdf',
+    'html',
+    'txt',
   ];
 
   public constructor(
