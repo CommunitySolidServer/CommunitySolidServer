@@ -20,6 +20,7 @@ describe('An ExtensionBasedMapper', (): void => {
     jest.clearAllMocks();
     fs.promises = {
       readdir: jest.fn(),
+      stat: jest.fn().mockRejectedValue(new Error('ENOENT')),
     } as any;
     fsPromises = fs.promises as any;
   });
@@ -161,7 +162,7 @@ describe('An ExtensionBasedMapper', (): void => {
     });
 
     it('resolves a common extension via a stat fast-path without scanning the directory.', async(): Promise<void> => {
-      jest.spyOn(fsPromises, 'stat').mockImplementation(async(path: string): Promise<void> => {
+      fsPromises.stat.mockImplementation(async(path: string): Promise<void> => {
         if (path !== `${rootFilepath}test$.ttl`) {
           throw new Error('ENOENT');
         }
@@ -177,7 +178,7 @@ describe('An ExtensionBasedMapper', (): void => {
     });
 
     it('does not scan internal storage for a missing resource.', async(): Promise<void> => {
-      jest.spyOn(fsPromises, 'stat').mockImplementation().mockRejectedValue(new Error('ENOENT'));
+      fsPromises.stat.mockRejectedValue(new Error('ENOENT'));
       fsPromises.readdir.mockRejectedValue(new Error('readdir should not be called for internal storage'));
       const result = await mapper.mapUrlToFilePath({ path: `${base}.internal/accounts/index/missing` }, false);
       expect(result).toMatchObject({
@@ -189,7 +190,7 @@ describe('An ExtensionBasedMapper', (): void => {
     });
 
     it('falls back to a directory scan for a pod resource with an uncommon extension.', async(): Promise<void> => {
-      jest.spyOn(fsPromises, 'stat').mockImplementation().mockRejectedValue(new Error('ENOENT'));
+      fsPromises.stat.mockRejectedValue(new Error('ENOENT'));
       fsPromises.readdir.mockReturnValue([ 'pic$.weird' ]);
       const result = await mapper.mapUrlToFilePath({ path: `${base}pod/pic` }, false);
       expect(result).toMatchObject({
