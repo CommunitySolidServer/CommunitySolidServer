@@ -1,6 +1,6 @@
+import { promises as fsPromises } from 'node:fs';
 import type { IModuleState } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
-import { remove } from 'fs-extra';
 import { joinFilePath } from '../../src/util/PathUtil';
 
 let cachedModuleState: IModuleState;
@@ -47,7 +47,7 @@ export function getTestFolder(name: string): string {
 }
 
 export async function removeFolder(folder: string): Promise<void> {
-  await remove(folder);
+  await fsPromises.rm(folder, { force: true, maxRetries: 3, recursive: true });
 }
 
 export function getDefaultVariables(port: number, baseUrl?: string): Record<string, any> {
