@@ -1,15 +1,22 @@
+import fs from 'node:fs';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { ContainerContentTypeMapper } from '../../../../src/storage/mapping/ContainerContentTypeMapper';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
+jest.mock('node:fs');
+
 describe('A ContainerContentTypeMapper', (): void => {
   const baseUrl = 'http://example.com/';
+  let fsPromises: Record<string, jest.Mock>;
   let source: jest.Mocked<FileIdentifierMapper>;
   let mapper: ContainerContentTypeMapper;
 
   beforeEach((): void => {
+    jest.clearAllMocks();
+    fs.promises = { readdir: jest.fn() } as any;
+    fsPromises = fs.promises as any;
     source = {
       mapUrlToFilePath: jest.fn<
         Promise<ResourceLink>,
@@ -69,6 +76,11 @@ describe('A ContainerContentTypeMapper', (): void => {
       filePath: '/data/.internal/id.meta',
       contentType: 'text/turtle',
     });
+    await expect(mapper.mapUrlToFilePath({ path: `${baseUrl}%2Einternal/id` }, false)).resolves.toMatchObject({
+      filePath: '/data/.internal/id$.json',
+      contentType: 'application/json',
+    });
+    expect(fsPromises.readdir).not.toHaveBeenCalled();
   });
 
   it('rejects another content type in the configured container.', async(): Promise<void> => {
@@ -82,6 +94,18 @@ describe('A ContainerContentTypeMapper', (): void => {
     const identifier = { path: `${baseUrl}pod/resource` };
     await mapper.mapUrlToFilePath(identifier, false, 'text/plain');
     expect(source.mapUrlToFilePath).toHaveBeenCalledWith(identifier, false, 'text/plain');
+  });
+
+  it('delegates identifiers outside the configured base URL.', async(): Promise<void> => {
+    const identifier = { path: 'http://other.example/.internal/resource' };
+    await mapper.mapUrlToFilePath(identifier, false);
+    expect(source.mapUrlToFilePath).toHaveBeenCalledWith(identifier, false, undefined);
+  });
+
+  it('delegates identifiers with invalid encoding.', async(): Promise<void> => {
+    const identifier = { path: `${baseUrl}%` };
+    await mapper.mapUrlToFilePath(identifier, false);
+    expect(source.mapUrlToFilePath).toHaveBeenCalledWith(identifier, false, undefined);
   });
 
   it('does not match containers with the same prefix.', async(): Promise<void> => {
