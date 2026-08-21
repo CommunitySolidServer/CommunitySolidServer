@@ -63,8 +63,8 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
   });
 
   afterAll(async(): Promise<void> => {
-    await app.stop();
     await teardown();
+    await app.stop();
   });
 
   it('prevents operations on existing resources with "if-none-match: *" header.', async(): Promise<void> => {

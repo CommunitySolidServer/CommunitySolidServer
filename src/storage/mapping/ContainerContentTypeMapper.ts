@@ -1,31 +1,22 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { decodeUriPathComponents, ensureTrailingSlash, joinUrl, trimTrailingSlashes } from '../../util/PathUtil';
+import { decodeUriPathComponents, ensureTrailingSlash, joinUrl } from '../../util/PathUtil';
 import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
 
 /**
  * Provides the content types for resources stored in a specific container.
  */
 export class ContainerContentTypeMapper implements FileIdentifierMapper {
-  private readonly source: FileIdentifierMapper;
-  private readonly documentContentType: string;
-  private readonly metadataContentType: string;
-  private readonly baseUrl: string;
-  private readonly containerPath: string;
+  private readonly containerUrl: string;
 
   public constructor(
-    source: FileIdentifierMapper,
+    private readonly source: FileIdentifierMapper,
     baseUrl: string,
     container: string,
-    documentContentType: string,
-    metadataContentType: string,
+    private readonly documentContentType: string,
+    private readonly metadataContentType: string,
   ) {
-    this.source = source;
-    this.documentContentType = documentContentType;
-    this.metadataContentType = metadataContentType;
-    this.baseUrl = trimTrailingSlashes(baseUrl);
-    const containerUrl = ensureTrailingSlash(joinUrl(baseUrl, container));
-    this.containerPath = decodeUriPathComponents(containerUrl.slice(this.baseUrl.length));
+    this.containerUrl = decodeUriPathComponents(ensureTrailingSlash(joinUrl(baseUrl, container)));
   }
 
   public async mapUrlToFilePath(identifier: ResourceIdentifier, isMetadata: boolean, contentType?: string):
@@ -47,11 +38,8 @@ export class ContainerContentTypeMapper implements FileIdentifierMapper {
   }
 
   private isContained(identifier: ResourceIdentifier): boolean {
-    if (!identifier.path.startsWith(this.baseUrl)) {
-      return false;
-    }
     try {
-      return decodeUriPathComponents(identifier.path.slice(this.baseUrl.length)).startsWith(this.containerPath);
+      return decodeUriPathComponents(identifier.path).startsWith(this.containerUrl);
     } catch {
       return false;
     }
