@@ -11,6 +11,17 @@
         "relativePath": "/notifications/",
         "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
       }
+    },
+    {
+      "comment": "Makes sure the notification channel sweep timer is stopped when the application stops.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:SubscriptionStorage" }
+        }
+      ]
     }
   ]
 }

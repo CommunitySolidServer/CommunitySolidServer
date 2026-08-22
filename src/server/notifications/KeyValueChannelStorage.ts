@@ -1,8 +1,10 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+import type { Finalizable } from '../../init/final/Finalizable';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
+import { setSafeInterval } from '../../util/TimerUtil';
 import type { NotificationChannel } from './NotificationChannel';
 import type { NotificationChannelStorage } from './NotificationChannelStorage';
 
@@ -13,16 +15,45 @@ type StorageValue = string | string[] | NotificationChannel;
  * Encodes IDs/topics before storing them in the KeyValueStorage.
  *
  * Uses a {@link ReadWriteLocker} to prevent internal race conditions.
+ *
+ * Expired channels are deleted when they are requested through `get`.
+ * A timer additionally deletes all expired channels periodically,
+ * since channels that are never requested again would otherwise remain in the storage.
  */
-export class KeyValueChannelStorage implements NotificationChannelStorage {
+export class KeyValueChannelStorage implements NotificationChannelStorage, Finalizable {
   protected logger = getLoggerFor(this);
 
   private readonly storage: KeyValueStorage<string, StorageValue>;
   private readonly locker: ReadWriteLocker;
+  private readonly timer?: NodeJS.Timeout;
 
-  public constructor(storage: KeyValueStorage<string, StorageValue>, locker: ReadWriteLocker) {
+  /**
+   * @param storage - Where to store the channels.
+   * @param locker - Used to prevent internal race conditions.
+   * @param sweepInterval - How often the expired channels need to be deleted, in minutes. `0` disables the sweep.
+   * @param jitter - Maximum random fraction of `sweepInterval` that is added to the interval,
+   *                 so multiple instances do not all sweep at the same time.
+   */
+  public constructor(
+    storage: KeyValueStorage<string, StorageValue>,
+    locker: ReadWriteLocker,
+    sweepInterval = 60,
+    jitter = 0.15,
+  ) {
     this.storage = storage;
     this.locker = locker;
+
+    if (sweepInterval > 0) {
+      const period = sweepInterval * 60 * 1000;
+      const jitterMs = Math.floor(Math.random() * period * jitter);
+      this.timer = setSafeInterval(
+        this.logger,
+        'Failed to sweep expired notification channels',
+        this.sweepExpiredChannels.bind(this),
+        period + jitterMs,
+      );
+      this.timer.unref();
+    }
   }
 
   public async get(id: string): Promise<NotificationChannel | undefined> {
@@ -110,11 +141,42 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
     });
   }
 
+  /**
+   * Deletes all channels that have expired.
+   */
+  private async sweepExpiredChannels(): Promise<void> {
+    this.logger.debug('Sweeping expired notification channels.');
+    const expired: string[] = [];
+    let removed = 0;
+    // Not deleting while iterating to prevent iterator issues
+    for await (const [ , value ] of this.storage.entries()) {
+      if (this.isChannel(value) && typeof value.endAt === 'number' && value.endAt < Date.now()) {
+        expired.push(value.id);
+      }
+    }
+    for (const id of expired) {
+      await this.locker.withWriteLock(this.getLockKey(id), async(): Promise<void> => {
+        const channel = await this.storage.get(encodeURIComponent(id));
+        if (channel && this.isChannel(channel) && typeof channel.endAt === 'number' && channel.endAt < Date.now()) {
+          await this.deleteChannel(channel);
+          removed += 1;
+        }
+      });
+    }
+    this.logger.debug(`Finished sweeping expired notification channels, removed ${removed}.`);
+  }
+
   private isChannel(value: StorageValue): value is NotificationChannel {
     return Boolean((value as NotificationChannel).id);
   }
 
   private getLockKey(identifier: ResourceIdentifier | string): ResourceIdentifier {
     return { path: `${typeof identifier === 'string' ? identifier : identifier.path}.notification-storage` };
+  }
+
+  public async finalize(): Promise<void> {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
