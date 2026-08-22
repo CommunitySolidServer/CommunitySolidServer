@@ -9,6 +9,10 @@
 
 ### Configuration changes
 
+- `KeyValueChannelStorage` now sweeps expired notification channels every 60 minutes by default,
+  with up to 15% jitter between instances.
+  Custom configurations can set the interval in minutes (`0` disables the sweep) and the jitter fraction,
+  and should register the storage with the `Finalizer` so its timer is cleared during shutdown.
 - There is a new opt-in `util/resource-locker/file-capped.json` configuration that caps file-based locks at one hour.
   Existing resource locker configurations remain uncapped.
 
