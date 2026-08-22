@@ -111,12 +111,17 @@ export class ExpiringAdapter implements Adapter {
  */
 export class ExpiringAdapterFactory implements AdapterFactory {
   private readonly storage: ExpiringStorage<string, unknown>;
+  private readonly clientStorage: ExpiringStorage<string, unknown>;
 
-  public constructor(storage: ExpiringStorage<string, unknown>) {
+  public constructor(
+    storage: ExpiringStorage<string, unknown>,
+    clientStorage: ExpiringStorage<string, unknown> = storage,
+  ) {
     this.storage = storage;
+    this.clientStorage = clientStorage;
   }
 
   public createStorageAdapter(name: string): ExpiringAdapter {
-    return new ExpiringAdapter(name, this.storage);
+    return new ExpiringAdapter(name, name === 'Client' ? this.clientStorage : this.storage);
   }
 }

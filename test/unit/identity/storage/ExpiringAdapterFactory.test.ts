@@ -6,28 +6,46 @@ import type { AdapterPayload } from '../../../../templates/types/oidc-provider';
 // Use fixed dates
 jest.useFakeTimers();
 
+function createStorage(): ExpiringStorage<string, unknown> {
+  const map = new Map<string, any>();
+  return {
+    get: jest.fn().mockImplementation((key: string): any => map.get(key)),
+    set: jest.fn().mockImplementation((key: string, value: any): any => map.set(key, value)),
+    delete: jest.fn().mockImplementation((key: string): any => map.delete(key)),
+  } as any;
+}
+
 describe('An ExpiringAdapterFactory', (): void => {
   const name = 'nnaammee';
   const id = 'http://alice.test.com/card#me';
   const grantId = 'grant123456';
   let payload: AdapterPayload;
   let storage: ExpiringStorage<string, unknown>;
+  let clientStorage: ExpiringStorage<string, unknown>;
   let adapter: ExpiringAdapter;
   let factory: ExpiringAdapterFactory;
   const expiresIn = 333 * 1000;
 
   beforeEach(async(): Promise<void> => {
     payload = { data: 'data!' };
-
-    const map = new Map<string, any>();
-    storage = {
-      get: jest.fn().mockImplementation((key: string): any => map.get(key)),
-      set: jest.fn().mockImplementation((key: string, value: any): any => map.set(key, value)),
-      delete: jest.fn().mockImplementation((key: string): any => map.delete(key)),
-    } as any;
-
-    factory = new ExpiringAdapterFactory(storage);
+    storage = createStorage();
+    clientStorage = createStorage();
+    factory = new ExpiringAdapterFactory(storage, clientStorage);
     adapter = factory.createStorageAdapter(name);
+  });
+
+  it('uses the client storage for Client adapters.', async(): Promise<void> => {
+    const clientAdapter = factory.createStorageAdapter('Client');
+    await expect(clientAdapter.upsert(id, payload)).resolves.toBeUndefined();
+    expect(clientStorage.set).toHaveBeenCalledWith(expect.anything(), payload, undefined);
+    expect(storage.set).not.toHaveBeenCalled();
+    await expect(clientAdapter.find(id)).resolves.toBe(payload);
+  });
+
+  it('uses the default storage for Client adapters if none is configured.', async(): Promise<void> => {
+    const clientAdapter = new ExpiringAdapterFactory(storage).createStorageAdapter('Client');
+    await expect(clientAdapter.upsert(id, payload)).resolves.toBeUndefined();
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, undefined);
   });
 
   it('can find payload by id.', async(): Promise<void> => {
