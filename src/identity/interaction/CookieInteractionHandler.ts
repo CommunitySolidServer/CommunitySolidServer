@@ -36,16 +36,16 @@ export class CookieInteractionHandler extends JsonInteractionHandler {
     let { metadata: outputMetadata } = output;
 
     // The cookie could be new, in the output, or the one received in the input if no new cookie is made
-    const cookie = outputMetadata?.get(SOLID_HTTP.terms.accountCookie)?.value ??
+    const outputCookie = outputMetadata?.get(SOLID_HTTP.terms.accountCookie)?.value;
+    const cookie = outputCookie ??
       input.metadata.get(SOLID_HTTP.terms.accountCookie)?.value;
     // Only update the expiration if it wasn't set by the source handler,
     // as that might have a specific reason, such as logging out.
     if (!cookie || outputMetadata?.has(SOLID_HTTP.terms.accountCookieExpiration)) {
       return output;
     }
-    // Not reusing the account ID from the input,
-    // as that could potentially belong to a different account if this is a new login action.
-    const accountId = await this.cookieStore.get(cookie);
+    // An output cookie can belong to a different account.
+    const accountId = outputCookie ? await this.cookieStore.get(cookie) : input.accountId;
 
     // Only refresh the cookie if it points to an account that exists and wants to be remembered
     if (!accountId) {
@@ -56,7 +56,7 @@ export class CookieInteractionHandler extends JsonInteractionHandler {
       return output;
     }
 
-    // Refresh the cookie, could be undefined if it was deleted by the operation
+    // Refresh only if the cookie still exists.
     const expiration = await this.cookieStore.refresh(cookie);
     if (expiration) {
       outputMetadata = outputMetadata ?? new RepresentationMetadata(input.target);
