@@ -1,5 +1,17 @@
 # Community Solid Server release notes
 
+## v7.3.0
+
+### New features
+
+- Expiring read/write lockers can enforce an optional maximum hold duration,
+  independent of activity-based lock renewals.
+
+### Configuration changes
+
+- There is a new opt-in `util/resource-locker/file-capped.json` configuration that caps file-based locks at one hour.
+  Existing resource locker configurations remain uncapped.
+
 ## v7.0.0
 
 ### New features
