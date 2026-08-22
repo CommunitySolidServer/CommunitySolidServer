@@ -52,16 +52,13 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
     identifier: ResourceIdentifier,
     whileLocked: (maintainLock: () => void) => PromiseOrValue<T>,
   ): Promise<T> {
-    let timer: Timeout | undefined;
+    let timer: Timeout;
     let maxTimer: Timeout | undefined;
     let createTimeout: () => Timeout;
     let active = true;
 
     function clearTimers(): void {
-      if (timer) {
-        clearTimeout(timer);
-        timer = undefined;
-      }
+      clearTimeout(timer);
       if (maxTimer) {
         clearTimeout(maxTimer);
         maxTimer = undefined;
@@ -72,12 +69,10 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
     const timerPromise = new Promise<never>((resolve, reject): void => {
       // Starts the timer that will cause this promise to error after a given time
       createTimeout = (): Timeout => setTimeout((): void => {
-        if (active) {
-          active = false;
-          clearTimers();
-          this.logger.error(`Lock expired after ${this.expiration}ms on ${identifier.path}`);
-          reject(new InternalServerError(`Lock expired after ${this.expiration}ms on ${identifier.path}`));
-        }
+        active = false;
+        clearTimers();
+        this.logger.error(`Lock expired after ${this.expiration}ms on ${identifier.path}`);
+        reject(new InternalServerError(`Lock expired after ${this.expiration}ms on ${identifier.path}`));
       }, this.expiration);
 
       timer = createTimeout();
@@ -85,16 +80,14 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
       // Absolute deadline on the total hold time, which renewals do not extend
       if (this.maxHoldDuration > 0) {
         maxTimer = setTimeout((): void => {
-          if (active) {
-            active = false;
-            clearTimers();
-            this.logger.warn(
-              `Lock reached its maximum hold duration of ${this.maxHoldDuration}ms on ${identifier.path}`,
-            );
-            reject(new InternalServerError(
-              `Lock reached its maximum hold duration of ${this.maxHoldDuration}ms on ${identifier.path}`,
-            ));
-          }
+          active = false;
+          clearTimers();
+          this.logger.warn(
+            `Lock reached its maximum hold duration of ${this.maxHoldDuration}ms on ${identifier.path}`,
+          );
+          reject(new InternalServerError(
+            `Lock reached its maximum hold duration of ${this.maxHoldDuration}ms on ${identifier.path}`,
+          ));
         }, this.maxHoldDuration);
       }
     });
@@ -105,9 +98,7 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
         return;
       }
       this.logger.verbose(`Renewed expiring lock on ${identifier.path}`);
-      if (timer) {
-        clearTimeout(timer);
-      }
+      clearTimeout(timer);
       timer = createTimeout();
     };
 
