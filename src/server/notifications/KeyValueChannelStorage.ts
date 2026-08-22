@@ -26,6 +26,7 @@ export class KeyValueChannelStorage implements NotificationChannelStorage, Final
   private readonly storage: KeyValueStorage<string, StorageValue>;
   private readonly locker: ReadWriteLocker;
   private readonly timer?: NodeJS.Timeout;
+  private activeSweep?: Promise<void>;
 
   /**
    * @param storage - Where to store the channels.
@@ -100,6 +101,11 @@ export class KeyValueChannelStorage implements NotificationChannelStorage, Final
         if (channel.topic !== oldChannel.topic) {
           throw new InternalServerError(`Trying to change the topic of a notification channel ${channel.id}`);
         }
+      } else {
+        // The channel might have been deleted while this update was waiting for its lock.
+        // Adding it again also restores its topic index entry.
+        await this.add(channel);
+        return;
       }
 
       await this.storage.set(encodeURIComponent(channel.id), channel);
@@ -142,9 +148,21 @@ export class KeyValueChannelStorage implements NotificationChannelStorage, Final
   }
 
   /**
-   * Deletes all channels that have expired.
+   * Runs the expiry sweep as a single-flight operation.
    */
   private async sweepExpiredChannels(): Promise<void> {
+    if (!this.activeSweep) {
+      this.activeSweep = this.performSweep().finally((): void => {
+        this.activeSweep = undefined;
+      });
+    }
+    await this.activeSweep;
+  }
+
+  /**
+   * Deletes all channels that have expired.
+   */
+  private async performSweep(): Promise<void> {
     this.logger.debug('Sweeping expired notification channels.');
     const expired: string[] = [];
     let removed = 0;
@@ -178,5 +196,6 @@ export class KeyValueChannelStorage implements NotificationChannelStorage, Final
     if (this.timer) {
       clearInterval(this.timer);
     }
+    await this.activeSweep;
   }
 }

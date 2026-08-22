@@ -1,3 +1,4 @@
+import { EventEmitter } from 'node:events';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { Logger } from '../../../../src/logging/Logger';
 import { getLoggerFor } from '../../../../src/logging/LogUtil';
@@ -5,6 +6,7 @@ import { KeyValueChannelStorage } from '../../../../src/server/notifications/Key
 import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
+import { flushPromises } from '../../../util/Util';
 import resetAllMocks = jest.resetAllMocks;
 
 jest.mock('../../../../src/logging/LogUtil', (): any => {
@@ -119,6 +121,19 @@ describe('A KeyValueChannelStorage', (): void => {
       };
       await expect(storage.update(newChannel)).rejects
         .toThrow(`Trying to update ${topic} which is not a NotificationChannel.`);
+    });
+
+    it('restores the topic index if the channel was deleted before the update acquired its lock.', async():
+    Promise<void> => {
+      const newChannel = {
+        ...channel,
+        state: '123456',
+      };
+      await expect(storage.update(newChannel)).resolves.toBeUndefined();
+      expect([ ...internalMap.entries() ]).toEqual(expect.arrayContaining([
+        [ encodedTopic, [ channel.id ]],
+        [ encodedId, newChannel ],
+      ]));
     });
   });
 
@@ -260,6 +275,59 @@ describe('A KeyValueChannelStorage', (): void => {
 
       expect(internalMap.get(encodedId)).toEqual(renewed);
       expect(internalMap.get(encodedTopic)).toEqual([ channel.id ]);
+    });
+
+    it('does not start another sweep while one is active.', async(): Promise<void> => {
+      const sweepGate = new EventEmitter();
+      const holdSweep = new Promise<void>((resolve): void => {
+        sweepGate.once('release', resolve);
+      });
+      const entries = jest.spyOn(internalStorage, 'entries').mockImplementation(async function* ():
+      AsyncIterableIterator<[string, NotificationChannel]> {
+        await holdSweep;
+        yield [ encodedId, channel ];
+      });
+      channel.endAt = 0;
+      storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
+      await storage.add(channel);
+      const sweep = mockInterval.mock.calls[0][0] as () => Promise<void>;
+
+      const firstSweep = sweep();
+      const secondSweep = sweep();
+      await flushPromises();
+      expect(entries).toHaveBeenCalledTimes(1);
+
+      sweepGate.emit('release');
+      await Promise.all([ firstSweep, secondSweep ]);
+      await sweep();
+      expect(entries).toHaveBeenCalledTimes(2);
+    });
+
+    it('waits for the active sweep on finalize.', async(): Promise<void> => {
+      const sweepGate = new EventEmitter();
+      const holdSweep = new Promise<void>((resolve): void => {
+        sweepGate.once('release', resolve);
+      });
+      jest.spyOn(internalStorage, 'entries').mockImplementation(async function* ():
+      AsyncIterableIterator<[string, NotificationChannel]> {
+        await holdSweep;
+        yield [ encodedId, channel ];
+      });
+      storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
+      const sweep = (mockInterval.mock.calls[0][0] as () => Promise<void>)();
+      await flushPromises();
+
+      let finalized = false;
+      const finalize = storage.finalize().then((): void => {
+        finalized = true;
+      });
+      await flushPromises();
+      expect(mockClear).toHaveBeenCalledWith(mockTimer);
+      expect(finalized).toBe(false);
+
+      sweepGate.emit('release');
+      await Promise.all([ sweep, finalize ]);
+      expect(finalized).toBe(true);
     });
 
     it('clears the timer on finalize.', async(): Promise<void> => {
