@@ -526,6 +526,10 @@ export * from './storage/ResourceSet';
 export * from './storage/ResourceStore';
 export * from './storage/RoutingResourceStore';
 
+// Util/Caching
+export * from './util/caching/CachedDecorator';
+export * from './util/caching/PromiseCache';
+
 // Util/Errors
 export * from './util/errors/BadRequestHttpError';
 export * from './util/errors/ConflictHttpError';

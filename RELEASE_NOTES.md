@@ -4,6 +4,7 @@
 
 ### New features
 
+- A promise cache and caching decorator are now exported for deduplicating asynchronous computations.
 - Backend resources are cached, as long as they don't change, improving response speed.
   This only works for servers running on a single thread.
 - Several parts of the codebase have been exported to external libraries.
