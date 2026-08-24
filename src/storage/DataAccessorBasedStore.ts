@@ -169,27 +169,24 @@ export class DataAccessorBasedStore implements ResourceStore {
     );
 
     async function* generate(): AsyncGenerator<Quad, void, undefined> {
-      yield* ownQuads;
-      if (!first.done) {
-        yield first.value;
-        yield* childQuads;
+      try {
+        yield* ownQuads;
+        if (!first.done) {
+          yield first.value;
+          yield* childQuads;
+        }
+      } finally {
+        await childQuads.return?.();
       }
     }
     const listing = generate();
-    const streamSource: AsyncIterableIterator<Quad> = {
-      next: listing.next.bind(listing),
-      return: async(): Promise<IteratorResult<Quad>> => {
-        try {
-          return await listing.return();
-        } finally {
-          await childQuads.return?.();
-        }
-      },
-      [Symbol.asyncIterator](): AsyncIterableIterator<Quad> {
-        return this;
-      },
-    };
-    return Readable.from(streamSource, { objectMode: true });
+    // Prime the generator so cancellation reaches its finally block.
+    const initial = await listing.next();
+    const data = Readable.from(listing, { objectMode: true });
+    if (!initial.done) {
+      data.unshift(initial.value);
+    }
+    return data;
   }
 
   /** Yields containment and metadata quads for non-auxiliary children. */
