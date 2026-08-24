@@ -134,7 +134,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     if (isContainer && isMetadata) {
       for await (const child of this.accessor.getChildren(identifier)) {
-        if (!this.isAuxiliaryChild(child)) {
+        if (!this.isAuxiliaryResourceMetadata(child)) {
           metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
         }
       }
@@ -196,7 +196,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   private async* getContainerListingQuads(identifier: ResourceIdentifier, containerNode: NamedNode):
   AsyncIterableIterator<Quad> {
     for await (const child of this.accessor.getChildren(identifier)) {
-      if (!this.isAuxiliaryChild(child)) {
+      if (!this.isAuxiliaryResourceMetadata(child)) {
         yield DataFactory.quad(
           containerNode,
           LDP.terms.contains,
@@ -208,8 +208,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
   }
 
-  private isAuxiliaryChild(child: RepresentationMetadata): boolean {
-    return this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value });
+  private isAuxiliaryResourceMetadata(metadata: RepresentationMetadata): boolean {
+    return this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: metadata.identifier.value });
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions):
@@ -713,7 +713,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    */
   protected async hasProperChildren(container: ResourceIdentifier): Promise<boolean> {
     for await (const child of this.accessor.getChildren(container)) {
-      if (!this.isAuxiliaryChild(child)) {
+      if (!this.isAuxiliaryResourceMetadata(child)) {
         return true;
       }
     }
