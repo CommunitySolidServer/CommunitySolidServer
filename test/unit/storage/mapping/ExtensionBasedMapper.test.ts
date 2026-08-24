@@ -20,6 +20,7 @@ describe('An ExtensionBasedMapper', (): void => {
     jest.clearAllMocks();
     fs.promises = {
       readdir: jest.fn(),
+      stat: jest.fn().mockRejectedValue(new Error('does not exist')),
     } as any;
     fsPromises = fs.promises as any;
   });
@@ -158,6 +159,71 @@ describe('An ExtensionBasedMapper', (): void => {
           contentType: 'text/custom',
           isMetadata: false,
         });
+    });
+
+    it('resolves an exact file name without scanning the directory.', async(): Promise<void> => {
+      fsPromises.stat.mockResolvedValue(undefined);
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, false)).resolves.toEqual({
+        identifier: { path: `${base}test.txt` },
+        filePath: `${rootFilepath}test.txt`,
+        contentType: 'text/plain',
+        isMetadata: false,
+      });
+      expect(fsPromises.stat).toHaveBeenCalledWith(`${rootFilepath}test.txt`);
+      expect(fsPromises.readdir).not.toHaveBeenCalled();
+    });
+
+    it('resolves a common extension without scanning the directory.', async(): Promise<void> => {
+      fsPromises.stat.mockImplementation(async(path: string): Promise<void> => {
+        if (path !== `${rootFilepath}test$.json`) {
+          throw new Error('does not exist');
+        }
+      });
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test` }, false)).resolves.toEqual({
+        identifier: { path: `${base}test` },
+        filePath: `${rootFilepath}test$.json`,
+        contentType: 'application/json',
+        isMetadata: false,
+      });
+      expect(fsPromises.readdir).not.toHaveBeenCalled();
+    });
+
+    it('resolves a configured extension without scanning the directory.', async(): Promise<void> => {
+      const customMapper = new ExtensionBasedMapper(base, rootFilepath, { cstm: 'text/custom' });
+      fsPromises.stat.mockImplementation(async(path: string): Promise<void> => {
+        if (path !== `${rootFilepath}test$.cstm`) {
+          throw new Error('does not exist');
+        }
+      });
+      await expect(customMapper.mapUrlToFilePath({ path: `${base}test` }, false)).resolves.toEqual({
+        identifier: { path: `${base}test` },
+        filePath: `${rootFilepath}test$.cstm`,
+        contentType: 'text/custom',
+        isMetadata: false,
+      });
+      expect(fsPromises.readdir).not.toHaveBeenCalled();
+    });
+
+    it('falls back to a directory scan for uncommon extensions.', async(): Promise<void> => {
+      fsPromises.readdir.mockReturnValue([ 'test$.weird' ]);
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test` }, false)).resolves.toEqual({
+        identifier: { path: `${base}test` },
+        filePath: `${rootFilepath}test$.weird`,
+        contentType: 'application/octet-stream',
+        isMetadata: false,
+      });
+      expect(fsPromises.readdir).toHaveBeenCalledWith(rootFilepath);
+    });
+
+    it('preserves arbitrary content types in internal containers.', async(): Promise<void> => {
+      fsPromises.readdir.mockReturnValue([ 'resource$.ttl' ]);
+      const identifier = { path: `${base}.internal/resource` };
+      await expect(mapper.mapUrlToFilePath(identifier, false)).resolves.toEqual({
+        identifier,
+        filePath: `${rootFilepath}.internal/resource$.ttl`,
+        contentType: 'text/turtle',
+        isMetadata: false,
+      });
     });
   });
 

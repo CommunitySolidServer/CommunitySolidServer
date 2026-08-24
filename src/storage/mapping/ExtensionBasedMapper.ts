@@ -14,8 +14,23 @@ import type { FileIdentifierMapperFactory, ResourceLink } from './FileIdentifier
  * the corresponding file will be appended with the correct extension, preceded by $.
  */
 export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
+  private static readonly commonExtensions: readonly string[] = [
+    'json',
+    'ttl',
+    'nq',
+    'nt',
+    'jsonld',
+    'trig',
+    'n3',
+    'rdf',
+    'html',
+    'txt',
+    'unknown',
+  ];
+
   private readonly customTypes: Record<string, string>;
   private readonly customExtensions: Record<string, string>;
+  private readonly lookupExtensions: string[];
 
   public constructor(
     base: string,
@@ -25,7 +40,8 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
     super(base, rootFilepath);
 
     // Workaround for https://github.com/LinkedSoftwareDependencies/Components.js/issues/20
-    if (!customTypes || Object.keys(customTypes).length === 0) {
+    const configuredExtensions = Object.keys(customTypes ?? {});
+    if (!customTypes || configuredExtensions.length === 0) {
       this.customTypes = DEFAULT_CUSTOM_TYPES;
     } else {
       this.customTypes = customTypes;
@@ -35,6 +51,10 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
     for (const [ extension, contentType ] of Object.entries(this.customTypes)) {
       this.customExtensions[contentType] = extension;
     }
+    this.lookupExtensions = [ ...new Set([
+      ...configuredExtensions,
+      ...ExtensionBasedMapper.commonExtensions,
+    ]) ];
   }
 
   protected async mapUrlToDocumentPath(identifier: ResourceIdentifier, filePath: string, contentType?: string):
@@ -49,14 +69,7 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
     if (!contentType) {
       // Find a matching file
       const [ , folder, documentName ] = /^(.*\/)([^/]*)$/u.exec(filePath)!;
-      let fileName: string | undefined;
-      try {
-        const files = await fsPromises.readdir(folder);
-        fileName = files.find((file): boolean =>
-          file.startsWith(documentName) && /^(?:\$\..+)?$/u.test(file.slice(documentName.length)));
-      } catch {
-        // Parent folder does not exist (or is not a folder)
-      }
+      const fileName = await this.findFile(folder, documentName);
       if (fileName) {
         filePath = joinFilePath(folder, fileName);
       }
@@ -74,6 +87,36 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
       filePath += `$.${extension}`;
     }
     return super.mapUrlToDocumentPath(identifier, filePath, contentType);
+  }
+
+  /**
+   * Finds a matching file by probing likely names before scanning the directory.
+   * The fallback preserves support for arbitrary extensions.
+   */
+  private async findFile(folder: string, documentName: string): Promise<string | undefined> {
+    // An empty document name would cause stat to match the folder itself.
+    if (documentName) {
+      const candidates = [
+        documentName,
+        ...this.lookupExtensions.map((extension): string => `${documentName}$.${extension}`),
+      ];
+      for (const candidate of candidates) {
+        try {
+          await fsPromises.stat(joinFilePath(folder, candidate));
+          return candidate;
+        } catch {
+          // Try the next candidate.
+        }
+      }
+    }
+
+    try {
+      const files = await fsPromises.readdir(folder);
+      return files.find((file): boolean =>
+        file.startsWith(documentName) && /^(?:\$\..+)?$/u.test(file.slice(documentName.length)));
+    } catch {
+      // Parent folder does not exist (or is not a folder)
+    }
   }
 
   protected async getDocumentUrl(relative: string): Promise<string> {
