@@ -169,7 +169,7 @@
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.12",
-    "typescript": "^5.9.2"
+    "typescript": "^7.0.2"
   },
   "husky": {
     "hooks": {
