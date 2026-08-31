@@ -58,6 +58,7 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
     let active = true;
 
     function clearTimers(): void {
+      active = false;
       clearTimeout(timer);
       if (maxTimer) {
         clearTimeout(maxTimer);
@@ -67,12 +68,20 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
 
     // Promise that throws an error when the timer finishes
     const timerPromise = new Promise<never>((resolve, reject): void => {
+      const logger = this.logger;
+
+      function rejectAfterTimeout(message: string, logLevel: 'error' | 'warn'): void {
+        clearTimers();
+        logger[logLevel](message);
+        reject(new InternalServerError(message));
+      }
+
       // Starts the timer that will cause this promise to error after a given time
       createTimeout = (): Timeout => setTimeout((): void => {
-        active = false;
-        clearTimers();
-        this.logger.error(`Lock expired after ${this.expiration}ms on ${identifier.path}`);
-        reject(new InternalServerError(`Lock expired after ${this.expiration}ms on ${identifier.path}`));
+        rejectAfterTimeout(
+          `Lock expired after ${this.expiration}ms on ${identifier.path}`,
+          'error',
+        );
       }, this.expiration);
 
       timer = createTimeout();
@@ -80,14 +89,10 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
       // Absolute deadline on the total hold time, which renewals do not extend
       if (this.maxHoldDuration > 0) {
         maxTimer = setTimeout((): void => {
-          active = false;
-          clearTimers();
-          this.logger.warn(
+          rejectAfterTimeout(
             `Lock reached its maximum hold duration of ${this.maxHoldDuration}ms on ${identifier.path}`,
+            'warn',
           );
-          reject(new InternalServerError(
-            `Lock reached its maximum hold duration of ${this.maxHoldDuration}ms on ${identifier.path}`,
-          ));
         }, this.maxHoldDuration);
       }
     });
@@ -107,7 +112,6 @@ export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
       try {
         return await whileLocked(renewTimer);
       } finally {
-        active = false;
         clearTimers();
       }
     }
