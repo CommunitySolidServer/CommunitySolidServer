@@ -16,7 +16,7 @@
       }
     },
     {
-      "comment": "Makes sure the notification channel sweep timer is stopped when the application stops.",
+      "comment": "Stops notification channel sweeps and waits for pending storage operations before backend cleanup.",
       "@id": "urn:solid-server:default:Finalizer",
       "@type": "ParallelHandler",
       "handlers": [

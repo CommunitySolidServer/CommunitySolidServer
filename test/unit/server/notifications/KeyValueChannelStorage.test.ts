@@ -173,27 +173,19 @@ describe('A KeyValueChannelStorage', (): void => {
   });
 
   describe('the background sweep', (): void => {
-    // Disable the actual interval and simply check it was created with the correct parameters.
-    // The registered callback is invoked manually to verify its behaviour.
     let mockInterval: jest.SpyInstance;
-    let mockClear: jest.SpyInstance;
-    let mockRandom: jest.SpyInstance;
-    // We only need a stub timer with an `unref` function since we never let it fire on its own.
-    let mockTimer: { unref: jest.Mock };
 
     beforeEach((): void => {
-      mockTimer = { unref: jest.fn() };
-      mockInterval = jest.spyOn(globalThis, 'setInterval')
-        .mockImplementation(jest.fn().mockReturnValue(mockTimer));
-      mockClear = jest.spyOn(globalThis, 'clearInterval').mockImplementation(jest.fn());
+      jest.useFakeTimers();
+      mockInterval = jest.spyOn(globalThis, 'setInterval');
       // Fixed jitter source so the scheduled delay is deterministic.
-      mockRandom = jest.spyOn(globalThis.Math, 'random').mockReturnValue(0.5);
+      jest.spyOn(globalThis.Math, 'random').mockReturnValue(0.5);
     });
 
     afterEach((): void => {
-      mockInterval.mockRestore();
-      mockClear.mockRestore();
-      mockRandom.mockRestore();
+      jest.clearAllTimers();
+      jest.restoreAllMocks();
+      jest.useRealTimers();
     });
 
     it('schedules the sweep on the configured interval when jitter is disabled.', (): void => {
@@ -219,7 +211,8 @@ describe('A KeyValueChannelStorage', (): void => {
 
     it('unrefs the timer so it does not keep the event loop alive.', (): void => {
       storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
-      expect(mockTimer.unref).toHaveBeenCalledTimes(1);
+      const timer = mockInterval.mock.results[0].value as NodeJS.Timeout;
+      expect(timer.hasRef()).toBe(false);
     });
 
     it('does not schedule a sweep when the interval is 0.', (): void => {
@@ -232,7 +225,7 @@ describe('A KeyValueChannelStorage', (): void => {
         id: 'http://example.com/.notifications/active',
         topic,
         type: 'WebSocketChannel2023',
-        endAt: Date.now() + (60 * 1000),
+        endAt: Date.now() + (2 * 60 * 1000),
       };
       const endlessChannel: NotificationChannel = {
         id: 'http://example.com/.notifications/endless',
@@ -245,8 +238,7 @@ describe('A KeyValueChannelStorage', (): void => {
       await storage.add(activeChannel);
       await storage.add(endlessChannel);
 
-      // Invoke the callback that was registered with the interval.
-      await (mockInterval.mock.calls[0][0] as () => Promise<void>)();
+      await jest.advanceTimersByTimeAsync(60 * 1000);
 
       // The expired channel and its index reference are gone; the others remain.
       expect(internalMap.has(encodedId)).toBe(false);
@@ -260,7 +252,7 @@ describe('A KeyValueChannelStorage', (): void => {
       storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
       await storage.add(channel);
 
-      const renewed = { ...channel, endAt: Date.now() + (60 * 1000) };
+      const renewed = { ...channel, endAt: Date.now() + (2 * 60 * 1000) };
       jest.mocked(locker.withWriteLock).mockImplementation(async(
         rid: ResourceIdentifier,
         whileLocked: () => unknown,
@@ -271,7 +263,7 @@ describe('A KeyValueChannelStorage', (): void => {
         return whileLocked();
       });
 
-      await (mockInterval.mock.calls[0][0] as () => Promise<void>)();
+      await jest.advanceTimersByTimeAsync(60 * 1000);
 
       expect(internalMap.get(encodedId)).toEqual(renewed);
       expect(internalMap.get(encodedTopic)).toEqual([ channel.id ]);
@@ -290,16 +282,14 @@ describe('A KeyValueChannelStorage', (): void => {
       channel.endAt = 0;
       storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
       await storage.add(channel);
-      const sweep = mockInterval.mock.calls[0][0] as () => Promise<void>;
 
-      const firstSweep = sweep();
-      const secondSweep = sweep();
-      await flushPromises();
+      await jest.advanceTimersByTimeAsync(2 * 60 * 1000);
       expect(entries).toHaveBeenCalledTimes(1);
 
       sweepGate.emit('release');
-      await Promise.all([ firstSweep, secondSweep ]);
-      await sweep();
+      await flushPromises();
+      expect(internalMap.size).toBe(0);
+      await jest.advanceTimersByTimeAsync(60 * 1000);
       expect(entries).toHaveBeenCalledTimes(2);
     });
 
@@ -314,33 +304,93 @@ describe('A KeyValueChannelStorage', (): void => {
         yield [ encodedId, channel ];
       });
       storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
-      const sweep = (mockInterval.mock.calls[0][0] as () => Promise<void>)();
-      await flushPromises();
+      await jest.advanceTimersByTimeAsync(60 * 1000);
 
       let finalized = false;
       const finalize = storage.finalize().then((): void => {
         finalized = true;
       });
       await flushPromises();
-      expect(mockClear).toHaveBeenCalledWith(mockTimer);
+      expect(jest.getTimerCount()).toBe(0);
       expect(finalized).toBe(false);
 
       sweepGate.emit('release');
-      await Promise.all([ sweep, finalize ]);
+      await finalize;
       expect(finalized).toBe(true);
     });
 
-    it('clears the timer on finalize.', async(): Promise<void> => {
+    it('waits for an active deletion before finalization completes.', async(): Promise<void> => {
+      const deletionGate = new EventEmitter();
+      const holdDeletion = new Promise<void>((resolve): void => {
+        deletionGate.once('release', resolve);
+      });
+      const deleteEntry = internalMap.delete.bind(internalMap);
+      const deleteSpy = jest.spyOn(internalStorage, 'delete').mockImplementation(async(key): Promise<boolean> => {
+        await holdDeletion;
+        return deleteEntry(key);
+      });
+      channel.endAt = 0;
       storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
-      await expect(storage.finalize()).resolves.toBeUndefined();
-      expect(mockClear).toHaveBeenCalledTimes(1);
-      expect(mockClear).toHaveBeenLastCalledWith(mockTimer);
+      await storage.add(channel);
+      await jest.advanceTimersByTimeAsync(60 * 1000);
+      expect(deleteSpy).toHaveBeenCalledTimes(1);
+
+      let finalized = false;
+      const finalize = storage.finalize().then((): void => {
+        finalized = true;
+      });
+      await flushPromises();
+      expect(finalized).toBe(false);
+
+      deletionGate.emit('release');
+      await finalize;
+      expect(finalized).toBe(true);
+      expect(internalMap.size).toBe(0);
+      expect(deleteSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('does not clear a timer on finalize when the sweep is disabled.', async(): Promise<void> => {
+    it('stops sweeping on finalize even when the process remains alive.', async(): Promise<void> => {
+      const entries = jest.spyOn(internalStorage, 'entries');
+      storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
+      // An unreferenced timer still fires while the event loop is running.
+      await jest.advanceTimersByTimeAsync(60 * 1000);
+      expect(entries).toHaveBeenCalledTimes(1);
+
+      await expect(storage.finalize()).resolves.toBeUndefined();
+      expect(jest.getTimerCount()).toBe(0);
+      await jest.advanceTimersByTimeAsync(2 * 60 * 1000);
+      expect(entries).toHaveBeenCalledTimes(1);
+    });
+
+    it('still finalizes if the active sweep fails.', async(): Promise<void> => {
+      const sweepGate = new EventEmitter();
+      const holdSweep = new Promise<void>((resolve): void => {
+        sweepGate.once('release', resolve);
+      });
+      jest.spyOn(internalStorage, 'delete').mockImplementation(async(): Promise<boolean> => {
+        await holdSweep;
+        throw new Error('delete failed');
+      });
+      channel.endAt = 0;
+      storage = new KeyValueChannelStorage(internalStorage, locker, 1, 0);
+      await storage.add(channel);
+      await jest.advanceTimersByTimeAsync(60 * 1000);
+
+      const finalize = storage.finalize();
+      sweepGate.emit('release');
+      await expect(finalize).resolves.toBeUndefined();
+      await flushPromises();
+      expect(logger.error).toHaveBeenCalledTimes(1);
+      expect(logger.error).toHaveBeenCalledWith(
+        'Error during interval callback: Failed to sweep expired notification channels - delete failed',
+      );
+      expect(jest.getTimerCount()).toBe(0);
+    });
+
+    it('can finalize when the sweep is disabled.', async(): Promise<void> => {
       storage = new KeyValueChannelStorage(internalStorage, locker, 0);
       await expect(storage.finalize()).resolves.toBeUndefined();
-      expect(mockClear).toHaveBeenCalledTimes(0);
+      expect(jest.getTimerCount()).toBe(0);
     });
   });
 });

@@ -192,10 +192,17 @@ export class KeyValueChannelStorage implements NotificationChannelStorage, Final
     return { path: `${typeof identifier === 'string' ? identifier : identifier.path}.notification-storage` };
   }
 
+  /**
+   * Stops future sweeps and waits for pending storage operations before backend cleanup.
+   * `unref()` only allows the process to exit; it does not stop the timer when `App.stop()` is called
+   * while other work keeps the process alive.
+   */
   public async finalize(): Promise<void> {
     if (this.timer) {
       clearInterval(this.timer);
     }
-    await this.activeSweep;
+    await this.activeSweep?.catch((): void => {
+      // Sweep errors are logged by setSafeInterval and must not prevent backend cleanup.
+    });
   }
 }
