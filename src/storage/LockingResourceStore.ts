@@ -124,15 +124,23 @@ export class LockingResourceStore implements AtomicResourceStore {
     // once we have the Representation.
     // See https://github.com/CommunitySolidServer/CommunitySolidServer/pull/536#discussion_r562467957
     return new Promise((resolve, reject): void => {
-      let representation: Representation;
+      let representation: Representation | undefined;
+      let timedOut = false;
       // Make the resource time out to ensure that the lock is always released eventually.
       this.locks.withReadLock(identifier, async(maintainLock): Promise<void> => {
         representation = await whileLocked();
+        if (timedOut) {
+          // The lock expired while the resource was still being read.
+          // Close the stream so it doesn't keep a file handle open forever.
+          representation.data.destroy();
+          return;
+        }
         resolve(this.createExpiringRepresentation(representation, maintainLock));
 
         // Release the lock when an error occurs or the data finished streaming
         await this.waitForStreamToEnd(representation.data);
       }).catch((error: unknown): void => {
+        timedOut = true;
         // Destroy the source stream in case the lock times out
         representation?.data.destroy(error as Error);
 

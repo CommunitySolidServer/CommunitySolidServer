@@ -29,7 +29,9 @@ const defaultUnlockOptions: UnlockOptions = {
   realpath: false,
 };
 
-const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay: 50, retryJitter: 30 };
+// Bound the number of retries so a contended lock doesn't spin forever,
+// keeping the event loop and filesystem threadpool busy (~30s max wait).
+const attemptDefaults: Required<AttemptSettings> = { retryCount: 600, retryDelay: 50, retryJitter: 30 };
 
 /**
  * Argument interface of the FileSystemResourceLocker constructor.

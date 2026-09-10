@@ -294,6 +294,38 @@ describe('A LockingResourceStore', (): void => {
     expect(order).toEqual([ 'lock read', 'useless get', 'timeout', 'unlock read' ]);
   });
 
+  it('destroys the stream if a timeout happens before getting a resource finishes.', async(): Promise<void> => {
+    // The resource only finishes loading after the timeout has already fired
+    let resolveRepresentation!: (representation: Representation) => void;
+    jest.spyOn(source, 'getRepresentation').mockImplementation((): any => {
+      order.push('useless get');
+      return new Promise((resolve): void => {
+        resolveRepresentation = resolve;
+      });
+    });
+
+    const prom = store.getRepresentation(subjectId, {});
+
+    timeoutTrigger.emit('timeout');
+
+    await expect(prom).rejects.toThrow('timeout');
+
+    // Let the resource finish loading; its stream must be closed to prevent a leak
+    const readable = guardedStreamFrom([ 1, 2, 3 ]);
+    const destroy = readable.destroy.bind(readable);
+    jest.spyOn(readable, 'destroy').mockImplementation((error): any => destroy.call(readable, error));
+    resolveRepresentation({ data: readable } as Representation);
+
+    // Provide opportunity for async events
+    await flushPromises();
+
+    expect(locker.withReadLock).toHaveBeenCalledTimes(1);
+    expect(locker.withReadLock.mock.calls[0][0]).toEqual(subjectId);
+    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(order).toEqual([ 'lock read', 'useless get', 'timeout', 'unlock read' ]);
+    expect(readable.destroy).toHaveBeenCalledTimes(1);
+  });
+
   it('hasResource should only acquire and release the read lock.', async(): Promise<void> => {
     await store.hasResource(subjectId);
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);

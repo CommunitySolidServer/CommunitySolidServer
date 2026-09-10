@@ -66,6 +66,16 @@ describe('A BaseLoginAccountStorage', (): void => {
     expect(source.delete).toHaveBeenLastCalledWith(ACCOUNT_TYPE, 'id');
   });
 
+  it('does not reject when the timeout check for an account without login methods fails.', async(): Promise<void> => {
+    source.get.mockRejectedValueOnce(new Error('bad get'));
+    await expect(storage.create(ACCOUNT_TYPE, { test: 'data' })).resolves.toEqual({ test: 'data', id: 'id' });
+    expect(source.delete).toHaveBeenCalledTimes(0);
+
+    await expect(jest.advanceTimersByTimeAsync(30 * 60 * 1000)).resolves.toBeUndefined();
+
+    expect(source.delete).toHaveBeenCalledTimes(0);
+  });
+
   it('does not delete an account after the set timeout if it has a login method.', async(): Promise<void> => {
     source.get.mockResolvedValueOnce({ id: 'id', linkedLoginsCount: 1 });
     await expect(storage.create(ACCOUNT_TYPE, { test: 'data' })).resolves.toEqual({ test: 'data', id: 'id' });

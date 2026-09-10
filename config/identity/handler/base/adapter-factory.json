@@ -13,6 +13,7 @@
         "source": {
           "@type": "ExpiringAdapterFactory",
           "storage": {
+            "@id": "urn:solid-server:default:ExpiringAdapterStorage",
             "@type": "WrappedExpiringStorage",
             "source": {
               "@type": "ContainerPathStorage",

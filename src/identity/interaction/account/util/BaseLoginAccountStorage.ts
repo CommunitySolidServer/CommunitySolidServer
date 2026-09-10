@@ -9,6 +9,7 @@ import type {
   ValueType,
 } from '../../../../storage/keyvalue/IndexedStorage';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
+import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { NotFoundHttpError } from '../../../../util/errors/NotFoundHttpError';
 import type { LoginStorage } from './LoginStorage';
 import { ACCOUNT_TYPE } from './LoginStorage';
@@ -155,10 +156,15 @@ export class BaseLoginAccountStorage<T extends IndexTypeCollection<T>> implement
   protected createAccountTimeout(id: string): void {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     const timer = setTimeout(async(): Promise<void> => {
-      const account = await this.storage.get(ACCOUNT_TYPE, id);
-      if (account && account[LOGIN_COUNT] === 0) {
-        this.logger.debug(`Removing account with no login methods ${id}`);
-        await this.storage.delete(ACCOUNT_TYPE, id);
+      try {
+        const account = await this.storage.get(ACCOUNT_TYPE, id);
+        if (account && account[LOGIN_COUNT] === 0) {
+          this.logger.debug(`Removing account with no login methods ${id}`);
+          await this.storage.delete(ACCOUNT_TYPE, id);
+        }
+      } catch (error: unknown) {
+        // Prevent an unhandled rejection (e.g. a lock timeout) from crashing the process.
+        this.logger.error(`Error during account cleanup of ${id}: ${createErrorMessage(error)}`);
       }
     }, this.expiration);
     timer.unref();
