@@ -1,5 +1,7 @@
 import { PassThrough } from 'node:stream';
+import type { TransformableInfo } from 'logform';
 import type { Logger } from 'winston';
+import { format } from 'winston';
 import type * as Transport from 'winston-transport';
 import { WinstonLogger } from '../../../src/logging/WinstonLogger';
 import { WinstonLoggerFactory } from '../../../src/logging/WinstonLoggerFactory';
@@ -73,5 +75,61 @@ describe('WinstonLoggerFactory', (): void => {
       [Symbol.for('splat')]: [{ isPrimary: true, pid: 0 }],
       [Symbol.for('message')]: `${now.toISOString()} [MyLabel] {Primary} ${level}: my message`,
     }));
+  });
+
+  it.each([
+    { target: 'inner', formatCalls: 2 },
+    { target: 'wrapped', formatCalls: 1 },
+  ] as const)('runs CSS formatting $formatCalls times through the $target logger.', ({ target, formatCalls }): void => {
+    const wrapped = new WinstonLoggerFactory('info').createLogger('MyLabel');
+    const inner: Logger = (wrapped as any).logger;
+    const consoleTransport = inner.transports[0];
+    const loggerFormat = jest.spyOn(inner.format, 'transform');
+    // Keep Winston's real transport level filtering and observe its separate formatting stage.
+    consoleTransport.format = format((info): TransformableInfo => info)();
+    const transportFormat = jest.spyOn(consoleTransport.format, 'transform');
+    const output = jest.spyOn(consoleTransport, 'log').mockImplementation((info, callback): void => callback());
+
+    try {
+      const loggers = { inner, wrapped };
+      loggers[target].log('debug', 'filtered message', { isPrimary: true, pid: 0 });
+      loggers[target].log('info', 'visible message', { isPrimary: true, pid: 0 });
+
+      expect(loggerFormat).toHaveBeenCalledTimes(formatCalls);
+      expect(transportFormat).toHaveBeenCalledTimes(1);
+      expect(output).toHaveBeenCalledTimes(1);
+      expect(output).toHaveBeenCalledWith(expect.objectContaining({
+        label: 'MyLabel',
+        message: 'visible message',
+        timestamp: now.toISOString(),
+        metadata: { isPrimary: true, pid: 0 },
+        [Symbol.for('level')]: 'info',
+        [Symbol.for('message')]: expect.stringContaining('[MyLabel] {Primary}'),
+      }), expect.any(Function));
+    } finally {
+      inner.close();
+    }
+  });
+
+  it('formats messages enabled by a transport that overrides the logger level.', (): void => {
+    const wrapped = new WinstonLoggerFactory('info').createLogger('MyLabel');
+    const inner: Logger = (wrapped as any).logger;
+    const consoleTransport = inner.transports[0];
+    consoleTransport.level = 'debug';
+    const loggerFormat = jest.spyOn(inner.format, 'transform');
+    const output = jest.spyOn(consoleTransport, 'log').mockImplementation((info, callback): void => callback());
+
+    try {
+      wrapped.log('debug', 'visible message');
+
+      expect(loggerFormat).toHaveBeenCalledTimes(1);
+      expect(output).toHaveBeenCalledTimes(1);
+      expect(output).toHaveBeenCalledWith(expect.objectContaining({
+        message: 'visible message',
+        [Symbol.for('level')]: 'debug',
+      }), expect.any(Function));
+    } finally {
+      inner.close();
+    }
   });
 });
