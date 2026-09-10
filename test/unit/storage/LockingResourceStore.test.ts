@@ -1,8 +1,11 @@
 import { EventEmitter } from 'node:events';
+import { Algebra } from 'sparqlalgebrajs';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { N3Patch } from '../../../src/http/representation/N3Patch';
 import type { Representation } from '../../../src/http/representation/Representation';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
+import type { SparqlUpdatePatch } from '../../../src/http/representation/SparqlUpdatePatch';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import type { ExpiringReadWriteLocker } from '../../../src/util/locking/ExpiringReadWriteLocker';
@@ -207,6 +210,48 @@ describe('A LockingResourceStore', (): void => {
     expect(data.data.read).toBe(originalRead);
     data.data.read();
     expect(maintainLock).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([ 'addResource', 'setRepresentation', 'modifyResource' ] as const)(
+    'preserves the metadata of the representation passed to %s by reference.',
+    async(method): Promise<void> => {
+      const representation = new BasicRepresentation('data', subjectId, 'text/plain');
+
+      await store[method](subjectId, representation);
+      const expiringRepresentation = jest.mocked(source[method]).mock.calls[0][1];
+      expect(expiringRepresentation.metadata).toBe(representation.metadata);
+      expect(expiringRepresentation.binary).toBe(representation.binary);
+      expect(expiringRepresentation.isEmpty).toBe(false);
+    },
+  );
+
+  it('preserves the metadata of the returned representation by reference.', async(): Promise<void> => {
+    const representation = new BasicRepresentation('data', subjectId, 'text/plain');
+    jest.spyOn(source, 'getRepresentation').mockResolvedValueOnce(representation);
+
+    const expiringRepresentation = await store.getRepresentation(subjectId, {});
+    expect(expiringRepresentation.metadata).toBe(representation.metadata);
+
+    expiringRepresentation.data.destroy();
+    await flushPromises();
+  });
+
+  it('preserves the empty state of a representation.', async(): Promise<void> => {
+    await store.setRepresentation(subjectId, new BasicRepresentation());
+    const expiringRepresentation = jest.mocked(source.setRepresentation).mock.calls[0][1];
+    expect(expiringRepresentation.isEmpty).toBe(true);
+  });
+
+  it('preserves SPARQL update algebra when modifying a resource.', async(): Promise<void> => {
+    const patch: SparqlUpdatePatch = {
+      ...data,
+      algebra: { type: Algebra.types.DELETE_INSERT, delete: [], insert: []},
+    };
+
+    await store.modifyResource(subjectId, patch);
+    const expiringPatch = jest.mocked(source.modifyResource).mock.calls[0][1] as SparqlUpdatePatch;
+    expect(expiringPatch.data).not.toBe(patch.data);
+    expect(expiringPatch.algebra).toBe(patch.algebra);
   });
 
   it('destroys the incoming data stream if the write lock expires.', async(): Promise<void> => {

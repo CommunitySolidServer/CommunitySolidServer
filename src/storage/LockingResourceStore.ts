@@ -5,6 +5,7 @@ import type { Representation } from '../http/representation/Representation';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
+import { guardStream } from '../util/GuardedStream';
 import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteLocker';
 import { endOfStream } from '../util/StreamUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';
@@ -112,19 +113,17 @@ export class LockingResourceStore implements AtomicResourceStore {
   }
 
   /**
-   * Acquires a read lock that is only released when all data of the resulting representation has been read,
+   * Acquires a lock that is only released when all data of the resulting representation data has been read,
    * an error occurs, or the timeout has been triggered.
-   * The representation is adapted to reset the timer every time data is read.
+   * The resulting data stream will be adapted to reset the timer every time data is read.
    *
    * In case the data of the resulting stream is not needed it should be closed to prevent a timeout error.
    *
    * @param identifier - Identifier that should be locked.
    * @param whileLocked - Function to be executed while the resource is locked.
    */
-  protected async lockedRepresentationRun(
-    identifier: ResourceIdentifier,
-    whileLocked: () => Promise<Representation>,
-  ): Promise<Representation> {
+  protected async lockedRepresentationRun(identifier: ResourceIdentifier, whileLocked: () => Promise<Representation>):
+  Promise<Representation> {
     // Create a new Promise that resolves to the resulting Representation
     // while only unlocking when the data has been read (or there's a timeout).
     // Note that we can't just return the result of `withReadLock` since that promise only
@@ -132,8 +131,7 @@ export class LockingResourceStore implements AtomicResourceStore {
     // once we have the Representation.
     // See https://github.com/CommunitySolidServer/CommunitySolidServer/pull/536#discussion_r562467957
     return new Promise((resolve, reject): void => {
-      let representation: Representation | undefined;
-
+      let representation: Representation;
       // Make the resource time out to ensure that the lock is always released eventually.
       this.locks.withReadLock(identifier, async(maintainLock): Promise<void> => {
         representation = await whileLocked();
@@ -146,7 +144,7 @@ export class LockingResourceStore implements AtomicResourceStore {
         representation?.data.destroy(error as Error);
 
         // Let this function return an error in case something went wrong getting the data
-        // or in case the timeout happens before `whileLocked` returned
+        // or in case the timeout happens before `func` returned
         reject(error as Error);
       });
     });
@@ -202,11 +200,13 @@ export class LockingResourceStore implements AtomicResourceStore {
       },
     }) as Readable;
 
-    // Write inputs can be specialized representations, such as N3 or SPARQL patches.
-    // Preserve their prototype and properties while replacing only the data stream used to maintain the lock.
-    const descriptors: PropertyDescriptorMap = Object.getOwnPropertyDescriptors(representation);
-    descriptors.data.value = data;
-    return Object.create(Reflect.getPrototypeOf(representation), descriptors) as T;
+    // Reuse metadata to avoid duplicating potentially large container listings.
+    return {
+      ...representation,
+      data: guardStream(data),
+      // BasicRepresentation defines isEmpty on its prototype, so it is not copied by the spread.
+      isEmpty: representation.isEmpty,
+    };
   }
 
   /**
