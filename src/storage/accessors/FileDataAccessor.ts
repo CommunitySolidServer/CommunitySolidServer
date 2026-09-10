@@ -225,6 +225,7 @@ export class FileDataAccessor implements DataAccessor {
     // Write metadata to file if there are quads remaining
     if (quads.length > 0) {
       // Determine required content-type based on mapper
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- Buffered metadata is faster for this call site.
       const serializedMetadata = serializeQuads(quads, metadataLink.contentType);
       await this.writeDataFile(metadataLink.filePath, serializedMetadata);
       wroteMetadata = true;
@@ -266,6 +267,7 @@ export class FileDataAccessor implements DataAccessor {
       const stats = await lstat(metadataLink.filePath);
 
       const readMetadataStream = guardStream(createReadStream(metadataLink.filePath));
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- Streaming into metadata regresses performance.
       const quads = await parseQuads(
         readMetadataStream,
         { format: metadataLink.contentType, baseIRI: identifier.path },
