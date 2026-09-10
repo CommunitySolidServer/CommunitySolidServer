@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^8.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^8.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "Storage to be used to keep track of subscriptions.",
@@ -11,6 +14,17 @@
         "relativePath": "/notifications/",
         "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
       }
+    },
+    {
+      "comment": "Stops notification channel sweeps and waits for pending storage operations before backend cleanup.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:SubscriptionStorage" }
+        }
+      ]
     }
   ]
 }

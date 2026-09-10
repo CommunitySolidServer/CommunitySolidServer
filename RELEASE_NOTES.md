@@ -31,6 +31,13 @@ The following changes pertain to the imports in the default configs:
 
 The following changes are relevant for v7 custom configs that replaced certain features.
 
+- `KeyValueChannelStorage` now sweeps expired notification channels every 60 minutes by default,
+  with up to 15% jitter between instances.
+  Custom configurations can set the interval in minutes (`0` disables the sweep) and the jitter fraction,
+  and should register the storage with the `Finalizer` so its timer is cleared and any active sweep finishes
+  before backend cleanup during shutdown.
+  The timer is unreferenced so it does not keep Node.js running,
+  but finalization is still needed when stopping the server while the process remains alive.
 - Due to extracting the core handlers as an external library,
   the CSS had to adapt some of them resulting in new class names.
   The following renames have happened, meaning that if you used or extended a component of one of the following types,
