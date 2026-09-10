@@ -1,11 +1,11 @@
 import type { Readable } from 'node:stream';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
-import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
+import { guardStream } from '../util/GuardedStream';
 import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteLocker';
 import { endOfStream } from '../util/StreamUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';
@@ -16,6 +16,7 @@ import type { ChangeMap, ResourceStore } from './ResourceStore';
  * Store that for every call acquires a lock before executing it on the requested resource,
  * and releases it afterwards.
  * In case the request returns a Representation the lock will only be released when the data stream is finished.
+ * Similarly, for write operations the lock will be maintained as long as the incoming data stream is being read.
  *
  * For auxiliary resources the lock will be applied to the subject resource.
  * The actual operation is still executed on the auxiliary resource.
@@ -60,9 +61,11 @@ export class LockingResourceStore implements AtomicResourceStore {
     representation: Representation,
     conditions?: Conditions,
   ): Promise<ChangeMap> {
-    return this.locks.withWriteLock(
+    return this.lockedWriteRepresentationRun(
       this.getLockIdentifier(container),
-      async(): Promise<ChangeMap> => this.source.addResource(container, representation, conditions),
+      representation,
+      async(expiringRepresentation): Promise<ChangeMap> =>
+        this.source.addResource(container, expiringRepresentation, conditions),
     );
   }
 
@@ -71,9 +74,11 @@ export class LockingResourceStore implements AtomicResourceStore {
     representation: Representation,
     conditions?: Conditions,
   ): Promise<ChangeMap> {
-    return this.locks.withWriteLock(
+    return this.lockedWriteRepresentationRun(
       this.getLockIdentifier(identifier),
-      async(): Promise<ChangeMap> => this.source.setRepresentation(identifier, representation, conditions),
+      representation,
+      async(expiringRepresentation): Promise<ChangeMap> =>
+        this.source.setRepresentation(identifier, expiringRepresentation, conditions),
     );
   }
 
@@ -89,9 +94,11 @@ export class LockingResourceStore implements AtomicResourceStore {
     patch: Patch,
     conditions?: Conditions,
   ): Promise<ChangeMap> {
-    return this.locks.withWriteLock(
+    return this.lockedWriteRepresentationRun(
       this.getLockIdentifier(identifier),
-      async(): Promise<ChangeMap> => this.source.modifyResource(identifier, patch, conditions),
+      patch,
+      async(expiringRepresentation): Promise<ChangeMap> =>
+        this.source.modifyResource(identifier, expiringRepresentation, conditions),
     );
   }
 
@@ -144,12 +151,44 @@ export class LockingResourceStore implements AtomicResourceStore {
   }
 
   /**
+   * Acquires a write lock that is held until the operation completes.
+   * The input representation is adapted to reset the timer every time data is read.
+   *
+   * @param identifier - Identifier that should be locked.
+   * @param inputRepresentation - Representation to pass to the write operation.
+   * @param whileLocked - Function to be executed while the resource is locked.
+   */
+  protected async lockedWriteRepresentationRun<T extends Representation, TResult>(
+    identifier: ResourceIdentifier,
+    inputRepresentation: T,
+    whileLocked: (representation: T) => Promise<TResult>,
+  ): Promise<TResult> {
+    let operationActive = false;
+    return this.locks.withWriteLock(identifier, async(maintainLock): Promise<TResult> => {
+      operationActive = true;
+      try {
+        const expiringRepresentation = this.createExpiringRepresentation(inputRepresentation, maintainLock);
+        return await whileLocked(expiringRepresentation);
+      } finally {
+        operationActive = false;
+      }
+    }).catch((error: unknown): never => {
+      // Destroy the source stream when an acquired lock expires while the operation is still active.
+      // This prevents a source store from continuing a write without the protection of the lock.
+      if (operationActive) {
+        inputRepresentation.data.destroy(error as Error);
+      }
+      throw error;
+    });
+  }
+
+  /**
    * Wraps a representation to make it reset the timeout timer every time data is read.
    *
    * @param representation - The representation to wrap
    * @param maintainLock - Function to call to reset the timer.
    */
-  protected createExpiringRepresentation(representation: Representation, maintainLock: () => void): Representation {
+  protected createExpiringRepresentation<T extends Representation>(representation: T, maintainLock: () => void): T {
     const source = representation.data;
     // Spy on the source to maintain the lock upon reading.
     const data = Object.create(source, {
@@ -160,7 +199,14 @@ export class LockingResourceStore implements AtomicResourceStore {
         },
       },
     }) as Readable;
-    return new BasicRepresentation(data, representation.metadata, representation.binary);
+
+    // Reuse metadata to avoid duplicating potentially large container listings.
+    return {
+      ...representation,
+      data: guardStream(data),
+      // BasicRepresentation defines isEmpty on its prototype, so it is not copied by the spread.
+      isEmpty: representation.isEmpty,
+    };
   }
 
   /**

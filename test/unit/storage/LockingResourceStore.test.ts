@@ -1,8 +1,11 @@
 import { EventEmitter } from 'node:events';
+import { Algebra } from 'sparqlalgebrajs';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
-import type { Patch } from '../../../src/http/representation/Patch';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
+import type { N3Patch } from '../../../src/http/representation/N3Patch';
 import type { Representation } from '../../../src/http/representation/Representation';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
+import type { SparqlUpdatePatch } from '../../../src/http/representation/SparqlUpdatePatch';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import type { ExpiringReadWriteLocker } from '../../../src/util/locking/ExpiringReadWriteLocker';
@@ -18,7 +21,7 @@ function emptyFn(): void {
 describe('A LockingResourceStore', (): void => {
   const auxiliaryId = { path: 'http://test.com/foo.dummy' };
   const subjectId = { path: 'http://test.com/foo' };
-  const data = { data: 'data!' } as any;
+  let data: Representation;
   let store: LockingResourceStore;
   let locker: jest.Mocked<ExpiringReadWriteLocker>;
   let source: ResourceStore;
@@ -32,6 +35,8 @@ describe('A LockingResourceStore', (): void => {
       order.push(name);
       return input;
     }
+
+    data = { data: guardedStreamFrom([ 1, 2, 3 ]) } as any;
 
     const readable = guardedStreamFrom([ 1, 2, 3 ]);
     const destroy = readable.destroy.bind(readable);
@@ -70,7 +75,12 @@ describe('A LockingResourceStore', (): void => {
       ): Promise<T> => {
         order.push('lock write');
         try {
-          return await whileLocked(emptyFn);
+          // Allows simulating a timeout event
+          const timeout = new Promise<never>((resolve, reject): any => timeoutTrigger.on('timeout', (): void => {
+            order.push('timeout');
+            reject(new Error('timeout'));
+          }));
+          return await Promise.race([ Promise.resolve(whileLocked(emptyFn)), timeout ]);
         } finally {
           order.push('unlock write');
         }
@@ -96,7 +106,7 @@ describe('A LockingResourceStore', (): void => {
     expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
     expect(locker.withWriteLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.addResource).toHaveBeenCalledTimes(1);
-    expect(source.addResource).toHaveBeenLastCalledWith(subjectId, data, undefined);
+    expect(source.addResource).toHaveBeenLastCalledWith(subjectId, expect.any(Object), undefined);
     expect(order).toEqual([ 'lock write', 'addResource', 'unlock write' ]);
 
     order = [];
@@ -104,7 +114,7 @@ describe('A LockingResourceStore', (): void => {
     expect(locker.withWriteLock).toHaveBeenCalledTimes(2);
     expect(locker.withWriteLock.mock.calls[1][0]).toEqual(subjectId);
     expect(source.addResource).toHaveBeenCalledTimes(2);
-    expect(source.addResource).toHaveBeenLastCalledWith(auxiliaryId, data, undefined);
+    expect(source.addResource).toHaveBeenLastCalledWith(auxiliaryId, expect.any(Object), undefined);
     expect(order).toEqual([ 'lock write', 'addResource', 'unlock write' ]);
   });
 
@@ -113,7 +123,7 @@ describe('A LockingResourceStore', (): void => {
     expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
     expect(locker.withWriteLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
-    expect(source.setRepresentation).toHaveBeenLastCalledWith(subjectId, data, undefined);
+    expect(source.setRepresentation).toHaveBeenLastCalledWith(subjectId, expect.any(Object), undefined);
     expect(order).toEqual([ 'lock write', 'setRepresentation', 'unlock write' ]);
 
     order = [];
@@ -121,7 +131,7 @@ describe('A LockingResourceStore', (): void => {
     expect(locker.withWriteLock).toHaveBeenCalledTimes(2);
     expect(locker.withWriteLock.mock.calls[1][0]).toEqual(subjectId);
     expect(source.setRepresentation).toHaveBeenCalledTimes(2);
-    expect(source.setRepresentation).toHaveBeenLastCalledWith(auxiliaryId, data, undefined);
+    expect(source.setRepresentation).toHaveBeenLastCalledWith(auxiliaryId, expect.any(Object), undefined);
     expect(order).toEqual([ 'lock write', 'setRepresentation', 'unlock write' ]);
   });
 
@@ -143,20 +153,155 @@ describe('A LockingResourceStore', (): void => {
   });
 
   it('acquires a lock on the resource when modifying its representation.', async(): Promise<void> => {
-    await store.modifyResource(subjectId, data as Patch);
+    const patch: N3Patch = {
+      ...data,
+      deletes: [],
+      inserts: [],
+      conditions: [],
+    };
+
+    await store.modifyResource(subjectId, patch);
     expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
     expect(locker.withWriteLock.mock.calls[0][0]).toEqual(subjectId);
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
-    expect(source.modifyResource).toHaveBeenLastCalledWith(subjectId, data, undefined);
+    const expiringPatch = jest.mocked(source.modifyResource).mock.calls[0][1] as N3Patch;
+    expect(source.modifyResource).toHaveBeenLastCalledWith(subjectId, expiringPatch, undefined);
+    expect(expiringPatch).not.toBe(patch);
+    expect(expiringPatch.data).not.toBe(patch.data);
+    expect(expiringPatch.deletes).toBe(patch.deletes);
+    expect(expiringPatch.inserts).toBe(patch.inserts);
+    expect(expiringPatch.conditions).toBe(patch.conditions);
     expect(order).toEqual([ 'lock write', 'modifyResource', 'unlock write' ]);
 
     order = [];
-    await expect(store.modifyResource(auxiliaryId, data as Patch)).resolves.toBeUndefined();
+    await expect(store.modifyResource(auxiliaryId, patch)).resolves.toBeUndefined();
     expect(locker.withWriteLock).toHaveBeenCalledTimes(2);
     expect(locker.withWriteLock.mock.calls[1][0]).toEqual(subjectId);
     expect(source.modifyResource).toHaveBeenCalledTimes(2);
-    expect(source.modifyResource).toHaveBeenLastCalledWith(auxiliaryId, data, undefined);
+    expect(source.modifyResource).toHaveBeenLastCalledWith(auxiliaryId, expect.any(Object), undefined);
     expect(order).toEqual([ 'lock write', 'modifyResource', 'unlock write' ]);
+  });
+
+  it('resets the write lock expiration every time incoming data is read.', async(): Promise<void> => {
+    const originalRead = jest.spyOn(data.data, 'read');
+    const maintainLock = jest.fn();
+    locker.withWriteLock.mockImplementationOnce((async <T>(
+      identifier: ResourceIdentifier,
+      whileLocked: (maintain: () => void) => PromiseOrValue<T>,
+    ): Promise<T> => whileLocked(maintainLock)) satisfies ReadWriteLocker['withWriteLock'] as any);
+    jest.spyOn(source, 'setRepresentation').mockImplementation(
+      async(identifier: ResourceIdentifier, representation: Representation): Promise<any> => {
+        representation.data.read();
+        representation.data.read();
+        order.push('setRepresentation');
+      },
+    );
+
+    await store.setRepresentation(subjectId, data);
+    expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
+    expect(source.setRepresentation).toHaveBeenCalledTimes(1);
+    const expiringRepresentation = jest.mocked(source.setRepresentation).mock.calls[0][1];
+    expect(source.setRepresentation).toHaveBeenLastCalledWith(subjectId, expiringRepresentation, undefined);
+    expect(expiringRepresentation).not.toBe(data);
+    expect(expiringRepresentation.data).not.toBe(data.data);
+    expect(maintainLock).toHaveBeenCalledTimes(2);
+
+    // The original stream is not adapted
+    expect(data.data.read).toBe(originalRead);
+    data.data.read();
+    expect(maintainLock).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([ 'addResource', 'setRepresentation', 'modifyResource' ] as const)(
+    'preserves the metadata of the representation passed to %s by reference.',
+    async(method): Promise<void> => {
+      const representation = new BasicRepresentation('data', subjectId, 'text/plain');
+
+      await store[method](subjectId, representation);
+      const expiringRepresentation = jest.mocked(source[method]).mock.calls[0][1];
+      expect(expiringRepresentation.metadata).toBe(representation.metadata);
+      expect(expiringRepresentation.binary).toBe(representation.binary);
+      expect(expiringRepresentation.isEmpty).toBe(false);
+    },
+  );
+
+  it('preserves the metadata of the returned representation by reference.', async(): Promise<void> => {
+    const representation = new BasicRepresentation('data', subjectId, 'text/plain');
+    jest.spyOn(source, 'getRepresentation').mockResolvedValueOnce(representation);
+
+    const expiringRepresentation = await store.getRepresentation(subjectId, {});
+    expect(expiringRepresentation.metadata).toBe(representation.metadata);
+
+    expiringRepresentation.data.destroy();
+    await flushPromises();
+  });
+
+  it('preserves the empty state of a representation.', async(): Promise<void> => {
+    await store.setRepresentation(subjectId, new BasicRepresentation());
+    const expiringRepresentation = jest.mocked(source.setRepresentation).mock.calls[0][1];
+    expect(expiringRepresentation.isEmpty).toBe(true);
+  });
+
+  it('preserves SPARQL update algebra when modifying a resource.', async(): Promise<void> => {
+    const patch: SparqlUpdatePatch = {
+      ...data,
+      algebra: { type: Algebra.types.DELETE_INSERT, delete: [], insert: []},
+    };
+
+    await store.modifyResource(subjectId, patch);
+    const expiringPatch = jest.mocked(source.modifyResource).mock.calls[0][1] as SparqlUpdatePatch;
+    expect(expiringPatch.data).not.toBe(patch.data);
+    expect(expiringPatch.algebra).toBe(patch.algebra);
+  });
+
+  it('destroys the incoming data stream if the write lock expires.', async(): Promise<void> => {
+    const originalRead = jest.spyOn(data.data, 'read');
+    const destroy = jest.spyOn(data.data, 'destroy');
+    jest.spyOn(source, 'setRepresentation').mockImplementation((): any => {
+      order.push('useless set');
+      // This will never resolve
+      return new Promise(emptyFn);
+    });
+
+    const prom = store.setRepresentation(subjectId, data);
+
+    timeoutTrigger.emit('timeout');
+
+    await expect(prom).rejects.toThrow('timeout');
+    expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
+    expect(source.setRepresentation).toHaveBeenCalledTimes(1);
+    expect(destroy).toHaveBeenCalledTimes(1);
+    expect(destroy).toHaveBeenLastCalledWith(new Error('timeout'));
+    expect(data.data.read).toBe(originalRead);
+    expect(order).toEqual([ 'lock write', 'useless set', 'timeout', 'unlock write' ]);
+  });
+
+  it('does not destroy the incoming data stream if the write itself errors.', async(): Promise<void> => {
+    const destroy = jest.spyOn(data.data, 'destroy');
+    jest.spyOn(source, 'setRepresentation').mockImplementation((): any => {
+      order.push('bad set');
+      throw new Error('dummy');
+    });
+
+    await expect(store.setRepresentation(subjectId, data)).rejects.toThrow('dummy');
+    expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
+    expect(source.setRepresentation).toHaveBeenCalledTimes(1);
+    expect(destroy).toHaveBeenCalledTimes(0);
+    expect(order).toEqual([ 'lock write', 'bad set', 'unlock write' ]);
+  });
+
+  it('does not destroy the incoming data stream if the write lock can not be acquired.', async(): Promise<void> => {
+    const destroy = jest.spyOn(data.data, 'destroy');
+    locker.withWriteLock.mockImplementationOnce(async(): Promise<never> => {
+      order.push('failed lock');
+      throw new Error('lock error');
+    });
+
+    await expect(store.setRepresentation(subjectId, data)).rejects.toThrow('lock error');
+    expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
+    expect(source.setRepresentation).toHaveBeenCalledTimes(0);
+    expect(destroy).toHaveBeenCalledTimes(0);
+    expect(order).toEqual([ 'failed lock' ]);
   });
 
   it('releases the lock if an error was thrown.', async(): Promise<void> => {
