@@ -63,6 +63,16 @@ describe('A BaseWebIdStore', (): void => {
     expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { webId, accountId });
   });
 
+  it('can verify if a WebID is registered to any account.', async(): Promise<void> => {
+    await expect(store.hasWebId(webId)).resolves.toBe(true);
+    expect(storage.find).toHaveBeenCalledTimes(1);
+    expect(storage.find).toHaveBeenLastCalledWith(STORAGE_TYPE, { webId });
+
+    storage.find.mockResolvedValueOnce([]);
+    await expect(store.hasWebId(webId)).resolves.toBe(false);
+    expect(storage.find).toHaveBeenCalledTimes(2);
+  });
+
   it('can find all WebIDs linked to an account.', async(): Promise<void> => {
     await expect(store.findLinks(accountId)).resolves.toEqual([{ id, webId }]);
     expect(storage.find).toHaveBeenCalledTimes(1);

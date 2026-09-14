@@ -18,6 +18,13 @@ export interface WebIdStore {
   isLinked: (webId: string, accountId: string) => Promise<boolean>;
 
   /**
+   * Determines if the given WebID is registered to an account on this server.
+   *
+   * @param webId - WebID to check.
+   */
+  hasWebId: (webId: string) => Promise<boolean>;
+
+  /**
    * Finds all links associated with the given account.
    *
    * @param accountId - ID of the account.

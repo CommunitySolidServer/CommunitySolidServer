@@ -539,6 +539,7 @@ export * from './storage/LockingResourceStore';
 export * from './storage/MonitoringStore';
 export * from './storage/PassthroughStore';
 export * from './storage/PatchingStore';
+export * from './storage/ProfileCardGuard';
 export * from './storage/ReadOnlyStore';
 export * from './storage/RepresentationConvertingStore';
 export * from './storage/ResourceSet';

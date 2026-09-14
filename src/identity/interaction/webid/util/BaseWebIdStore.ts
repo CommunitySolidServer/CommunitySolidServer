@@ -56,6 +56,10 @@ export class BaseWebIdStore extends Initializer implements WebIdStore {
     return result.length > 0;
   }
 
+  public async hasWebId(webId: string): Promise<boolean> {
+    return (await this.storage.find(WEBID_STORAGE_TYPE, { webId })).length > 0;
+  }
+
   public async findLinks(accountId: string): Promise<{ id: string; webId: string }[]> {
     return (await this.storage.find(WEBID_STORAGE_TYPE, { accountId }))
       .map(({ id, webId }): { id: string; webId: string } => ({ id, webId }));

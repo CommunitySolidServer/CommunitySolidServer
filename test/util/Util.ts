@@ -35,6 +35,7 @@ const portNames = [
   'WebhookChannel2023',
   'WebhookChannel2023-client',
   'WebSocketChannel2023',
+  'ProfileCardGuard',
 
   // Unit
   'BaseServerFactory',
