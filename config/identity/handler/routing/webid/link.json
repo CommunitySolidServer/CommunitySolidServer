@@ -21,8 +21,7 @@
           "ownershipValidator": { "@id": "urn:solid-server:default:OwnershipValidator" },
           "podStore": { "@id": "urn:solid-server:default:PodStore" },
           "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
-          "webIdRoute": { "@id": "urn:solid-server:default:AccountWebIdLinkRoute" },
-          "storageStrategy": { "@id": "urn:solid-server:default:StorageLocationStrategy" }
+          "webIdRoute": { "@id": "urn:solid-server:default:AccountWebIdLinkRoute" }
         }
       }
     }

@@ -6,6 +6,8 @@
 
 - Expiring read/write lockers can enforce an optional maximum hold duration,
   independent of activity-based lock renewals.
+- Linking a WebID that is hosted in a pod of the account no longer requires a registration token:
+  the pod ownership already proves that the account can claim the WebID.
 
 ### Configuration changes
 
