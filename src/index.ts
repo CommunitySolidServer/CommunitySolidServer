@@ -510,7 +510,12 @@ export * from './storage/patch/SparqlUpdatePatcher';
 
 // Storage/Quota
 export * from './storage/quota/GlobalQuotaStrategy';
+export * from './storage/quota/IncrementalSizeReporter';
+export * from './storage/quota/InternalPath';
+export * from './storage/quota/PodDiscovery';
 export * from './storage/quota/PodQuotaStrategy';
+export * from './storage/quota/QuotaCounter';
+export * from './storage/quota/QuotaDeltaDataAccessor';
 export * from './storage/quota/QuotaStrategy';
 
 // Storage/Routing
@@ -521,6 +526,7 @@ export * from './storage/routing/RegexRouterRule';
 export * from './storage/routing/RouterRule';
 
 // Storage/Size-Reporter
+export * from './storage/size-reporter/DuSizeReporter';
 export * from './storage/size-reporter/FileSizeReporter';
 export * from './storage/size-reporter/Size';
 export * from './storage/size-reporter/SizeReporter';

@@ -114,6 +114,32 @@ so the above values would result in a pod at `http://test.example.com/` instead.
 A file-based server that limits the amount of data a user can put in a pod.
 The values in the configuration determine the limit.
 
+## pod-quota-counter-file.json
+
+A storage backend that replaces the default per-write size calculation by an
+incremental per-pod byte counter. Where the default quota setup walks the whole
+pod on every write, this counter is updated O(1) per write and persisted to a
+per-pod sidecar (`/.internal/css-quota.json`), so quota checks are constant-time
+after a one-time bootstrap walk of each pod.
+It is not a standalone server configuration: import
+`css:config/storage/backend/quota/pod-quota-counter-file.json` on top of a quota
+server configuration (such as `quota-file.json`) or alongside
+`css:config/storage/backend/pod-quota-file.json` to opt in.
+The default quota configuration is unchanged.
+
+The counter is refreshed by a full walk on first access, on pod-root mtime
+changes, and (to bound staleness from deep out-of-band changes) whenever it is
+older than `maxAgeMs` (default 24 h). The max age can be changed by overriding
+`urn:solid-server:default:QuotaCounter`, e.g. to one week:
+
+```json
+{
+  "@type": "Override",
+  "overrideInstance": { "@id": "urn:solid-server:default:QuotaCounter" },
+  "overrideParameters": { "maxAgeMs": 604800000 }
+}
+```
+
 ## path-routing.json
 
 This configuration serves as an example of how a server can be configured

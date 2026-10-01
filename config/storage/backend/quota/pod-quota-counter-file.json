@@ -1,0 +1,65 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "comment": "incremental per-pod byte counter",
+  "@graph": [
+    {
+      "comment": "The shared per-pod counter",
+      "@id": "urn:solid-server:default:QuotaCounter",
+      "@type": "QuotaCounter",
+      "fileIdentifierMapper": {
+        "@id": "urn:solid-server:default:FileIdentifierMapper"
+      },
+      "rootFilePath": {
+        "@id": "urn:solid-server:default:variable:rootFilePath"
+      },
+      "ignoreFolders": [
+        "(^|/)\\.internal$"
+      ],
+      "maxAgeMs": 86400000
+    },
+    {
+      "comment": "SizeReporter backed by the counter",
+      "@type": "Override",
+      "overrideInstance": {
+        "@id": "urn:solid-server:default:SizeReporter"
+      },
+      "overrideParameters": {
+        "@type": "IncrementalSizeReporter",
+        "counter": {
+          "@id": "urn:solid-server:default:QuotaCounter"
+        }
+      }
+    },
+    {
+      "comment": "Delta hook",
+      "@type": "Override",
+      "overrideInstance": {
+        "@id": "urn:solid-server:default:FileDataAccessor"
+      },
+      "overrideParameters": {
+        "@type": "QuotaDeltaDataAccessor",
+        "fileIdentifierMapper": {
+          "@id": "urn:solid-server:default:FileIdentifierMapper"
+        },
+        "identifierStrategy": {
+          "@id": "urn:solid-server:default:IdentifierStrategy"
+        },
+        "counter": {
+          "@id": "urn:solid-server:default:QuotaCounter"
+        },
+        "accessor": {
+          "@type": "FilterMetadataDataAccessor",
+          "accessor": {
+            "@id": "urn:solid-server:default:ValidatingFileDataAccessor"
+          },
+          "filters": [
+            {
+              "@type": "FilterPattern",
+              "predicate": "http://www.w3.org/2011/http-headers#content-length"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
