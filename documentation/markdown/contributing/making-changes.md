@@ -8,7 +8,7 @@ All changes should be done through
 We recommend first discussing a possible solution in the relevant issue
 to reduce the amount of changes that will be requested.
 
-In case any of your changes are breaking, make sure you target the next major branch (`versions/x.0.0`)
+In case any of your changes are breaking, make sure you target the next major branch (`versions/next-major`)
 instead of the main branch. Breaking changes include: changing interface/class signatures,
 potentially breaking external custom configurations,
 and breaking how internal data is stored.

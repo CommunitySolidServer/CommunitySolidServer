@@ -8,31 +8,20 @@ Reference any relevant issues here. Closing keywords only have an effect when ta
 
 <!-- Describe the relevant changes in this PR. Also add notes that might be relevant for code reviewers. -->
 
-#### 🤖 AI assistance
-
-<!--
-State whether you used generative AI to prepare this contribution, including code, tests, documentation, the PR description, or review comments. If so, name the tools and briefly describe their role. Update this section if you use AI during review.
-See the policy: https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/documentation/markdown/contributing/making-changes.md#use-of-generative-ai
--->
-
-#### 🧪 Verification
-
-<!-- Describe the checks and tests you ran, their results, and any limitations. -->
-
-* [ ] I have personally reviewed and understood this contribution and can explain its design and verification.
-
 ### ✅ PR check list
 
-Before this pull request can be merged, a core maintainer will check whether
+Make sure to read the [contributing guidelines](https://communitysolidserver.github.io/CommunitySolidServer/latest/contributing/making-changes/)
+before submitting this pull request.
+Make sure to pay additional attention to the [AI policy](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/documentation/markdown/contributing/making-changes.md#use-of-generative-ai)
+when using generative AI tools.
+The following checklist is a summary of the most important points.
 
-* [ ] this PR is labeled with the correct semver label
-    * semver.patch: Backwards compatible bug fixes.
-    * semver.minor: Backwards compatible feature additions.
-    * semver.major: Backwards incompatible changes to APIs, configuration behaviour, or stored data.
-* [ ] the correct branch is targeted.
-    * `main`: Backwards compatible bug fixes and feature additions (`semver.patch` and `semver.minor`).
-    * `versions/next-major`: Breaking changes (`semver.major`).
-* [ ] the RELEASE_NOTES.md document in case of relevant feature or config changes.
-* [ ] any relevant documentation was updated to reflect the changes in this PR.
+* [ ] Make sure you have personally reviewed and understood this contribution when using generative AI tools.
+* [ ] Target the correct branch based on [semantic versioning](https://semver.org/).
+    * `main`: Backwards compatible bug fixes and feature additions.
+    * `versions/next-major`: Breaking changes, such as changes to APIs, configuration behaviour, or stored data.
+* [ ] Update documentation when relevant.
+* [ ] Update the [release notes](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/RELEASE_NOTES.md)
+      when adding new major features.
 
 <!-- Try to check these to the best of your abilities before opening the PR -->
