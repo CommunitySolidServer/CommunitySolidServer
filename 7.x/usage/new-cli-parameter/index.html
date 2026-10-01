@@ -2147,24 +2147,24 @@ the <a href="../starting-server/">server initialization documentation</a>.</p>
 you need to explicitly define that this URI corresponds to a variable.
 The block below defines a new variable named <code>urn:custom:default:variable:emailPass</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:custom:default:variable:emailPass&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variable&quot;</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:custom:default:variable:emailPass"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Variable"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="parsing-the-cli-parameter">Parsing the CLI parameter<a class="headerlink" href="#parsing-the-cli-parameter" title="Permanent link">&para;</a></h2>
 <p>For this example, we introduce a new CLI parameter <code>emailPass</code> and tell the server to parse it.
 We do this with the following block:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server-app-setup:default:CliExtractor&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YargsCliExtractor&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server-app-setup:default:CliExtractor"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"YargsCliExtractor"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YargsParameter&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;emailPass&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;requiresArg&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;describe&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The password for the email server.&quot;</span>
+<span class="w">      </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"YargsParameter"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"emailPass"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"options"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"requiresArg"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"describe"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The password for the email server."</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
@@ -2178,14 +2178,14 @@ and that it needs to be interpreted as a string.</p>
 <p>Once the CLI parameter has been parsed, we need to tell the server which variable to link to that value.
 Here we can reference the variable we defined above:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server-app-setup:default:ShorthandResolver&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CombinedShorthandResolver&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;resolvers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server-app-setup:default:ShorthandResolver"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CombinedShorthandResolver"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"resolvers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;CombinedShorthandResolver:_resolvers_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:custom:default:variable:emailPass&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;CombinedShorthandResolver:_resolvers_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KeyExtractor&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;emailPass&quot;</span>
+<span class="w">      </span><span class="nt">"CombinedShorthandResolver:_resolvers_key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:custom:default:variable:emailPass"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"CombinedShorthandResolver:_resolvers_value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KeyExtractor"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"emailPass"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>

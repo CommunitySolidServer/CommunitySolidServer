@@ -2197,38 +2197,38 @@
 <h1 id="interacting-with-the-server">Interacting with the server<a class="headerlink" href="#interacting-with-the-server" title="Permanent link">&para;</a></h1>
 <h2 id="put-creating-resources-for-a-given-url"><code>PUT</code>: Creating resources for a given URL<a class="headerlink" href="#put-creating-resources-for-a-given-url" title="Permanent link">&para;</a></h2>
 <p>Create a plain text file:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: text/plain&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;abc&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: text/plain"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"abc"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/myfile.txt
 </code></pre></div>
 <p>Create a turtle file:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: text/turtle&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: text/turtle"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;."</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/myfile.ttl
 </code></pre></div>
 <h2 id="post-creating-resources-at-a-generated-url"><code>POST</code>: Creating resources at a generated URL<a class="headerlink" href="#post-creating-resources-at-a-generated-url" title="Permanent link">&para;</a></h2>
 <p>Create a plain text file:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: text/plain&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;abc&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: text/plain"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"abc"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/
 </code></pre></div>
 <p>Create a turtle file:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: text/turtle&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: text/turtle"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;."</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/
 </code></pre></div>
 <p>The response's <code>Location</code> header will contain the URL of the created resource.</p>
 <h2 id="get-retrieving-resources"><code>GET</code>: Retrieving resources<a class="headerlink" href="#get-retrieving-resources" title="Permanent link">&para;</a></h2>
 <p>Retrieve a plain text file:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Accept: text/plain&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Accept: text/plain"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/myfile.txt
 </code></pre></div>
 <p>Retrieve a turtle file:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Accept: text/turtle&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Accept: text/turtle"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/myfile.ttl
 </code></pre></div>
 <p>Retrieve a turtle file in a different serialization:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/ld+json&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Accept: application/ld+json"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/myfile.ttl
 </code></pre></div>
 <h2 id="delete-deleting-resources"><code>DELETE</code>: Deleting resources<a class="headerlink" href="#delete-deleting-resources" title="Permanent link">&para;</a></h2>
@@ -2236,17 +2236,17 @@
 </code></pre></div>
 <h2 id="patch-modifying-resources"><code>PATCH</code>: Modifying resources<a class="headerlink" href="#patch-modifying-resources" title="Permanent link">&para;</a></h2>
 <p>Modify a resource using <a href="https://solidproject.org/TR/protocol#n3-patch">N3 Patch</a>:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: text/n3&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--data-raw<span class="w"> </span><span class="s2">&quot;@prefix solid: &lt;http://www.w3.org/ns/solid/terms#&gt;. _:rename a solid:InsertDeletePatch; solid:inserts { &lt;ex:s2&gt; &lt;ex:p2&gt; &lt;ex:o2&gt;. }.&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: text/n3"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--data-raw<span class="w"> </span><span class="s2">"@prefix solid: &lt;http://www.w3.org/ns/solid/terms#&gt;. _:rename a solid:InsertDeletePatch; solid:inserts { &lt;ex:s2&gt; &lt;ex:p2&gt; &lt;ex:o2&gt;. }."</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/myfile.ttl
 </code></pre></div>
 <p>Modify a resource using <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/sparql-update&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;INSERT DATA { &lt;ex:s2&gt; &lt;ex:p2&gt; &lt;ex:o2&gt; }&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/sparql-update"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"INSERT DATA { &lt;ex:s2&gt; &lt;ex:p2&gt; &lt;ex:o2&gt; }"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/myfile.ttl
 </code></pre></div>
 <h2 id="head-retrieve-resources-headers"><code>HEAD</code>: Retrieve resources headers<a class="headerlink" href="#head-retrieve-resources-headers" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-I<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Accept: text/plain&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-I<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Accept: text/plain"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>http://localhost:3000/myfile.txt
 </code></pre></div>
 <h2 id="options-retrieve-resources-communication-options"><code>OPTIONS</code>: Retrieve resources communication options<a class="headerlink" href="#options-retrieve-resources-communication-options" title="Permanent link">&para;</a></h2>

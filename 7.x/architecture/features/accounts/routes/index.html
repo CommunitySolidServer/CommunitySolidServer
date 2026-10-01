@@ -2165,15 +2165,15 @@ but other handlers can also occur.</p>
 <p>Below we will give an example of one API route and all the components that are necessary to add it to the server.</p>
 <h2 id="route-handler">Route handler<a class="headerlink" href="#route-handler" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountWebIdRouter&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AuthorizedRouteHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;route&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountWebIdRoute&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RelativePathInteractionRoute&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;base&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountIdRoute&quot;</span><span class="w"> </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;relativePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;webid/&quot;</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountWebIdRouter"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AuthorizedRouteHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountWebIdRoute"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RelativePathInteractionRoute"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"base"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountIdRoute"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"relativePath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"webid/"</span>
 <span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:WebIdHandler&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"source"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:WebIdHandler"</span><span class="w"> </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>The main entry point is the route handler,
@@ -2187,16 +2187,16 @@ the request also needs to be authenticated using an account cookie.
 If there is match, the request will be sent to the <code>urn:solid-server:default:WebIdHandler</code>.</p>
 <h2 id="interaction-handler">Interaction handler<a class="headerlink" href="#interaction-handler" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:WebIdHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ViewInteractionHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:LinkWebIdHandler&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LinkWebIdHandler&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;baseUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:variable:baseUrl&quot;</span><span class="w"> </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;ownershipValidator&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:OwnershipValidator&quot;</span><span class="w"> </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;accountStore&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountStore&quot;</span><span class="w"> </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;webIdStore&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:WebIdStore&quot;</span><span class="w"> </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;identifierStrategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:IdentifierStrategy&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:WebIdHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ViewInteractionHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"source"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:LinkWebIdHandler"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LinkWebIdHandler"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"baseUrl"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:variable:baseUrl"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"ownershipValidator"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:OwnershipValidator"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"accountStore"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountStore"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"webIdStore"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:WebIdStore"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"identifierStrategy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:IdentifierStrategy"</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -2205,10 +2205,10 @@ Often these are wrapped in a <code>ViewInteractionHandler</code>,
 which allows classes to have different support for GET and POST requests.</p>
 <h2 id="exposing-the-api">Exposing the API<a class="headerlink" href="#exposing-the-api" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:InteractionRouteHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WaterfallHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;handlers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountWebIdRouter&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:InteractionRouteHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"WaterfallHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"handlers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountWebIdRouter"</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -2218,11 +2218,11 @@ This is the main handler that contains entries for all the APIs.
 This block of Components.js adds the route handler defined above to that list.</p>
 <h2 id="adding-the-necessary-controls">Adding the necessary controls<a class="headerlink" href="#adding-the-necessary-controls" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountControlHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ControlHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;controls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
-<span class="w">    </span><span class="nt">&quot;ControlHandler:_controls_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;webId&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;ControlHandler:_controls_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountWebIdRoute&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountControlHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ControlHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"controls"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">    </span><span class="nt">"ControlHandler:_controls_key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"webId"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ControlHandler:_controls_value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountWebIdRoute"</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}]</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -2233,13 +2233,13 @@ so we add its route in the account controls with the key <code>webId</code>.
 More information about controls can be found <a href="../controls/">here</a>.</p>
 <h2 id="adding-html">Adding HTML<a class="headerlink" href="#adding-html" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:HtmlViewHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HtmlViewHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;templates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
-<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:LinkWebIdHtml&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HtmlViewEntry&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;filePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@css:templates/identity/account/link-webid.html.ejs&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;route&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountWebIdRoute&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:HtmlViewHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HtmlViewHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"templates"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">    </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:LinkWebIdHtml"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HtmlViewEntry"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"filePath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@css:templates/identity/account/link-webid.html.ejs"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountWebIdRoute"</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}]</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -2248,11 +2248,11 @@ in which case the page needs to be added to the <code>urn:solid-server:default:H
 which is what we do here.
 Usually you will also want to add HTML controls so the page can be found.</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountHtmlControlHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ControlHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;controls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
-<span class="w">    </span><span class="nt">&quot;ControlHandler:_controls_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;linkWebId&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;ControlHandler:_controls_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:AccountWebIdRoute&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountHtmlControlHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ControlHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"controls"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">    </span><span class="nt">"ControlHandler:_controls_key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"linkWebId"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ControlHandler:_controls_value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:AccountWebIdRoute"</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}]</span>
 <span class="p">}</span>
 </code></pre></div>

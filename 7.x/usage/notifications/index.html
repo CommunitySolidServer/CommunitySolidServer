@@ -2296,7 +2296,7 @@ and how to make use of the different ways supported to receive notifications.</p
 This can be found by doing a <code>HEAD</code> request on any resource in your pod and looking for the <code>Link</code> header
 with the <code>http://www.w3.org/ns/solid/terms#storageDescription</code> relationship.</p>
 <p>For example, when hosting the server on localhost with port 3000, the result is:</p>
-<div class="highlight"><pre><span></span><code>Link:<span class="w"> </span>&lt;http://localhost:3000/.well-known/solid&gt;<span class="p">;</span><span class="w"> </span><span class="nv">rel</span><span class="o">=</span><span class="s2">&quot;http://www.w3.org/ns/solid/terms#storageDescription&quot;</span>
+<div class="highlight"><pre><span></span><code>Link:<span class="w"> </span>&lt;http://localhost:3000/.well-known/solid&gt;<span class="p">;</span><span class="w"> </span><span class="nv">rel</span><span class="o">=</span><span class="s2">"http://www.w3.org/ns/solid/terms#storageDescription"</span>
 </code></pre></div>
 <p>Doing a GET to <code>http://localhost:3000/.well-known/solid</code> then gives the following result (simplified for readability):</p>
 <div class="highlight"><pre><span></span><code><span class="k">@prefix</span><span class="w"> </span><span class="nn">notify:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/solid/notifications#&gt;</span><span class="p">.</span>
@@ -2339,45 +2339,45 @@ and <a href="https://solid.github.io/notifications/webhook-channel-2023"><code>W
 you use an authenticated <code>POST</code> request to send the following JSON-LD document to the server,
 at <code>http://localhost:3000/.notifications/WebSocketChannel2023/</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;https://www.w3.org/ns/solid/notification/v1&quot;</span><span class="w"> </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/solid/notifications#WebSocketChannel2023&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;topic&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/foo&quot;</span>
+<span class="w">  </span><span class="nt">"@context"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"https://www.w3.org/ns/solid/notification/v1"</span><span class="w"> </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.w3.org/ns/solid/notifications#WebSocketChannel2023"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"topic"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:3000/foo"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>If you have <code>Read</code> permissions, the server's reply will look like this:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;https://www.w3.org/ns/solid/notification/v1&quot;</span><span class="w"> </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/.notifications/WebSocketChannel2023/dea6f614-08ab-4cc1-bbca-5dece0afb1e2&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/solid/notifications#WebSocketChannel2023&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;topic&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/foo&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;receiveFrom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ws://localhost:3000/.notifications/WebSocketChannel2023/?auth=http%3A%2F%2Flocalhost%3A3000%2F.notifications%2FWebSocketChannel2023%2Fdea6f614-08ab-4cc1-bbca-5dece0afb1e2&quot;</span>
+<span class="w">  </span><span class="nt">"@context"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"https://www.w3.org/ns/solid/notification/v1"</span><span class="w"> </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:3000/.notifications/WebSocketChannel2023/dea6f614-08ab-4cc1-bbca-5dece0afb1e2"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.w3.org/ns/solid/notifications#WebSocketChannel2023"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"topic"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:3000/foo"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"receiveFrom"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ws://localhost:3000/.notifications/WebSocketChannel2023/?auth=http%3A%2F%2Flocalhost%3A3000%2F.notifications%2FWebSocketChannel2023%2Fdea6f614-08ab-4cc1-bbca-5dece0afb1e2"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>The most important field is <code>receiveFrom</code>.
 This field tells you the WebSocket to which you need to connect, through which you will start receiving notifications.
 In JavaScript, this can be done using the WebSocket object, such as:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">ws</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">WebSocket</span><span class="p">(</span><span class="nx">receiveFrom</span><span class="p">);</span>
-<span class="nx">ws</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">notification</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">notification</span><span class="p">));</span>
+<span class="nx">ws</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">notification</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">notification</span><span class="p">));</span>
 </code></pre></div>
 <h3 id="webhooks">Webhooks<a class="headerlink" href="#webhooks" title="Permanent link">&para;</a></h3>
 <p>Similar to the WebSocket subscription, below is sample JSON-LD
 that would be sent to <code>http://localhost:3000/.notifications/WebhookChannel2023/</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;https://www.w3.org/ns/solid/notification/v1&quot;</span><span class="w"> </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/solid/notifications#WebhookChannel2023&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;topic&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/foo&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;sendTo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://example.com/webhook&quot;</span>
+<span class="w">  </span><span class="nt">"@context"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"https://www.w3.org/ns/solid/notification/v1"</span><span class="w"> </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.w3.org/ns/solid/notifications#WebhookChannel2023"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"topic"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:3000/foo"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"sendTo"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://example.com/webhook"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>Note that this document has an additional <code>sendTo</code> field.
 This is the Webhook URL of your server, the URL to which you want the notifications to be sent.</p>
 <p>The response would then be something like this:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;https://www.w3.org/ns/solid/notification/v1&quot;</span><span class="w"> </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/.notifications/WebhookChannel2023/eeaf2c17-699a-4e53-8355-e91d13807e5f&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/solid/notifications#WebhookChannel2023&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;topic&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/foo&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;sendTo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://example.com/webhook&quot;</span>
+<span class="w">  </span><span class="nt">"@context"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"https://www.w3.org/ns/solid/notification/v1"</span><span class="w"> </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:3000/.notifications/WebhookChannel2023/eeaf2c17-699a-4e53-8355-e91d13807e5f"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.w3.org/ns/solid/notifications#WebhookChannel2023"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"topic"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:3000/foo"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"sendTo"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://example.com/webhook"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="streaming-http">Streaming HTTP<a class="headerlink" href="#streaming-http" title="Permanent link">&para;</a></h3>
@@ -2386,10 +2386,10 @@ This means that subscribing and unsubscribing are not supported, and no subscrip
 Instead, each resource advertises the <code>receiveFrom</code> of its pre-established notification channel using HTTP Link header,
 using <code>rel="http://www.w3.org/ns/solid/terms#updatesViaStreamingHttp2023"</code>.</p>
 <p>For example, this —</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>--head<span class="w"> </span><span class="s1">&#39;http://localhost:3000/foo/&#39;</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>--head<span class="w"> </span><span class="s1">'http://localhost:3000/foo/'</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="na">Link</span><span class="o">:</span> <span class="l">&lt;http://localhost:3000/.notifications/StreamingHTTPChannel2023/foo/&gt;; rel=&quot;http://www.w3.org/ns/solid/terms#updatesViaStreamingHttp2023&quot;</span>
+<span class="na">Link</span><span class="o">:</span> <span class="l">&lt;http://localhost:3000/.notifications/StreamingHTTPChannel2023/foo/&gt;; rel="http://www.w3.org/ns/solid/terms#updatesViaStreamingHttp2023"</span>
 </code></pre></div>
 <p>It is essential to remember that any HTTP request to that <code>receiveFrom</code> endpoint requires the same authorization
 as a <code>GET</code> request on the resource which advertises it.</p>
@@ -2410,15 +2410,15 @@ No authorization is needed for this request.</p>
 <h2 id="notification-format">Notification format<a class="headerlink" href="#notification-format" title="Permanent link">&para;</a></h2>
 <p>Below is an example notification that would be sent when a resource changes:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s2">&quot;https://www.w3.org/ns/activitystreams&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;https://www.w3.org/ns/solid/notification/v1&quot;</span>
+<span class="w">  </span><span class="nt">"@context"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"https://www.w3.org/ns/activitystreams"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"https://www.w3.org/ns/solid/notification/v1"</span>
 <span class="w">  </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:123456:http://example.com/foo&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Update&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000/foo&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;987654&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;published&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-02-09T15:08:12.345Z&quot;</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:123456:http://example.com/foo"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Update"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"object"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:3000/foo"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"987654"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"published"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-02-09T15:08:12.345Z"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>A notification contains the following fields:</p>
@@ -2475,9 +2475,9 @@ this could degrade server performance.</p>
 <p>For this reason, the default server configuration removes notification channels after two weeks (20160 minutes).
 You can modify this behaviour by adding the following block to your configuration:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:WebSocket2023Subscriber&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NotificationSubscriber&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;maxDuration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20160</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:WebSocket2023Subscriber"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NotificationSubscriber"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"maxDuration"</span><span class="p">:</span><span class="w"> </span><span class="mi">20160</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><code>maxDuration</code> defines after how many minutes every channel will be removed.

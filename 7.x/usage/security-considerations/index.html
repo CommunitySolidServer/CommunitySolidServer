@@ -2044,12 +2044,12 @@ one extra safeguard is adding restrictive response headers.</p>
 <p>For example,
 you can configure CSS to add a <code>Content-Security-Policy</code> header to responses:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:Middleware_Header&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HeaderHandler&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:Middleware_Header"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HeaderHandler"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"headers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;HeaderHandler:_headers_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Content-Security-Policy&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;HeaderHandler:_headers_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sandbox allow-scripts&quot;</span>
+<span class="w">      </span><span class="nt">"HeaderHandler:_headers_key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Content-Security-Policy"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"HeaderHandler:_headers_value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sandbox allow-scripts"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
@@ -2076,14 +2076,14 @@ and if a WebID matches one of those patterns,
 the server will reject it before generating a token or making a request.</p>
 <p>This can be done by adding something like the following block to your Components.js configuration:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:solid-server:default:OwnershipValidator&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TokenOwnershipValidator&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;blockedWebIdPatterns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s2">&quot;^https?://localhost(?::\\d+)?(?:/|$)&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;^https?://127\\.&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;^https?://10\\.&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;^https?://192\\.168\\.&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;^https?://169\\.254\\.&quot;</span>
+<span class="w">  </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"urn:solid-server:default:OwnershipValidator"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TokenOwnershipValidator"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"blockedWebIdPatterns"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"^https?://localhost(?::\\d+)?(?:/|$)"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"^https?://127\\."</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"^https?://10\\."</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"^https?://192\\.168\\."</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"^https?://169\\.254\\."</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>

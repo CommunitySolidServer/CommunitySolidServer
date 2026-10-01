@@ -2217,10 +2217,10 @@ There is however a way to keep the contents of description resource prior to the
 adding the HTTP <code>Link</code> header targeting the description resource with <code>rel="preserve"</code>.</p>
 <p>When the resource URL is <code>http://localhost:3000/foobar</code>, preserving its description resource when updating its contents
 can be achieved like in the following example:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span><span class="s1">&#39;http://localhost:3000/foobar&#39;</span><span class="w"> </span><span class="se">\</span>
--H<span class="w"> </span><span class="s1">&#39;Content-Type: text/turtle&#39;</span><span class="w"> </span><span class="se">\</span>
--H<span class="w"> </span><span class="s1">&#39;Link: &lt;http://localhost:3000/foobar.meta&gt;;rel=&quot;preserve&quot;&#39;</span><span class="w"> </span><span class="se">\</span>
--d<span class="w"> </span><span class="s2">&quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot;</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span><span class="s1">'http://localhost:3000/foobar'</span><span class="w"> </span><span class="se">\</span>
+-H<span class="w"> </span><span class="s1">'Content-Type: text/turtle'</span><span class="w"> </span><span class="se">\</span>
+-H<span class="w"> </span><span class="s1">'Link: &lt;http://localhost:3000/foobar.meta&gt;;rel="preserve"'</span><span class="w"> </span><span class="se">\</span>
+-d<span class="w"> </span><span class="s2">"&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;."</span>
 </code></pre></div>
 <h2 id="impact-on-creating-containers">Impact on creating containers<a class="headerlink" href="#impact-on-creating-containers" title="Permanent link">&para;</a></h2>
 <p>When creating a container the input body is ignored
@@ -2235,22 +2235,22 @@ This allows discovery of the <code>ldp:inbox</code> as described in the <a href=
 and have already created an inbox at <code>http://localhost:3000/inbox/</code>.</p>
 <p>Since we don't know the location of the description resource,
 we first send a <code>HEAD</code> request to the resource to obtain the URL of its description resource.</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>--head<span class="w"> </span><span class="s1">&#39;http://localhost:3000/foo/&#39;</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>--head<span class="w"> </span><span class="s1">'http://localhost:3000/foo/'</span>
 </code></pre></div>
 <p>which will produce a response with at least these headers:</p>
 <div class="highlight"><pre><span></span><code>HTTP/1.1<span class="w"> </span><span class="m">200</span><span class="w"> </span>OK
-Link:<span class="w"> </span>&lt;http://localhost:3000/foo/.meta&gt;<span class="p">;</span><span class="w"> </span><span class="nv">rel</span><span class="o">=</span><span class="s2">&quot;describedby&quot;</span>
+Link:<span class="w"> </span>&lt;http://localhost:3000/foo/.meta&gt;<span class="p">;</span><span class="w"> </span><span class="nv">rel</span><span class="o">=</span><span class="s2">"describedby"</span>
 </code></pre></div>
 <p>Now that we have the URL of the description resource,
 we create a patch for adding the inbox in the description of the resource.</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span><span class="s1">&#39;http://localhost:3000/foo/.meta&#39;</span><span class="w"> </span><span class="se">\</span>
--H<span class="w"> </span><span class="s1">&#39;Content-Type: text/n3&#39;</span><span class="w"> </span><span class="se">\</span>
---data-raw<span class="w"> </span><span class="s1">&#39;@prefix solid: &lt;http://www.w3.org/ns/solid/terms#&gt;.</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span><span class="s1">'http://localhost:3000/foo/.meta'</span><span class="w"> </span><span class="se">\</span>
+-H<span class="w"> </span><span class="s1">'Content-Type: text/n3'</span><span class="w"> </span><span class="se">\</span>
+--data-raw<span class="w"> </span><span class="s1">'@prefix solid: &lt;http://www.w3.org/ns/solid/terms#&gt;.</span>
 <span class="s1">&lt;&gt; a solid:InsertDeletePatch;</span>
-<span class="s1">solid:inserts { &lt;http://localhost:3000/foo/&gt; &lt;http://www.w3.org/ns/ldp#inbox&gt; &lt;http://localhost:3000/inbox/&gt;. }.&#39;</span>
+<span class="s1">solid:inserts { &lt;http://localhost:3000/foo/&gt; &lt;http://www.w3.org/ns/ldp#inbox&gt; &lt;http://localhost:3000/inbox/&gt;. }.'</span>
 </code></pre></div>
 <p>After this update, we can verify that the inbox is added by performing a GET request to the description resource</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span><span class="s1">&#39;http://localhost:3000/foo/.meta&#39;</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span><span class="s1">'http://localhost:3000/foo/.meta'</span>
 </code></pre></div>
 <p>With as result for the body</p>
 <div class="highlight"><pre><span></span><code><span class="k">@prefix</span><span class="w"> </span><span class="nn">dc:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/dc/terms/&gt;</span><span class="p">.</span>
@@ -2259,15 +2259,15 @@ we create a patch for adding the inbox in the description of the resource.</p>
 <span class="k">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="p">.</span>
 
 <span class="nv">&lt;http://localhost:3000/foo/&gt;</span> <span class="kt">a</span> <span class="nn">ldp</span><span class="p">:</span><span class="nt">Container</span><span class="p">,</span> <span class="nn">ldp</span><span class="p">:</span><span class="nt">BasicContainer</span><span class="p">,</span> <span class="nn">ldp</span><span class="p">:</span><span class="nt">Resource</span><span class="p">;</span>
-    <span class="nn">dc</span><span class="p">:</span><span class="nt">modified</span> <span class="s">&quot;2022-06-09T08:17:07.000Z&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">dateTime</span><span class="p">;</span>
+    <span class="nn">dc</span><span class="p">:</span><span class="nt">modified</span> <span class="s">"2022-06-09T08:17:07.000Z"</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">dateTime</span><span class="p">;</span>
     <span class="nn">ldp</span><span class="p">:</span><span class="nt">inbox</span> <span class="nv">&lt;http://localhost:3000/inbox/&gt;</span><span class="p">;.</span>
 </code></pre></div>
 <p>This can also be verified by sending a GET request to the subject resource itself.
 The inbox location can also be found in the Link headers.</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;http://localhost:3000/foo/&#39;</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-v<span class="w"> </span><span class="s1">'http://localhost:3000/foo/'</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>HTTP/1.1<span class="w"> </span><span class="m">200</span><span class="w"> </span>OK
-Link:<span class="w"> </span>&lt;http://localhost:3000/inbox/&gt;<span class="p">;</span><span class="w"> </span><span class="nv">rel</span><span class="o">=</span><span class="s2">&quot;http://www.w3.org/ns/ldp#inbox&quot;</span>
+Link:<span class="w"> </span>&lt;http://localhost:3000/inbox/&gt;<span class="p">;</span><span class="w"> </span><span class="nv">rel</span><span class="o">=</span><span class="s2">"http://www.w3.org/ns/ldp#inbox"</span>
 </code></pre></div>
 
 
