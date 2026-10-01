@@ -11,6 +11,17 @@
         "relativePath": "/notifications/",
         "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
       }
+    },
+    {
+      "comment": "Stops notification channel sweeps and waits for pending storage operations before backend cleanup.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:SubscriptionStorage" }
+        }
+      ]
     }
   ]
 }
