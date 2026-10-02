@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- These tests protect the compatibility API. */
 import 'jest-rdf';
 import { DataFactory, Store } from 'n3';
 import { parseQuads, serializeQuads, solveBgp, termToInt, uniqueQuads } from '../../../src/util/QuadUtil';
