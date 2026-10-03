@@ -1,0 +1,140 @@
+<h1>Recover WebID</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <p>
+    If the profile document of one of your WebIDs is missing, private, or has a broken authorization,
+    you can recover it here. The server rewrites the profile document and its authorization
+    the same way as when the pod was created, so you can authenticate as this WebID again.
+  </p>
+  <p>
+    <strong>This is a destructive action:</strong>
+    the profile document and its authorization are reset,
+    so any customizations in them are lost.
+    The current profile document is backed up first if it still exists.
+  </p>
+
+  <fieldset>
+    <legend>Choose the WebID to recover</legend>
+    <ol id="webIdList"></ol>
+  </fieldset>
+
+  <fieldset>
+    <ol>
+      <li class="checkbox">
+        <label>
+          <input type="checkbox" id="confirm" name="confirm">
+          I understand this resets the profile document and its authorization.
+        </label>
+      </li>
+    </ol>
+  </fieldset>
+
+  <ul class="actions">
+    <li><button type="submit" name="submit" disabled>Recover WebID</button></li>
+    <li><button type="button" id="account-link">Back</button></li>
+  </ul>
+</form>
+<div class="hidden" id="noWebIds">
+  <p>
+    No WebID linked to this account can be recovered here.
+    Recovery regenerates the profile document of a WebID that is hosted in one of your pods.
+  </p>
+  <p>The pods of this account:</p>
+  <ul id="pods"></ul>
+  <ul class="actions">
+    <li><button type="button" id="link-webId">Link WebID</button></li>
+    <li><button type="button" id="no-webId-account-link">Back</button></li>
+  </ul>
+</div>
+<div class="hidden" id="response">
+  <h2>WebID recovered</h2>
+  <p>
+    The WebID <a id="response-webId" href="" class="link"></a> can be used again.
+  </p>
+  <p>
+    Its profile document is available at <a id="response-cardUrl" href="" class="link"></a>.
+  </p>
+  <p id="response-backup">
+    The previous profile document was backed up to
+    <a id="response-backupUrl" href="" class="link"></a>.
+  </p>
+  <p id="response-note" class="hidden"></p>
+
+  <p class="actions"><button type="button" id="response-account-link">Back</button></p>
+</div>
+
+<script>
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+
+    // When the page was opened from another step, such as the consent page,
+    // the back buttons return there so that flow can be continued.
+    // Only same-origin targets are accepted to prevent open redirects.
+    function sameOrigin(url) {
+      try {
+        return Boolean(url) && new URL(url, location.origin).origin === location.origin;
+      } catch {
+        return false;
+      }
+    }
+
+    const returnParam = new URL(location.href).searchParams.get('return');
+    const hasReturn = sameOrigin(returnParam);
+    const backUrl = hasReturn ? returnParam : controls.html.account.account;
+    setRedirectClick('account-link', backUrl);
+    setRedirectClick('no-webId-account-link', backUrl);
+    setRedirectClick('response-account-link', backUrl);
+    if (hasReturn) {
+      document.getElementById('response-account-link').innerText = 'Continue';
+    }
+
+    // List the recoverable WebIDs of the account so one can be chosen
+    const { webIds, pods } = await fetchJson(controls.account.recoverWebId);
+    const webIdList = document.getElementById('webIdList');
+    for (const webId of webIds) {
+      webIdList.insertAdjacentHTML('beforeend', `
+        <li class="radio">
+          <label for="${webId}">
+            <input id="${webId}" type="radio" name="webId" value="${webId}" ${webIds.length === 1 ? 'checked' : ''}>
+            ${webId}
+          </label>
+        </li>`);
+    }
+
+    addPostListener(async() => {
+      // The confirm field of the form needs to be a boolean for the API
+      const { webId, cardUrl, backupUrl, note } = await postJsonForm(
+        controls.account.recoverWebId,
+        false,
+        (json) => ({ webId: json.webId, confirm: json.confirm === 'on' }),
+      );
+
+      updateElement('response-webId', webId, { innerText: true, href: true });
+      updateElement('response-cardUrl', cardUrl, { innerText: true, href: true });
+      updateElement('response-backupUrl', backupUrl, { innerText: true, href: true });
+      setVisibility('response-backup', Boolean(backupUrl));
+      updateElement('response-note', note, { innerText: true });
+
+      setVisibility('response', true);
+      setVisibility('mainForm', false);
+    });
+
+    // Without a recoverable WebID there is nothing to choose:
+    // show the pods and the way to the account workflow
+    if (webIds.length === 0) {
+      setVisibility('mainForm', false);
+      setVisibility('noWebIds', true);
+      const podList = document.getElementById('pods');
+      for (const pod of pods) {
+        const item = document.createElement('li');
+        const anchor = document.createElement('a');
+        anchor.href = pod;
+        anchor.textContent = pod;
+        item.append(anchor);
+        podList.append(item);
+      }
+      setRedirectClick('link-webId', controls.html.account.linkWebId ?? controls.html.account.account);
+    }
+  })();
+</script>
