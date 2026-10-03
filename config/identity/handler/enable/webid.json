@@ -9,36 +9,57 @@
       "@id": "urn:solid-server:default:InteractionRouteHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:AccountWebIdRouter" }
+        { "@id": "urn:solid-server:default:AccountWebIdRouter" },
+        { "@id": "urn:solid-server:default:AccountWebIdRecoverRouter" }
       ]
     },
 
     {
       "@id": "urn:solid-server:default:AccountControlHandler",
       "@type": "ControlHandler",
-      "controls": [{
-        "ControlHandler:_controls_key": "webId",
-        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
-      }]
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "webId",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
+        },
+        {
+          "ControlHandler:_controls_key": "recoverWebId",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountWebIdRecoverRoute" }
+        }
+      ]
     },
 
     {
       "@id": "urn:solid-server:default:HtmlViewHandler",
       "@type": "HtmlViewHandler",
-      "templates": [{
-        "@id": "urn:solid-server:default:LinkWebIdHtml",
-        "@type": "HtmlViewEntry",
-        "filePath": "@css:templates/identity/account/link-webid.html.ejs",
-        "route": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
-      }]
+      "templates": [
+        {
+          "@id": "urn:solid-server:default:LinkWebIdHtml",
+          "@type": "HtmlViewEntry",
+          "filePath": "@css:templates/identity/account/link-webid.html.ejs",
+          "route": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
+        },
+        {
+          "@id": "urn:solid-server:default:RecoverWebIdHtml",
+          "@type": "HtmlViewEntry",
+          "filePath": "@css:templates/identity/account/recover-webid.html.ejs",
+          "route": { "@id": "urn:solid-server:default:AccountWebIdRecoverRoute" }
+        }
+      ]
     },
     {
       "@id": "urn:solid-server:default:AccountHtmlControlHandler",
       "@type": "ControlHandler",
-      "controls": [{
-        "ControlHandler:_controls_key": "linkWebId",
-        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
-      }]
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "linkWebId",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
+        },
+        {
+          "ControlHandler:_controls_key": "recoverWebId",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountWebIdRecoverRoute" }
+        }
+      ]
     }
   ]
 }
