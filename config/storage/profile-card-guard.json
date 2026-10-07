@@ -1,0 +1,36 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "comment": "Guards the profile cards of registered WebIDs, keeping the `solid:oidcIssuer` triple.",
+  "@graph": [
+    {
+      "comment": "Guards registered WebID cards from being deleted or losing their `solid:oidcIssuer` triple.",
+      "@id": "urn:solid-server:default:ResourceStore_CardGuard",
+      "@type": "ProfileCardGuard",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Converting" },
+      "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+      "relativeWebIdPaths": [
+        "/profile/card#me"
+      ]
+    },
+    {
+      "comment": "Insert the card guard between the patch and conversion stores bypassing the guard.",
+      "@type": "Override",
+      "overrideInstance": { "@id": "urn:solid-server:default:ResourceStore_Patching" },
+      "overrideParameters": {
+        "@type": "PatchingStore",
+        "source": { "@id": "urn:solid-server:default:ResourceStore_CardGuard" }
+      }
+    },
+    {
+      "comment": "Route the internal key-value storage through the converting store directly, bypassing the guard.",
+      "@type": "Override",
+      "overrideInstance": { "@id": "urn:solid-server:default:JsonResourceStorage" },
+      "overrideParameters": {
+        "@type": "JsonResourceStorage",
+        "source": { "@id": "urn:solid-server:default:ResourceStore_Converting" }
+      }
+    }
+  ]
+}
