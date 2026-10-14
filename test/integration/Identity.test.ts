@@ -294,6 +294,13 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       // Redirect to WebID picker
       await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
 
+      // Add the OIDC controls to the object
+      res = await state.fetchIdp(indexUrl);
+      controls = {
+        ...(await res.json()).controls,
+        ...controls,
+      };
+
       // Pick the WebID
       res = await state.fetchIdp(controls.oidc.webId, 'POST', { webId, remember: true });
 
@@ -336,6 +343,174 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       const res = await state.fetchIdp(nextUrl);
       expect(res.status).toBe(400);
       await expect(res.text()).resolves.toContain('invalid_redirect_uri');
+    });
+  });
+
+  describe('using JWT assertion', (): void => {
+    const tokenUrl = joinUrl(baseUrl, '.oidc/token');
+    const grantType = 'urn:ietf:params:oauth:grant-type:jwt-bearer';
+    let dpopKey: KeyPair;
+    let assertion: string | undefined;
+    let assertionId: string | undefined;
+    let accessToken: string | undefined;
+    const clientId = joinUrl(baseUrl, 'client-id');
+    const clientJson = {
+      '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
+
+      client_id: clientId,
+      client_name: 'Solid Application Name',
+      client_uri: 'https://app.example/',
+      logo_uri: 'https://app.example/logo.png',
+      tos_uri: 'https://app.example/tos.html',
+      scope: 'openid profile offline_access webid',
+      default_max_age: 3600,
+      require_auth_time: true,
+      // TODO: remove authorization_code
+      grant_types: [ 'refresh_token', 'authorization_code', grantType ],
+      // TODO: remove below
+      redirect_uris: [ redirectUrl ],
+      post_logout_redirect_uris: [ 'https://app.example/logout' ],
+      response_types: [ 'code' ],
+    };
+
+    beforeAll(async(): Promise<void> => {
+      dpopKey = await generateDpopKeyPair();
+      await fetch(clientId, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/ld+json' },
+        body: JSON.stringify(clientJson),
+      });
+    });
+
+    it('can request an assertion given client id.', async(): Promise<void> => {
+      // Login and save cookie
+      const loginResponse = await fetch(controls.password.login, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
+      const cookie = `${cookies[0].name}=${cookies[0].value}`;
+
+      // Request assertion
+      const accountJson = await (await fetch(indexUrl, { headers: { cookie }})).json();
+      const assertionsUrl = accountJson.controls.account.jwtAssertions;
+      const res = await fetch(assertionsUrl, {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ clientId, webId }),
+      });
+
+      expect(res.status).toBe(200);
+      ({ id: assertionId, assertion } = await res.json());
+      expect(assertion).toBeDefined();
+    });
+
+    it('can not request another assertion for the same client id.', async(): Promise<void> => {
+      // Login and save cookie
+      const loginResponse = await fetch(controls.password.login, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
+      const cookie = `${cookies[0].name}=${cookies[0].value}`;
+
+      // Request another for the same clientId
+      const accountJson = await (await fetch(indexUrl, { headers: { cookie }})).json();
+      const assertionsUrl = accountJson.controls.account.jwtAssertions;
+
+      const secondRes = await fetch(assertionsUrl, {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ clientId, webId }),
+      });
+
+      expect(secondRes.status).toBe(409);
+    });
+
+    it('can request an access token using the assertion.', async(): Promise<void> => {
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: `grant_type=${grantType}&assertion=${assertion}&client_id=${clientId}&scope=webid`,
+      });
+      const json = await res.json();
+      expect(res.status).toBe(200);
+      ({ access_token: accessToken } = json);
+      expect(typeof accessToken).toBe('string');
+    });
+
+    it('can use the generated access token to do an authenticated call.', async(): Promise<void> => {
+      const authFetch = await buildAuthenticatedFetch(accessToken!, { dpopKey });
+      let res = await fetch(container);
+      expect(res.status).toBe(401);
+      res = await authFetch(container);
+      expect(res.status).toBe(200);
+    });
+
+    it('errors with assertion signed with some other key.', async(): Promise<void> => {
+      const untrustedAssertion = 'eyJhbGciOiJFUzI1NiJ9.eyJjbGllbnQiOiJodHRwOi8vbG9jYWxob3N0OjYwMDkvY2xpZW50LWlkIiwiYWdlbnQiOiJodHRwOi8vbG9jYWxob3N0OjYwMDkvdGVzdC9wcm9maWxlL2NhcmQjbWUiLCJpYXQiOjE3NTUzMTA1NDA3NDUsImp0aSI6ImIyNThkOTFkLWYyZTEtNDljOS1iMWE1LTg1NDVlN2FkNzUxOCJ9.ZDp7sFb1jLywqjF-m6mDKiSuiKOU9-3N8ki0z0c1qRGk-KB4W5habXxFHsS3yD3Wj2x69JaJTev_LuQuW8QHW';
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: `grant_type=${grantType}&assertion=${untrustedAssertion}&client_id=${clientId}&scope=webid`,
+      });
+      // TODO: adjust implementation for a proper error code
+      expect(res.status).toBe(500);
+    });
+
+    it('errors with invalid dpop.', async(): Promise<void> => {
+      const dpopHeader = await createDpopHeader(tokenUrl, 'GET', dpopKey);
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: `grant_type=${grantType}&assertion=${assertion}&client_id=${clientId}&scope=webid`,
+      });
+      // TODO: adjust implementation for a proper error code
+      expect(res.status).toBe(400);
+    });
+
+    it('can revoke assertion.', async(): Promise<void> => {
+      // Login and save cookie
+      const loginResponse = await fetch(controls.password.login, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
+      const cookie = `${cookies[0].name}=${cookies[0].value}`;
+
+      // Request delete assertion
+      const delRes = await fetch(assertionId as string, {
+        method: 'DELETE',
+        headers: { cookie },
+      });
+
+      expect(delRes.status).toBe(200);
+
+      // Can't get the token any more
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: `grant_type=${grantType}&assertion=${assertion}&client_id=${clientId}&scope=webid`,
+      });
+      expect(res.status).toBe(404);
     });
   });
 
