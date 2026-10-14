@@ -47,6 +47,24 @@ describe('A BaseRouterHandler', (): void => {
     await expect(router.canHandle({ method, target })).resolves.toBeUndefined();
   });
 
+  it('matches targets outside of the base URL against their full URL.', async(): Promise<void> => {
+    router = new SimpleRouterHandler({
+      baseUrl,
+      handler,
+      allowedPathNames: [ '^/foo$', '^http://alice\\.example\\.com/foo$' ],
+    });
+    await expect(router.canHandle({ method, target: { path: 'http://alice.example.com/foo' }}))
+      .resolves.toBeUndefined();
+    await expect(router.canHandle({ method, target: { path: 'http://alice.example.com/bar' }}))
+      .rejects.toThrow('Cannot handle route http://alice.example.com/bar');
+  });
+
+  it('does not strip the base URL from targets on a different host.', async(): Promise<void> => {
+    // `http://ex.co/abcde` has the same length as `http://example.com`
+    await expect(router.canHandle({ method, target: { path: 'http://ex.co/abcde/foo' }}))
+      .rejects.toThrow('Cannot handle route http://ex.co/abcde/foo');
+  });
+
   it('requires the source handler to accept the input.', async(): Promise<void> => {
     handler.canHandle.mockRejectedValue(new Error('bad input'));
     await expect(router.canHandle({ method, target })).rejects.toThrow('bad input');

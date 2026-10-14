@@ -3,7 +3,7 @@ import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHtt
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { AsyncHandlerInput, AsyncHandlerOutput } from '../../util/handlers/AsyncHandler';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
-import { trimTrailingSlashes } from '../../util/PathUtil';
+import { ensureTrailingSlash } from '../../util/PathUtil';
 
 export interface BaseRouterHandlerArgs<T extends AsyncHandler<unknown, unknown>> {
   /**
@@ -24,6 +24,7 @@ export interface BaseRouterHandlerArgs<T extends AsyncHandler<unknown, unknown>>
    * Regular expression(s) used to match the target URL.
    * The base URl without trailing slash will be stripped of before applying the regular expressions,
    * so the input will always start with a `/`.
+   * Targets that are not inside the base URL, such as those on a subdomain, are matched against their full URL.
    * Default is `[ '.*' ]`.
    */
   allowedPathNames?: string[];
@@ -38,6 +39,7 @@ export interface BaseRouterHandlerArgs<T extends AsyncHandler<unknown, unknown>>
  */
 export abstract class BaseRouterHandler<T extends AsyncHandler<unknown, unknown>>
   extends AsyncHandler<AsyncHandlerInput<T>, AsyncHandlerOutput<T>> {
+  private readonly baseUrl: string;
   protected readonly baseUrlLength: number;
   protected readonly handler: T;
   protected readonly allowedMethods: string[];
@@ -49,8 +51,9 @@ export abstract class BaseRouterHandler<T extends AsyncHandler<unknown, unknown>
     if (typeof args.allowedPathNames !== 'undefined' && typeof args.baseUrl !== 'string') {
       throw new TypeError('A value for allowedPathNames requires baseUrl to be defined.');
     }
-    // Trimming trailing slash so regexes can start with `/`
-    this.baseUrlLength = trimTrailingSlashes(args.baseUrl ?? '').length;
+    this.baseUrl = ensureTrailingSlash(args.baseUrl ?? '');
+    // Not including the trailing slash so regexes can start with `/`
+    this.baseUrlLength = this.baseUrl.length - 1;
     this.handler = args.handler;
     this.allowedMethods = args.allowedMethods ?? [ '*' ];
     this.allMethods = this.allowedMethods.includes('*');
@@ -62,7 +65,7 @@ export abstract class BaseRouterHandler<T extends AsyncHandler<unknown, unknown>
     if (!this.allMethods && !this.allowedMethods.includes(method)) {
       throw new MethodNotAllowedHttpError([ method ], `${method} is not allowed.`);
     }
-    const pathName = target.path.slice(this.baseUrlLength);
+    const pathName = target.path.startsWith(this.baseUrl) ? target.path.slice(this.baseUrlLength) : target.path;
     if (!this.allowedPathNamesRegEx.some((regex): boolean => regex.test(pathName))) {
       throw new NotFoundHttpError(`Cannot handle route ${pathName}`);
     }
