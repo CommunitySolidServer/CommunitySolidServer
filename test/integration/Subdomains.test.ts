@@ -102,6 +102,21 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
       expect(res.status).toBe(200);
     });
 
+    it('can read the storage description of the pod.', async(): Promise<void> => {
+      const res = await fetch(`${baseUrl}.well-known/solid`, {
+        headers: { forwarded: `host=${podHost}`, accept: 'text/turtle' },
+      });
+      expect(res.status).toBe(200);
+      await expect(res.text()).resolves.toContain(`<${podUrl}>`);
+    });
+
+    it('does not route server paths on the pod subdomain.', async(): Promise<void> => {
+      const res = await fetch(`${baseUrl}.well-known/openid-configuration`, {
+        headers: { forwarded: `host=${podHost}` },
+      });
+      expect(res.status).toBe(401);
+    });
+
     it('should not be able to read the acl file.', async(): Promise<void> => {
       const res = await fetch(`${baseUrl}.acl`, { headers: { forwarded: `host=${podHost}` }});
       expect(res.status).toBe(401);
