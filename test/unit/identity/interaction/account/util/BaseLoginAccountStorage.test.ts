@@ -3,11 +3,19 @@ import {
 } from '../../../../../../src/identity/interaction/account/util/BaseLoginAccountStorage';
 import { ACCOUNT_TYPE } from '../../../../../../src/identity/interaction/account/util/LoginStorage';
 import type { IndexedStorage } from '../../../../../../src/storage/keyvalue/IndexedStorage';
+import type { Logger } from '../../../../../../src/logging/Logger';
+import { getLoggerFor } from '../../../../../../src/logging/LogUtil';
 import { NotFoundHttpError } from '../../../../../../src/util/errors/NotFoundHttpError';
+
+jest.mock('../../../../../../src/logging/LogUtil', (): any => {
+  const logger: Logger = { debug: jest.fn(), warn: jest.fn(), error: jest.fn() } as any;
+  return { getLoggerFor: (): Logger => logger };
+});
 
 jest.useFakeTimers();
 
 describe('A BaseLoginAccountStorage', (): void => {
+  const logger: jest.Mocked<Logger> = getLoggerFor(BaseLoginAccountStorage) as any;
   let source: jest.Mocked<IndexedStorage<any>>;
   let storage: BaseLoginAccountStorage<any>;
 
@@ -27,6 +35,7 @@ describe('A BaseLoginAccountStorage', (): void => {
     };
 
     storage = new BaseLoginAccountStorage(source);
+    jest.clearAllMocks();
   });
 
   it('calls the source when defining types.', async(): Promise<void> => {
@@ -64,6 +73,17 @@ describe('A BaseLoginAccountStorage', (): void => {
 
     expect(source.delete).toHaveBeenCalledTimes(1);
     expect(source.delete).toHaveBeenLastCalledWith(ACCOUNT_TYPE, 'id');
+  });
+
+  it('logs an error if the account could not be removed after the set timeout.', async(): Promise<void> => {
+    source.get.mockRejectedValueOnce(new Error('bad data'));
+    await expect(storage.create(ACCOUNT_TYPE, { test: 'data' })).resolves.toEqual({ test: 'data', id: 'id' });
+
+    await jest.advanceTimersByTimeAsync(30 * 60 * 1000);
+
+    expect(source.delete).toHaveBeenCalledTimes(0);
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenLastCalledWith('Unable to remove account id without login methods: bad data');
   });
 
   it('does not delete an account after the set timeout if it has a login method.', async(): Promise<void> => {
