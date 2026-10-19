@@ -37,11 +37,11 @@ describe('A RecoverWebIdHandler', (): void => {
   }
 
   function backups(): string[] {
-    return writtenPaths().filter((path): boolean => path.includes('.backup-') && path.endsWith('.ttl'));
+    return writtenPaths().filter((path): boolean => path.includes('.backup-'));
   }
 
   beforeEach(async(): Promise<void> => {
-    json = { webId, confirm: true };
+    json = { webId };
     resources = new Set([ cardUrl, aclUrl ]);
     backupRepresentation = new BasicRepresentation('card data', 'text/turtle');
 
@@ -110,7 +110,6 @@ describe('A RecoverWebIdHandler', (): void => {
         pods: [ podUrl ],
         fields: {
           webId: { required: true, type: 'string' },
-          confirm: { required: true, type: 'boolean' },
         },
       },
     });
@@ -145,12 +144,6 @@ describe('A RecoverWebIdHandler', (): void => {
     expect(store.setRepresentation).toHaveBeenCalledTimes(0);
   });
 
-  it('requires the confirmation option.', async(): Promise<void> => {
-    json = { webId };
-    await expect(handler.handle({ accountId, json } as any)).rejects.toThrow(BadRequestHttpError);
-    expect(store.setRepresentation).toHaveBeenCalledTimes(0);
-  });
-
   it('keeps the linked WebID and rewrites the card and its authorization.', async(): Promise<void> => {
     await expect(handler.handle({ accountId, json } as any)).resolves.toEqual({
       json: {
@@ -168,7 +161,7 @@ describe('A RecoverWebIdHandler', (): void => {
 
   it('recovers the linked WebID with its own fragment.', async(): Promise<void> => {
     webIdStore.findLinks.mockResolvedValue([{ id: linkId, webId: `${cardUrl}#it` }]);
-    json = { webId: `${cardUrl}#it`, confirm: true };
+    json = { webId: `${cardUrl}#it` };
     const response = await handler.handle({ accountId, json } as any);
     expect(response.json).toMatchObject({ webId: `${cardUrl}#it`, cardUrl });
     expect(resourcesGenerator.generate).toHaveBeenCalledWith({ path: podUrl }, expect.objectContaining({
@@ -179,7 +172,7 @@ describe('A RecoverWebIdHandler', (): void => {
   it('throws an error if the WebID is not hosted in a pod of the account.', async(): Promise<void> => {
     const foreignWebId = 'http://other.example/profile/card#me';
     webIdStore.findLinks.mockResolvedValue([{ id: linkId, webId: foreignWebId }]);
-    json = { webId: foreignWebId, confirm: true };
+    json = { webId: foreignWebId };
     await expect(handler.handle({ accountId, json } as any)).rejects.toThrow(BadRequestHttpError);
     expect(store.setRepresentation).toHaveBeenCalledTimes(0);
   });
@@ -203,8 +196,7 @@ describe('A RecoverWebIdHandler', (): void => {
         representation: new BasicRepresentation('new acr', 'text/turtle'),
       };
     });
-    const response = await handler.handle({ accountId, json } as any);
-    expect(response.json.note).toBeUndefined();
+    await handler.handle({ accountId, json } as any);
     expect(store.setRepresentation).toHaveBeenCalledWith({ path: cardUrl }, expect.anything());
     expect(store.setRepresentation).toHaveBeenCalledWith({ path: `${cardUrl}.acr` }, expect.anything());
     // No WAC authorization is written: the templates decide which authorization file is generated
@@ -214,7 +206,7 @@ describe('A RecoverWebIdHandler', (): void => {
   it('backs up the current card as-is without adding an authorization.', async(): Promise<void> => {
     const response = await handler.handle({ accountId, json } as any);
     const backupUrl = response.json.backupUrl!;
-    expect(backupUrl).toMatch(new RegExp(`^${cardUrl}\\.backup-.*\\.ttl$`, 'u'));
+    expect(backupUrl).toMatch(new RegExp(`^${cardUrl}\\.backup-[0-9a-f-]{36}$`, 'u'));
     expect(store.getRepresentation).toHaveBeenCalledWith({ path: cardUrl }, {});
     // The card is copied as-is: a broken card must still be backed up
     expect(store.setRepresentation).toHaveBeenCalledWith({ path: backupUrl }, backupRepresentation);
@@ -223,29 +215,11 @@ describe('A RecoverWebIdHandler', (): void => {
     expect(store.setRepresentation).not.toHaveBeenCalledWith({ path: `${backupUrl}.acr` }, expect.anything());
   });
 
-  it('uses the content type of the card for the backup extension.', (): void => {
-    expect((handler as any).getBackupExtension('text/turtle')).toBe('.ttl');
-    expect((handler as any).getBackupExtension('application/ld+json')).toBe('.jsonld');
-    expect((handler as any).getBackupExtension('text/n3')).toBe('.n3');
-    expect((handler as any).getBackupExtension('image/png')).toBe('.bin');
-  });
-
-  it('backs up a JSON-LD card with a matching extension.', async(): Promise<void> => {
-    const jsonLd = new BasicRepresentation('{"@id": "card"}', 'application/ld+json');
-    store.getRepresentation.mockImplementation(async({ path }: any): Promise<any> => path === cardUrl ?
-      jsonLd :
-      new BasicRepresentation('acl data', 'text/turtle'));
-    const response = await handler.handle({ accountId, json } as any);
-    expect(response.json.backupUrl).toMatch(/\.jsonld$/u);
-    expect(store.setRepresentation).toHaveBeenCalledWith({ path: response.json.backupUrl }, jsonLd);
-  });
-
-  it('does not overwrite an existing backup.', async(): Promise<void> => {
-    store.hasResource.mockImplementation(async({ path }: any): Promise<boolean> =>
-      path.includes('.backup-') ? !path.endsWith('-2.ttl') : resources.has(path));
-    const response = await handler.handle({ accountId, json } as any);
-    expect(response.json.backupUrl).toMatch(/-2\.ttl$/u);
-    expect(backups()).toEqual([ response.json.backupUrl ]);
+  it('gives each backup a different random name.', async(): Promise<void> => {
+    const first = (await handler.handle({ accountId, json } as any)).json.backupUrl!;
+    const second = (await handler.handle({ accountId, json } as any)).json.backupUrl!;
+    expect(first).not.toBe(second);
+    expect(backups()).toEqual([ first, second ]);
   });
 
   it('skips the backup if the card does not exist.', async(): Promise<void> => {
@@ -262,7 +236,7 @@ describe('A RecoverWebIdHandler', (): void => {
     expect(backups()).toEqual([]);
   });
 
-  it('notes a missing authorization template and leaves the authorization unchanged.', async(): Promise<void> => {
+  it('leaves the authorization unchanged when the templates generate none.', async(): Promise<void> => {
     resourcesGenerator.generate.mockImplementation(async function* (): AsyncGenerator<any, void, undefined> {
       yield {
         identifier: { path: `${podUrl}profile/card` },
@@ -270,7 +244,13 @@ describe('A RecoverWebIdHandler', (): void => {
       };
     });
     const response = await handler.handle({ accountId, json } as any);
-    expect(response.json.note).toContain('authorization');
+    expect(response.json).toEqual({
+      webId,
+      cardUrl,
+      link: resource,
+      oidcIssuer: baseUrl,
+      backupUrl: expect.stringContaining('.backup-'),
+    });
     expect(store.setRepresentation).toHaveBeenCalledWith({ path: cardUrl }, expect.anything());
     expect(store.setRepresentation).not.toHaveBeenCalledWith({ path: aclUrl }, expect.anything());
   });
@@ -296,45 +276,21 @@ describe('A RecoverWebIdHandler', (): void => {
     await expect(handler.handle({ accountId, json } as any)).rejects.toThrow('card failure');
   });
 
-  it('throws an error if the templates do not generate the document of the WebID.', async(): Promise<void> => {
+  it('throws a generic error if the templates do not generate the document of the WebID.', async(): Promise<void> => {
     const customWebId = `${podUrl}me#me`;
     webIdStore.findLinks.mockResolvedValue([{ id: linkId, webId: customWebId }]);
-    json = { webId: customWebId, confirm: true };
+    json = { webId: customWebId };
     await expect(handler.handle({ accountId, json } as any)).rejects.toThrow(
-      `The pod templates do not generate ${podUrl}me; this WebID cannot be recovered on this server.`,
+      `Unable to recover ${podUrl}me. Contact the server administrator if the problem persists.`,
     );
     expect(store.setRepresentation).toHaveBeenCalledTimes(0);
   });
 
   it('accepts a linked WebID without a fragment.', async(): Promise<void> => {
     webIdStore.findLinks.mockResolvedValue([{ id: linkId, webId: cardUrl }]);
-    json = { webId: cardUrl, confirm: true };
+    json = { webId: cardUrl };
     await expect(handler.handle({ accountId, json } as any)).resolves.toMatchObject({
       json: { webId: cardUrl, cardUrl },
     });
-  });
-
-  it('requires confirmation when it is explicitly false.', async(): Promise<void> => {
-    json = { webId, confirm: false };
-    await expect(handler.handle({ accountId, json } as any)).rejects.toThrow(
-      `Set "confirm": true to replace ${cardUrl} and its authorization file` +
-      ' and to back up the current profile document first.',
-    );
-  });
-
-  it('does not mention a backup when there is no card to back up.', async(): Promise<void> => {
-    resources.delete(cardUrl);
-    json = { webId, confirm: false };
-    await expect(handler.handle({ accountId, json } as any)).rejects.toThrow(
-      `Set "confirm": true to replace ${cardUrl} and its authorization file.`,
-    );
-  });
-
-  it('fails if no unique backup name can be found.', async(): Promise<void> => {
-    store.hasResource.mockImplementation(async({ path }: any): Promise<boolean> =>
-      path.includes('.backup-') ? true : resources.has(path));
-    await expect(handler.handle({ accountId, json } as any)).rejects.toThrow(
-      `Unable to create a unique backup name for ${cardUrl}.`,
-    );
   });
 });

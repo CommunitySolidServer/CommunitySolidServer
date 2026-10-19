@@ -117,7 +117,7 @@ describe.each(setups)('A server with account-authorized WebID recovery $name', (
     return fetch(controls.account.recoverWebId, {
       method: 'POST',
       headers: { authorization, 'content-type': 'application/json' },
-      body: JSON.stringify(options ?? { webId, confirm: true }),
+      body: JSON.stringify(options ?? { webId }),
     });
   }
 
@@ -171,7 +171,6 @@ describe.each(setups)('A server with account-authorized WebID recovery $name', (
     expect(json.pods).toEqual([ pod ]);
     expect(json.fields).toEqual({
       webId: { required: true, type: 'string' },
-      confirm: { required: true, type: 'boolean' },
     });
   });
 
@@ -188,19 +187,12 @@ describe.each(setups)('A server with account-authorized WebID recovery $name', (
     expect((await fetch(controls.account.recoverWebId, { method: 'POST' })).status).toBe(401);
   });
 
-  it('requires confirmation.', async(): Promise<void> => {
-    const res = await recover({ webId });
-    expect(res.status).toBe(400);
-    // The card is untouched
-    expect((await fetchCard()).status).toBe(200);
-  });
-
   it('does not recover a WebID of a different account.', async(): Promise<void> => {
     const bob = await register(baseUrl, { email: 'bob@example.com', password: 'secret', podName: 'bob' });
     const res = await fetch(bob.controls.account.recoverWebId, {
       method: 'POST',
       headers: { authorization: bob.authorization, 'content-type': 'application/json' },
-      body: JSON.stringify({ webId, confirm: true }),
+      body: JSON.stringify({ webId }),
     });
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toMatchObject({ message: expect.stringContaining('not linked to this account') });

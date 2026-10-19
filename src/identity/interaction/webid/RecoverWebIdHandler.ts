@@ -1,11 +1,10 @@
-import { boolean, object } from 'yup';
+import { randomUUID } from 'node:crypto';
+import { object } from 'yup';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { PodSettings } from '../../../pods/settings/PodSettings';
 import type { Resource, ResourcesGenerator } from '../../../pods/generate/ResourcesGenerator';
 import type { ResourceStore } from '../../../storage/ResourceStore';
-import { APPLICATION_LD_JSON, TEXT_N3, TEXT_TURTLE } from '../../../util/ContentTypes';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import { InternalServerError } from '../../../util/errors/InternalServerError';
 import { ensureTrailingSlash, isContainerIdentifier } from '../../../util/PathUtil';
 import { assertAccountId } from '../account/util/AccountUtil';
 import type { JsonRepresentation } from '../InteractionUtil';
@@ -19,7 +18,6 @@ import type { WebIdLinkRoute } from './WebIdLinkRoute';
 
 const inSchema = object({
   webId: URL_SCHEMA.required(),
-  confirm: boolean().required(),
 });
 
 type OutType = {
@@ -31,10 +29,6 @@ type OutType = {
    * URL of the backup of the previous card, if there was one.
    */
   backupUrl?: string;
-  /**
-   * Set when the pod templates did not provide an authorization file for the recovered document.
-   */
-  note?: string;
 };
 
 export interface RecoverWebIdHandlerArgs {
@@ -107,7 +101,7 @@ export class RecoverWebIdHandler extends JsonInteractionHandler<OutType> impleme
   public async handle({ accountId, json }: JsonInteractionHandlerInput): Promise<JsonRepresentation<OutType>> {
     assertAccountId(accountId);
 
-    const { webId, confirm } = await validateWithError(inSchema, json);
+    const { webId } = await validateWithError(inSchema, json);
 
     const link = (await this.webIdStore.findLinks(accountId))
       .find((entry): boolean => entry.webId === webId);
@@ -122,22 +116,14 @@ export class RecoverWebIdHandler extends JsonInteractionHandler<OutType> impleme
       throw new BadRequestHttpError(`${webId} is not hosted in a pod of this account.`);
     }
 
-    if (!confirm) {
-      const backup = await this.store.hasResource({ path: cardUrl }) ?
-        ' and to back up the current profile document first' :
-        '';
-      throw new BadRequestHttpError(
-        `Set "confirm": true to replace ${cardUrl} and its authorization file${backup}.`,
-      );
-    }
-
     // The templates decide what can be recovered: generate everything first,
     // so nothing is written or backed up before we know the profile document will be produced.
     const resources = await this.generateResources(podUrl, webId, cardUrl);
     const card = resources.find(({ identifier }): boolean => identifier.path === cardUrl);
     if (!card) {
+      this.logger.warn(`The pod templates did not generate ${cardUrl}; the WebID can not be recovered.`);
       throw new BadRequestHttpError(
-        `The pod templates do not generate ${cardUrl}; this WebID cannot be recovered on this server.`,
+        `Unable to recover ${cardUrl}. Contact the server administrator if the problem persists.`,
       );
     }
 
@@ -145,6 +131,8 @@ export class RecoverWebIdHandler extends JsonInteractionHandler<OutType> impleme
     for (const { identifier, representation } of resources) {
       await this.store.setRepresentation(identifier, representation);
     }
+    this.logger.info(`Recovered ${cardUrl} and wrote: ${resources
+      .map(({ identifier }): string => identifier.path).join(', ')}`);
 
     const result: OutType = {
       webId,
@@ -154,13 +142,6 @@ export class RecoverWebIdHandler extends JsonInteractionHandler<OutType> impleme
     };
     if (backupUrl) {
       result.backupUrl = backupUrl;
-    }
-    if (!resources.some(({ identifier }): boolean => identifier.path !== cardUrl)) {
-      this.logger.warn(
-        `No authorization file was generated for ${cardUrl}; its authorization is left unchanged.`,
-      );
-      result.note = 'No authorization file was generated for this profile document; ' +
-        'its authorization was left unchanged.';
     }
     return { json: result };
   }
@@ -185,43 +166,11 @@ export class RecoverWebIdHandler extends JsonInteractionHandler<OutType> impleme
     }
 
     const representation = await this.store.getRepresentation({ path: cardUrl }, {});
-    const extension = this.getBackupExtension(representation.metadata.contentType);
-    const backupUrl = await this.getBackupUrl(cardUrl, extension);
+    // A random name can not clash, so an earlier backup is never overwritten.
+    const backupUrl = `${cardUrl}.backup-${randomUUID()}`;
     await this.store.setRepresentation({ path: backupUrl }, representation);
 
     return backupUrl;
-  }
-
-  /**
-   * File extension of a backup, based on the stored content type of the card.
-   */
-  protected getBackupExtension(contentType?: string): string {
-    if (contentType === TEXT_TURTLE) {
-      return '.ttl';
-    }
-    if (contentType === APPLICATION_LD_JSON) {
-      return '.jsonld';
-    }
-    if (contentType === TEXT_N3) {
-      return '.n3';
-    }
-    return '.bin';
-  }
-
-  /**
-   * Finds a free backup URL for the given card: `<card>.backup-<timestamp><extension>`, with a numeric
-   * suffix only if the name is already taken. An existing backup is never overwritten.
-   */
-  protected async getBackupUrl(cardUrl: string, extension: string): Promise<string> {
-    const stamp = new Date().toISOString().replaceAll(/[:.]/gu, '-');
-    for (let i = 1; i < 100; i += 1) {
-      const suffix = i === 1 ? '' : `-${i}`;
-      const backupUrl = `${cardUrl}.backup-${stamp}${suffix}${extension}`;
-      if (!await this.store.hasResource({ path: backupUrl })) {
-        return backupUrl;
-      }
-    }
-    throw new InternalServerError(`Unable to create a unique backup name for ${cardUrl}.`);
   }
 
   /**

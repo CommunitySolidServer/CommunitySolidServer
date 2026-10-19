@@ -59,7 +59,6 @@
     The previous profile document was backed up to
     <a id="response-backupUrl" href="" class="link"></a>.
   </p>
-  <p id="response-note" class="hidden"></p>
 
   <p class="actions"><button type="button" id="response-account-link">Back</button></p>
 </div>
@@ -103,18 +102,18 @@
     }
 
     addPostListener(async() => {
-      // The confirm field of the form needs to be a boolean for the API
-      const { webId, cardUrl, backupUrl, note } = await postJsonForm(
+      // The confirmation is a frontend concern: the checkbox above gates the submit button,
+      // the API only needs the WebID.
+      const { webId, cardUrl, backupUrl } = await postJsonForm(
         controls.account.recoverWebId,
         false,
-        (json) => ({ webId: json.webId, confirm: json.confirm === 'on' }),
+        (json) => ({ webId: json.webId }),
       );
 
       updateElement('response-webId', webId, { innerText: true, href: true });
       updateElement('response-cardUrl', cardUrl, { innerText: true, href: true });
       updateElement('response-backupUrl', backupUrl, { innerText: true, href: true });
       setVisibility('response-backup', Boolean(backupUrl));
-      updateElement('response-note', note, { innerText: true });
 
       setVisibility('response', true);
       setVisibility('mainForm', false);
