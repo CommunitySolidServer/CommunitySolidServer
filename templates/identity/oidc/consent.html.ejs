@@ -31,11 +31,8 @@
   </p>
 
   <p id="recoverWebId">
-    If an application cannot read or use a WebID hosted in one of your pods,
-    you can <a id="recover-webid" href="" class="link">recover it</a>.
-    This <strong>resets your profile document and its authorization</strong>,
-    so any customizations in them are lost.
-    The current profile document is backed up first.
+    If an application cannot read or use a WebID hosted in one of your pods, do not continue here:
+    <a id="recover-webid" href="" class="link">recover it first</a> from your account.
   </p>
 </form>
 
@@ -86,12 +83,12 @@
       location.href = controls.html.main.login;
     });
 
-    // Recovering a WebID resets the profile document of one of the account's pods.
-    // The current URL is passed along so the recovery page can come back here afterwards.
+    // A broken WebID should be fixed before it is used again, so the flow is not resumed here:
+    // without a `return` parameter the recovery page goes back to the account page,
+    // where the recovered WebID is listed.
     // This is a link, so it needs a real href: an empty href would navigate to the current page.
     if (controls.html.account?.recoverWebId) {
-      const returnUrl = encodeURIComponent(location.href);
-      recoverWebIdLink.href = `${controls.html.account.recoverWebId}?return=${returnUrl}`;
+      recoverWebIdLink.href = controls.html.account.recoverWebId;
     } else {
       setVisibility('recoverWebId', false);
     }
