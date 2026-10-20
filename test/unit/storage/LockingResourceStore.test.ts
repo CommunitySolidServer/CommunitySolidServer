@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events';
+import { DataFactory, StreamWriter } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
@@ -330,6 +331,44 @@ describe('A LockingResourceStore', (): void => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(subjectId, {}, undefined);
     expect(order).toEqual([ 'lock read', 'getRepresentation', 'end', 'unlock read' ]);
+  });
+
+  it('streams asynchronously arriving N3 data while maintaining the read lock.', async(): Promise<void> => {
+    const writer = new StreamWriter({ format: 'N-Triples' });
+    jest.spyOn(source, 'getRepresentation').mockResolvedValueOnce(
+      new BasicRepresentation(writer, subjectId, 'application/n-triples'),
+    );
+    const maintainLock = jest.fn();
+    let released = false;
+    locker.withReadLock.mockImplementationOnce((async <T>(
+      identifier: ResourceIdentifier,
+      whileLocked: (maintain: () => void) => PromiseOrValue<T>,
+    ): Promise<T> => {
+      try {
+        return await whileLocked(maintainLock);
+      } finally {
+        released = true;
+      }
+    }) satisfies ReadWriteLocker['withReadLock'] as any);
+
+    const representation = await store.getRepresentation(subjectId, {});
+    setImmediate((): void => {
+      writer.end(DataFactory.quad(
+        DataFactory.namedNode('http://example.com/s'),
+        DataFactory.namedNode('http://example.com/p'),
+        DataFactory.namedNode('http://example.com/o'),
+      ));
+    });
+    const chunks: unknown[] = [];
+    for await (const chunk of representation.data) {
+      expect(released).toBe(false);
+      chunks.push(chunk);
+    }
+    await flushPromises();
+
+    expect(chunks.join('')).toBe('<http://example.com/s> <http://example.com/p> <http://example.com/o> .\n');
+    expect(maintainLock).toHaveBeenCalledWith();
+    expect(released).toBe(true);
   });
 
   it('acquires the lock on the subject resource when reading an auxiliary resource.', async(): Promise<void> => {

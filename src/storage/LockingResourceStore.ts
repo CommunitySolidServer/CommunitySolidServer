@@ -192,6 +192,15 @@ export class LockingResourceStore implements AtomicResourceStore {
     const source = representation.data;
     // Spy on the source to maintain the lock upon reading.
     const data = Object.create(source, {
+      // Async iteration must listen on the original stream so event callbacks retain its identity.
+      [Symbol.asyncIterator]: {
+        async* value(): AsyncIterableIterator<unknown> {
+          for await (const chunk of source) {
+            maintainLock();
+            yield chunk;
+          }
+        },
+      },
       read: {
         value(size: number): unknown {
           maintainLock();

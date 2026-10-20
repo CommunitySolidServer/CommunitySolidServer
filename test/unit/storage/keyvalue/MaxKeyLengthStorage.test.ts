@@ -78,6 +78,18 @@ describe('A MaxKeyLengthStorage', (): void => {
     ]);
   });
 
+  it('skips entries that were not written by this storage.', async(): Promise<void> => {
+    source.entries.mockImplementation(async function* (): AsyncIterableIterator<any> {
+      yield [ 'locks/lock', 123 ];
+      yield [ key, { key, payload }];
+    });
+    const entries = [];
+    for await (const entry of storage.entries()) {
+      entries.push(entry);
+    }
+    expect(entries).toEqual([[ key, payload ]]);
+  });
+
   it('errors trying to write with a key that has the hash prefix.', async(): Promise<void> => {
     await expect(storage.set(`$hash$key`, payload)).rejects.toThrow(NotImplementedHttpError);
   });

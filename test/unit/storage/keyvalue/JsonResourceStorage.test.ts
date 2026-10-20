@@ -131,6 +131,19 @@ describe('A JsonResourceStorage', (): void => {
     ]);
   });
 
+  it('requests containers as quads.', async(): Promise<void> => {
+    await expect(storage.set(path1, 'path1')).resolves.toBe(storage);
+    data.set(containerIdentifier, '');
+
+    for await (const entry of storage.entries()) {
+      expect(entry).toEqual([ path1, 'path1' ]);
+    }
+    expect(store.getRepresentation).toHaveBeenCalledWith(
+      { path: containerIdentifier },
+      { type: { [INTERNAL_QUADS]: 1 }},
+    );
+  });
+
   it('streams container members.', async(): Promise<void> => {
     const childCount = 100;
     let generatedChildren = 0;
