@@ -229,6 +229,7 @@ export * from './identity/interaction/webid/util/WebIdStore';
 
 // Identity/Interaction/WebID
 export * from './identity/interaction/webid/LinkWebIdHandler';
+export * from './identity/interaction/webid/RecoverWebIdHandler';
 export * from './identity/interaction/webid/UnlinkWebIdHandler';
 export * from './identity/interaction/webid/WebIdLinkRoute';
 

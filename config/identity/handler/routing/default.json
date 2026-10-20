@@ -10,6 +10,7 @@
     "css:config/identity/handler/routing/pod/create.json",
     "css:config/identity/handler/routing/pod/resource.json",
     "css:config/identity/handler/routing/webid/link.json",
+    "css:config/identity/handler/routing/webid/recover.json",
     "css:config/identity/handler/routing/webid/resource.json",
 
     "css:config/identity/handler/routing/views/html.json"

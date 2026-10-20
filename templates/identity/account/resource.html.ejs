@@ -19,6 +19,7 @@
     These WebIDs also have full control access to the pods registered for this account.
   </p>
   <a id="linkWebId" href="" class="link">Link WebID</a>
+  <a id="recoverWebId" href="" class="link">Recover WebID</a>
   <ul id="webIdEntries"></ul>
 </div>
 <div id="clientCredentials">
@@ -73,6 +74,12 @@
       setVisibility('webIds', false);
     } else {
       updateElement('linkWebId', controls.html.account.linkWebId, { href: true });
+      // Only shown when the server can recover a WebID from its pods
+      if (controls.html.account.recoverWebId) {
+        updateElement('recoverWebId', controls.html.account.recoverWebId, { href: true });
+      } else {
+        setVisibility('recoverWebId', false);
+      }
       showAccountInfo(elements.webIdEntries, webIdLinks, false, true,
         'Are you sure you want to delete the registration of this WebID? ' +
         'If you do so you will be unable to identify as this WebID using this server, which can potentially cause you to lose access to data restricted to this WebID.',
