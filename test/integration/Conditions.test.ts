@@ -309,4 +309,43 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     const eTag = response.headers.get('ETag');
     expect(eTag).not.toEqual(originalETag);
   });
+
+  it('supports conditional requests on description resources.', async(): Promise<void> => {
+    const documentUrl = `${baseUrl}described.txt`;
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE' });
+    const metaUrl = `${documentUrl}.meta`;
+    const lastModified = (await getResource(documentUrl)).headers.get('last-modified');
+
+    // The description resource has the same modification date as the resource it describes
+    let response = await fetch(metaUrl, { headers: { accept: 'text/turtle' }});
+    expect(response.status).toBe(200);
+    expect(response.headers.get('last-modified')).toBe(lastModified);
+    const eTag = response.headers.get('ETag');
+    expect(typeof eTag).toBe('string');
+
+    response = await fetch(metaUrl, { headers: { accept: 'text/turtle', 'if-none-match': eTag! }});
+    expect(response.status).toBe(304);
+
+    // Timestamp accuracy is at second level so need to make sure it changed
+    await new Promise<void>((res): void => {
+      setTimeout((): void => {
+        res();
+      }, 1000);
+    });
+
+    // PATCH .meta
+    const query = 'INSERT {<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>} WHERE {}';
+    response = await fetch(metaUrl, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update' },
+      body: query,
+    });
+    expect(response.status).toBeLessThan(300);
+
+    response = await fetch(metaUrl, { headers: { accept: 'text/turtle', 'if-none-match': eTag! }});
+    expect(response.status).toBe(200);
+    expect(response.headers.get('ETag')).not.toEqual(eTag);
+
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
+  });
 });
