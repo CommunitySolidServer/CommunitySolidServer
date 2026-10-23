@@ -219,6 +219,32 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     expect(response.status).toBe(200);
   });
 
+  it('throws 412 error if "if-match" header does not match and request type is GET or HEAD.', async():
+  Promise<void> => {
+    // GET fails because of header
+    let response = await fetch(baseUrl, {
+      method: 'GET',
+      headers: { 'if-match': '"notAMatchingETag"' },
+    });
+    expect(response.status).toBe(412);
+
+    // HEAD fails because of header
+    response = await fetch(baseUrl, {
+      method: 'HEAD',
+      headers: { 'if-match': '"notAMatchingETag"' },
+    });
+    expect(response.status).toBe(412);
+
+    // GET succeeds if the ETag header matches
+    response = await getResource(baseUrl);
+    const eTag = response.headers.get('ETag');
+    response = await fetch(baseUrl, {
+      method: 'GET',
+      headers: { 'if-match': eTag! },
+    });
+    expect(response.status).toBe(200);
+  });
+
   it('prevents operations if the "if-unmodified-since" header is before the modified date.', async(): Promise<void> => {
     const documentUrl = `${baseUrl}document3.txt`;
     // PUT

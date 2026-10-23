@@ -3,9 +3,11 @@ import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
+import { BasicConditions } from '../storage/conditions/BasicConditions';
 import type { Conditions } from '../storage/conditions/Conditions';
 import type { ETagHandler } from '../storage/conditions/ETagHandler';
 import { NotModifiedHttpError } from './errors/NotModifiedHttpError';
+import { PreconditionFailedHttpError } from './errors/PreconditionFailedHttpError';
 import { guardedStreamFrom } from './StreamUtil';
 import { toLiteral } from './TermUtil';
 import { CONTENT_TYPE_TERM, DC, HH, LDP, RDF, SOLID_META, XSD } from './Vocabularies';
@@ -70,9 +72,23 @@ export async function cloneRepresentation(representation: Representation): Promi
 }
 
 /**
+ * Determines whether the `If-Match` or `If-Unmodified-Since` part of the conditions fails.
+ * RFC 9110, §13.2.2: these preconditions are evaluated first and result in a 412 status code when they fail.
+ */
+function failsPreconditions(body: Representation, eTagHandler: ETagHandler, conditions: Conditions): boolean {
+  if (!conditions.matchesETag && !conditions.unmodifiedSince) {
+    return false;
+  }
+  const { matchesETag, unmodifiedSince } = conditions;
+  return !new BasicConditions(eTagHandler, { matchesETag, unmodifiedSince }).matchesMetadata(body.metadata, true);
+}
+
+/**
  * Verify whether the given {@link Representation} matches the given conditions.
  * If true, add the corresponding ETag to the body metadata.
  * If not, destroy the data stream and throw a {@link NotModifiedHttpError} with the same ETag.
+ * In case the failing condition is an `If-Match` or `If-Unmodified-Since` condition,
+ * a {@link PreconditionFailedHttpError} is thrown instead, as required by RFC 9110, §13.2.2.
  * If `conditions` is not defined, nothing will happen.
  *
  * This uses the strict conditions check which takes the content type into account;
@@ -90,6 +106,9 @@ export function assertReadConditions(body: Representation, eTagHandler: ETagHand
   const eTag = eTagHandler.getETag(body.metadata);
   if (conditions && !conditions.matchesMetadata(body.metadata, true)) {
     body.data.destroy();
+    if (failsPreconditions(body, eTagHandler, conditions)) {
+      throw new PreconditionFailedHttpError();
+    }
     const error = new NotModifiedHttpError(eTag);
 
     // From RFC 9111:
