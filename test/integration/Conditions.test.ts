@@ -309,4 +309,29 @@ describe.each(stores)('A server supporting conditions with %s', (name, { storeCo
     const eTag = response.headers.get('ETag');
     expect(eTag).not.toEqual(originalETag);
   });
+
+  it('evaluates the conditions of a description resource against the described resource.', async():
+  Promise<void> => {
+    const documentUrl = `${baseUrl}described.txt`;
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE' });
+    const metaUrl = `${documentUrl}.meta`;
+
+    const query = 'INSERT {<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>} WHERE {}';
+    let response = await fetch(metaUrl, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update', 'if-match': '"notAMatchingETag"' },
+      body: query,
+    });
+    expect(response.status).toBe(412);
+
+    // The described resource exists
+    response = await fetch(metaUrl, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update', 'if-match': '*' },
+      body: query,
+    });
+    expect(response.status).toBeLessThan(300);
+
+    await expect(deleteResource(documentUrl)).resolves.toBeUndefined();
+  });
 });

@@ -311,6 +311,10 @@ export class DataAccessorBasedStore implements ResourceStore {
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<never> {
     if (conditions) {
       let metadata: RepresentationMetadata | undefined;
+      // Conditions on description resources are evaluated against the described resource
+      if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
+        identifier = this.metadataStrategy.getSubjectIdentifier(identifier);
+      }
       try {
         metadata = await this.accessor.getMetadata(identifier);
       } catch (error: unknown) {

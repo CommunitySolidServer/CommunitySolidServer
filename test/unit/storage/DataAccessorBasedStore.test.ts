@@ -791,6 +791,19 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
+    it('evaluates the conditions of metadata resources against the subject resource.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      representation.metadata.identifier = namedNode(resourceID.path);
+      accessor.data[resourceID.path] = representation;
+      const conditions: Conditions = { matchesMetadata: jest.fn().mockReturnValue(false) };
+
+      await expect(store.modifyResource({ path: `${root}resource.meta` }, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+      expect(conditions.matchesMetadata).toHaveBeenCalledTimes(1);
+      const metadata = jest.mocked(conditions.matchesMetadata).mock.calls[0][0]!;
+      expect(metadata.identifier.value).toBe(resourceID.path);
+    });
+
     it('re-throws the error if something goes wrong accessing the metadata.', async(): Promise<void> => {
       jest.spyOn(accessor, 'getMetadata').mockImplementation(async(): Promise<any> => {
         throw new Error('error');
