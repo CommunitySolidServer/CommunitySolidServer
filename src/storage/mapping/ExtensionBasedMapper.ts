@@ -47,18 +47,10 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
 
     // Existing file
     if (!contentType) {
-      // Find a matching file
-      const [ , folder, documentName ] = /^(.*\/)([^/]*)$/u.exec(filePath)!;
-      let fileName: string | undefined;
-      try {
-        const files = await fsPromises.readdir(folder);
-        fileName = files.find((file): boolean =>
-          file.startsWith(documentName) && /^(?:\$\..+)?$/u.test(file.slice(documentName.length)));
-      } catch {
-        // Parent folder does not exist (or is not a folder)
-      }
-      if (fileName) {
-        filePath = joinFilePath(folder, fileName);
+      // Metadata files are always stored without an additional extension,
+      // so only other documents need to be looked up in their folder.
+      if (!this.isMetadataPath(filePath)) {
+        filePath = await this.findExistingFile(filePath);
       }
       contentType = await this.getContentTypeFromPath(filePath);
     // If the extension of the identifier matches a different content-type than the one that is given,
@@ -74,6 +66,23 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
       filePath += `$.${extension}`;
     }
     return super.mapUrlToDocumentPath(identifier, filePath, contentType);
+  }
+
+  /**
+   * Finds the file corresponding to the given path, which might have an additional extension starting with $.
+   * Returns the input path if no such file exists.
+   */
+  protected async findExistingFile(filePath: string): Promise<string> {
+    const [ , folder, documentName ] = /^(.*\/)([^/]*)$/u.exec(filePath)!;
+    let fileName: string | undefined;
+    try {
+      const files = await fsPromises.readdir(folder);
+      fileName = files.find((file): boolean =>
+        file.startsWith(documentName) && /^(?:\$\..+)?$/u.test(file.slice(documentName.length)));
+    } catch {
+      // Parent folder does not exist (or is not a folder)
+    }
+    return fileName ? joinFilePath(folder, fileName) : filePath;
   }
 
   protected async getDocumentUrl(relative: string): Promise<string> {
