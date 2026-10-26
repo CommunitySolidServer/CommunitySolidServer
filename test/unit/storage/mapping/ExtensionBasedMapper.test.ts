@@ -88,13 +88,24 @@ describe('An ExtensionBasedMapper', (): void => {
     });
 
     it('determines the content-type correctly for metadata files.', async(): Promise<void> => {
-      fsPromises.readdir.mockReturnValue([ 'test.meta' ]);
       await expect(mapper.mapUrlToFilePath({ path: `${base}test` }, true)).resolves.toEqual({
         identifier: { path: `${base}test` },
         filePath: `${rootFilepath}test.meta`,
         contentType: 'text/turtle',
         isMetadata: true,
       });
+      expect(fsPromises.readdir).toHaveBeenCalledTimes(0);
+    });
+
+    it('does not look for other extensions of metadata files.', async(): Promise<void> => {
+      fsPromises.readdir.mockReturnValue([ 'test.meta$.txt' ]);
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test` }, true)).resolves.toEqual({
+        identifier: { path: `${base}test` },
+        filePath: `${rootFilepath}test.meta`,
+        contentType: 'text/turtle',
+        isMetadata: true,
+      });
+      expect(fsPromises.readdir).toHaveBeenCalledTimes(0);
     });
 
     it('matches even if the content-type does not match the extension.', async(): Promise<void> => {
