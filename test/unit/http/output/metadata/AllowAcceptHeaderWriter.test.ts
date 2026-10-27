@@ -1,3 +1,4 @@
+import { DataFactory } from 'n3';
 import { createResponse } from 'node-mocks-http';
 import { AllowAcceptHeaderWriter } from '../../../../../src/http/output/metadata/AllowAcceptHeaderWriter';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
@@ -5,7 +6,7 @@ import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 import { MethodNotAllowedHttpError } from '../../../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { LDP, PIM, RDF, SOLID_ERROR, SOLID_META } from '../../../../../src/util/Vocabularies';
+import { LDP, PIM, RDF, SOLID_ERROR, SOLID_META, XSD } from '../../../../../src/util/Vocabularies';
 
 describe('An AllowAcceptHeaderWriter', (): void => {
   const document = new RepresentationMetadata(
@@ -20,12 +21,24 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     { path: 'http://example.com/foo/' },
     { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]},
   );
+  emptyContainer.add(
+    SOLID_META.terms.containerEmpty,
+    DataFactory.literal('true', XSD.terms.boolean),
+    SOLID_META.terms.ResponseMetadata,
+  );
   const fullContainer = new RepresentationMetadata(
     { path: 'http://example.com/foo/' },
     {
       [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ],
       [LDP.contains]: [ document.identifier ],
     },
+  );
+  const streamedFullContainer = new RepresentationMetadata(fullContainer);
+  streamedFullContainer.removeAll(LDP.terms.contains);
+  streamedFullContainer.add(
+    SOLID_META.terms.containerEmpty,
+    DataFactory.literal('false', XSD.terms.boolean),
+    SOLID_META.terms.ResponseMetadata,
   );
   const storageContainer = new RepresentationMetadata(
     { path: 'http://example.com/foo/' },
@@ -98,6 +111,14 @@ describe('An AllowAcceptHeaderWriter', (): void => {
     expect(headers['accept-patch']).toBeUndefined();
     expect(headers['accept-put']).toBeUndefined();
     expect(headers['accept-post']).toBe('*/*');
+  });
+
+  it('uses the explicit emptiness metadata for streamed containers.', async(): Promise<void> => {
+    await expect(writer.handleSafe({ response, metadata: streamedFullContainer })).resolves.toBeUndefined();
+    const headers = response.getHeaders();
+    expect(typeof headers.allow).toBe('string');
+    expect(new Set(headers.allow!.split(', ')))
+      .toEqual(new Set([ 'OPTIONS', 'GET', 'HEAD', 'POST' ]));
   });
 
   it('returns all methods except PUT/PATCH/DELETE for a storage container.', async(): Promise<void> => {

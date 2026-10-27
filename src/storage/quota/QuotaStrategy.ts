@@ -85,15 +85,19 @@ export abstract class QuotaStrategy {
    * @returns a Passthrough instance that errors when quota is exceeded
    */
   public async createQuotaGuard(identifier: ResourceIdentifier): Promise<Guarded<PassThrough>> {
+    // Compute the available space ONCE instead of for every stream chunk.
+    // The available space does not change during a single write (the
+    // overwritten resource's own size is constant), so the per-chunk
+    // recomputation was `chunks × O(pod)` of needless full-pod walks. The
+    // QuotaValidator re-checks the space after the write completes, so the
+    // quota guarantee is preserved even with concurrent writes.
+    const availableSpace = await this.getAvailableSpace(identifier);
     let total = 0;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const that = this;
     const { reporter } = this;
 
     return guardStream(new PassThrough({
       async transform(this, chunk: unknown, enc: string, done: () => void): Promise<void> {
         total += await reporter.calculateChunkSize(chunk);
-        const availableSpace = await that.getAvailableSpace(identifier);
         if (availableSpace.amount < total) {
           this.destroy(new PayloadHttpError(
             `Quota exceeded by ${total - availableSpace.amount} ${availableSpace.unit} during write`,

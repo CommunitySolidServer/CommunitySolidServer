@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import {
   ACCOUNT_SETTINGS_REMEMBER_LOGIN,
   type MinimalAccountSettings,
@@ -19,6 +20,8 @@ describe('A GenericAccountStore', (): void => {
   let store: GenericAccountStore<MinimalAccountSettings>;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue('4c9b88c1-7502-4107-bb79-2a3a590c7aa3');
+
     storage = {
       defineType: jest.fn().mockResolvedValue({}),
       create: jest.fn().mockResolvedValue({ id }),

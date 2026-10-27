@@ -1,4 +1,6 @@
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
+import { EqualReadWriteLocker } from '../../../../src/util/locking/EqualReadWriteLocker';
+import { MemoryResourceLocker } from '../../../../src/util/locking/MemoryResourceLocker';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import { WrappedExpiringReadWriteLocker } from '../../../../src/util/locking/WrappedExpiringReadWriteLocker';
 import type { PromiseOrValue } from '../../../../src/util/PromiseUtil';
@@ -27,6 +29,10 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
     }));
 
     locker = new WrappedExpiringReadWriteLocker(wrappedLocker, expiration);
+  });
+
+  afterEach((): void => {
+    jest.clearAllTimers();
   });
 
   it('calls the wrapped locker for locking.', async(): Promise<void> => {
@@ -87,5 +93,116 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
     const prom = locker.withReadLock(identifier, refreshCb);
     jest.advanceTimersByTime(5000);
     await expect(prom).rejects.toThrow(`Lock expired after ${expiration}ms on ${identifier.path}`);
+  });
+
+  it('does not cap the total hold time when maxHoldDuration defaults to 0.', async(): Promise<void> => {
+    async function refreshCb(maintainLock: () => void): Promise<string> {
+      return new Promise((resolve): any => {
+        setTimeout(maintainLock, 750);
+        setTimeout(maintainLock, 1500);
+        setTimeout(maintainLock, 2250);
+        setTimeout((): void => resolve('refresh'), 2900);
+      });
+    }
+    const prom = locker.withReadLock(identifier, refreshCb);
+    jest.advanceTimersByTime(2900);
+    await expect(prom).resolves.toBe('refresh');
+  });
+
+  it('does not cap the total hold time when maxHoldDuration is explicitly 0.', async(): Promise<void> => {
+    locker = new WrappedExpiringReadWriteLocker(wrappedLocker, expiration, 0);
+    async function refreshCb(maintainLock: () => void): Promise<string> {
+      return new Promise((resolve): any => {
+        setTimeout(maintainLock, 750);
+        setTimeout(maintainLock, 1500);
+        setTimeout(maintainLock, 2250);
+        setTimeout((): void => resolve('refresh'), 2900);
+      });
+    }
+    const prom = locker.withReadLock(identifier, refreshCb);
+    jest.advanceTimersByTime(2900);
+    await expect(prom).resolves.toBe('refresh');
+  });
+
+  it('rejects once the maximum hold duration is exceeded, even while being renewed.', async():
+  Promise<void> => {
+    const maxHoldDuration = 2000;
+    locker = new WrappedExpiringReadWriteLocker(wrappedLocker, expiration, maxHoldDuration);
+    async function trickleCb(maintainLock: () => void): Promise<void> {
+      return new Promise((resolve): any => {
+        setTimeout(maintainLock, 750);
+        setTimeout(maintainLock, 1500);
+        setTimeout(resolve, 10000);
+      });
+    }
+    const prom = locker.withWriteLock(identifier, trickleCb);
+    jest.advanceTimersByTime(maxHoldDuration);
+    await expect(prom).rejects
+      .toThrow(`Lock reached its maximum hold duration of ${maxHoldDuration}ms on ${identifier.path}`);
+  });
+
+  it('releases the underlying resource lock once the maximum hold duration is exceeded.', async(): Promise<void> => {
+    const maxHoldDuration = 2000;
+    const resourceLocker = new MemoryResourceLocker();
+    const release = jest.spyOn(resourceLocker, 'release');
+    locker = new WrappedExpiringReadWriteLocker(
+      new EqualReadWriteLocker(resourceLocker),
+      expiration,
+      maxHoldDuration,
+    );
+    let indicateLockAcquired: () => void;
+    const lockAcquired = new Promise<void>((resolve): void => {
+      indicateLockAcquired = resolve;
+    });
+
+    const prom = locker.withWriteLock(identifier, async(maintainLock): Promise<never> => {
+      indicateLockAcquired();
+      setTimeout(maintainLock, 750);
+      setTimeout(maintainLock, 1500);
+      return new Promise<never>((): void => undefined);
+    });
+    await lockAcquired;
+    jest.advanceTimersByTime(maxHoldDuration);
+
+    await expect(prom).rejects
+      .toThrow(`Lock reached its maximum hold duration of ${maxHoldDuration}ms on ${identifier.path}`);
+    expect(release).toHaveBeenCalledTimes(1);
+    expect(release).toHaveBeenCalledWith(identifier);
+  });
+
+  it('ignores renewals after the maximum hold duration is exceeded.', async(): Promise<void> => {
+    const maxHoldDuration = 2000;
+    locker = new WrappedExpiringReadWriteLocker(wrappedLocker, expiration, maxHoldDuration);
+    let maintainLock: (() => void) | undefined;
+    const prom = locker.withWriteLock(identifier, async(renew): Promise<never> => {
+      maintainLock = renew;
+      setTimeout(renew, 750);
+      setTimeout(renew, 1500);
+      return new Promise<never>((): void => undefined);
+    });
+    jest.advanceTimersByTime(maxHoldDuration);
+    await expect(prom).rejects
+      .toThrow(`Lock reached its maximum hold duration of ${maxHoldDuration}ms on ${identifier.path}`);
+    expect(jest.getTimerCount()).toBe(0);
+
+    expect(maintainLock).toBeDefined();
+    maintainLock?.();
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('still allows renewals up to the maximum hold duration.', async(): Promise<void> => {
+    const maxHoldDuration = 5000;
+    locker = new WrappedExpiringReadWriteLocker(wrappedLocker, expiration, maxHoldDuration);
+    async function refreshCb(maintainLock: () => void): Promise<string> {
+      return new Promise((resolve): any => {
+        setTimeout(maintainLock, 750);
+        setTimeout(maintainLock, 1500);
+        setTimeout(maintainLock, 2250);
+        setTimeout((): void => resolve('refresh'), 3000);
+      });
+    }
+    const prom = locker.withReadLock(identifier, refreshCb);
+    jest.advanceTimersByTime(3000);
+    await expect(prom).resolves.toBe('refresh');
   });
 });

@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { BaseCookieStore } from '../../../../../../src/identity/interaction/account/util/BaseCookieStore';
 import type { ExpiringStorage } from '../../../../../../src/storage/keyvalue/ExpiringStorage';
 
@@ -14,6 +15,8 @@ describe('A BaseCookieStore', (): void => {
   let store: BaseCookieStore;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(cookie);
+
     storage = {
       get: jest.fn().mockResolvedValue(accountId),
       set: jest.fn(),

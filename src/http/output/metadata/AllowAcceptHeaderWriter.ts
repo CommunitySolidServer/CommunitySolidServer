@@ -132,7 +132,8 @@ export class AllowAcceptHeaderWriter extends MetadataWriter {
     }
 
     const isStorage = metadata.has(RDF.terms.type, PIM.terms.Storage);
-    const isEmpty = !metadata.has(LDP.terms.contains);
+    const empty = metadata.get(SOLID_META.terms.containerEmpty, SOLID_META.terms.ResponseMetadata);
+    const isEmpty = empty ? empty.value === 'true' : !metadata.has(LDP.terms.contains);
     return !isStorage && isEmpty;
   }
 

@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { Readable } from 'node:stream';
 import type { NamedNode, Quad, Term } from '@rdfjs/types';
 import { DataFactory } from 'n3';
 import { getLoggerFor } from 'global-logger-factory';
@@ -117,7 +118,6 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
     let metadata = await this.accessor.getMetadata(identifier);
-    let representation: Representation;
 
     // Potentially add auxiliary related metadata
     // Solid, §4.3: "Clients can discover auxiliary resources associated with a subject resource by making an HTTP HEAD
@@ -126,40 +126,86 @@ export class DataAccessorBasedStore implements ResourceStore {
     await this.auxiliaryStrategy.addMetadata(metadata);
 
     const isContainer = isContainerPath(metadata.identifier.value);
-    let data = metadata.quads();
-    if (isContainer || isMetadata) {
-      if (isContainer) {
-        // Add containment triples of non-auxiliary resources
-        for await (const child of this.accessor.getChildren(identifier)) {
-          if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
-            if (!isMetadata) {
-              metadata.addQuads(child.quads());
-            }
-            metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
-          }
+
+    if (!isContainer && !isMetadata) {
+      return new BasicRepresentation(await this.accessor.getData(identifier), metadata);
+    }
+
+    if (isContainer && isMetadata) {
+      for await (const child of this.accessor.getChildren(identifier)) {
+        if (!this.isAuxiliaryResourceMetadata(child)) {
+          metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
         }
-        data = metadata.quads();
       }
-
-      if (isMetadata) {
-        metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
-        addResourceMetadata(metadata, false);
-        metadata.add(RDF.terms.type, SOLID_META.terms.DescriptionResource);
-      }
-
-      metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
-      metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
-      metadata.addQuad(POSIX.terms.namespace, PREFERRED_PREFIX_TERM, 'posix', SOLID_META.terms.ResponseMetadata);
-      metadata.addQuad(XSD.terms.namespace, PREFERRED_PREFIX_TERM, 'xsd', SOLID_META.terms.ResponseMetadata);
     }
 
-    if (isContainer || isMetadata) {
-      representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
-    } else {
-      representation = new BasicRepresentation(await this.accessor.getData(identifier), metadata);
+    const data = isMetadata ? metadata.quads() : await this.streamContainerRepresentation(identifier, metadata);
+    if (isMetadata) {
+      metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
+      addResourceMetadata(metadata, false);
+      metadata.add(RDF.terms.type, SOLID_META.terms.DescriptionResource);
     }
 
-    return representation;
+    metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
+    metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
+    metadata.addQuad(POSIX.terms.namespace, PREFERRED_PREFIX_TERM, 'posix', SOLID_META.terms.ResponseMetadata);
+    metadata.addQuad(XSD.terms.namespace, PREFERRED_PREFIX_TERM, 'xsd', SOLID_META.terms.ResponseMetadata);
+    return new BasicRepresentation(data, metadata, INTERNAL_QUADS);
+  }
+
+  /**
+   * Creates a lazy quad stream for a container listing.
+   */
+  protected async streamContainerRepresentation(identifier: ResourceIdentifier, metadata: RepresentationMetadata):
+  Promise<Readable> {
+    const ownQuads = metadata.quads();
+    const childQuads = this.getContainerListingQuads(identifier, metadata.identifier as NamedNode);
+    const first = await childQuads.next();
+    metadata.add(
+      SOLID_META.terms.containerEmpty,
+      DataFactory.literal(`${first.done}`, XSD.terms.boolean),
+      SOLID_META.terms.ResponseMetadata,
+    );
+
+    async function* generate(): AsyncGenerator<Quad, void, undefined> {
+      try {
+        yield* ownQuads;
+        if (!first.done) {
+          yield first.value;
+          yield* childQuads;
+        }
+      } finally {
+        await childQuads.return?.();
+      }
+    }
+    const listing = generate();
+    // Prime the generator so cancellation reaches its finally block.
+    const initial = await listing.next();
+    const data = Readable.from(listing, { objectMode: true });
+    if (!initial.done) {
+      data.unshift(initial.value);
+    }
+    return data;
+  }
+
+  /** Yields containment and metadata quads for non-auxiliary children. */
+  private async* getContainerListingQuads(identifier: ResourceIdentifier, containerNode: NamedNode):
+  AsyncIterableIterator<Quad> {
+    for await (const child of this.accessor.getChildren(identifier)) {
+      if (!this.isAuxiliaryResourceMetadata(child)) {
+        yield DataFactory.quad(
+          containerNode,
+          LDP.terms.contains,
+          child.identifier as NamedNode,
+          SOLID_META.terms.ResponseMetadata,
+        );
+        yield* child.quads();
+      }
+    }
+  }
+
+  private isAuxiliaryResourceMetadata(metadata: RepresentationMetadata): boolean {
+    return this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: metadata.identifier.value });
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions):
@@ -663,7 +709,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    */
   protected async hasProperChildren(container: ResourceIdentifier): Promise<boolean> {
     for await (const child of this.accessor.getChildren(container)) {
-      if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
+      if (!this.isAuxiliaryResourceMetadata(child)) {
         return true;
       }
     }

@@ -64,10 +64,16 @@ describe('A OriginalUrlExtractor', (): void => {
       .resolves.toEqual({ path: 'http://test.com/url' });
   });
 
-  it('returns an input URL with multiple leading slashes.', async(): Promise<void> => {
+  it('normalizes an input URL with multiple leading slashes.', async(): Promise<void> => {
     const noQuery = createExtractor({ includeQueryString: true });
     await expect(noQuery.handle({ request: { url: '///url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
-      .resolves.toEqual({ path: 'http://test.com///url?abc=def&xyz' });
+      .resolves.toEqual({ path: 'http://test.com/url?abc=def&xyz' });
+  });
+
+  it('normalizes repeated slashes for internal paths.', async(): Promise<void> => {
+    await expect(
+      extractor.handle({ request: { url: '//.internal/setup/current-base-url', headers: { host: 'test.com' }} as any }),
+    ).resolves.toEqual({ path: 'http://test.com/.internal/setup/current-base-url' });
   });
 
   it('drops the query string when includeQueryString is set to false.', async(): Promise<void> => {

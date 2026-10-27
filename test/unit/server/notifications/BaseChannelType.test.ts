@@ -32,6 +32,10 @@ describe('A BaseChannelType', (): void => {
   const credentials: Credentials = {};
   const channelType = new DummyChannelType();
 
+  beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue('4c9b88c1-7502-4107-bb79-2a3a590c7aa3');
+  });
+
   it('can provide a description of the subscription service.', async(): Promise<void> => {
     expect(channelType.getDescription()).toEqual({
       '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],

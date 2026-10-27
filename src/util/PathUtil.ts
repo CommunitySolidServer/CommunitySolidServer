@@ -159,6 +159,18 @@ export function toCanonicalUriPath(path: string): string {
     encodeURIComponent(decodeURIComponent(part)));
 }
 
+/**
+ * Collapses repeated forward slashes in the path part of a URI-like string.
+ * Query strings are preserved unchanged.
+ *
+ * @param path - URI path (optionally followed by a query string).
+ */
+export function normalizeUriPathSlashes(path: string): string {
+  const [ , pathname, queryString ] = /^([^?]*)(\?.*)?$/u.exec(path)!;
+  const normalizedPathname = pathname.replaceAll(/\/{2,}/gu, '/');
+  return queryString ? `${normalizedPathname}${queryString}` : normalizedPathname;
+}
+
 /* eslint-disable @typescript-eslint/naming-convention */
 // Characters not allowed in a Windows file path
 const forbiddenSymbols = {

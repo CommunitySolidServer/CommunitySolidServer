@@ -55,6 +55,27 @@ These changes are relevant if you wrote custom modules for the server that depen
 - The handler changes discussed above also impact the code if you depended on these.
 - The `DeleteParentExtractor` class has been removed.
 
+## v7.3.0
+
+### New features
+
+- Expiring read/write lockers can enforce an optional maximum hold duration,
+  independent of activity-based lock renewals.
+- An account can now recover the profile document of a WebID linked to the account and
+  hosted in one of its pods: the server first creates a backup of the current profile
+  document, and then rewrites the original profile document and its authorization the
+  same way as when the pod was created.
+  This can be used to restore access when the profile is missing, private, or has
+  a broken authorization, without needing a registration token or a publicly
+  readable profile.
+  The new step is linked from the OIDC consent page ("recover it", which returns to
+  the consent page afterwards) and exposed as the `recoverWebId` account control.
+
+### Configuration changes
+
+- There is a new opt-in `util/resource-locker/file-capped.json` configuration that caps file-based locks at one hour.
+  Existing resource locker configurations remain uncapped.
+
 ## v7.0.0
 
 ### New features

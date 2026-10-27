@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import {
   CreateClientCredentialsHandler,
 } from '../../../../../src/identity/interaction/client-credentials/CreateClientCredentialsHandler';
@@ -29,6 +30,7 @@ describe('A CreateClientCredentialsHandler', (): void => {
   let handler: CreateClientCredentialsHandler;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(uuid);
     route = {
       getPath: jest.fn().mockReturnValue(resource),
       matchPath: jest.fn().mockReturnValue({ accountId, clientCredentialsId: id }),

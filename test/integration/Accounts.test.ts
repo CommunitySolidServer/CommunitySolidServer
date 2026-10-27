@@ -1,10 +1,12 @@
 import fetch from 'cross-fetch';
+import { Parser } from 'n3';
 import { parse, splitCookiesString } from 'set-cookie-parser';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { App } from '../../src/init/App';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinUrl } from '../../src/util/PathUtil';
+import { PIM } from '../../src/util/Vocabularies';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
@@ -270,6 +272,32 @@ describe.each(stores)('A server with account management using %s', (name, { conf
     res = await fetch(controls.account.webId, { headers: { cookie }});
     expect(res.status).toBe(200);
     expect((await res.json()).webIdLinks[webId]).toBeDefined();
+  });
+
+  it('can create a pod with a pim:storage triple.', async(): Promise<void> => {
+    let res = await fetch(controls.account.pod, {
+      method: 'POST',
+      headers: { cookie, 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'pim', settings: { linkStorage: true }}),
+    });
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.pod).toBeDefined();
+    expect(json.webId).toBeDefined();
+
+    // Fetch the WebID profile document
+    const profileUrl = json.webId.split('#')[0];
+    res = await fetch(profileUrl, { headers: { accept: 'text/turtle' }});
+    expect(res.status).toBe(200);
+
+    // Parse and verify the pim:storage triple points to the pod root
+    const parser = new Parser({ baseIRI: profileUrl });
+    const quads = parser.parse(await res.text());
+    const storageQuads = quads.filter((q): boolean =>
+      q.subject.value === json.webId &&
+      q.predicate.value === PIM.storage &&
+      q.object.value === json.pod);
+    expect(storageQuads).toHaveLength(1);
   });
 
   it('can not remove the last owner of a pod.', async(): Promise<void> => {

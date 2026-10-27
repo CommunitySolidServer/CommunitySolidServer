@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^8.0.0/components/context.jsonld",
+  "import": [
+    "css:config/util/resource-locker/file.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Caps file-based locks at 1 hour so continually renewed locks can not block a resource forever.",
+      "@id": "urn:solid-server:default:ResourceLocker",
+      "@type": "WrappedExpiringReadWriteLocker",
+      "maxHoldDuration": 3600000
+    }
+  ]
+}

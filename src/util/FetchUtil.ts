@@ -25,8 +25,12 @@ export async function fetchDataset(url: string): Promise<Representation> {
       const quadArray = await arrayifyStream<Quad>(quadStream);
       return new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
     } catch (error: unknown) {
+      // Log full detail server-side only.
+      // Generic client message prevents leaking network state (ECONNREFUSED, ETIMEDOUT, etc.)
+      // which would otherwise allow using this endpoint as an internal port scanner.
+      logger.warn(`Could not fetch dataset at ${url}: ${createErrorMessage(error)}`);
       throw new BadRequestHttpError(
-        `Could not parse resource at URL (${url})! ${createErrorMessage(error)}`,
+        `Could not retrieve or parse the WebID document at ${url}.`,
         { cause: error },
       );
     }

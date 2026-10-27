@@ -93,6 +93,7 @@ export const OIDC = createVocabulary(
 export const PIM = createVocabulary(
   'http://www.w3.org/ns/pim/space#',
   'Storage',
+  'storage',
 );
 
 export const POSIX = createVocabulary(
@@ -173,6 +174,8 @@ export const SOLID_META = createVocabulary(
   'value',
   // This is used to indicate whether metadata should be preserved or not during a PUT operation
   'preserve',
+  // Indicates whether a container has no contained resources
+  'containerEmpty',
   // These predicates are used to describe the requested access in case of an unauthorized request
   'requestedAccess',
   'accessTarget',
@@ -191,6 +194,7 @@ export const VCARD = createVocabulary(
 
 export const XSD = createVocabulary(
   'http://www.w3.org/2001/XMLSchema#',
+  'boolean',
   'dateTime',
   'duration',
   'integer',

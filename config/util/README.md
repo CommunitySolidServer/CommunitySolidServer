@@ -52,6 +52,7 @@ Which locking mechanism to use to for example prevent 2 write simultaneous write
 
 * *debug-void*: No locking mechanism, does not prevent simultaneous read/writes.
 * *file*: Uses a file-system based locking mechanism (process-safe/thread-safe).
+* *file-capped*: Uses the file-system locker with a one-hour maximum hold duration.
 * *memory*: Uses an in-memory locking mechanism.
 * *redis*: Uses a Redis store for locking that supports threadsafe read-write locking (process-safe/thread-safe).
 

@@ -93,6 +93,24 @@ describe('A FileDataAccessor', (): void => {
       await expect(accessor.getMetadata({ path: `${base}container/` })).rejects.toThrow(NotFoundHttpError);
     });
 
+    it('cleans up orphaned auxiliary metadata files for missing document bodies.', async(): Promise<void> => {
+      cache.data = { 'resource.ttl.meta': '<http://this> <http://is> <http://metadata>.' };
+
+      await expect(accessor.getMetadata({ path: `${base}resource.ttl` })).rejects.toThrow(NotFoundHttpError);
+      expect(cache.data['resource.ttl.meta']).toBeUndefined();
+    });
+
+    it('logs cleanup errors when removing orphaned auxiliary metadata files.', async(): Promise<void> => {
+      cache.data = { 'resource.ttl.meta': '<http://this> <http://is> <http://metadata>.' };
+      jest.requireMock('fs-extra').remove = (): never => {
+        throw new Error('cleanup failed');
+      };
+      const logSpy = jest.spyOn((accessor as any).logger, 'error');
+
+      await expect(accessor.getMetadata({ path: `${base}resource.ttl` })).rejects.toThrow(NotFoundHttpError);
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to remove dangling metadata'));
+    });
+
     it('throws a 404 if it matches something that is no file or directory.', async(): Promise<void> => {
       cache.data = { resource: 5 };
       await expect(accessor.getMetadata({ path: `${base}resource` })).rejects.toThrow(NotFoundHttpError);
@@ -103,6 +121,15 @@ describe('A FileDataAccessor', (): void => {
         throw new Error('error');
       };
       await expect(accessor.getMetadata({ path: base })).rejects.toThrow('error');
+    });
+
+    it('throws a 404 if stat returns ENOTDIR (container path over an existing file).', async(): Promise<void> => {
+      cache.data = { resource: 'data' };
+      const enotdir = Object.assign(new Error('ENOTDIR: not a directory, stat'), { code: 'ENOTDIR', syscall: 'stat' });
+      jest.requireMock('fs-extra').stat = (): never => {
+        throw enotdir;
+      };
+      await expect(accessor.getMetadata({ path: `${base}resource/` })).rejects.toThrow(NotFoundHttpError);
     });
 
     it('throws a 404 if the trailing slash does not match its type.', async(): Promise<void> => {

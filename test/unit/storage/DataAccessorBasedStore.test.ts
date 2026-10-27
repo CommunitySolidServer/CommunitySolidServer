@@ -1,4 +1,5 @@
 import 'jest-rdf';
+import { once } from 'node:events';
 import type { Readable } from 'node:stream';
 import type { Quad } from '@rdfjs/types';
 import { DataFactory as DF, Store } from 'n3';
@@ -165,6 +166,74 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
       expect(result.metadata.get(DF.namedNode('AUXILIARY'))?.value)
         .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
+      expect(result.metadata.get(SOLID_META.terms.containerEmpty, SOLID_META.terms.ResponseMetadata))
+        .toEqualRdfTerm(DF.literal('true', XSD.terms.boolean));
+    });
+
+    it('keeps large container listings lazy and releases their child iterator on cancellation.', async():
+    Promise<void> => {
+      const resourceID = { path: `${root}container/` };
+      containerMetadata.identifier = DF.namedNode(resourceID.path);
+      accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
+
+      const childCount = 100_000;
+      let generatedChildren = 0;
+      let iteratorClosed = false;
+      accessor.getChildren = async function* (): AsyncIterableIterator<RepresentationMetadata> {
+        try {
+          for (let i = 0; i < childCount; ++i) {
+            generatedChildren += 1;
+            const child = new RepresentationMetadata({ path: `${resourceID.path}${i}` });
+            child.add(RDF.terms.type, LDP.terms.Resource);
+            yield child;
+          }
+        } finally {
+          iteratorClosed = true;
+        }
+      };
+
+      const result = await store.getRepresentation(resourceID);
+
+      expect(generatedChildren).toBe(1);
+      expect(result.metadata.getAll(LDP.terms.contains)).toHaveLength(0);
+      expect(result.metadata.get(SOLID_META.terms.containerEmpty, SOLID_META.terms.ResponseMetadata))
+        .toEqualRdfTerm(DF.literal('false', XSD.terms.boolean));
+
+      const iterator = result.data[Symbol.asyncIterator]();
+      for (let i = 0; i < 20; ++i) {
+        expect((await iterator.next()).done).toBe(false);
+      }
+      expect(generatedChildren).toBeLessThan(20);
+
+      const closed = new Promise<void>((resolve): void => {
+        result.data.once('close', resolve);
+      });
+      await iterator.return?.();
+      await closed;
+      expect(iteratorClosed).toBe(true);
+      expect(generatedChildren).toBeLessThan(childCount);
+    });
+
+    it('releases the child iterator when an unread listing is destroyed.', async(): Promise<void> => {
+      const resourceID = { path: `${root}container/` };
+      containerMetadata.identifier = DF.namedNode(resourceID.path);
+      accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
+
+      let iteratorClosed = false;
+      accessor.getChildren = async function* (): AsyncIterableIterator<RepresentationMetadata> {
+        try {
+          yield new RepresentationMetadata({ path: `${resourceID.path}child` });
+        } finally {
+          iteratorClosed = true;
+        }
+      };
+
+      const result = await store.getRepresentation(resourceID);
+      const closed = once(result.data, 'close');
+      result.data.destroy();
+      await closed;
+
+      expect(iteratorClosed).toBe(true);
     });
 
     it('will remove containment triples referencing auxiliary resources.', async(): Promise<void> => {
@@ -175,7 +244,8 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${resourceID.path}resource`] = representation;
       accessor.data[`${resourceID.path}resource.dummy`] = representation;
       const result = await store.getRepresentation(resourceID);
-      const contains = result.metadata.getAll(LDP.terms.contains);
+      const quads = await arrayifyStream<Quad>(result.data);
+      const contains = new Store(quads).getObjects(DF.namedNode(resourceID.path), LDP.terms.contains, null);
       expect(contains).toHaveLength(1);
       expect(contains[0].value).toBe(`${resourceID.path}resource`);
     });
@@ -218,6 +288,58 @@ describe('A DataAccessorBasedStore', (): void => {
         ),
       );
       expect(result.metadata.contentType).toBe(INTERNAL_QUADS);
+    });
+
+    it('ignores auxiliary metadata entries when building container metadata.', async(): Promise<void> => {
+      const resourceID = { path: `${root}container/` };
+      const metaResourceID = metadataStrategy.getAuxiliaryIdentifier(resourceID);
+      containerMetadata.identifier = DF.namedNode(resourceID.path);
+      accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
+      accessor.data[`${resourceID.path}.dummy`] = representation;
+
+      const result = await store.getRepresentation(metaResourceID);
+      const quads = await arrayifyStream<Quad>(result.data);
+      const contains = new Store(quads).getObjects(DF.namedNode(resourceID.path), LDP.terms.contains, null);
+      expect(contains).toHaveLength(0);
+    });
+
+    it('returns an empty container listing when there are no non-auxiliary children.', async(): Promise<void> => {
+      const resourceID = { path: `${root}empty/` };
+      containerMetadata.identifier = DF.namedNode(resourceID.path);
+      accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
+      accessor.data[`${resourceID.path}.dummy`] = representation;
+
+      const result = await store.getRepresentation(resourceID);
+      const quads = await arrayifyStream<Quad>(result.data);
+      const contains = new Store(quads).getObjects(DF.namedNode(resourceID.path), LDP.terms.contains, null);
+      expect(contains).toHaveLength(0);
+      expect(result.metadata.get(SOLID_META.terms.containerEmpty, SOLID_META.terms.ResponseMetadata))
+        .toEqualRdfTerm(DF.literal('true', XSD.terms.boolean));
+    });
+
+    it('does not prepend a quad when the container stream is empty.', async(): Promise<void> => {
+      const resourceID = { path: `${root}empty/` };
+      accessor.getMetadata = async(): Promise<RepresentationMetadata> => new RepresentationMetadata(resourceID);
+      jest.spyOn(auxiliaryStrategy, 'addMetadata').mockResolvedValue();
+
+      const result = await store.getRepresentation(resourceID);
+      await expect(arrayifyStream(result.data)).resolves.toEqual([]);
+    });
+
+    it('keeps container listings non-empty when there are non-auxiliary children.', async(): Promise<void> => {
+      const resourceID = { path: `${root}container/` };
+      const childResourceID = { path: `${resourceID.path}child` };
+      containerMetadata.identifier = DF.namedNode(resourceID.path);
+      accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
+      accessor.data[childResourceID.path] = representation;
+
+      const result = await store.getRepresentation(resourceID);
+      const quads = await arrayifyStream<Quad>(result.data);
+      const contains = new Store(quads).getObjects(DF.namedNode(resourceID.path), LDP.terms.contains, null);
+      expect(contains).toHaveLength(1);
+      expect(contains[0].value).toBe(childResourceID.path);
+      expect(result.metadata.get(SOLID_META.terms.containerEmpty, SOLID_META.terms.ResponseMetadata))
+        .toEqualRdfTerm(DF.literal('false', XSD.terms.boolean));
     });
   });
 

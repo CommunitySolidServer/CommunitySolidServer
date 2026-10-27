@@ -1,9 +1,13 @@
+import { Readable } from 'node:stream';
+import { DataFactory } from 'n3';
+import type { Quad } from '@rdfjs/types';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { JsonResourceStorage } from '../../../../src/storage/keyvalue/JsonResourceStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
+import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { isContainerIdentifier, joinUrl } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
@@ -30,12 +34,13 @@ describe('A JsonResourceStorage', (): void => {
         if (!data.has(id.path)) {
           throw new NotFoundHttpError();
         }
-        // Simulate container metadata
+        // Container members are listed in the body.
         if (isContainerIdentifier(id)) {
           const keys = [ ...data.keys() ].filter((key): boolean => key.startsWith(id.path) &&
             /^[^/]+\/?$/u.test(key.slice(id.path.length)));
-          const metadata = new RepresentationMetadata({ [LDP.contains]: keys });
-          return new BasicRepresentation('', metadata);
+          const quads = keys.map((key): Quad =>
+            DataFactory.quad(DataFactory.namedNode(id.path), LDP.terms.contains, DataFactory.namedNode(key)));
+          return new BasicRepresentation(quads, new RepresentationMetadata(id), INTERNAL_QUADS);
         }
         return new BasicRepresentation(data.get(id.path)!, id);
       }),
@@ -124,5 +129,48 @@ describe('A JsonResourceStorage', (): void => {
       [ path2, 'path2' ],
       [ subPath, 'subDocument' ],
     ]);
+  });
+
+  it('streams container members.', async(): Promise<void> => {
+    const childCount = 100;
+    let generatedChildren = 0;
+    let listingClosed = false;
+    async function* generateListing(): AsyncIterableIterator<Quad> {
+      try {
+        yield {
+          subject: DataFactory.namedNode(containerIdentifier),
+          predicate: {},
+        } as unknown as Quad;
+        for (let i = 0; i < childCount; ++i) {
+          generatedChildren += 1;
+          yield DataFactory.quad(
+            DataFactory.namedNode(containerIdentifier),
+            LDP.terms.contains,
+            DataFactory.namedNode(`${containerIdentifier}${i}`),
+          );
+        }
+      } finally {
+        listingClosed = true;
+      }
+    }
+    store.getRepresentation.mockImplementation(async(id): Promise<Representation> =>
+      isContainerIdentifier(id) ?
+        new BasicRepresentation(
+          Readable.from(generateListing()),
+          new RepresentationMetadata(id),
+          INTERNAL_QUADS,
+        ) :
+        new BasicRepresentation(JSON.stringify(id.path), id));
+
+    const iterator = storage.entries();
+    await expect(iterator.next()).resolves.toEqual({
+      done: false,
+      value: [ '0', `${containerIdentifier}0` ],
+    });
+    expect(generatedChildren).toBeLessThan(childCount);
+    expect(listingClosed).toBe(false);
+
+    await iterator.return?.();
+    expect(listingClosed).toBe(true);
   });
 });

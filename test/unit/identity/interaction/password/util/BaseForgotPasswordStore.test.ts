@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import {
   BaseForgotPasswordStore,
 } from '../../../../../../src/identity/interaction/password/util/BaseForgotPasswordStore';
@@ -12,6 +13,8 @@ describe('A BaseForgotPasswordStore', (): void => {
   let store: BaseForgotPasswordStore;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue(record);
+
     storage = {
       get: jest.fn().mockResolvedValue(email),
       set: jest.fn(),

@@ -1,3 +1,4 @@
+import type { Quad } from '@rdfjs/types';
 import { getLoggerFor } from 'global-logger-factory';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
@@ -83,11 +84,8 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
     const representation = await this.safelyGetResource(identifier);
     if (representation) {
       if (isContainerIdentifier(identifier)) {
-        // Only need the metadata
-        representation.data.destroy();
-        const members = representation.metadata.getAll(LDP.terms.contains).map((term): string => term.value);
-        for (const path of members) {
-          yield* this.getResourceEntries({ path });
+        for await (const member of this.getContainedResourceIdentifiers(identifier, representation)) {
+          yield* this.getResourceEntries(member);
         }
       } else {
         try {
@@ -98,6 +96,20 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
           }. You should probably delete this resource manually. Error: ${
             createErrorMessage(error)}`);
         }
+      }
+    }
+  }
+
+  /** Streams direct member identifiers from a container representation. */
+  protected async* getContainedResourceIdentifiers(
+    identifier: ResourceIdentifier,
+    representation: Representation,
+  ): AsyncIterableIterator<ResourceIdentifier> {
+    for await (const entry of representation.data as AsyncIterable<Partial<Quad>>) {
+      if (entry.subject?.termType === 'NamedNode' && entry.subject.value === identifier.path &&
+        entry.predicate?.termType === 'NamedNode' && entry.predicate.value === LDP.terms.contains.value &&
+        entry.object?.termType === 'NamedNode') {
+        yield { path: entry.object.value };
       }
     }
   }

@@ -1,8 +1,11 @@
+import { DataFactory } from 'n3';
+import type { Quad } from '@rdfjs/types';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { SingleContainerJsonStorage } from '../../../../src/init/migration/SingleContainerJsonStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
+import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { isContainerIdentifier } from '../../../../src/util/PathUtil';
 import { LDP } from '../../../../src/util/Vocabularies';
@@ -17,13 +20,31 @@ describe('A SingleContainerJsonStorage', (): void => {
     store = {
       getRepresentation: jest.fn(async(id): Promise<Representation> => {
         if (isContainerIdentifier(id)) {
-          const metadata = new RepresentationMetadata(id);
-          metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/foo');
-          metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/bad');
-          metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/bar/');
-          metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/baz');
-          metadata.add(LDP.terms.contains, 'http://example.com/.internal/accounts/unknown');
-          return new BasicRepresentation('', metadata);
+          // Container members are listed in the body.
+          const members = [
+            'http://example.com/.internal/accounts/foo',
+            'http://example.com/.internal/accounts/bad',
+            'http://example.com/.internal/accounts/bar/',
+            'http://example.com/.internal/accounts/baz',
+            'http://example.com/.internal/accounts/unknown',
+          ];
+          const quads = members.map((member): Quad =>
+            DataFactory.quad(DataFactory.namedNode(id.path), LDP.terms.contains, DataFactory.namedNode(member)));
+          // Ignore containment statements from child resources.
+          quads.push(DataFactory.quad(
+            DataFactory.namedNode(`${id.path}nested/`),
+            LDP.terms.contains,
+            DataFactory.namedNode(`${id.path}not-a-direct-member`),
+          ));
+          const containerNode = DataFactory.namedNode(id.path);
+          quads.push(
+            {} as unknown as Quad,
+            { subject: containerNode } as unknown as Quad,
+            { subject: containerNode, predicate: LDP.terms.contains } as unknown as Quad,
+            DataFactory.quad(containerNode, DataFactory.namedNode('urn:other'), DataFactory.namedNode('urn:ignored')),
+            DataFactory.quad(containerNode, LDP.terms.contains, DataFactory.literal('not-an-identifier')),
+          );
+          return new BasicRepresentation(quads, new RepresentationMetadata(id), INTERNAL_QUADS);
         }
         if (id.path.endsWith('unknown')) {
           throw new NotFoundHttpError();

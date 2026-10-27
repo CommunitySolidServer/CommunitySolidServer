@@ -8,7 +8,9 @@
       "@type": "PodQuotaStrategy",
       "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
       "accessor": { "@id": "urn:solid-server:default:AtomicFileDataAccessor" },
-      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "internalFolder": "/.internal/"
     }
   ]
 }

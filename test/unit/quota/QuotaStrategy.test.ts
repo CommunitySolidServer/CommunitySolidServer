@@ -85,5 +85,24 @@ describe('A QuotaStrategy', (): void => {
       });
       await expect(destroy).resolves.toBeUndefined();
     });
+
+    it('computes the available space once at guard creation instead of once per chunk.', async(): Promise<void> => {
+      const spy = jest.spyOn(strategy, 'getAvailableSpace').mockResolvedValue({ amount: 1000, unit: mockSize.unit });
+      const track = await strategy.createQuotaGuard({ path: `${base}nested/file2.txt` });
+      // Creating the guard already computed the available space once...
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      const done = new Promise<void>((resolve): void => {
+        track.on('data', (): void => { /* Consume */ });
+        track.on('end', (): void => resolve());
+        track.on('error', (): void => resolve());
+      });
+      // Writing chunks through the guard must NOT recompute it.
+      track.write(Buffer.from('A'.repeat(50)));
+      track.write(Buffer.from('A'.repeat(50)));
+      track.end();
+      await done;
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 });

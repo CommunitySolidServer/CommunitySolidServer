@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { DataFactory, Store } from 'n3';
 import {
   AbsolutePathInteractionRoute,
@@ -29,6 +30,8 @@ describe('A WebSocketChannel2023', (): void => {
   let channelType: WebSocketChannel2023Type;
 
   beforeEach(async(): Promise<void> => {
+    jest.spyOn(crypto, 'randomUUID').mockReturnValue('4c9b88c1-7502-4107-bb79-2a3a590c7aa3');
+
     data = new Store();
     data.addQuad(DataFactory.quad(subject, RDF.terms.type, NOTIFY.terms.WebSocketChannel2023));
     data.addQuad(DataFactory.quad(subject, NOTIFY.terms.topic, DataFactory.namedNode(topic)));
