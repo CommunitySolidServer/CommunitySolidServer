@@ -154,7 +154,7 @@
     "@tsconfig/node20": "^20.1.6",
     "@types/jest": "^30.0.0",
     "@types/set-cookie-parser": "^2.4.4",
-    "@types/supertest": "^6.0.2",
+    "@types/supertest": "^7.2.1",
     "commit-and-tag-version": "^13.1.2",
     "componentsjs-generator": "^4.3.0",
     "husky": "^4.3.8",
