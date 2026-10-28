@@ -138,7 +138,7 @@
     "rdf-vocabulary": "^1.0.1",
     "sparqlalgebrajs": "^5.0.1",
     "sparqljs": "^3.7.1",
-    "url-join": "^4.0.1",
+    "url-join": "^6.0.0",
     "winston": "^3.11.0",
     "winston-transport": "^4.5.0",
     "ws": "^8.14.2",
