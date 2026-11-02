@@ -1,5 +1,8 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^8.0.0/components/context.jsonld",
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^8.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
+  ],
   "@graph": [
     {
       "comment": "An adapter is responsible for storing all interaction metadata.",
@@ -13,6 +16,7 @@
         "source": {
           "@type": "ExpiringAdapterFactory",
           "storage": {
+            "@id": "urn:solid-server:default:IdpAdapterExpiringStorage",
             "@type": "WrappedExpiringStorage",
             "source": {
               "@type": "ContainerPathStorage",
@@ -24,6 +28,17 @@
           }
         }
       }
+    },
+    {
+      "comment": "Makes sure the expiring storage cleanup timer is stopped when the application needs to stop.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:IdpAdapterExpiringStorage" }
+        }
+      ]
     }
   ]
 }
