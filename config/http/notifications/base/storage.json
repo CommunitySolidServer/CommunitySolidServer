@@ -7,10 +7,31 @@
       "@type": "KeyValueChannelStorage",
       "locker": { "@id": "urn:solid-server:default:ResourceLocker" },
       "storage": {
-        "@type": "ContainerPathStorage",
-        "relativePath": "/notifications/",
-        "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        "comment": [
+          "Uses its own container so the expiry sweep only has to list notification channels.",
+          "The key length limit accounts for the `notifications/` prefix that used to be part of the key,",
+          "so existing channels keep their paths."
+        ],
+        "@type": "MaxKeyLengthStorage",
+        "maxKeyLength": 136,
+        "source": {
+          "@type": "JsonResourceStorage",
+          "source": { "@id": "urn:solid-server:default:ResourceStore" },
+          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+          "container": "/.internal/notifications/"
+        }
       }
+    },
+    {
+      "comment": "Stops notification channel sweeps and waits for pending storage operations before backend cleanup.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "@type": "FinalizableHandler",
+          "finalizable": { "@id": "urn:solid-server:default:SubscriptionStorage" }
+        }
+      ]
     }
   ]
 }
