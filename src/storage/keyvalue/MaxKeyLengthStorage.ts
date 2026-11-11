@@ -48,7 +48,13 @@ export class MaxKeyLengthStorage<T> implements KeyValueStorage<string, T> {
   }
 
   public async* entries(): AsyncIterableIterator<[string, T]> {
-    for await (const [ , val ] of this.source.entries()) {
+    for await (const [ key, val ] of this.source.entries()) {
+      // The source can contain entries that were not written through this storage,
+      // such as locks that share the same internal container.
+      if (typeof val?.key !== 'string') {
+        this.logger.debug(`Skipping entry ${key} as it was not written by this storage.`);
+        continue;
+      }
       yield [ val.key, val.payload ];
     }
   }

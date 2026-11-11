@@ -1,8 +1,10 @@
 import type { Quad } from '@rdfjs/types';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
+import type { RepresentationPreferences } from '../../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash, isContainerIdentifier, joinUrl, trimLeadingSlashes } from '../../util/PathUtil';
@@ -122,8 +124,12 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
   protected async safelyGetResource(identifier: ResourceIdentifier): Promise<Representation | undefined> {
     let representation: Representation | undefined;
     try {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const preferences = isContainerIdentifier(identifier) ? {} : { type: { 'application/json': 1 }};
+      // Containers are parsed as quads, so they need to be requested as such:
+      // without an explicit preference a converting store would serialize them to an RDF format.
+      const preferences: RepresentationPreferences = isContainerIdentifier(identifier) ?
+          { type: { [INTERNAL_QUADS]: 1 }} :
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          { type: { 'application/json': 1 }};
       representation = await this.source.getRepresentation(identifier, preferences);
     } catch (error: unknown) {
       // Can happen if resource is deleted by this point.

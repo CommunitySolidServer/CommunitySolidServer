@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Sweeps expired notification channels every 0.6 seconds.",
+      "@id": "urn:solid-server:default:SubscriptionStorage",
+      "@type": "KeyValueChannelStorage",
+      "sweepInterval": 0.01,
+      "jitter": 0
+    }
+  ]
+}
