@@ -273,6 +273,22 @@ describe('A DataAccessorBasedStore', (): void => {
       ]);
     });
 
+    it('copies the modification date of the subject to metadata resources.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const metaResourceID = { path: `${root}resource.meta` };
+      representation.metadata.identifier = namedNode(resourceID.path);
+      representation.metadata.add(DC.terms.modified, literal(now.toISOString(), XSD.terms.dateTime));
+
+      accessor.data[resourceID.path] = representation;
+
+      const result = await store.getRepresentation(metaResourceID);
+      expect(result.metadata.identifier.value).toBe(metaResourceID.path);
+      expect(result.metadata.get(DC.terms.modified)).toEqualRdfTerm(
+        literal(now.toISOString(), XSD.terms.dateTime),
+      );
+      expect(result.metadata.quads(null, DC.terms.modified, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(1);
+    });
+
     it('will return the generated representation for container metadata resources.', async(): Promise<void> => {
       const metaResourceID = { path: `${root}.meta` };
 
