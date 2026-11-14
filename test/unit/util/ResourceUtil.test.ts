@@ -4,9 +4,11 @@ import type { Literal, NamedNode } from 'n3';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
+import { BasicConditions } from '../../../src/storage/conditions/BasicConditions';
 import type { Conditions } from '../../../src/storage/conditions/Conditions';
 import type { ETagHandler } from '../../../src/storage/conditions/ETagHandler';
 import { NotModifiedHttpError } from '../../../src/util/errors/NotModifiedHttpError';
+import { PreconditionFailedHttpError } from '../../../src/util/errors/PreconditionFailedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
 import {
   addTemplateMetadata,
@@ -114,6 +116,28 @@ describe('ResourceUtil', (): void => {
       expect((error as NotModifiedHttpError).metadata.get(HH.terms.etag)?.value).toBe('ETag');
       expect(data.destroy).toHaveBeenCalledTimes(1);
       expect(representation.metadata.get(HH.terms.etag)).toBeUndefined();
+    });
+
+    it('throws a PreconditionFailedHttpError if the If-Match condition does not match.', async(): Promise<void> => {
+      const conditions = new BasicConditions(eTagHandler, { matchesETag: [ 'other' ], notMatchesETag: [ 'other' ]});
+      jest.mocked(eTagHandler.matchesETag).mockReturnValue(false);
+      expect((): any => assertReadConditions(representation, eTagHandler, conditions))
+        .toThrow(PreconditionFailedHttpError);
+      expect(data.destroy).toHaveBeenCalledTimes(1);
+    });
+
+    it('throws a PreconditionFailedHttpError if If-Unmodified-Since does not match.', async(): Promise<void> => {
+      representation.metadata.set(DC.terms.modified, new Date('2020-01-02').toISOString());
+      const conditions = new BasicConditions(eTagHandler, { unmodifiedSince: new Date('2020-01-01') });
+      expect((): any => assertReadConditions(representation, eTagHandler, conditions))
+        .toThrow(PreconditionFailedHttpError);
+    });
+
+    it('throws a NotModifiedHttpError if only the If-None-Match condition fails.', async(): Promise<void> => {
+      const conditions = new BasicConditions(eTagHandler, { matchesETag: [ 'ETag' ], notMatchesETag: [ 'ETag' ]});
+      jest.mocked(eTagHandler.matchesETag).mockReturnValue(true);
+      expect((): any => assertReadConditions(representation, eTagHandler, conditions))
+        .toThrow(NotModifiedHttpError);
     });
   });
 });
