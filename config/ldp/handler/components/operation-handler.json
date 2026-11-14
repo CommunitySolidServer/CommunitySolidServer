@@ -33,6 +33,7 @@
           "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
+          "@id": "urn:solid-server:default:OperationHandler_MethodNotAllowed",
           "@type": "StaticThrowHandler",
           "error": { "@type": "MethodNotAllowedHttpError" }
         }

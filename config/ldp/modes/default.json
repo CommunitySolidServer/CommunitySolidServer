@@ -34,6 +34,7 @@
           }
         },
         {
+          "@id": "urn:solid-server:default:HttpModesExtractor_MethodNotAllowed",
           "@type": "StaticThrowHandler",
           "error": { "@type": "MethodNotAllowedHttpError" }
         }
@@ -47,6 +48,7 @@
         "@type": "MethodFilterHandler",
         "methods": [ "PATCH" ],
         "source": {
+          "@id": "urn:solid-server:default:PatchModesExtractor_Waterfall",
           "@type": "WaterfallHandler",
           "handlers": [
             {
@@ -58,6 +60,7 @@
               "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
             },
             {
+              "@id": "urn:solid-server:default:PatchModesExtractor_UnsupportedMediaType",
               "@type": "StaticThrowHandler",
               "error": { "@type": "UnsupportedMediaTypeHttpError" }
             }

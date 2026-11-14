@@ -9,6 +9,7 @@
         "@id": "urn:solid-server:default:PatchHandler",
         "@type": "RepresentationPatchHandler",
         "patcher": {
+          "@id": "urn:solid-server:default:PatchHandler_Waterfall",
           "@type": "WaterfallHandler",
           "handlers": [
             {
@@ -19,6 +20,7 @@
               "defaultType": "text/turtle"
             },
             {
+              "@id": "urn:solid-server:default:PatchHandler_UnsupportedMediaType",
               "@type": "StaticThrowHandler",
               "error": { "@type": "UnsupportedMediaTypeHttpError" }
             }
