@@ -439,6 +439,27 @@ describe('A LockingResourceStore', (): void => {
     expect(order).toEqual([ 'lock read', 'useless get', 'timeout', 'unlock read' ]);
   });
 
+  it('destroys the data of a representation that is only returned after a timeout.', async(): Promise<void> => {
+    let resolveRepresentation: (representation: Representation) => void;
+    jest.spyOn(source, 'getRepresentation').mockImplementation(async(): Promise<any> => {
+      order.push('slow get');
+      return new Promise((resolve): void => {
+        resolveRepresentation = resolve;
+      });
+    });
+
+    const prom = store.getRepresentation(subjectId, {});
+
+    timeoutTrigger.emit('timeout');
+
+    await expect(prom).rejects.toThrow('timeout');
+    const lateData = guardedStreamFrom([ 1, 2, 3 ]);
+    resolveRepresentation!({ data: lateData } as Representation);
+    await flushPromises();
+    expect(lateData.destroyed).toBe(true);
+    expect(order).toEqual([ 'lock read', 'slow get', 'timeout', 'unlock read' ]);
+  });
+
   it('hasResource should only acquire and release the read lock.', async(): Promise<void> => {
     await store.hasResource(subjectId);
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
