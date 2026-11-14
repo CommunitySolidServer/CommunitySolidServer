@@ -16,13 +16,19 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
   protected readonly logger = getLoggerFor(this);
   private readonly source: KeyValueStorage<TKey, Expires<TValue>>;
   private readonly timer: NodeJS.Timeout;
+  private readonly batchSize: number;
 
   /**
    * @param source - KeyValueStorage to actually store the data.
    * @param timeout - How often the expired data needs to be checked in minutes.
+   * @param batchSize - How many expired entries are deleted simultaneously.
    */
-  public constructor(source: KeyValueStorage<TKey, Expires<TValue>>, timeout = 60) {
+  public constructor(source: KeyValueStorage<TKey, Expires<TValue>>, timeout = 60, batchSize = 32) {
+    if (!Number.isSafeInteger(batchSize) || batchSize < 1) {
+      throw new InternalServerError('The batch size needs to be a positive integer.');
+    }
     this.source = source;
+    this.batchSize = batchSize;
     this.timer = setSafeInterval(
       this.logger,
       'Failed to remove expired entries',
@@ -77,7 +83,11 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
         expired.push(key);
       }
     }
-    await Promise.all(expired.map(async(key): Promise<boolean> => this.source.delete(key)));
+    // Deleting everything at once can make the individual operations slow enough for their locks to expire
+    for (let i = 0; i < expired.length; i += this.batchSize) {
+      const batch = expired.slice(i, i + this.batchSize);
+      await Promise.all(batch.map(async(key): Promise<boolean> => this.source.delete(key)));
+    }
     this.logger.debug('Finished removing expired entries');
   }
 

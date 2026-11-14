@@ -2,6 +2,7 @@ import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueS
 import type { Expires } from '../../../../src/storage/keyvalue/WrappedExpiringStorage';
 import { WrappedExpiringStorage } from '../../../../src/storage/keyvalue/WrappedExpiringStorage';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
+import { flushPromises } from '../../../util/Util';
 import clearAllTimers = jest.clearAllTimers;
 
 type Internal = Expires<string>;
@@ -153,5 +154,39 @@ describe('A WrappedExpiringStorage', (): void => {
     expect(source.delete).toHaveBeenCalledTimes(1);
     expect(source.delete).toHaveBeenLastCalledWith('key2');
     mockInterval.mockRestore();
+  });
+
+  it('deletes expired entries in batches.', async(): Promise<void> => {
+    const mockInterval = jest.spyOn(globalThis, 'setInterval');
+    mockInterval.mockImplementationOnce(jest.fn().mockReturnValueOnce({ unref: jest.fn() }));
+    storage = new WrappedExpiringStorage(source, 1, 2);
+    source.entries.mockImplementationOnce(function* (): any {
+      yield [ 'key1', createExpires('data1', yesterday) ];
+      yield [ 'key2', createExpires('data2', yesterday) ];
+      yield [ 'key3', createExpires('data3', yesterday) ];
+    });
+    const resolvers: ((value: boolean) => void)[] = [];
+    source.delete.mockImplementation(async(): Promise<boolean> => new Promise((resolve): void => {
+      resolvers.push(resolve);
+    }));
+
+    const promise = (mockInterval.mock.calls[0][0] as () => Promise<void>)();
+    await flushPromises();
+    expect(source.delete).toHaveBeenCalledTimes(2);
+
+    resolvers[0](true);
+    resolvers[1](true);
+    await flushPromises();
+    expect(source.delete).toHaveBeenCalledTimes(3);
+    expect(source.delete).toHaveBeenLastCalledWith('key3');
+
+    resolvers[2](true);
+    await expect(promise).resolves.toBeUndefined();
+    mockInterval.mockRestore();
+  });
+
+  it.each([ 0, 1.5, Number.NaN ])('errors if the batch size is %d.', (batchSize): void => {
+    expect((): unknown => new WrappedExpiringStorage(source, 1, batchSize))
+      .toThrow('The batch size needs to be a positive integer.');
   });
 });
