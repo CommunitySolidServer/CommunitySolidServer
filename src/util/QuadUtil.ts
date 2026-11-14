@@ -14,6 +14,8 @@ import { toNamedTerm } from './TermUtil';
  * @param contentType - The content-type to serialize to.
  *
  * @returns The Readable object.
+ *
+ * @deprecated Pipe the quad source through an N3 `StreamWriter` at the I/O boundary instead.
  */
 export function serializeQuads(quads: Quad[], contentType?: string): Guarded<Readable> {
   return pipeSafely(guardedStreamFrom(quads), new StreamWriter({ format: contentType }));
@@ -26,6 +28,8 @@ export function serializeQuads(quads: Quad[], contentType?: string): Guarded<Rea
  * @param options - Options for the parser.
  *
  * @returns A promise containing the array of quads.
+ *
+ * @deprecated Pipe the input through an N3 `StreamParser` and consume its quad stream instead.
  */
 export async function parseQuads(readable: Guarded<Readable>, options: ParserOptions = {}): Promise<Quad[]> {
   return arrayifyStream(pipeSafely(readable, new StreamParser(options)));
