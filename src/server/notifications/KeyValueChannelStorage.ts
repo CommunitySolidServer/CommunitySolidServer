@@ -26,18 +26,21 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
   }
 
   public async get(id: string): Promise<NotificationChannel | undefined> {
-    const channel = await this.storage.get(encodeURIComponent(id));
-    if (channel && this.isChannel(channel)) {
-      if (typeof channel.endAt === 'number' && channel.endAt < Date.now()) {
-        this.logger.info(`Notification channel ${id} has expired.`);
-        await this.locker.withWriteLock(this.getLockKey(id), async(): Promise<void> => {
-          await this.deleteChannel(channel);
-        });
-        return;
-      }
-
+    const channel = await this.getChannel(id);
+    if (!channel || !this.isExpired(channel)) {
       return channel;
     }
+
+    return this.locker.withWriteLock(this.getLockKey(id), async(): Promise<NotificationChannel | undefined> => {
+      // The channel might have been deleted or updated while waiting for the lock
+      const current = await this.getChannel(id);
+      if (current && this.isExpired(current)) {
+        this.logger.info(`Notification channel ${id} has expired.`);
+        await this.deleteChannel(current);
+        return;
+      }
+      return current;
+    });
   }
 
   public async getAll(topic: ResourceIdentifier): Promise<string[]> {
@@ -77,7 +80,8 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
 
   public async delete(id: string): Promise<boolean> {
     return this.locker.withWriteLock(this.getLockKey(id), async(): Promise<boolean> => {
-      const channel = await this.get(id);
+      // Not using `get` as that would try to acquire the same lock again for expired channels
+      const channel = await this.getChannel(id);
       if (!channel) {
         return false;
       }
@@ -110,8 +114,22 @@ export class KeyValueChannelStorage implements NotificationChannelStorage {
     });
   }
 
+  /**
+   * Returns the channel with the given identifier, without checking if it expired.
+   */
+  private async getChannel(id: string): Promise<NotificationChannel | undefined> {
+    const channel = await this.storage.get(encodeURIComponent(id));
+    if (channel && this.isChannel(channel)) {
+      return channel;
+    }
+  }
+
   private isChannel(value: StorageValue): value is NotificationChannel {
     return Boolean((value as NotificationChannel).id);
+  }
+
+  private isExpired(channel: NotificationChannel): boolean {
+    return typeof channel.endAt === 'number' && channel.endAt < Date.now();
   }
 
   private getLockKey(identifier: ResourceIdentifier | string): ResourceIdentifier {

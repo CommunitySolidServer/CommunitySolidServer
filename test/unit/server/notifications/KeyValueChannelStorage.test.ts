@@ -4,11 +4,13 @@ import { getLoggerFor } from '../../../../src/logging/LogUtil';
 import { KeyValueChannelStorage } from '../../../../src/server/notifications/KeyValueChannelStorage';
 import type { NotificationChannel } from '../../../../src/server/notifications/NotificationChannel';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
+import { EqualReadWriteLocker } from '../../../../src/util/locking/EqualReadWriteLocker';
+import { MemoryResourceLocker } from '../../../../src/util/locking/MemoryResourceLocker';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import resetAllMocks = jest.resetAllMocks;
 
 jest.mock('../../../../src/logging/LogUtil', (): any => {
-  const logger: Logger = { info: jest.fn(), error: jest.fn() } as any;
+  const logger: Logger = { info: jest.fn(), error: jest.fn(), debug: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });
 
@@ -61,6 +63,30 @@ describe('A KeyValueChannelStorage', (): void => {
       await storage.add(channel);
       await expect(storage.get(channel.id)).resolves.toBeUndefined();
       expect(internalMap.size).toBe(0);
+    });
+
+    it('only deletes an expired channel once when it is requested multiple times.', async(): Promise<void> => {
+      storage = new KeyValueChannelStorage(internalStorage, new EqualReadWriteLocker(new MemoryResourceLocker()));
+      channel.endAt = 0;
+      await storage.add(channel);
+      await expect(Promise.all([ storage.get(channel.id), storage.get(channel.id) ]))
+        .resolves.toEqual([ undefined, undefined ]);
+      expect(internalMap.size).toBe(0);
+      expect(logger.info).toHaveBeenCalledTimes(1);
+      expect(logger.error).toHaveBeenCalledTimes(0);
+    });
+
+    it('does not delete a channel that was renewed while waiting for the lock.', async(): Promise<void> => {
+      channel.endAt = 0;
+      await storage.add(channel);
+      const renewed = { ...channel, endAt: Date.now() + 60000 };
+      jest.mocked(locker.withWriteLock).mockImplementationOnce(async(rid, whileLocked): Promise<any> => {
+        internalMap.set(encodedId, renewed);
+        return whileLocked();
+      });
+      await expect(storage.get(channel.id)).resolves.toEqual(renewed);
+      expect(internalMap.get(encodedId)).toEqual(renewed);
+      expect(internalMap.get(encodedTopic)).toEqual([ channel.id ]);
     });
   });
 
@@ -146,6 +172,21 @@ describe('A KeyValueChannelStorage', (): void => {
 
     it('does nothing if the target does not exist.', async(): Promise<void> => {
       await expect(storage.delete(channel.id)).resolves.toBe(false);
+    });
+
+    it('does nothing if the target is not a channel.', async(): Promise<void> => {
+      await storage.add(channel);
+      await expect(storage.delete(topic)).resolves.toBe(false);
+      expect(internalMap.size).toBe(2);
+    });
+
+    it('removes an expired channel.', async(): Promise<void> => {
+      // A lock that is not reentrant, as with the actual lockers
+      storage = new KeyValueChannelStorage(internalStorage, new EqualReadWriteLocker(new MemoryResourceLocker()));
+      channel.endAt = 0;
+      await storage.add(channel);
+      await expect(storage.delete(channel.id)).resolves.toBe(true);
+      expect(internalMap.size).toBe(0);
     });
 
     it('logs an error if the target can not be found in the list of references.', async(): Promise<void> => {
