@@ -70,6 +70,17 @@ describe('A BaseReadWriteLocker', (): void => {
     await expect(locker.withReadLock(resourceId, (): number => 5)).resolves.toBe(5);
   });
 
+  it('resets the read count if the resource lock could not be acquired.', async(): Promise<void> => {
+    const acquireSpy = jest.spyOn(resourceLocker, 'acquire').mockRejectedValueOnce(new Error('lock error'));
+
+    await expect(locker.withReadLock(resourceId, (): number => 5)).rejects.toThrow('lock error');
+    expect(acquireSpy).toHaveBeenCalledTimes(1);
+
+    // The next read operation still needs to acquire the lock
+    await expect(locker.withReadLock(resourceId, (): number => 5)).resolves.toBe(5);
+    expect(acquireSpy).toHaveBeenCalledTimes(2);
+  });
+
   it('does not block single write operations.', async(): Promise<void> => {
     await expect(locker.withWriteLock(resourceId, (): number => 5)).resolves.toBe(5);
   });
