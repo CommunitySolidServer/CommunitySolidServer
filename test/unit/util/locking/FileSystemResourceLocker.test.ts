@@ -67,11 +67,12 @@ describe('A FileSystemResourceLocker', (): void => {
 
   it('blocks lock acquisition until they are released.', async(): Promise<void> => {
     const results: number[] = [];
-    const lock1 = locker.acquire(identifier);
+    // Make sure the first lock is held before the others are requested,
+    // as the order in which parallel acquisitions reach the file system is not guaranteed.
+    await locker.acquire(identifier);
     const lock2 = locker.acquire(identifier);
     const lock3 = locker.acquire(identifier);
 
-    // Note the different order of calls
     const prom2 = lock2.then(async(): Promise<void> => {
       results.push(2);
       return locker.release(identifier);
@@ -80,11 +81,11 @@ describe('A FileSystemResourceLocker', (): void => {
       results.push(3);
       return locker.release(identifier);
     });
-    const prom1 = lock1.then(async(): Promise<void> => {
-      results.push(1);
-      return locker.release(identifier);
-    });
-    await Promise.all([ prom2, prom3, prom1 ]);
+
+    // If either of the other locks were acquired while the first one is held, it would be pushed before 1
+    results.push(1);
+    await locker.release(identifier);
+    await Promise.all([ prom2, prom3 ]);
     expect(results[0]).toBe(1);
     expect(results).toContain(2);
     expect(results).toContain(3);
