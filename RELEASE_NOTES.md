@@ -11,6 +11,8 @@
     - `AsyncHandler` and utility handlers such as `WaterfallHandler`: [asynchronous-handlers](https://www.npmjs.com/package/asynchronous-handlers).
     - Utilities for creating vocabularies: [rdf-vocabulary](https://www.npmjs.com/package/rdf-vocabulary).
     - WAC/ACP authorization: [@solidlab/policy-engine](https://github.com/CommunitySolidServer/policy-engine).
+- `WrappedExpiringStorage` adds up to 15% random jitter to its cleanup interval,
+  so storages created together do not all clean up at the same time.
 
 ### Data migration
 
