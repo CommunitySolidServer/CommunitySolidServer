@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream';
 import { RoutingAuxiliaryStrategy } from '../../src/http/auxiliary/RoutingAuxiliaryStrategy';
 import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../src/http/representation/Representation';
@@ -8,6 +9,7 @@ import { LockingResourceStore } from '../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../../src/util/ContentTypes';
 import { InternalServerError } from '../../src/util/errors/InternalServerError';
+import { guardStream } from '../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { EqualReadWriteLocker } from '../../src/util/locking/EqualReadWriteLocker';
 import type { ExpiringReadWriteLocker } from '../../src/util/locking/ExpiringReadWriteLocker';
@@ -120,6 +122,64 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify the lock was acquired and released at the right time
     expect(getRepresentationSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the lock while data keeps flowing to a data listener.', async(): Promise<void> => {
+    // Produces a chunk every 750ms, so the full stream takes longer than the lock expiration
+    let count = 0;
+    const data = guardStream(new Readable({
+      read(): void {
+        setTimeout((): void => {
+          this.push(count < 4 ? `${count}` : null);
+          count += 1;
+        }, 750);
+      },
+    }));
+    getRepresentationSpy.mockResolvedValueOnce({ data } as Representation);
+
+    const representation = await store.getRepresentation({ path }, {});
+    const errorCallback = jest.fn();
+    representation.data.on('error', errorCallback);
+    const chunks: string[] = [];
+    representation.data.on('data', (chunk: Buffer): void => {
+      chunks.push(chunk.toString());
+    });
+
+    for (let i = 0; i < 6; ++i) {
+      jest.advanceTimersByTime(750);
+      await flushPromises();
+    }
+    expect(errorCallback).toHaveBeenCalledTimes(0);
+    expect(chunks).toEqual([ '0', '1', '2', '3' ]);
+    expect(representation.data.readableEnded).toBe(true);
+  });
+
+  it('keeps the lock while data is read through an async iterator.', async(): Promise<void> => {
+    let count = 0;
+    const data = guardStream(new Readable({
+      read(): void {
+        setTimeout((): void => {
+          this.push(count < 4 ? `${count}` : null);
+          count += 1;
+        }, 750);
+      },
+    }));
+    getRepresentationSpy.mockResolvedValueOnce({ data } as Representation);
+
+    const representation = await store.getRepresentation({ path }, {});
+    const chunks: string[] = [];
+    const consumed = (async(): Promise<void> => {
+      for await (const chunk of representation.data) {
+        chunks.push((chunk as Buffer).toString());
+      }
+    })();
+
+    for (let i = 0; i < 6; ++i) {
+      jest.advanceTimersByTime(750);
+      await flushPromises();
+    }
+    await expect(consumed).resolves.toBeUndefined();
+    expect(chunks).toEqual([ '0', '1', '2', '3' ]);
   });
 
   it('destroys the incoming stream when nothing is written after 1000ms.', async(): Promise<void> => {

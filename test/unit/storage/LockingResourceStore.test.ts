@@ -167,7 +167,7 @@ describe('A LockingResourceStore', (): void => {
     const expiringPatch = jest.mocked(source.modifyResource).mock.calls[0][1] as N3Patch;
     expect(source.modifyResource).toHaveBeenLastCalledWith(subjectId, expiringPatch, undefined);
     expect(expiringPatch).not.toBe(patch);
-    expect(expiringPatch.data).not.toBe(patch.data);
+    expect(expiringPatch.data).toBe(patch.data);
     expect(expiringPatch.deletes).toBe(patch.deletes);
     expect(expiringPatch.inserts).toBe(patch.inserts);
     expect(expiringPatch.conditions).toBe(patch.conditions);
@@ -203,10 +203,10 @@ describe('A LockingResourceStore', (): void => {
     const expiringRepresentation = jest.mocked(source.setRepresentation).mock.calls[0][1];
     expect(source.setRepresentation).toHaveBeenLastCalledWith(subjectId, expiringRepresentation, undefined);
     expect(expiringRepresentation).not.toBe(data);
-    expect(expiringRepresentation.data).not.toBe(data.data);
+    expect(expiringRepresentation.data).toBe(data.data);
     expect(maintainLock).toHaveBeenCalledTimes(2);
 
-    // The original stream is not adapted
+    // The stream is restored once the lock is released
     expect(data.data.read).toBe(originalRead);
     data.data.read();
     expect(maintainLock).toHaveBeenCalledTimes(2);
@@ -250,7 +250,7 @@ describe('A LockingResourceStore', (): void => {
 
     await store.modifyResource(subjectId, patch);
     const expiringPatch = jest.mocked(source.modifyResource).mock.calls[0][1] as SparqlUpdatePatch;
-    expect(expiringPatch.data).not.toBe(patch.data);
+    expect(expiringPatch.data).toBe(patch.data);
     expect(expiringPatch.algebra).toBe(patch.algebra);
   });
 
@@ -330,6 +330,31 @@ describe('A LockingResourceStore', (): void => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(subjectId, {}, undefined);
     expect(order).toEqual([ 'lock read', 'getRepresentation', 'end', 'unlock read' ]);
+  });
+
+  it('resets the read lock expiration when the data is read through an async iterator.', async(): Promise<void> => {
+    const maintainLock = jest.fn();
+    locker.withReadLock.mockImplementationOnce((async <T>(
+      identifier: ResourceIdentifier,
+      whileLocked: (maintain: () => void) => PromiseOrValue<T>,
+    ): Promise<T> => whileLocked(maintainLock)) satisfies ReadWriteLocker['withReadLock'] as any);
+    const stream = guardedStreamFrom([ 1, 2, 3 ]);
+    // eslint-disable-next-line jest/unbound-method
+    const originalRead = stream.read;
+    jest.spyOn(source, 'getRepresentation').mockResolvedValueOnce({ data: stream } as Representation);
+
+    const representation = await store.getRepresentation(subjectId, {});
+    expect(representation.data).toBe(stream);
+    const chunks: unknown[] = [];
+    for await (const chunk of representation.data) {
+      chunks.push(chunk);
+    }
+    expect(chunks).toEqual([ 1, 2, 3 ]);
+    expect(maintainLock).toHaveBeenCalledWith();
+
+    // The stream is restored once the lock is released
+    await flushPromises();
+    expect(stream.read).toBe(originalRead);
   });
 
   it('acquires the lock on the subject resource when reading an auxiliary resource.', async(): Promise<void> => {

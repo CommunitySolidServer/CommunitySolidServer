@@ -135,10 +135,16 @@ export class LockingResourceStore implements AtomicResourceStore {
       // Make the resource time out to ensure that the lock is always released eventually.
       this.locks.withReadLock(identifier, async(maintainLock): Promise<void> => {
         representation = await whileLocked();
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const { read } = representation.data;
         resolve(this.createExpiringRepresentation(representation, maintainLock));
 
-        // Release the lock when an error occurs or the data finished streaming
-        await this.waitForStreamToEnd(representation.data);
+        try {
+          // Release the lock when an error occurs or the data finished streaming
+          await this.waitForStreamToEnd(representation.data);
+        } finally {
+          representation.data.read = read;
+        }
       }).catch((error: unknown): void => {
         // Destroy the source stream in case the lock times out
         representation?.data.destroy(error as Error);
@@ -164,6 +170,8 @@ export class LockingResourceStore implements AtomicResourceStore {
     whileLocked: (representation: T) => Promise<TResult>,
   ): Promise<TResult> {
     let operationActive = false;
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const { read } = inputRepresentation.data;
     return this.locks.withWriteLock(identifier, async(maintainLock): Promise<TResult> => {
       operationActive = true;
       try {
@@ -179,26 +187,29 @@ export class LockingResourceStore implements AtomicResourceStore {
         inputRepresentation.data.destroy(error as Error);
       }
       throw error;
+    }).finally((): void => {
+      inputRepresentation.data.read = read;
     });
   }
 
   /**
    * Wraps a representation to make it reset the timeout timer every time data is read.
+   * The `read` function of the data stream itself is replaced to do this,
+   * the callers restore the original function once the lock is released.
    *
    * @param representation - The representation to wrap
    * @param maintainLock - Function to call to reset the timer.
    */
   protected createExpiringRepresentation<T extends Representation>(representation: T, maintainLock: () => void): T {
-    const source = representation.data;
-    // Spy on the source to maintain the lock upon reading.
-    const data = Object.create(source, {
-      read: {
-        value(size: number): unknown {
-          maintainLock();
-          return source.read(size);
-        },
-      },
-    }) as Readable;
+    const data = representation.data;
+    // A wrapper object around the stream can not be used here,
+    // as Node.js internally calls `read` and emits events on the original stream object.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const { read } = data;
+    data.read = (size?: number): unknown => {
+      maintainLock();
+      return read.call(data, size);
+    };
 
     // Reuse metadata to avoid duplicating potentially large container listings.
     return {
