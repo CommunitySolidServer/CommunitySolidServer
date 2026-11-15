@@ -29,6 +29,11 @@
     <button id="edit-account" type="button" class="alternate">Edit account</button>
     <button id="switch-account" type="button" class="alternate">Use a different account</button>
   </p>
+
+  <p id="recoverWebId">
+    If an application cannot read or use a WebID hosted in one of your pods, do not continue here:
+    <a id="recover-webid" href="" class="link">recover it first</a> from your account.
+  </p>
 </form>
 
 <script>
@@ -67,6 +72,7 @@
   })();
 
   function wireButtons(controls) {
+    const recoverWebIdLink = document.getElementById('recover-webid');
     elements.cancel.addEventListener('click', async() => {
       const res = await fetch(controls.oidc.cancel, { method: 'POST' });
       location.href = (await res.json()).location;
@@ -76,6 +82,16 @@
       await fetch(controls.account.logout, { method: 'POST' });
       location.href = controls.html.main.login;
     });
+
+    // A broken WebID should be fixed before it is used again, so the flow is not resumed here:
+    // without a `return` parameter the recovery page goes back to the account page,
+    // where the recovered WebID is listed.
+    // This is a link, so it needs a real href: an empty href would navigate to the current page.
+    if (controls.html.account?.recoverWebId) {
+      recoverWebIdLink.href = controls.html.account.recoverWebId;
+    } else {
+      setVisibility('recoverWebId', false);
+    }
   }
 
   // Adds client info to the UI

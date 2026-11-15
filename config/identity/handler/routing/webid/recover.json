@@ -1,0 +1,34 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": [
+        "Handles recovering the profile card of a WebID that is hosted in a pod of the account.",
+        "Registered directly under the account route: a path below webid/ would be matched",
+        "by the WebID link resource route, whose handler only supports DELETE."
+      ],
+      "@id": "urn:solid-server:default:AccountWebIdRecoverRouter",
+      "@type": "AuthorizedRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountWebIdRecoverRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:AccountIdRoute" },
+        "relativePath": "recover/"
+      },
+      "source": {
+        "@id": "urn:solid-server:default:RecoverWebIdViews",
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:RecoverWebIdHandler",
+          "@type": "RecoverWebIdHandler",
+          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+          "podStore": { "@id": "urn:solid-server:default:PodStore" },
+          "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
+          "webIdRoute": { "@id": "urn:solid-server:default:AccountWebIdLinkRoute" },
+          "resourcesGenerator": { "@id": "urn:solid-server:default:PodResourcesGenerator" },
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
+        }
+      }
+    }
+  ]
+}

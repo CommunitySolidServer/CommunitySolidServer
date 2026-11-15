@@ -83,7 +83,7 @@ we would appreciate a citation of our
 ```bibtex
 @article{CommunitySolidServer,
   title   = {The Community Solid Server: Supporting research \& development in an evolving ecosystem},
-  author  = {Van Herwegen, Joachim and Verborgh, Ruben},
+  author  = {Van Herwegen, Joanna and Verborgh, Ruben},
   journal = {Semantic Web},
   volume  = {15},
   number  = {6},
