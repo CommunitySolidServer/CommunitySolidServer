@@ -5,5 +5,5 @@ but with a different Committee, which should be contacted in the case of violati
 
 The Committee consists of the following people:
 
-* Joachim Van Herwegen <joachim.vanherwegen@ugent.be>
+* Joanna Van Herwegen <joanna.vanherwegen@ugent.be>
 * Ruben Verborgh <ruben.verborgh@ugent.be>
