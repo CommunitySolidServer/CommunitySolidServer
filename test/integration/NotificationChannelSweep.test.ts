@@ -34,7 +34,8 @@ function toInternal(id: string): { path: string } {
   return { path: joinUrl(baseUrl, '.internal/notifications/', encodeURIComponent(id)) };
 }
 
-async function waitFor(check: () => Promise<boolean>, timeout = 10000): Promise<boolean> {
+// Generous, as a sweep on the file backend can take several seconds on the Windows CI runners
+async function waitFor(check: () => Promise<boolean>, timeout = 30000): Promise<boolean> {
   const end = Date.now() + timeout;
   while (Date.now() < end) {
     if (await check()) {
