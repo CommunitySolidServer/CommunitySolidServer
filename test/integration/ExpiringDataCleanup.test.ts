@@ -33,7 +33,8 @@ describe('A server with expiring storage', (): void => {
   it('does not crash after the interval timeout.', async(): Promise<void> => {
     // Default timeout is 1 hour
     // This test would fail if something goes wrong in an interval timer
-    jest.advanceTimersByTime(2 * 60 * 60 * 1000);
+    // Async so interval callbacks that do I/O, such as the notification channel sweep, can finish
+    await jest.advanceTimersByTimeAsync(2 * 60 * 60 * 1000);
     const res = await fetch(baseUrl, { method: 'HEAD' });
     expect(res.status).toBe(200);
   });

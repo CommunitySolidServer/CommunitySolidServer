@@ -7,10 +7,24 @@
       "@type": "KeyValueChannelStorage",
       "locker": { "@id": "urn:solid-server:default:ResourceLocker" },
       "storage": {
+        "@id": "urn:solid-server:default:SubscriptionKeyValueStorage",
         "@type": "ContainerPathStorage",
         "relativePath": "/notifications/",
         "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
       }
+    },
+    {
+      "@id": "urn:solid-server:default:Finalizer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        {
+          "comment": "Periodically removes expired subscriptions. Stops when the server stops.",
+          "@id": "urn:solid-server:default:SubscriptionSweeper",
+          "@type": "KeyValueChannelSweeper",
+          "storage": { "@id": "urn:solid-server:default:SubscriptionKeyValueStorage" },
+          "channelStorage": { "@id": "urn:solid-server:default:SubscriptionStorage" }
+        }
+      ]
     }
   ]
 }

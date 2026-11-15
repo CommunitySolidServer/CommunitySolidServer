@@ -131,7 +131,20 @@ describe('A JsonResourceStorage', (): void => {
     ]);
   });
 
-  it('streams container members.', async(): Promise<void> => {
+  it('requests containers as quads.', async(): Promise<void> => {
+    await expect(storage.set(path1, 'path1')).resolves.toBe(storage);
+    data.set(containerIdentifier, '');
+
+    for await (const entry of storage.entries()) {
+      expect(entry).toEqual([ path1, 'path1' ]);
+    }
+    expect(store.getRepresentation).toHaveBeenCalledWith(
+      { path: containerIdentifier },
+      { type: { [INTERNAL_QUADS]: 1 }},
+    );
+  });
+
+  it('closes the container listing before going through its members.', async(): Promise<void> => {
     const childCount = 100;
     let generatedChildren = 0;
     let listingClosed = false;
@@ -167,10 +180,9 @@ describe('A JsonResourceStorage', (): void => {
       done: false,
       value: [ '0', `${containerIdentifier}0` ],
     });
-    expect(generatedChildren).toBeLessThan(childCount);
-    expect(listingClosed).toBe(false);
-
-    await iterator.return?.();
+    // A store can keep the container locked while the listing is open
+    expect(generatedChildren).toBe(childCount);
     expect(listingClosed).toBe(true);
+    await iterator.return?.();
   });
 });

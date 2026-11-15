@@ -72,7 +72,7 @@ describe('A SingleContainerJsonStorage', (): void => {
     expect(store.getRepresentation).toHaveBeenNthCalledWith(
       1,
       { path: 'http://example.com/.internal/accounts/' },
-      {},
+      { type: { [INTERNAL_QUADS]: 1 }},
     );
     expect(store.getRepresentation).toHaveBeenNthCalledWith(
       2,

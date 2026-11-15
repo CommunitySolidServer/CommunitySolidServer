@@ -421,6 +421,7 @@ export * from './server/notifications/BaseChannelType';
 export * from './server/notifications/BaseStateHandler';
 export * from './server/notifications/ComposedNotificationHandler';
 export * from './server/notifications/KeyValueChannelStorage';
+export * from './server/notifications/KeyValueChannelSweeper';
 export * from './server/notifications/ListeningActivityHandler';
 export * from './server/notifications/NotificationChannel';
 export * from './server/notifications/NotificationChannelStorage';

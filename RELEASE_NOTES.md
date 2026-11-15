@@ -1,5 +1,13 @@
 # Community Solid Server release notes
 
+## v7.4.0
+
+### Configuration changes
+
+- The notification storage configuration adds a `KeyValueChannelSweeper` to the `Finalizer`,
+  which removes expired notification channels every 60 minutes, with up to 15% jitter.
+  Its `sweepInterval` is in minutes, and `0` disables it.
+
 ## v7.3.0
 
 ### New features
