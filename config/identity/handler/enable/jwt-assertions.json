@@ -1,0 +1,43 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Enable JWT assertions creation."
+    },
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:AccountJwtAssertionsRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:AccountControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "jwtAssertions",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountJwtAssertionsRoute" }
+      }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:CreateJwtAssertionsHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/account/create-jwt-assertions.html.ejs",
+        "route": { "@id": "urn:solid-server:default:AccountJwtAssertionsRoute" }
+      }]
+    },
+    {
+      "ControlHandler:_controls_value": {
+        "@id": "urn:solid-server:default:AccountHtmlControlHandler",
+        "@type": "ControlHandler",
+        "controls": [{
+          "ControlHandler:_controls_key": "createJwtAssertions",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountJwtAssertionsRoute" }
+        }]
+      }
+    }
+  ]
+}
